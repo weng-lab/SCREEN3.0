@@ -31,7 +31,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.mjs",
-    "src/app/[elementType]/[elementID]/[[...tab]]/_GeneTabs/_linkedICREs"
+    "src/app/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_linkedICREs"
   ],
   "exclude": ["node_modules", "yarn.lock", "yarn-error.log", ".cache", "dist"]
 }

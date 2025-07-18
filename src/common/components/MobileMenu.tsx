@@ -1,14 +1,13 @@
 "use client";
 import { Search } from "@mui/icons-material";
-import { Box, Divider, Drawer, DrawerProps, IconButton, List, ListItem, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Divider, Drawer, IconButton, List, ListItem, Stack, useMediaQuery, useTheme } from "@mui/material";
 import MuiLink from "@mui/material/Link";
 import AutoComplete from "./autocomplete";
 import Link from "next/link";
-import { PageInfo } from "./HomeAppBar";
+import { PageInfo } from "./Header";
 import CloseIcon from "@mui/icons-material/Close";
 import { useMenuControl } from "common/MenuContext";
 import { useEffect } from "react";
-import { TransitionProps } from "@mui/material/transitions";
 
 export type MobileMenuProps = {
   pageLinks: PageInfo[];

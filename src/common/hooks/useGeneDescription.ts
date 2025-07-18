@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GenomicElementType } from 'types/globalTypes';
+import { EntityType } from 'types/globalTypes';
 
 export interface UseGeneDescriptionResult {
   description: string | null;
@@ -7,14 +7,14 @@ export interface UseGeneDescriptionResult {
   error: string | null;
 }
 
-export function useGeneDescription(name: string, elementType: GenomicElementType = "gene"): UseGeneDescriptionResult {
+export function useGeneDescription(name: string, entityType: EntityType = "gene"): UseGeneDescriptionResult {
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     
-    if ((elementType !== undefined) && elementType !== 'gene') return;
+    if ((entityType !== undefined) && entityType !== 'gene') return;
     if (!name) return;
 
     const fetchDescription = async () => {
@@ -43,7 +43,7 @@ export function useGeneDescription(name: string, elementType: GenomicElementType
     };
 
     fetchDescription();
-  }, [name]);
+  }, [entityType, name]);
 
   return { description, loading, error };
 }

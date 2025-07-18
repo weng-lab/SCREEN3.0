@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GenomicElementType } from 'types/globalTypes';
+import { EntityType } from 'types/globalTypes';
 
 interface Frequency {
   population: string;
@@ -18,13 +18,13 @@ export interface UseSnpFrequenciesResult {
   error: string | null;
 }
 
-export function useSnpFrequencies(rsids: string[], elementType: GenomicElementType = "variant"): UseSnpFrequenciesResult {
+export function useSnpFrequencies(rsids: string[], entityType: EntityType = "variant"): UseSnpFrequenciesResult {
   const [data, setData] = useState<{ [rsid: string]: SnpFrequencies | null }>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if ((elementType !== undefined) && elementType !== 'variant') return;
+    if ((entityType !== undefined) && entityType !== 'variant') return;
     
     if (data || loading || !rsids || rsids.length === 0) return; // Avoid fetching if no rsids are provided
 

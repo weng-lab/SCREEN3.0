@@ -20,7 +20,7 @@ import {
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/psychscreen-ui-components";
 import { useCallback, useEffect, useState } from "react";
-import { GenomicElementType, GenomicRange } from "types/globalTypes";
+import { EntityType, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import AddTracksModal, { BigWig } from "./addTracksModal";
 import ControlButtons from "./controls";
@@ -59,7 +59,7 @@ export default function GenomeBrowserView({
 }: {
   coordinates: GenomicRange;
   name: string;
-  type: GenomicElementType;
+  type: EntityType;
 }) {
   const [browserState, browserDispatch] = useBrowserState({
     domain: expandCoordinates(coordinates),
@@ -90,7 +90,7 @@ export default function GenomeBrowserView({
   }, [browserDispatch]);
   const onIcreClick = useCallback((item: Rect) => {
     const accession = item.name;
-    router.push(`/icre/${accession}`)
+    router.push(`/ccre/${accession}`)
   }, []);
   const onGeneClick = useCallback((gene: Transcript) => {
     const name = gene.name;

@@ -22,7 +22,7 @@ export default function AutoComplete({closeDrawer, ...props}: AutoCompleteProps)
   const handleSearchSubmit = (r: Result) => {
     //needed to trigger closing the mobile menu drawer
     if (closeDrawer) {
-      closeDrawer()
+      closeDrawer();
     }
 
     let url = "";
@@ -30,15 +30,8 @@ export default function AutoComplete({closeDrawer, ...props}: AutoCompleteProps)
       case "Gene":
         url = `/gene/${r.title}`;
         break;
-      case "iCRE":
-        url = `/icre/${r.title}`;
-        break;
-      case "cCRE": 
-        if (r.description.includes("iCRE")) {
-          url = `/icre/${r.title}`;
-        } else {
-          url = `/ccre?accession=${r.title}`;
-        }
+      case "cCRE":
+        url = `/ccre/${r.title}`;
         break;
       case "Coordinate":
         url = `/region/${r.domain.chromosome}:${r.domain.start}-${r.domain.end}`;
@@ -54,7 +47,6 @@ export default function AutoComplete({closeDrawer, ...props}: AutoCompleteProps)
     <GenomeSearch
       assembly="GRCh38"
       queries={["Gene", "cCRE", "SNP", "Coordinate"]}
-      showiCREFlag
       onSearchSubmit={handleSearchSubmit}
       //This is needed to prevent the enter key press from triggering the onClick of the Menu IconButton
       onKeyDown={(e) => {

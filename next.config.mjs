@@ -17,14 +17,15 @@ const nextConfig = {
     return [
       {
         source: '/region/:region',
-        destination: '/region/:region/icres',
+        destination: '/region/:region/ccres',
         permanent: false
       },
       {
-        source: '/region',
+        source: '/:entityType',
         destination: '/',
         permanent: false
-      }
+      },
+
     ]
   }
 }

@@ -119,12 +119,9 @@ export const accessionCol: colDef = {
   field: "accession",
   headerName: "Accession",
   renderCell: (params: renderCellParams) => {
-    const href = !params.row.isiCRE
-      ? `https://screen.wenglab.org/search/?q=${params.value}&uuid=0&assembly=GRCh38`
-      : `/icre/${params.value}`;
     return (
       <LinkComponent
-        href={href}        
+        href={`/ccre/${params.value}`}        
         showExternalIcon={!params.row.isiCRE}
         openInNewTab={!params.row.isiCRE}
       >

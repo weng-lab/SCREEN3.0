@@ -1,7 +1,7 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { gql } from "types/generated/gql";
 import { GeneQuery } from "types/generated/graphql";
-import { GenomicElementType, GenomicRange } from "types/globalTypes";
+import { EntityType, GenomicRange } from "types/globalTypes";
 
 const GENE_Query = gql(`
   query Gene($chromosome: String, $start: Int, $end: Int, $name: [String]) {
@@ -24,15 +24,15 @@ const GENE_Query = gql(`
  */
 
 export type UseGeneDataParams = 
-  | { name: string | string[]; coordinates?: never; elementType?: GenomicElementType }
-  | { coordinates: GenomicRange; name?: never; elementType?: GenomicElementType }
+  | { name: string | string[]; coordinates?: never; entityType?: EntityType }
+  | { coordinates: GenomicRange; name?: never; entityType?: EntityType }
 
 export type UseGeneDataReturn<T extends UseGeneDataParams> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { name: string[] })
   ? { data: GeneQuery["gene"] | undefined; loading: boolean; error: ApolloError }
   : { data: GeneQuery["gene"][0] | undefined; loading: boolean; error: ApolloError };
 
-export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, elementType}: T): UseGeneDataReturn<T> => {
+export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, entityType}: T): UseGeneDataReturn<T> => {
 
   const { data, loading, error } = useQuery(
     GENE_Query,
@@ -43,7 +43,7 @@ export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, ele
         end: coordinates?.end,
         name
       },
-      skip: (elementType !== undefined) && elementType !== 'gene'
+      skip: (entityType !== undefined) && entityType !== 'gene'
     }
   );
 

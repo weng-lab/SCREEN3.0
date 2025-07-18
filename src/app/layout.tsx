@@ -1,4 +1,4 @@
-import AppBar from "common/components/HomeAppBar"
+import Header from "common/components/Header"
 import Footer from "common/components/Footer"
 import { Box, CssBaseline, Stack } from "@mui/material"
 import { ThemeProvider } from '@mui/material/styles';
@@ -7,7 +7,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ApolloWrapper } from "common/apollo/apollo-wrapper"
 import { Suspense } from "react"
 import MuiXLicense from "common/MuiXLicense";
-import { OpenElementsContextProvider } from "common/OpenElementsContext";
+import { OpenEntitiesContextProvider } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { Analytics } from "@vercel/analytics/next"
 import { MenuControlProvider } from "common/MenuContext";
 
@@ -25,17 +25,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AppRouterCacheProvider>
               <ThemeProvider theme={theme}>
                 <MenuControlProvider>
-                  <OpenElementsContextProvider>
+                  <OpenEntitiesContextProvider>
                     {/* Overall wrapper set to be screen height */}
                     <Stack height={"100vh"} minHeight={0} id="app-wrapper">
-                      <AppBar maintenance={false} />
+                      <Header maintenance={false} />
                       {/* Overflow=auto provides scrolling ancestor for OpenElementsTab. This allows it to be position=sticky with top=0, and right under AppBar*/}
                       <Stack flexGrow={1} overflow={"auto"} minHeight={0} id="content-wrapper">
                         <Stack flexGrow={1}>{children}</Stack>
                         <Footer />
                       </Stack>
                     </Stack>
-                  </OpenElementsContextProvider>
+                  </OpenEntitiesContextProvider>
                 </MenuControlProvider>
               </ThemeProvider>
             </AppRouterCacheProvider>

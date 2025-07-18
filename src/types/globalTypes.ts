@@ -8,55 +8,59 @@ export interface GenomicRange {
   end: number;
 }
 
-export type GenomicElementType = "variant" | "gene" | "icre" | "region"
+export type EntityType = "variant" | "gene" | "ccre" | "region"
 
-export function isValidGenomicElement(value: string): value is GenomicElementType {
-  return value === "variant" || value === "gene" || value === "icre" || value === "region";
+export function isValidGenomicEntity(value: string): value is EntityType {
+  return value === "variant" || value === "gene" || value === "ccre" || value === "region";
 }
 
+
+/**
+ * @note If we are now adding studies and biosamples as "Entities", this will need to be changed.
+ */
 export type SharedRoute = "browser"
 
 //empty route is for the elements default tab. For example /gene/SP1 will be the gene expression. Otherwise would need to assign /gene/SP1/gene
-export type ElementDefaultTab = ""
+export type EntityDefaultTab = ""
 
-export type VariantRoute = SharedRoute | ElementDefaultTab | "icres" | "genes"
+export type VariantRoute = SharedRoute | EntityDefaultTab | "ccres" | "genes"
 
-export type GeneRoute = SharedRoute | ElementDefaultTab | "icres" | "variants"
+export type GeneRoute = SharedRoute | EntityDefaultTab | "ccres" | "variants"
 
-export type IcreRoute = SharedRoute | ElementDefaultTab | "genes" | "variants"
+export type CcreRoute = SharedRoute | EntityDefaultTab | "genes" | "variants"
 
-//region search does not have "base" tab like gene/snp/icre. Always region/[region]/[elementType]
-export type RegionRoute = SharedRoute | "icres" | "genes" | "variants"
+//region search does not have "base" tab like gene/snp/ccre. Always region/[region]/[elementType]
+export type RegionRoute = SharedRoute | "ccres" | "genes" | "variants"
 
 export function isValidSharedTab(tab: string): tab is SharedRoute {
   return tab === "browser"
 }
 
-export function isValidElementDefaultTab(tab: string): tab is ElementDefaultTab {
+export function isValidEntityDefaultTab(tab: string): tab is EntityDefaultTab {
   return tab === ""
 }
 
 export function isValidVariantTab(tab: string): tab is VariantRoute {
-  return isValidSharedTab(tab) || isValidElementDefaultTab(tab) || tab === "icres" || tab === "genes"
+  return isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || tab === "ccres" || tab === "genes"
 }
 
 export function isValidGeneTab(tab: string): tab is GeneRoute {
-  return isValidSharedTab(tab) || isValidElementDefaultTab(tab) || tab === "icres" || tab === "variants"
+  return isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || tab === "ccres" || tab === "variants"
 }
 
-export function isValidIcreTab(tab: string): tab is IcreRoute {
-  return isValidSharedTab(tab) || isValidElementDefaultTab(tab) || tab === "genes" || tab === "variants"
+export function isValidCcreTab(tab: string): tab is CcreRoute {
+  return isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || tab === "genes" || tab === "variants"
 }
 
 export function isValidRegionTab(tab: string): tab is RegionRoute {
-  return  isValidSharedTab(tab) || tab === "icres" || tab === "genes" || tab === "variants"
+  return  isValidSharedTab(tab) || tab === "ccres" || tab === "genes" || tab === "variants"
 }
 
-export function isValidTab(tab: string): tab is SharedRoute | VariantRoute | GeneRoute | IcreRoute {
-  return isValidSharedTab(tab) || isValidElementDefaultTab(tab) || isValidVariantTab(tab) || isValidGeneTab(tab) || isValidIcreTab(tab)
+export function isValidTab(tab: string): tab is SharedRoute | VariantRoute | GeneRoute | CcreRoute {
+  return isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || isValidVariantTab(tab) || isValidGeneTab(tab) || isValidCcreTab(tab)
 }
 
-export type TabRoute = VariantRoute | GeneRoute | IcreRoute | RegionRoute
+export type TabRoute = VariantRoute | GeneRoute | CcreRoute | RegionRoute
 
 /**
  * label is for the display name of the tab.
@@ -80,8 +84,8 @@ export interface GeneDetailsTab extends ElementDetailsTab {
   href: GeneRoute
 }
 
-export interface IcreDetailsTab extends ElementDetailsTab {
-  href: IcreRoute
+export interface CcreDetailsTab extends ElementDetailsTab {
+  href: CcreRoute
 }
 
 export interface RegionDetailsTab extends ElementDetailsTab {
