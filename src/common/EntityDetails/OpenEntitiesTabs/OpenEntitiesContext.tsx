@@ -57,10 +57,10 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
 export const OpenEntitiesContext = createContext<[OpenEntityState, Dispatch<OpenEntityAction>]>(null);
 
 export const OpenEntitiesContextProvider = ({ children }) => {
-  // The effect to sync state to url in OpenElementsTabs relies on this being an empty array on initial load.
+  // The effect to sync state to url in OpenEntitiesTabs relies on this being an empty array on initial load.
   // (and only ever being an empty array on initial load)
-  // It checks openElements.length before allowing pushes to the url.
-  const [openElements, dispatch] = useReducer(openEntitiesReducer, []);
+  // It checks openEntities.length before allowing pushes to the url.
+  const [openEntities, dispatch] = useReducer(openEntitiesReducer, []);
 
-  return <OpenEntitiesContext.Provider value={[openElements, dispatch]}>{children}</OpenEntitiesContext.Provider>;
+  return <OpenEntitiesContext.Provider value={[openEntities, dispatch]}>{children}</OpenEntitiesContext.Provider>;
 };

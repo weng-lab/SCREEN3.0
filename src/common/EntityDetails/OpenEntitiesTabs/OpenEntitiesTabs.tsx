@@ -1,7 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { Tab, Stack, Paper, Tooltip } from "@mui/material";
 import { OpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
-import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL } from "common/utility";
+import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { EntityType, TabRoute } from "types/globalTypes";
@@ -16,11 +16,6 @@ import { DraggableTab } from "./DraggableTab";
 export const constructEntityURL = (entity: OpenEntity) =>
   `/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
-export type ElementDetailsHeaderProps = {
-  elementType: EntityType;
-  elementID: string;
-};
-
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {
   const [openEntities, dispatch] = useContext(OpenEntitiesContext);
   const { menuCanBeOpened, isMenuMounted, openMenu } = useMenuControl();
@@ -33,7 +28,11 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   const urlEntityType = pathname.split("/")[1] as EntityType;
   const urlEntityID = pathname.split("/")[2];
   const urlTab = (pathname.split("/")[3] ?? "") as TabRoute;
-  const currentEntityState = openEntities.find((el) => el.entityID === urlEntityID);
+  const currentEntityState = openEntities.find((el) =>
+    urlEntityType === "region" && el.entityType === "region"
+      ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlEntityID)) //handles "%3A"/":" discrepency in url
+      : el.entityID === urlEntityID
+  );
   
   // ------- Initialize state from URL on initial load -------
 
@@ -233,16 +232,12 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   // ------- End "New Search" Button Helpers -------
 
-  /**
-   * Index of current route's element within internal state
-   */
-  const tabIndex = useMemo(
-    () => openEntities.findIndex((el) => el.entityID === urlEntityID),
-    [openEntities, urlEntityID]
-  );
-
   return (
-    <TabContext value={tabIndex}>
+    /**
+     * @todo I think this defeats the purpose of using TabContext and TabPanel if we are dynamically switching the content of TabPanel
+     * https://mui.com/material-ui/react-tabs/#experimental-api
+     */
+    <TabContext value={1}>
       {/* z index of scrollbar in DataGrid is 60 */}
       <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 61 }} id="open-elements-tabs">
         <Stack direction={"row"}>
@@ -272,7 +267,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
                         index={i}
                         closable={moreThanOneEntityOpen}
                         entity={entity}
-                        isSelected={urlEntityID === entity.entityID}
+                        isSelected={currentEntityState?.entityID === entity.entityID}
                         handleCloseTab={handleCloseTab}
                         handleTabClick={handleTabClick}
                       />
@@ -293,7 +288,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
         </Stack>
       </Paper>
       {/* Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */}
-      <TabPanel value={tabIndex} sx={{ p: 0, flexGrow: 1, minHeight: 0 }} id="element-details-TabPanel">
+      <TabPanel value={1} sx={{ p: 0, flexGrow: 1, minHeight: 0 }} id="element-details-TabPanel">
         {children}
       </TabPanel>
     </TabContext>
