@@ -1,8 +1,11 @@
 import { EntityType, GenomicRange, TabRoute } from "types/globalTypes";
 import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
-import { Typography, TypographyOwnProps } from "@mui/material";
+import { Typography, TypographyOwnProps, TypographyPropsVariantOverrides, Link } from "@mui/material";
 import { OpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
+import { OverridableStringUnion } from '@mui/types';
+import { Variant } from "@mui/material/styles/createTypography";
+import { Launch } from "@mui/icons-material";
 
 export function getClassDisplayname(input: string) {
   switch (input) {
@@ -27,6 +30,27 @@ export function getClassDisplayname(input: string) {
     default:
       return "No Class Found";
   }
+}
+
+/**
+ * 
+ * @param props 
+ * @returns 
+ */
+export const CreateLink: React.FC<{ 
+  linkPrefix: string,
+   linkArg?: string, 
+   label: string, 
+   showExternalIcon?: boolean,
+   onClick?: React.MouseEventHandler<HTMLAnchorElement>
+    variant?: OverridableStringUnion<Variant | 'inherit', TypographyPropsVariantOverrides>, textColor?: string, underline?: "none" | "always" | "hover" }> = (props) => {
+  const link = props.linkPrefix + (props.linkArg ?? "")
+  return (
+    <Link variant={props.variant} href={link} rel="noopener noreferrer" target="_blank" color={props.textColor} underline={props.underline} onClick={props.onClick}>
+      {props.label}
+      {props.showExternalIcon && <Launch sx={{ display: "inline-flex", verticalAlign: "middle", ml: 0.5 }} color="inherit" fontSize="inherit" />}
+    </Link>
+  )
 }
 
 /**
