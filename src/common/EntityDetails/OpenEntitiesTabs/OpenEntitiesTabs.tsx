@@ -13,8 +13,7 @@ import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/MenuContext";
 import { DraggableTab } from "./DraggableTab";
 
-export const constructEntityURL = (entity: OpenEntity) =>
-  `/${entity.entityType}/${entity.entityID}/${entity.tab}`;
+export const constructEntityURL = (entity: OpenEntity) => `/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {
   const [openEntities, dispatch] = useContext(OpenEntitiesContext);
@@ -33,11 +32,11 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
       ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlEntityID)) //handles "%3A"/":" discrepency in url
       : el.entityID === urlEntityID
   );
-  
+
   // ------- Initialize state from URL on initial load -------
 
   const isInitializedRef = useRef(false);
-  
+
   useEffect(() => {
     if (!isInitializedRef.current) {
       const openParam = searchParams.get("open");
@@ -50,7 +49,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
       isInitializedRef.current = true;
     }
   }, [dispatch, searchParams]);
-  
+
   // ------- Routing Related --------
 
   const isRoutingRef = useRef(false); // used to prevent race conditions when updating internal state and url (both async)
@@ -61,7 +60,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
    */
   const navigateAndMark = useCallback(
     (url: string) => {
-      console.log("called with " + url)
+      console.log("called with " + url);
       isRoutingRef.current = true;
       router.push(url);
     },
@@ -87,7 +86,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   }, [openEntities, pathname, navigateAndMark, router]);
 
   /**
-   * 
+   *
    */
   useEffect(() => {
     // if current route is not in open elements, and routing is not currently underway
@@ -237,7 +236,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
      * @todo I think this defeats the purpose of using TabContext and TabPanel if we are dynamically switching the content of TabPanel
      * https://mui.com/material-ui/react-tabs/#experimental-api
      */
-    <TabContext value={1}>
+    <TabContext value={0}>
       {/* z index of scrollbar in DataGrid is 60 */}
       <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 61 }} id="open-elements-tabs">
         <Stack direction={"row"}>
@@ -288,7 +287,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
         </Stack>
       </Paper>
       {/* Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */}
-      <TabPanel value={1} sx={{ p: 0, flexGrow: 1, minHeight: 0 }} id="element-details-TabPanel">
+      <TabPanel value={0} sx={{ p: 0, flexGrow: 1, minHeight: 0 }} id="element-details-TabPanel">
         {children}
       </TabPanel>
     </TabContext>
