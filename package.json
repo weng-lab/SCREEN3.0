@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "export": "next export",
@@ -25,8 +25,8 @@
     "@mui/x-data-grid": "^7.27.3",
     "@mui/x-data-grid-pro": "^7.28.1",
     "@types/node": "^22",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
     "@vercel/analytics": "^1.5.0",
     "@visx/axis": "^3",
     "@visx/drag": "^3.12.0",
@@ -46,13 +46,13 @@
     "bpnet-ui": "^0.3.8",
     "d3-scale-chromatic": "^3.1.0",
     "eslint": "^8",
-    "eslint-config-next": "^14",
+    "eslint-config-next": "15.4.2",
     "lz-string": "^1.5.0",
-    "next": "15.3.4",
+    "next": "15.4.2",
     "psychscreen-legacy-components": "^1.0.1",
     "queryz": "^0.0.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "track-logic": "^0.0.4",
     "umms-gb": "^3.9.14",
     "uuid": "^10.0.0"
@@ -64,5 +64,9 @@
     "@parcel/watcher": "^2.5.1",
     "graphql": "^16",
     "typescript": "^5"
+  },
+  "resolutions": {
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6"
   }
 }
