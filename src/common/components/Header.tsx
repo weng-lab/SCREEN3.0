@@ -31,6 +31,14 @@ export type PageInfo = {
 
 const pageLinks: PageInfo[] = [
   {
+    pageName: "Home",
+    link: "/"
+  },
+  {
+    pageName: "Downloads",
+    link: "/downloads"
+  },
+  {
     pageName: "About",
     link: "/about",
     dropdownID: 0,
@@ -38,6 +46,10 @@ const pageLinks: PageInfo[] = [
       { pageName: "Overview", link: "/about" },
       { pageName: "Contact Us", link: "/about#contact-us" },
     ],
+  },
+  {
+    pageName: "Help",
+    link: "/about#contact-us"
   },
 ];
 
@@ -119,20 +131,22 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
       </Stack>
       <AppBar position="static">
         <Toolbar sx={{ justifyContent: "space-between" }}>
-          {/* Display Icon on left when >=900px */}
-          <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
-            <Image
-              priority
-              src="/on-dark@16x.png"
-              fill
-              sizes="110px"
-              alt="igSCREEN logo"
-              style={{ objectFit: "contain", objectPosition: "left center" }}
-            />
-          </Box>
           {/* Main navigation items for desktop */}
-          <Box display={{ xs: "none", md: "flex" }} alignItems={"center"}>
-            <Box sx={{ display: { xs: "flex" } }}>
+          <Stack direction={"row"} spacing={4}>
+            <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
+              <Image
+                  priority
+                  src={"/on-dark@16x.png"}
+                  alt="SCREEN Icon"
+                  fill
+                  style={{
+                    objectFit: "contain",
+                    objectPosition: "left center",
+                    imageRendering: "auto",
+                  }}
+                />
+            </Box>
+            <Stack spacing={4} direction={"row"} display={{ xs: "none", md: "flex" }} alignItems={"center"}>
               {pageLinks.map((page) => (
                 <Box
                   key={page.pageName}
@@ -177,51 +191,53 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   )}
                 </Box>
               ))}
-            </Box>
-            <AutoComplete
-              style={{ width: 400 }}
-              slots={{
-                button: (
-                  <IconButton sx={{ color: "white" }}>
-                    <Search />
-                  </IconButton>
-                ),
-              }}
-              //Needed to find element to focus it from OpenElementsTabs
-              id="desktop-search-component"
-              slotProps={{
-                box: { gap: 1 },
-                input: {
-                  size: "small",
-                  label: "Enter a gene, cCRE, variant or locus",
-                  placeholder: "Enter a gene, cCRE, variant or locus",
-                  sx: {
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#ffffff",
-                      "& fieldset": {
-                        border: "none",
-                      },
-                      "&:hover fieldset": {
-                        border: "none",
-                      },
-                      "&.Mui-focused fieldset": {
-                        border: "none",
-                      },
+            </Stack>
+          </Stack>
+          <AutoComplete
+            style={{ width: 400 }}
+            sx={{ display: { xs: "none", md: "flex" } }}
+            slots={{
+              button: (
+                <IconButton sx={{ color: "white" }}>
+                  <Search />
+                </IconButton>
+              ),
+            }}
+            //Needed to find element to focus it from OpenElementsTabs
+            id="desktop-search-component"
+            slotProps={{
+              box: { gap: 1 },
+              input: {
+                size: "small",
+                label: "Enter a gene, cCRE, variant or locus",
+                placeholder: "Enter a gene, cCRE, variant or locus",
+                sx: {
+                  "& .MuiOutlinedInput-root": {
+                    backgroundColor: "#ffffff",
+                    "& fieldset": {
+                      border: "none",
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#666666",
-                      "&.Mui-focused": {
-                        color: "#444444",
-                      },
+                    "&:hover fieldset": {
+                      border: "none",
                     },
-                    "& .MuiInputLabel-shrink": {
-                      display: "none",
+                    "&.Mui-focused fieldset": {
+                      border: "none",
                     },
                   },
+                  "& .MuiInputLabel-root": {
+                    color: "#666666",
+                    "&.Mui-focused": {
+                      color: "#444444",
+                    },
+                  },
+                  "& .MuiInputLabel-shrink": {
+                    display: "none",
+                  },
                 },
-              }}
-            />
-          </Box>
+              },
+            }}
+          />
+
           {/* mobile view */}
           <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
             <IconButton
