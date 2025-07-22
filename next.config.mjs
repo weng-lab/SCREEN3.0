@@ -20,11 +20,13 @@ const nextConfig = {
         destination: '/region/:region/ccres',
         permanent: false
       },
+      //redirect /:entityType was redirect static files, like the images in public
+      //Now excludes routes that look like files from the redirect
       {
-        source: '/:entityType',
+        source: '/:entityType((?!.*\\..*).+)',
         destination: '/',
         permanent: false
-      },
+      }
 
     ]
   }

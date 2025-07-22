@@ -135,16 +135,12 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
           <Stack direction={"row"} spacing={4}>
             <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
               <Image
-                  priority
-                  src={"/on-dark@16x.png"}
-                  alt="SCREEN Icon"
-                  fill
-                  style={{
-                    objectFit: "contain",
-                    objectPosition: "left center",
-                    imageRendering: "auto",
-                  }}
-                />
+                priority
+                src="/on-dark@16x.png"
+                fill
+                alt="SCREEN logo"
+                style={{ objectFit: "contain", objectPosition: "left center" }}
+              />
             </Box>
             <Stack spacing={4} direction={"row"} display={{ xs: "none", md: "flex" }} alignItems={"center"}>
               {pageLinks.map((page) => (
