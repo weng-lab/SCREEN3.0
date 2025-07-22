@@ -1,20 +1,20 @@
-import Header from "common/components/Header"
-import Footer from "common/components/Footer"
-import { Box, CssBaseline, Stack } from "@mui/material"
-import { ThemeProvider } from '@mui/material/styles';
-import { theme } from "./theme"
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import { ApolloWrapper } from "common/apollo/apollo-wrapper"
-import { Suspense } from "react"
-import MuiXLicense from "common/MuiXLicense";
+import { CssBaseline, Stack } from "@mui/material";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
+import { ThemeProvider } from "@mui/material/styles";
+import { Analytics } from "@vercel/analytics/next";
+import { ApolloWrapper } from "common/apollo/apollo-wrapper";
+import Footer from "common/components/Footer";
+import Header from "common/components/Header";
 import { OpenEntitiesContextProvider } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
-import { Analytics } from "@vercel/analytics/next"
 import { MenuControlProvider } from "common/MenuContext";
+import MuiXLicense from "common/MuiXLicense";
+import { Suspense } from "react";
+import { theme } from "./theme";
 
 export const metadata = {
   title: "igSCREEN: Search Immune Candidate cis-Regulatory Elements by ENCODE",
   description: "igSCREEN: Search Immune Candidate cis-Regulatory Elements by ENCODE",
-}
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

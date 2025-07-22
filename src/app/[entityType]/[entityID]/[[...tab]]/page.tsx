@@ -18,16 +18,19 @@ import VariantInfo from "./_SnpTabs/_Variant/Variant";
 import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { parseGenomicRangeString } from "common/utility";
+import { use } from "react";
 
 export default function DetailsPage({
-  params: { entityType, entityID, tab },
+  params,
 }: {
   /**
    * Should be able to safely type this as GenomicElementType instead of string
    * since the layout wrapping this ensures the type is fulfilled
    */
-  params: { entityType: EntityType; entityID: string; tab: string };
+  params: Promise<{ entityType: EntityType; entityID: string; tab: string }>;
 }) {
+  const { entityType, entityID, tab: tabString } = use(params);
+  let tab = tabString;
   /**
    * Since [[...tab]] is an optional catch-all route, tabs is an array.
    * tab is undefined when hitting /elementType/elementID (default tab's route).
@@ -64,7 +67,15 @@ export default function DetailsPage({
     return (
       <GenomeBrowserView
         coordinates={data.coordinates}
-        name={data.__typename === "Gene" ? data.name : data.__typename === "CCRE" ? data.accession : data.__typename === "SNP" ? data.id : null}
+        name={
+          data.__typename === "Gene"
+            ? data.name
+            : data.__typename === "CCRE"
+            ? data.accession
+            : data.__typename === "SNP"
+            ? data.id
+            : null
+        }
         type={entityType}
       />
     );
@@ -127,7 +138,7 @@ export default function DetailsPage({
         throw new Error("Unknown region details tab: " + tab);
       }
 
-      const region = parseGenomicRangeString(entityID)
+      const region = parseGenomicRangeString(entityID);
 
       switch (tab) {
         case "ccres":

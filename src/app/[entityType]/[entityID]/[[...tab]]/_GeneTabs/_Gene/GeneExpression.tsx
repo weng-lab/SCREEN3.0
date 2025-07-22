@@ -1,26 +1,26 @@
-import TwoPaneLayout from "../../../../../../common/components/TwoPaneLayout"
-import { useState } from "react"
-import GeneExpressionTable from "./GeneExpressionTable"
-import GeneExpressionUMAP from "./GeneExpressionUMAP"
-import GeneExpressionBarPlot from "./GeneExpressionBarPlot"
-import { BarData } from "../../../../../../common/components/VerticalBarPlot"
-import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression"
-import { BarChart, ScatterPlot, CandlestickChart } from "@mui/icons-material"
-import { UseGeneDataReturn } from "common/hooks/useGeneData"
-import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot"
-import { Distribution, ViolinPoint } from "@weng-lab/psychscreen-ui-components"
+import TwoPaneLayout from "../../../../../../common/components/TwoPaneLayout";
+import { useState } from "react";
+import GeneExpressionTable from "./GeneExpressionTable";
+import GeneExpressionUMAP from "./GeneExpressionUMAP";
+import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
+import { BarData } from "../../../../../../common/components/VerticalBarPlot";
+import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
+import { BarChart, ScatterPlot, CandlestickChart } from "@mui/icons-material";
+import { UseGeneDataReturn } from "common/hooks/useGeneData";
+import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
+import { Distribution, ViolinPoint } from "psychscreen-legacy-components";
 
-export type PointMetadata = UseGeneExpressionReturn["data"][number]
+export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
 export type SharedGeneExpressionPlotProps = {
-  selected: PointMetadata[],
-  geneExpressionData: UseGeneExpressionReturn,
-  sortedFilteredData: PointMetadata[]
-}
+  selected: PointMetadata[];
+  geneExpressionData: UseGeneExpressionReturn;
+  sortedFilteredData: PointMetadata[];
+};
 
 export type GeneExpressionProps = {
-  geneData: UseGeneDataReturn<{ name: string }>
-}
+  geneData: UseGeneDataReturn<{ name: string }>;
+};
 
 const GeneExpression = ({ geneData }: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
@@ -43,16 +43,16 @@ const GeneExpression = ({ geneData }: GeneExpressionProps) => {
   };
 
   const handleViolinClick = (violin: Distribution<PointMetadata>) => {
-    const metadataArray = violin.data.map((point) => point.metadata);
+    const metadataArray = violin.data.map((point) => point.metaData);
     if (selected.length === metadataArray.length && selected[0].lineage === metadataArray[0].lineage) {
       setSelected([]);
     } else setSelected(metadataArray);
   };
 
   const handleViolinPointClick = (point: ViolinPoint<PointMetadata>) => {
-    if (selected.includes(point.metadata)) {
-      setSelected(selected.filter((x) => x !== point.metadata));
-    } else setSelected([...selected, point.metadata]);
+    if (selected.includes(point.metaData)) {
+      setSelected(selected.filter((x) => x !== point.metaData));
+    } else setSelected([...selected, point.metaData]);
   };
 
   return (
@@ -113,4 +113,4 @@ const GeneExpression = ({ geneData }: GeneExpressionProps) => {
   );
 };
 
-export default GeneExpression
+export default GeneExpression;
