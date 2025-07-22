@@ -18,7 +18,7 @@ import {
   TranscriptTrackProps,
   useBrowserState,
 } from "@weng-lab/genomebrowser";
-import { Domain, GenomeSearch, Result } from "psychscreen-legacy-components";
+import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useState } from "react";
 import { EntityType, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";

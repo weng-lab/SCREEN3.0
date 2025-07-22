@@ -1,5 +1,5 @@
 "use client";
-import { GenomeSearch, GenomeSearchProps, Result } from "psychscreen-legacy-components";
+import { GenomeSearch, GenomeSearchProps, Result } from "@weng-lab/ui-components";
 import { useRouter } from "next/navigation";
 
 export type AutoCompleteProps = Partial<GenomeSearchProps> & {

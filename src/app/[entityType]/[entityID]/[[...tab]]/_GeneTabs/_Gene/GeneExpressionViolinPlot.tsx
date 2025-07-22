@@ -2,7 +2,7 @@ import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } fro
 import { useMemo } from "react";
 import { getCellCategoryColor, getCellCategoryDisplayname } from "common/utility";
 import { Box } from "@mui/material";
-import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "psychscreen-legacy-components";
+import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
 
 export type GeneExpressionViolinPlotProps = GeneExpressionProps &
   SharedGeneExpressionPlotProps &

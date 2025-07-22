@@ -1,7 +1,7 @@
 import { Box, DialogContent, Typography } from "@mui/material";
 import { DialogTitle } from "@mui/material";
 import { Dialog } from "@mui/material";
-import { Domain } from "psychscreen-legacy-components";
+import { Domain } from "@weng-lab/ui-components";
 
 export type GBHighlight = {
   id: string;

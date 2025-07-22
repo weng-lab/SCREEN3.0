@@ -1,5 +1,5 @@
 import { Skeleton } from "@mui/material";
-import { DataTable, DataTableColumn } from "psychscreen-legacy-components";
+import { DataTable, DataTableColumn } from "@weng-lab/ui-components";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 
 type Frequency = {

@@ -8,7 +8,7 @@ import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGene
 import { BarChart, ScatterPlot, CandlestickChart } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
-import { Distribution, ViolinPoint } from "psychscreen-legacy-components";
+import { Distribution, ViolinPoint } from "@weng-lab/visualization";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
