@@ -80,8 +80,6 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
           <Divider />
           <List>
             {pageLinks
-              .slice()
-              .reverse()
               .map((page) => (
                 <Box key={page.pageName} sx={{ mb: 1 }}>
                   <ListItem onClick={handleCloseDrawer}>
@@ -94,6 +92,7 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
                         justifyContent: "start",
                         width: "100%",
                       }}
+                      underline="none"
                     >
                       {page.pageName}
                     </MuiLink>
@@ -102,7 +101,7 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
                     <List sx={{ pl: 2 }}>
                       {page.subPages.map((subPage) => (
                         <ListItem key={subPage.pageName} sx={{ py: 0 }} onClick={handleCloseDrawer}>
-                          <MuiLink component={Link} href={subPage.link} sx={{ color: "gray", textTransform: "none" }}>
+                          <MuiLink component={Link} href={subPage.link} sx={{ color: "gray", textTransform: "none" }} underline="none">
                             {subPage.pageName}
                           </MuiLink>
                         </ListItem>

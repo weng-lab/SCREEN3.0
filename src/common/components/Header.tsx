@@ -31,10 +31,6 @@ export type PageInfo = {
 
 const pageLinks: PageInfo[] = [
   {
-    pageName: "Home",
-    link: "/"
-  },
-  {
     pageName: "Downloads",
     link: "/downloads"
   },
