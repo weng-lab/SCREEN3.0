@@ -17,6 +17,7 @@ const MainSearch: React.FC = () => {
                     padding: 4,
                     display: 'flex',
                     width: "45%",
+                    minWidth: 450,
                     marginTop: 2,
                     alignItems: 'center',
                     justifyContent: 'center',

@@ -8,7 +8,7 @@ import Image from "next/image"
 import MainSearch from "./landing/mainSearch";
 
 export default function Home() {
-
+  //@todo: mobile freindly
   return (
     <div>
       <Box
