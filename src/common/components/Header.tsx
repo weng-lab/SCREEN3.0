@@ -179,7 +179,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                     >
                       {page.subPages &&
                         page.subPages.map((subPage) => (
-                          <LinkComponent key={subPage.pageName} color="black" href={subPage.link}>
+                          <LinkComponent key={subPage.pageName} color="#000000" href={subPage.link}>
                             <MenuItem>{subPage.pageName}</MenuItem>
                           </LinkComponent>
                         ))}

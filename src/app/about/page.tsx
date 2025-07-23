@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import emailjs from '@emailjs/browser';
 import { Box, Button, Divider, Link, Stack, TextField, Typography } from "@mui/material"
 import Grid from "@mui/material/Grid2"
@@ -46,7 +46,7 @@ export default function About() {
     if (hasChanges) {
       setError(newError);
     }
-  }, [contactEmail, contactName, contactMessage, error.email, error.name, error.message]);
+  }, [contactEmail, contactName, contactMessage, error.email, error.name, error.message, error]);
 
   const handleSubmit = async () => {
     //Check fields to see if valid
