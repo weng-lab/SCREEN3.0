@@ -18,7 +18,7 @@ import {
   TranscriptTrackProps,
   useBrowserState,
 } from "@weng-lab/genomebrowser";
-import { Domain, GenomeSearch, Result } from "@weng-lab/psychscreen-ui-components";
+import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useState } from "react";
 import { EntityType, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
@@ -68,7 +68,7 @@ export default function GenomeBrowserView({
     highlights: [],
   });
 
-  const router = useRouter()
+  const router = useRouter();
 
   // Bed track mouse over, out, and click handlers
   const icreMouseOver = useCallback(
@@ -90,19 +90,26 @@ export default function GenomeBrowserView({
   }, [browserDispatch]);
   const onIcreClick = useCallback((item: Rect) => {
     const accession = item.name;
-    router.push(`/ccre/${accession}`)
+    router.push(`/ccre/${accession}`);
   }, []);
   const onGeneClick = useCallback((gene: Transcript) => {
     const name = gene.name;
     if (name.includes("ENSG")) {
-      return
-    } 
-    router.push(`/gene/${name}`)
-  }, [])
+      return;
+    }
+    router.push(`/gene/${name}`);
+  }, []);
 
   // Initialize tracks and highlights
   useEffect(() => {
-    const tracks = defaultTracks(type === "gene" ? name : "", icreMouseOver, icreMouseOut, onIcreClick, BedTooltip, onGeneClick);
+    const tracks = defaultTracks(
+      type === "gene" ? name : "",
+      icreMouseOver,
+      icreMouseOut,
+      onIcreClick,
+      BedTooltip,
+      onGeneClick
+    );
     tracks.forEach((track) => {
       browserDispatch({ type: BrowserActionType.ADD_TRACK, track });
     });

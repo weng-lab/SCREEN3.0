@@ -17,40 +17,59 @@ export default function About() {
   const [error, setError] = useState({ name: false, email: false, message: false })
   const [success, setSuccess] = useState(false)
 
-  const form = useRef();
+  const form = useRef<HTMLFormElement>(null);
 
-  function isValidEmail(email) {
+  function isValidEmail(email: string): boolean {
     //hopefully this is right, got it from ChatGPT
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
-  if (error.email && isValidEmail(contactEmail)) setError({ ...error, email: false })
-  if (error.name && contactName) setError({ ...error, name: false })
-  if (error.message && contactMessage) setError({ ...error, message: false })
+  // Move validation logic into useEffect to avoid state updates during render
+  useEffect(() => {
+    const newError = { ...error };
+    let hasChanges = false;
+
+    if (error.email && isValidEmail(contactEmail)) {
+      newError.email = false;
+      hasChanges = true;
+    }
+    if (error.name && contactName) {
+      newError.name = false;
+      hasChanges = true;
+    }
+    if (error.message && contactMessage) {
+      newError.message = false;
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      setError(newError);
+    }
+  }, [contactEmail, contactName, contactMessage, error.email, error.name, error.message]);
 
   const handleSubmit = async () => {
     //Check fields to see if valid
-    const newErrorState = { name: false, email: false, message: false }
-    if (!contactName) newErrorState.name = true
-    if (!isValidEmail(contactEmail)) newErrorState.email = true
-    if (!contactMessage) newErrorState.message = true
+    const newErrorState = { name: false, email: false, message: false };
+    if (!contactName) newErrorState.name = true;
+    if (!isValidEmail(contactEmail)) newErrorState.email = true;
+    if (!contactMessage) newErrorState.message = true;
 
     //If all fields valid: Try to send email and form fields, catch any error
     if (!newErrorState.name && !newErrorState.email && !newErrorState.message) {
       try {
-        await sendEmail()
-        setContactName('')
-        setContactEmail('')
-        setContactMessage('')
-        setSuccess(true)
+        await sendEmail();
+        setContactName("");
+        setContactEmail("");
+        setContactMessage("");
+        setSuccess(true);
       } catch (error) {
         console.log(error)
         window.alert("Something went wrong, please try again soon" + '\n' + JSON.stringify(error))
       }
     }
-    setError(newErrorState)
-  }
+    setError(newErrorState);
+  };
 
   const sendEmail = () => {
     return new Promise((resolve, reject) => {
