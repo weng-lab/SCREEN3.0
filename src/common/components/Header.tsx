@@ -130,7 +130,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
         <WarningAmberIcon />
       </Stack>
       <AppBar position="static">
-        <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Toolbar sx={{ justifyContent: "space-between", backgroundColor: "primary.main" }}>
           {/* Main navigation items for desktop */}
           <Stack direction={"row"} spacing={4}>
             <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
@@ -153,7 +153,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   id="LinkBox"
                   sx={{ mr: 2 }}
                 >
-                  <LinkComponent id="Link" display={"flex"} color="primary.contrastText" href={page.link}>
+                  <LinkComponent id="Link" display={"flex"} color="primary.contrastText" href={page.link} underline="none">
                     {page.pageName}
                     {page.subPages && <ArrowDropDownIcon />}
                   </LinkComponent>
