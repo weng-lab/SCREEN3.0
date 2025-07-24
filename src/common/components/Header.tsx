@@ -9,18 +9,21 @@ import {
   IconButton,
   Stack,
   Typography,
+  Grow,
+  Slide,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Link from "next/link";
 import Image from "next/image";
 import AutoComplete from "./autocomplete";
-import { Search } from "@mui/icons-material";
+import { Close, Search } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu"
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { LinkComponent } from "./LinkComponent";
 import { useMenuControl } from "common/MenuContext";
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 export type PageInfo = {
   pageName: string,
@@ -59,6 +62,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   // Hover dropdowns, deals with setting its position
   const [anchorDropdown0, setAnchorDropdown0] = useState<null | HTMLElement>(null)
   const [anchorDropdown1, setAnchorDropdown1] = useState<null | HTMLElement>(null)
+  const [showSearch, setShowSearch] = useState(false);
 
   // Open Dropdown
   const handleOpenDropdown = (event: React.MouseEvent<HTMLElement>, dropdownID: number) => {
@@ -104,7 +108,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   }
 
   return (
-    <Box position={"sticky"} top={0} zIndex={1}>
+    <Box position={"sticky"} top={0} zIndex={1} overflow={"hidden"}>
       <Stack
         direction={"row"}
         style={{
@@ -185,50 +189,64 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               ))}
             </Stack>
           </Stack>
-          <AutoComplete
-            style={{ width: 400 }}
-            sx={{ display: { xs: "none", md: "flex" } }}
-            slots={{
-              button: (
-                <IconButton sx={{ color: "white" }}>
-                  <Search />
+            {!showSearch && (
+              <IconButton onClick={() => setShowSearch(true)} sx={{ color: "white", display: { xs: "none", md: "flex" } }}>
+                <Search />
+              </IconButton>
+            )}
+
+            <Slide direction="left" in={showSearch} mountOnEnter unmountOnExit>
+              <Box
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  display: { xs: "none", md: "flex" },
+                  alignItems: "center",
+                  backgroundColor: "inherit",
+                }}
+              >
+                <IconButton
+                  onClick={() => setShowSearch(false)}
+                  sx={{ color: "white" }}
+                >
+                  <KeyboardArrowRightIcon />
                 </IconButton>
-              ),
-            }}
-            //Needed to find element to focus it from OpenElementsTabs
-            id="desktop-search-component"
-            slotProps={{
-              box: { gap: 1 },
-              input: {
-                size: "small",
-                label: "Enter a gene, cCRE, variant or locus",
-                placeholder: "Enter a gene, cCRE, variant or locus",
-                sx: {
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#ffffff",
-                    "& fieldset": {
-                      border: "none",
+                <AutoComplete
+                  style={{ width: 400 }}
+                  id="desktop-search-component"
+                  slots={{
+                    button: (
+                      <IconButton sx={{ color: "white" }}>
+                        <Search />
+                      </IconButton>
+                    ),
+                  }}
+                  slotProps={{
+                    box: { gap: 1 },
+                    input: {
+                      size: "small",
+                      label: "Enter a gene, cCRE, variant or locus",
+                      placeholder: "Enter a gene, cCRE, variant or locus",
+                      sx: {
+                        "& .MuiOutlinedInput-root": {
+                          backgroundColor: "#ffffff",
+                          "& fieldset": { border: "none" },
+                          "&:hover fieldset": { border: "none" },
+                          "&.Mui-focused fieldset": { border: "none" },
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "#666666",
+                          "&.Mui-focused": { color: "#444444" },
+                        },
+                        "& .MuiInputLabel-shrink": {
+                          display: "none",
+                        },
+                      },
                     },
-                    "&:hover fieldset": {
-                      border: "none",
-                    },
-                    "&.Mui-focused fieldset": {
-                      border: "none",
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    color: "#666666",
-                    "&.Mui-focused": {
-                      color: "#444444",
-                    },
-                  },
-                  "& .MuiInputLabel-shrink": {
-                    display: "none",
-                  },
-                },
-              },
-            }}
-          />
+                  }}
+                />
+              </Box>
+            </Slide>
 
           {/* mobile view */}
           <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
