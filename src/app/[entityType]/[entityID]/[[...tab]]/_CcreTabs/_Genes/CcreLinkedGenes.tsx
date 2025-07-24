@@ -8,38 +8,14 @@ import { GenomicRange } from "types/globalTypes";
 import CustomDataGrid, { CustomDataGridColDef } from "common/components/CustomDataGrid";
 import { gql } from "types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
+import useClosestgenes from "common/hooks/useClosestGenes";
 
-export const CLOSEST_GENE_QUERY = gql(`
-  query getclosestGenetocCRE($geneid: [String],$ccre: [String]) {
-    closestGenetocCRE(geneid: $geneid,ccre: $ccre) {
-      gene {
-        chromosome
-        stop
-        start
-        name
-        type
-      }
-      ccre
-      chromosome
-      stop
-      start
-    }
-  }
-`);
 
-export default function CcreLinkedGenes({ accession, coordinates }: { accession: string; coordinates: GenomicRange }) {
+
+export default function CcreLinkedGenes({ accession, coordinates, assembly }: { accession: string; coordinates: GenomicRange, assembly: string; }) {
   const { data: linkedGenes, loading, error } = useLinkedGenes(accession);
-
-  const {
-    data: closestGeneData,
-    loading: closestGeneLoading,
-    error: closestGeneError,
-  } = useQuery(CLOSEST_GENE_QUERY, {
-    variables: {
-      ccre: [accession],
-    },
-  });
-
+  const { data: closestGenes, loading: closestGeneLoading, error: closestGeneError} = useClosestgenes(accession, assembly);
+  
   if (loading || closestGeneLoading) {
     const NUM_TABLES = 5;
     return (
@@ -90,7 +66,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       columns: IntactHiCLoopsCols,
       sortColumn: "p_val",
       sortDirection: "asc",
-      emptyTableFallback: "No intact Hi-C loops overlap this iCRE and the promoter of a gene",
+      emptyTableFallback: "No intact Hi-C loops overlap this cCRE and the promoter of a gene",
     },
     {
       tableTitle: "ChIA-PET Interactions",
@@ -98,7 +74,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       columns: ChIAPETCols,
       sortColumn: "score",
       sortDirection: "desc",
-      emptyTableFallback: "No ChIA-PET interactions overlap this iCRE and the promoter of a gene",
+      emptyTableFallback: "No ChIA-PET interactions overlap this cCRE and the promoter of a gene",
     },
     {
       tableTitle: "CRISPRi-FlowFISH",
@@ -106,7 +82,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       columns: CrisprFlowFISHCols,
       sortColumn: "p_val",
       sortDirection: "asc",
-      emptyTableFallback: "This iCRE was not targeted in a CRISPRi-FlowFISH experiment",
+      emptyTableFallback: "This cCRE was not targeted in a CRISPRi-FlowFISH experiment",
     },
     {
       tableTitle: "eQTLs",
@@ -114,26 +90,11 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       columns: eQTLCols,
       sortColumn: "p_val",
       sortDirection: "asc",
-      emptyTableFallback: "This iCRE does not overlap a variant associated with significant changes in gene expression",
+      emptyTableFallback: "This cCRE does not overlap a variant associated with significant changes in gene expression",
     },
   ];
 
-  const genes: any[] = closestGeneData.closestGenetocCRE.map((item: any) => item.gene);
-  const closestPC = genes.find((gene: any) => gene.type === "PC");
-  const closestALL = genes.find((gene: any) => gene.type === "ALL");
-  const pcDistance = calcDistRegionToRegion(
-    { start: closestPC.start, end: closestPC.stop },
-    { start: coordinates.start, end: coordinates.end }
-  );
-  const allDistance = calcDistRegionToRegion(
-    { start: closestALL.start, end: closestALL.stop },
-    { start: coordinates.start, end: coordinates.end }
-  );
-  const closestGenes = [
-    { ...closestPC, distance: Math.abs(pcDistance) },
-    { ...closestALL, distance: Math.abs(allDistance) },
-  ];
-
+ 
   const closestGenesCols: CustomDataGridColDef<(typeof closestGenes)[number]>[] = [
     {
       field: "name",

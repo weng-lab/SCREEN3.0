@@ -18,18 +18,18 @@ export default function DistanceLinkedCcres({
     data: dataCcreDetails,
     loading: loadingCcreDetails,
     error: errorCcreDetails,
-  } = useCcreData({ accession: dataNearby?.map((d) => d.ccre)});
+  } = useCcreData({ accession: dataNearby?.map((d) => d.ccre), assembly: "GRCh38"});
 
   const nearbyccres = dataNearby
     ?.map((d) => {
-      let f = dataCcreDetails?.find((c) => c.accession === d.ccre);
+      let f = dataCcreDetails?.find((c) => c.info.accession === d.ccre);
       return {
         ...d,
-        chromosome: f?.coordinates.chromosome,
-        start: f?.coordinates.start,
-        end: f?.coordinates.end,
-        group: f?.group,
-        distance: Math.abs(f?.coordinates.start - geneData?.data.coordinates.start) || 0,
+        chromosome: f?.chrom,
+        start: f?.start,
+        end: f?.start + f?.len,
+        group: f?.pct,
+        distance: Math.abs(f?.start - geneData?.data.coordinates.start) || 0,
       };
     })
     ?.filter((d) => allcCREs || d.isiCRE);

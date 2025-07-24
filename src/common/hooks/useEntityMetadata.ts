@@ -16,7 +16,7 @@ type UseGenomicRangeReturn = { data: {__typename?: "Region", coordinates: Genomi
 export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
   ? UseGeneDataReturn<{ name: string }>
   : T extends "ccre"
-  ? UseCcreDataReturn<{ accession: string }>
+  ? UseCcreDataReturn<{ accession: string, assembly: string  }>
   : T extends "variant"
   ? UseSnpDataReturn<{ rsID: string }>
   : UseGenomicRangeReturn;
@@ -28,7 +28,14 @@ export const useEntityMetadata = <T extends EntityType>({ entityType, entityID }
    * See https://react.dev/reference/rules/rules-of-hooks#only-call-hooks-at-the-top-level
    */
   const geneMetadata = useGeneData({name: entityID, entityType});
-  const icreMetadata = useCcreData({accession: entityID, entityType});
+  const ccreMetadata = useCcreData({accession: entityID, assembly: "GRCh38", entityType});
+  const ccreRegionMetadata = useCcreData({coordinates: {
+    chromosome: "chr12",
+    start: 53380176,
+    end: 53416446
+  }, assembly: "GRCh38", entityType});
+
+  console.log("ccreRegionMetadata",ccreRegionMetadata)
   const snpMetadata = useSnpData({rsID: entityID, entityType});
   //example to use useSnpFrequencies, returns ref,alt alleles and population frequencies 
   //const SnpFrequencies= useSnpFrequencies(elementID);
@@ -37,7 +44,7 @@ export const useEntityMetadata = <T extends EntityType>({ entityType, entityID }
     case "gene":
       return geneMetadata as useEntityMetadataReturn<T>;
     case "ccre":
-      return icreMetadata as useEntityMetadataReturn<T>;
+      return ccreMetadata as useEntityMetadataReturn<T>;
     case "variant":
       return snpMetadata as useEntityMetadataReturn<T>;
     case "region":

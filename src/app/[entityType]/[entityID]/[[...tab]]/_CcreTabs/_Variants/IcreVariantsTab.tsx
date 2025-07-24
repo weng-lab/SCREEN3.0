@@ -6,8 +6,9 @@ import GWASLdr from "./GWASLdr"
 const IcreVariantsTab = ({CcreData}: {CcreData: useEntityMetadataReturn<"ccre">}) => {
   return (
     <Stack spacing={2}>
-      <IntersectingSNPs region={CcreData.data.coordinates} />
-      <GWASLdr accession={CcreData.data.accession} />
+            <IntersectingSNPs region={{ chromosome:  CcreData.data.chrom, start:  CcreData.data.start, end:  CcreData.data.start +  CcreData.data.len }} />
+            <GWASLdr accession={CcreData.data.info.accession} />
+
     </Stack>
   );
 }
