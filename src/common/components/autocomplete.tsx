@@ -39,7 +39,8 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
 
   return (
     <GenomeSearch
-      assembly="GRCh38"
+      assembly={props.assembly}
+      showiCREFlag={false}
       queries={["Gene", "cCRE", "SNP", "Coordinate"]}
       onSearchSubmit={handleSearchSubmit}
       //This is needed to prevent the enter key press from triggering the onClick of the Menu IconButton

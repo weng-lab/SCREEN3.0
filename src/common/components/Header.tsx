@@ -21,6 +21,8 @@ import MobileMenu from "./MobileMenu";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { LinkComponent } from "./LinkComponent";
 import { useMenuControl } from "common/MenuContext";
+import HumanIcon from 'app/_utility/humanIcon';
+import MouseIcon from 'app/_utility/mouseIcon';
 
 export type PageInfo = {
   pageName: string,
@@ -31,6 +33,10 @@ export type PageInfo = {
 
 const pageLinks: PageInfo[] = [
   {
+    pageName: "Downloads",
+    link: "/downloads"
+  },
+  {
     pageName: "About",
     link: "/about",
     dropdownID: 0,
@@ -38,6 +44,10 @@ const pageLinks: PageInfo[] = [
       { pageName: "Overview", link: "/about" },
       { pageName: "Contact Us", link: "/about#contact-us" },
     ],
+  },
+  {
+    pageName: "Help",
+    link: "/about#contact-us"
   },
 ];
 
@@ -51,6 +61,21 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   // Hover dropdowns, deals with setting its position
   const [anchorDropdown0, setAnchorDropdown0] = useState<null | HTMLElement>(null)
   const [anchorDropdown1, setAnchorDropdown1] = useState<null | HTMLElement>(null)
+  const [assembly, setAssembly] = React.useState<"GRCh38" | "mm10">("GRCh38");
+  const [iconMenuAnchor, setIconMenuAnchor] = React.useState<null | HTMLElement>(null);
+
+  const handleIconMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setIconMenuAnchor(event.currentTarget);
+  };
+
+  const handleIconMenuClose = () => {
+    setIconMenuAnchor(null);
+  };
+
+  const handleIconSelect = (icon: "GRCh38" | "mm10") => {
+    setAssembly(icon);
+    handleIconMenuClose();
+  };
 
   // Open Dropdown
   const handleOpenDropdown = (event: React.MouseEvent<HTMLElement>, dropdownID: number) => {
@@ -118,21 +143,19 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
         <WarningAmberIcon />
       </Stack>
       <AppBar position="static">
-        <Toolbar sx={{ justifyContent: "space-between" }}>
-          {/* Display Icon on left when >=900px */}
-          <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
-            <Image
-              priority
-              src="/on-dark@16x.png"
-              fill
-              sizes="110px"
-              alt="igSCREEN logo"
-              style={{ objectFit: "contain", objectPosition: "left center" }}
-            />
-          </Box>
+        <Toolbar sx={{ justifyContent: "space-between", backgroundColor: "primary.main" }}>
           {/* Main navigation items for desktop */}
-          <Box display={{ xs: "none", md: "flex" }} alignItems={"center"}>
-            <Box sx={{ display: { xs: "flex" } }}>
+          <Stack direction={"row"} spacing={4}>
+            <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
+              <Image
+                priority
+                src="/on-dark@16x.png"
+                fill
+                alt="SCREEN logo"
+                style={{ objectFit: "contain", objectPosition: "left center" }}
+              />
+            </Box>
+            <Stack spacing={4} direction={"row"} display={{ xs: "none", md: "flex" }} alignItems={"center"}>
               {pageLinks.map((page) => (
                 <Box
                   key={page.pageName}
@@ -143,7 +166,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   id="LinkBox"
                   sx={{ mr: 2 }}
                 >
-                  <LinkComponent id="Link" display={"flex"} color="primary.contrastText" href={page.link}>
+                  <LinkComponent id="Link" display={"flex"} color="primary.contrastText" href={page.link} underline="none">
                     {page.pageName}
                     {page.subPages && <ArrowDropDownIcon />}
                   </LinkComponent>
@@ -169,7 +192,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                     >
                       {page.subPages &&
                         page.subPages.map((subPage) => (
-                          <LinkComponent key={subPage.pageName} color="black" href={subPage.link}>
+                          <LinkComponent key={subPage.pageName} color="#000000" href={subPage.link}>
                             <MenuItem>{subPage.pageName}</MenuItem>
                           </LinkComponent>
                         ))}
@@ -177,9 +200,45 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   )}
                 </Box>
               ))}
-            </Box>
+            </Stack>
+          </Stack>
+          <Stack direction={"row"} spacing={2} alignItems={"center"}>
+            <Stack direction="row" alignItems="center">
+              <IconButton
+                onClick={handleIconMenuOpen}
+                size="small"
+                sx={{ color: "white" }}
+                aria-controls={Boolean(iconMenuAnchor) ? "icon-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={Boolean(iconMenuAnchor) ? "true" : undefined}
+              >
+                <ArrowDropDownIcon />
+              </IconButton>
+
+              {assembly === "GRCh38" ? (
+                <HumanIcon color="white" size={45} />
+              ) : (
+                <MouseIcon color="white" size={45} />
+              )}
+
+              <Menu
+                id="icon-menu"
+                anchorEl={iconMenuAnchor}
+                open={Boolean(iconMenuAnchor)}
+                onClose={handleIconMenuClose}
+                PaperProps={{ sx: { minWidth: 120 } }}
+              >
+                <MenuItem selected={assembly === "GRCh38"} onClick={() => handleIconSelect("GRCh38")}>
+                  Human
+                </MenuItem>
+                <MenuItem selected={assembly === "mm10"} onClick={() => handleIconSelect("mm10")}>
+                  Mouse
+                </MenuItem>
+              </Menu>
+            </Stack>
             <AutoComplete
               style={{ width: 400 }}
+              id="desktop-search-component"
               slots={{
                 button: (
                   <IconButton sx={{ color: "white" }}>
@@ -187,8 +246,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   </IconButton>
                 ),
               }}
-              //Needed to find element to focus it from OpenElementsTabs
-              id="desktop-search-component"
+              assembly={assembly}
               slotProps={{
                 box: { gap: 1 },
                 input: {
@@ -198,21 +256,13 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   sx: {
                     "& .MuiOutlinedInput-root": {
                       backgroundColor: "#ffffff",
-                      "& fieldset": {
-                        border: "none",
-                      },
-                      "&:hover fieldset": {
-                        border: "none",
-                      },
-                      "&.Mui-focused fieldset": {
-                        border: "none",
-                      },
+                      "& fieldset": { border: "none" },
+                      "&:hover fieldset": { border: "none" },
+                      "&.Mui-focused fieldset": { border: "none" },
                     },
                     "& .MuiInputLabel-root": {
                       color: "#666666",
-                      "&.Mui-focused": {
-                        color: "#444444",
-                      },
+                      "&.Mui-focused": { color: "#444444" },
                     },
                     "& .MuiInputLabel-shrink": {
                       display: "none",
@@ -221,7 +271,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                 },
               }}
             />
-          </Box>
+          </Stack>
           {/* mobile view */}
           <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
             <IconButton

@@ -11,8 +11,8 @@
     "gen-types -w": "graphql-codegen -w"
   },
   "dependencies": {
-    "@apollo/client": "^3",
-    "@apollo/experimental-nextjs-app-support": "^0.11",
+    "@apollo/client": "^3.11.8",
+    "@apollo/experimental-nextjs-app-support": "^0.11.3",
     "@emailjs/browser": "^4.4.1",
     "@emotion/cache": "^11",
     "@emotion/react": "^11",
@@ -24,6 +24,7 @@
     "@mui/material-nextjs": "^6",
     "@mui/x-data-grid": "^7.27.3",
     "@mui/x-data-grid-pro": "^7.28.1",
+    "@mui/x-tree-view": "^8.9.0",
     "@types/node": "^22",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",

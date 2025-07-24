@@ -12,8 +12,8 @@ import { Suspense } from "react";
 import { theme } from "./theme";
 
 export const metadata = {
-  title: "igSCREEN: Search Immune Candidate cis-Regulatory Elements by ENCODE",
-  description: "igSCREEN: Search Immune Candidate cis-Regulatory Elements by ENCODE",
+  title: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
+  description: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
