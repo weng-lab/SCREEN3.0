@@ -23,11 +23,7 @@ import { DataTable, DataTableColumn } from "@weng-lab/ui-components"
 import { ScatterPlot, Point } from "@weng-lab/visualization"
 import Config from "../../config.json"
 import { BiosampleUMAP, PointMetaData } from "./types"
-import { DNase_seq } from "../../common/lib/colors"
-import { H3K4me3 } from "../../common/lib/colors"
-import { H3K27ac } from "../../common/lib/colors"
-import { CA_CTCF } from "../../common/lib/colors"
-import { tissueColors } from "../../common/lib/colors"
+import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/lib/colors"
 import { UMAP_QUERY } from "./queries"
 import BiosampleTables from "../_biosampleTables/BiosampleTables"
 import { client } from "../client"
@@ -371,7 +367,7 @@ export function DataMatrices() {
             <Stack direction="column" spacing={1}>
               <Grid container direction="row" alignItems="flex-start" spacing={2}>
                 <Grid>
-                  <Image src={humanTransparentIcon} alt={"Human Icon"} style={{ maxWidth: '75px', maxHeight: '75px' }} />
+                  <Image src={humanTransparentIcon} alt={"Human Icon"} style={{ maxWidth: '75px', maxHeight: '75px', }} />
                 </Grid>
                 <Grid size="grow">
                   <Stack direction="column" spacing={1}>
@@ -493,7 +489,7 @@ export function DataMatrices() {
         <Grid paddingBottom={0} sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
           {searched && (
             <Paper sx={{ mb: 1 }}>
-              <Stack borderRadius={1} direction={"row"} spacing={3} sx={{ backgroundColor: theme => theme.palette.secondary.main }} alignItems={"center"}>
+              <Stack borderRadius={1} direction={"row"} spacing={3} sx={{ backgroundColor: theme => theme.palette.secondary.light }} alignItems={"center"}>
                 <Typography flexGrow={1} sx={{ color: "#2C5BA0", pl: 1 }}>{searched}</Typography>
                 <IconButton onClick={() => setSearched(null)} sx={{ m: 'auto', flexGrow: 0 }}>
                   <CancelRounded />

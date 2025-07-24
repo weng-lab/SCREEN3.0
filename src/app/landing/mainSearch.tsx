@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Radio, RadioGroup, FormControlLabel, Typography, Stack, IconButton, FormHelperText, FormControl } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import AutoComplete from 'common/components/autocomplete';
 import { Search } from '@mui/icons-material';
 import { theme } from 'app/theme';

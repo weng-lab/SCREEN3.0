@@ -9,21 +9,20 @@ import {
   IconButton,
   Stack,
   Typography,
-  Grow,
-  Slide,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Link from "next/link";
 import Image from "next/image";
 import AutoComplete from "./autocomplete";
-import { Close, Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu"
 import { useState } from "react";
 import MobileMenu from "./MobileMenu";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { LinkComponent } from "./LinkComponent";
 import { useMenuControl } from "common/MenuContext";
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import HumanIcon from 'app/_utility/humanIcon';
+import MouseIcon from 'app/_utility/mouseIcon';
 
 export type PageInfo = {
   pageName: string,
@@ -62,7 +61,21 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   // Hover dropdowns, deals with setting its position
   const [anchorDropdown0, setAnchorDropdown0] = useState<null | HTMLElement>(null)
   const [anchorDropdown1, setAnchorDropdown1] = useState<null | HTMLElement>(null)
-  const [showSearch, setShowSearch] = useState(false);
+  const [assembly, setAssembly] = React.useState<"GRCh38" | "mm10">("GRCh38");
+  const [iconMenuAnchor, setIconMenuAnchor] = React.useState<null | HTMLElement>(null);
+
+  const handleIconMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setIconMenuAnchor(event.currentTarget);
+  };
+
+  const handleIconMenuClose = () => {
+    setIconMenuAnchor(null);
+  };
+
+  const handleIconSelect = (icon: "GRCh38" | "mm10") => {
+    setAssembly(icon);
+    handleIconMenuClose();
+  };
 
   // Open Dropdown
   const handleOpenDropdown = (event: React.MouseEvent<HTMLElement>, dropdownID: number) => {
@@ -108,7 +121,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   }
 
   return (
-    <Box position={"sticky"} top={0} zIndex={1} overflow={"hidden"}>
+    <Box position={"sticky"} top={0} zIndex={1}>
       <Stack
         direction={"row"}
         style={{
@@ -189,65 +202,76 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               ))}
             </Stack>
           </Stack>
-            {!showSearch && (
-              <IconButton onClick={() => setShowSearch(true)} sx={{ color: "white", display: { xs: "none", md: "flex" } }}>
-                <Search />
-              </IconButton>
-            )}
-
-            <Slide direction="left" in={showSearch} mountOnEnter unmountOnExit>
-              <Box
-                sx={{
-                  position: "absolute",
-                  right: 0,
-                  display: { xs: "none", md: "flex" },
-                  alignItems: "center",
-                  backgroundColor: "inherit",
-                }}
+          <Stack direction={"row"} spacing={2} alignItems={"center"}>
+            <Stack direction="row" alignItems="center">
+              <IconButton
+                onClick={handleIconMenuOpen}
+                size="small"
+                sx={{ color: "white" }}
+                aria-controls={Boolean(iconMenuAnchor) ? "icon-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={Boolean(iconMenuAnchor) ? "true" : undefined}
               >
-                <IconButton
-                  onClick={() => setShowSearch(false)}
-                  sx={{ color: "white" }}
-                >
-                  <KeyboardArrowRightIcon />
-                </IconButton>
-                <AutoComplete
-                  style={{ width: 400 }}
-                  id="desktop-search-component"
-                  slots={{
-                    button: (
-                      <IconButton sx={{ color: "white" }}>
-                        <Search />
-                      </IconButton>
-                    ),
-                  }}
-                  slotProps={{
-                    box: { gap: 1 },
-                    input: {
-                      size: "small",
-                      label: "Enter a gene, cCRE, variant or locus",
-                      placeholder: "Enter a gene, cCRE, variant or locus",
-                      sx: {
-                        "& .MuiOutlinedInput-root": {
-                          backgroundColor: "#ffffff",
-                          "& fieldset": { border: "none" },
-                          "&:hover fieldset": { border: "none" },
-                          "&.Mui-focused fieldset": { border: "none" },
-                        },
-                        "& .MuiInputLabel-root": {
-                          color: "#666666",
-                          "&.Mui-focused": { color: "#444444" },
-                        },
-                        "& .MuiInputLabel-shrink": {
-                          display: "none",
-                        },
-                      },
-                    },
-                  }}
-                />
-              </Box>
-            </Slide>
+                <ArrowDropDownIcon />
+              </IconButton>
 
+              {assembly === "GRCh38" ? (
+                <HumanIcon color="white" size={45} />
+              ) : (
+                <MouseIcon color="white" size={45} />
+              )}
+
+              <Menu
+                id="icon-menu"
+                anchorEl={iconMenuAnchor}
+                open={Boolean(iconMenuAnchor)}
+                onClose={handleIconMenuClose}
+                PaperProps={{ sx: { minWidth: 120 } }}
+              >
+                <MenuItem selected={assembly === "GRCh38"} onClick={() => handleIconSelect("GRCh38")}>
+                  Human
+                </MenuItem>
+                <MenuItem selected={assembly === "mm10"} onClick={() => handleIconSelect("mm10")}>
+                  Mouse
+                </MenuItem>
+              </Menu>
+            </Stack>
+            <AutoComplete
+              style={{ width: 400 }}
+              id="desktop-search-component"
+              slots={{
+                button: (
+                  <IconButton sx={{ color: "white" }}>
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+              assembly={assembly}
+              slotProps={{
+                box: { gap: 1 },
+                input: {
+                  size: "small",
+                  label: "Enter a gene, cCRE, variant or locus",
+                  placeholder: "Enter a gene, cCRE, variant or locus",
+                  sx: {
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: "#ffffff",
+                      "& fieldset": { border: "none" },
+                      "&:hover fieldset": { border: "none" },
+                      "&.Mui-focused fieldset": { border: "none" },
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#666666",
+                      "&.Mui-focused": { color: "#444444" },
+                    },
+                    "& .MuiInputLabel-shrink": {
+                      display: "none",
+                    },
+                  },
+                },
+              }}
+            />
+          </Stack>
           {/* mobile view */}
           <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
             <IconButton
