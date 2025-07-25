@@ -16,7 +16,7 @@ export type EntityDetailsHeaderProps = {
 export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
-  const c = entityMetadata?.coordinates;
+  const c = entityMetadata?.__typename === "SCREENSearchResult" ? {chromosome: entityMetadata?.chrom, start: entityMetadata?.start, end: entityMetadata?.start + entityMetadata?.len } : entityMetadata?.coordinates;
   const coordinatesDisplay = c && `${c.chromosome}:${c.start.toLocaleString()}-${c.end.toLocaleString()}`;
 
   const description = useGeneDescription(entityID, entityType).description;
@@ -24,7 +24,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
 
   //All data used in the subtitle of the element header based on the element type
   const geneID = entityMetadata?.__typename === "Gene" ? entityMetadata?.id : "";
-  const ccreClass = entityMetadata?.__typename === "CCRE" ? entityMetadata?.group : "";
+  const ccreClass = entityMetadata?.__typename === "SCREENSearchResult" ? entityMetadata?.pct : "";
   const ref =
     entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.ref : "";
   const alt =

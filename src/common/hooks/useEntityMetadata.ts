@@ -17,7 +17,7 @@ type UseGenomicRangeReturn = { data: {__typename?: "Region", coordinates: Genomi
 export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
   ? UseGeneDataReturn<{ name: string }>
   : T extends "ccre"
-  ? UseCcreDataReturn<{ accession: string }>
+  ? UseCcreDataReturn<{ accession: string, assembly: string  }>
   : T extends "variant"
   ? UseSnpDataReturn<{ rsID: string }>
   : UseGenomicRangeReturn;
@@ -38,7 +38,7 @@ export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, 
     case "gene":
       return geneMetadata as useEntityMetadataReturn<T>;
     case "ccre":
-      return icreMetadata as useEntityMetadataReturn<T>;
+      return ccreMetadata as useEntityMetadataReturn<T>;
     case "variant":
       return snpMetadata as useEntityMetadataReturn<T>;
     case "region":

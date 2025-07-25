@@ -88,7 +88,8 @@ const GeneExpressionTable = ({
   ];
 
   const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
-    const selectedRows = ids.map((id) => data.find((row) => row.name === id));
+    const newIds = Array.from(ids.ids);
+    const selectedRows = newIds.map((id) => data.find((row) => row.name === id));
     onSelectionChange(selectedRows);
   };
 
@@ -135,7 +136,7 @@ const GeneExpressionTable = ({
       checkboxSelection
       getRowId={(row) => row.name} //needed to match up data with the ids returned by onRowSelectionModelChange
       onRowSelectionModelChange={handleRowSelectionModelChange}
-      rowSelectionModel={selected.map((x) => x.name)}
+      rowSelectionModel= {{type: 'include', ids: new Set(selected.map((x) => x.name))}}
       keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
       onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
     />
