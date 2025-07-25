@@ -1,36 +1,33 @@
-import {
-  GridToolbarContainer,
-  GridToolbarExport,
-  GridToolbarQuickFilter,
-} from "@mui/x-data-grid-pro";
-
-import { Typography } from "@mui/material";
+import { GridToolbarQuickFilter, GridToolbarExport } from "@mui/x-data-grid-pro";
+import { Box, Typography } from "@mui/material";
 import { ReactNode } from "react";
-
+import { Button } from "@mui/material";
 export type CustomDataGridToolbarProps = {
-  /**
-   * Optional ReactNode to be used in the table toolbar. Strings and numbers will be rendered as Typography variant h6.
-   */
   title?: ReactNode;
 };
 
 export default function CustomDataGridToolbar({ title }: CustomDataGridToolbarProps) {
   return (
-    <GridToolbarContainer sx={{ p: 1, justifyContent: "space-between" }}>
-      {title && (typeof title === "string" || typeof title === "number") ? (
-        <Typography variant={"h6"}>{title}</Typography>
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      p={1}
+    >
+      {title != null && (typeof title === "string" || typeof title === "number") ? (
+        <Typography variant="h6">{title}</Typography>
       ) : (
         title
       )}
-      <div>
-        <GridToolbarQuickFilter sx={{ mr: 1 }} />
-        <GridToolbarExport
-          slotProps={{
-            tooltip: { title: "Export data" },
-            button: { variant: "text" },
-          }}
-        />
-      </div>
-    </GridToolbarContainer>
+      <Box display="flex" alignItems="center">
+      <Box sx={{ mr: 1 }}>
+            <GridToolbarQuickFilter />
+      </Box>
+
+      <Button variant="text" color="primary">
+  <GridToolbarExport />
+</Button>
+      </Box>
+    </Box>
   );
 }

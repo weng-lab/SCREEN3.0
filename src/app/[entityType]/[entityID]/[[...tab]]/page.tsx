@@ -19,6 +19,7 @@ import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
+import IntersectingCcres from "common/components/IntersectingCcres";
 
 export default function DetailsPage({
   params,
@@ -54,7 +55,7 @@ export default function DetailsPage({
     return <CircularProgress />;
   }
 
-  if (!data?.coordinates) {
+  if (data.__typename !== "SCREENSearchResult" && !data?.coordinates) {
     return <Typography>Issue fetching data on {entityID}</Typography>;
   }
 
@@ -66,16 +67,8 @@ export default function DetailsPage({
   if (tab === "browser") {
     return (
       <GenomeBrowserView
-        coordinates={data.coordinates}
-        name={
-          data.__typename === "Gene"
-            ? data.name
-            : data.__typename === "CCRE"
-            ? data.accession
-            : data.__typename === "SNP"
-            ? data.id
-            : null
-        }
+        coordinates={ data.__typename === "SCREENSearchResult" ?  {chromosome: data.chrom, start: data.start, end: data.start + data.len} : data.coordinates}
+        name={data.__typename === "Gene" ? data.name : data.__typename === "SCREENSearchResult" ? data.info.accession : data.__typename === "SNP" ? data.id : null}
         type={entityType}
       />
     );
@@ -127,7 +120,7 @@ export default function DetailsPage({
         case "":
           return <p>This should have biosample specific z-scores</p>;
         case "genes":
-          return <CcreLinkedGenes accession={CcreData.data.accession} coordinates={CcreData.data.coordinates} />;
+          return <CcreLinkedGenes assembly={"GRCh38"} accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} />;
         case "variants":
           return <IcreVariantsTab CcreData={CcreData} />;
       }
@@ -138,11 +131,12 @@ export default function DetailsPage({
         throw new Error("Unknown region details tab: " + tab);
       }
 
-      const region = parseGenomicRangeString(entityID);
+      const region = parseGenomicRangeString(entityID)
 
       switch (tab) {
         case "ccres":
-          return <p>This should have the intersecting cCREs table</p>;
+          return <IntersectingCcres assembly="GRCh38" region={region} />;
+          
         case "genes":
           return <IntersectingGenes region={region} />;
         case "variants":
