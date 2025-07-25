@@ -1,6 +1,6 @@
 "use client";
 import EntityDetailsLayout from "common/EntityDetails/EntityDetailsLayout";
-import { isValidGenomicEntity } from "types/globalTypes";
+import { Assembly, isValidGenomicEntity } from "types/globalTypes";
 import { use } from "react";
 
 export default function Layout({
@@ -8,15 +8,15 @@ export default function Layout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ entityType: string; entityID: string }>;
+  params: Promise<{ assembly: Assembly; entityType: string; entityID: string }>;
 }) {
-  const { entityType, entityID } = use(params);
+  const { assembly, entityType, entityID } = use(params);
   if (!isValidGenomicEntity(entityType)) {
     throw new Error("Unknown genomic element type: " + entityType);
   }
 
   return (
-    <EntityDetailsLayout entityID={entityID} entityType={entityType}>
+    <EntityDetailsLayout assembly={assembly} entityID={entityID} entityType={entityType}>
       {children}
     </EntityDetailsLayout>
   );

@@ -1,4 +1,4 @@
-import { EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
 import { useGeneData, UseGeneDataReturn } from "./useGeneData";
 import { useSnpData, UseSnpDataReturn } from "./useSnpData";
 import { ApolloError } from "@apollo/client";
@@ -6,6 +6,7 @@ import { parseGenomicRangeString } from "common/utility";
 import { useCcreData, UseCcreDataReturn } from "./useCcreData";
 
 type useEntityMetadataParams<T extends EntityType> = {
+  assembly: Assembly,
   entityType: T,
   entityID: string
 }
@@ -21,15 +22,15 @@ export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
   ? UseSnpDataReturn<{ rsID: string }>
   : UseGenomicRangeReturn;
 
-export const useEntityMetadata = <T extends EntityType>({ entityType, entityID }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
+export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, entityID }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
   /**
    * elementType is being passed to these hooks to prevent data from being fetched unless
    * it actually should be fetched. Need to call all hooks to follow rules of hooks:
    * See https://react.dev/reference/rules/rules-of-hooks#only-call-hooks-at-the-top-level
    */
-  const geneMetadata = useGeneData({name: entityID, entityType});
-  const icreMetadata = useCcreData({accession: entityID, entityType});
-  const snpMetadata = useSnpData({rsID: entityID, entityType});
+  const geneMetadata = useGeneData({name: entityID, entityType, assembly});
+  const icreMetadata = useCcreData({accession: entityID, entityType, assembly});
+  const snpMetadata = useSnpData({rsID: entityID, entityType, assembly});
   //example to use useSnpFrequencies, returns ref,alt alleles and population frequencies 
   //const SnpFrequencies= useSnpFrequencies(elementID);
   

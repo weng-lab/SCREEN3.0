@@ -9,6 +9,7 @@ import {
   isValidVariantTab,
   isValidTab,
   isValidRegionTab,
+  Assembly,
 } from "types/globalTypes";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
@@ -27,9 +28,9 @@ export default function DetailsPage({
    * Should be able to safely type this as GenomicElementType instead of string
    * since the layout wrapping this ensures the type is fulfilled
    */
-  params: Promise<{ entityType: EntityType; entityID: string; tab: string }>;
+  params: Promise<{ assembly: Assembly; entityType: EntityType; entityID: string; tab: string }>;
 }) {
-  const { entityType, entityID, tab: tabString } = use(params);
+  const { assembly, entityType, entityID, tab: tabString } = use(params);
   let tab = tabString;
   /**
    * Since [[...tab]] is an optional catch-all route, tabs is an array.
@@ -48,7 +49,7 @@ export default function DetailsPage({
     throw new Error("Unknown tab: " + tab);
   }
 
-  const { data, loading, error } = useEntityMetadata({ entityType, entityID });
+  const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
   if (loading) {
     return <CircularProgress />;

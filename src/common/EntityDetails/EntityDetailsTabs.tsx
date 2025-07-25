@@ -4,18 +4,19 @@ import { Tabs, Tab } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
-import { ElementDetailsTab, GeneDetailsTab, EntityType, CcreDetailsTab, RegionDetailsTab, VariantDetailsTab } from "types/globalTypes";
+import { ElementDetailsTab, GeneDetailsTab, EntityType, CcreDetailsTab, RegionDetailsTab, VariantDetailsTab, Assembly } from "types/globalTypes";
 import { geneDetailsTabs, icreDetailsTabs, regionDetailsTabs, sharedTabs, variantDetailsTabs } from "./tabsConfig";
 import Image from "next/image";
 
 export type ElementDetailsTabsProps = {
+  assembly: Assembly
   entityType: EntityType
   entityID: string
   orientation: "horizontal" | "vertical"
   verticalTabsWidth?: number
 }
 
-const EntityDetailsTabs = ({ entityType, entityID, orientation, verticalTabsWidth }: ElementDetailsTabsProps) => {
+const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, verticalTabsWidth }: ElementDetailsTabsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams()
   const currentTab = pathname.substring(pathname.lastIndexOf('/') + 1) === entityID ? "" : pathname.substring(pathname.lastIndexOf('/') + 1)
@@ -85,7 +86,7 @@ const EntityDetailsTabs = ({ entityType, entityID, orientation, verticalTabsWidt
           label={tab.label}
           value={tab.href}
           LinkComponent={Link}
-          href={`/${entityType}/${entityID}/${tab.href}` + '?' + searchParams.toString()}
+          href={`/${assembly}/${entityType}/${entityID}/${tab.href}` + '?' + searchParams.toString()}
           key={tab.href}
           icon={<Image width={verticalTabs ? 50 : 40} height={verticalTabs ? 50 : 40} src={tab.iconPath} alt={tab.label + " icon"} />}
         />
