@@ -17,7 +17,7 @@ type UseGenomicRangeReturn = { data: {__typename?: "Region", coordinates: Genomi
 export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
   ? UseGeneDataReturn<{ name: string }>
   : T extends "ccre"
-  ? UseCcreDataReturn<{ accession: string, assembly: string  }>
+  ? UseCcreDataReturn<{ accession: string, assembly: Assembly  }>
   : T extends "variant"
   ? UseSnpDataReturn<{ rsID: string }>
   : UseGenomicRangeReturn;
@@ -29,7 +29,7 @@ export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, 
    * See https://react.dev/reference/rules/rules-of-hooks#only-call-hooks-at-the-top-level
    */
   const geneMetadata = useGeneData({name: entityID, entityType, assembly});
-  const icreMetadata = useCcreData({accession: entityID, entityType, assembly});
+  const ccreMetadata = useCcreData({accession: entityID, entityType, assembly});
   const snpMetadata = useSnpData({rsID: entityID, entityType, assembly});
   //example to use useSnpFrequencies, returns ref,alt alleles and population frequencies 
   //const SnpFrequencies= useSnpFrequencies(elementID);
