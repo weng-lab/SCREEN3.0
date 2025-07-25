@@ -102,7 +102,7 @@ export default function GWASLdr({ accession }: { accession: string }) {
           }}
           tableTitle={`GWAS Variants for ${accession}`}
           emptyTableFallback={
-            "This iCRE does not overlap a variant associated with significant changes in gene expression"
+            "This cCRE does not overlap a variant associated with significant changes in gene expression"
           }
         />
       )}
