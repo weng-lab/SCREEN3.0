@@ -145,7 +145,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
       <AppBar position="static">
         <Toolbar sx={{ justifyContent: "space-between", backgroundColor: "primary.main" }}>
           {/* Main navigation items for desktop */}
-          <Stack direction={"row"} spacing={4}>
+          <Stack direction={"row"} spacing={1}>
             <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
               <Image
                 priority
@@ -155,7 +155,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                 style={{ objectFit: "contain", objectPosition: "left center" }}
               />
             </Box>
-            <Stack spacing={4} direction={"row"} display={{ xs: "none", md: "flex" }} alignItems={"center"}>
+            <Stack spacing={3} direction={"row"} display={{ xs: "none", md: "flex" }} alignItems={"center"}>
               {pageLinks.map((page) => (
                 <Box
                   key={page.pageName}
@@ -202,8 +202,13 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               ))}
             </Stack>
           </Stack>
-          <Stack direction={"row"} spacing={2} alignItems={"center"}>
-            <Stack direction="row" alignItems="center">
+          <Stack direction={"row"} spacing={2} alignItems={"center"} sx={{ display: { xs: "none", md: "flex" } }}>
+            <Stack direction="row" alignItems="center" spacing={-1}>
+              {assembly === "GRCh38" ? (
+                <HumanIcon color="white" size={45} />
+              ) : (
+                <MouseIcon color="white" size={45} />
+              )}
               <IconButton
                 onClick={handleIconMenuOpen}
                 size="small"
@@ -214,19 +219,20 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               >
                 <ArrowDropDownIcon />
               </IconButton>
-
-              {assembly === "GRCh38" ? (
-                <HumanIcon color="white" size={45} />
-              ) : (
-                <MouseIcon color="white" size={45} />
-              )}
-
               <Menu
                 id="icon-menu"
                 anchorEl={iconMenuAnchor}
                 open={Boolean(iconMenuAnchor)}
                 onClose={handleIconMenuClose}
-                PaperProps={{ sx: { minWidth: 120 } }}
+                PaperProps={{ sx: { minWidth: 120, mt: 1 } }}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
               >
                 <MenuItem selected={assembly === "GRCh38"} onClick={() => handleIconSelect("GRCh38")}>
                   Human
