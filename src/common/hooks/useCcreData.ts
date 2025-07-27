@@ -37,7 +37,7 @@ const CCRE_QUERY = gql(`
 `);
 
 type UseCcreDataParams = 
-  | { assembly: Assembly, accession: string | string[]; coordinates?: never; entityType?: EntityType, nearbygeneslimit?: number }
+  | { assembly: Assembly, accession?: string | string[]; coordinates?: never; entityType?: EntityType, nearbygeneslimit?: number }
   | { assembly: Assembly, coordinates: GenomicRange | GenomicRange[]; accession?: never; entityType?: EntityType, nearbygeneslimit?: number }
 
 export type UseCcreDataReturn<T extends UseCcreDataParams> =
@@ -46,13 +46,18 @@ export type UseCcreDataReturn<T extends UseCcreDataParams> =
   : { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] | undefined; loading: boolean; error: ApolloError };
 
 export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly}: T): UseCcreDataReturn<T> => {
+  console.log(accession, coordinates,assembly,entityType)
   const { data, loading, error } = useQuery(CCRE_QUERY, {
     variables: { 
-      coordinates,
-      accessions: accession,
-      assembly: assembly.toLowerCase()
+      coordinates: Array.isArray(coordinates) ? coordinates: [coordinates],
+      accessions: Array.isArray(accession) ? accession: [accession],
+      assembly: assembly
      },
-    skip: (entityType !== undefined) && entityType !== 'ccre'
+    skip: ((entityType !== undefined) && entityType !== 'ccre') ||
+    (
+      (!accession || (Array.isArray(accession) && accession.length === 0)) &&
+      (!coordinates || (Array.isArray(coordinates) && coordinates.length === 0))
+    )
   });
 
   return {
