@@ -98,9 +98,9 @@ const MainSearch: React.FC = () => {
                 </FormControl>
             </Box>
             <Box sx={{ width: "45%", display: "flex", justifyContent: "flex-end" }}>
-                <Typography variant="subtitle2" color={theme.palette.secondary.light}>
+                <Typography variant="subtitle2" color={"#b2bcf0"}>
                     Looking to search multiple regions?{" "}
-                    <a href="#" style={{ color: theme.palette.secondary.light, textDecoration: "underline" }}>
+                    <a href="#" style={{ color: "#b2bcf0", textDecoration: "underline" }}>
                         Click here!
                     </a>
                 </Typography>
