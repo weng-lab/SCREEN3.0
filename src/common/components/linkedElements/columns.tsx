@@ -17,7 +17,7 @@ export const geneNameCol: colDef = {
   field: "gene",
   headerName: "Common Gene Name",
   renderCell: (params: renderCellParams) => (
-    <LinkComponent href={`/gene/${params.value}`}>
+    <LinkComponent href={`/GRCh38/gene/${params.value}`}>
       <i>{params.value}</i>
     </LinkComponent>
   ),

@@ -16,8 +16,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/region/:region',
-        destination: '/region/:region/ccres',
+        source: '/:assembly/region/:region',
+        destination: '/:assembly/region/:region/ccres',
         permanent: false
       },
       //redirect /:entityType was redirect static files, like the images in public

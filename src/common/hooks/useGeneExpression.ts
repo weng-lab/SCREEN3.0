@@ -3,6 +3,8 @@ import { useMemo } from "react";
 import { gql } from "types/generated/gql";
 import { GeneExpressionQuery } from "types/generated/graphql";
 
+
+//TODO: change from old igScreen query, must include assembly as well
 const GET_GENE_EXPRESSION = gql(`
   query GeneExpression($gene_id: String!) {
     immuneRnaUmapQuery(gene_id: $gene_id) {

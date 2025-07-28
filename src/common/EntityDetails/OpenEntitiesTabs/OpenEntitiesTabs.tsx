@@ -4,7 +4,7 @@ import { OpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { EntityType, TabRoute } from "types/globalTypes";
+import { Assembly, EntityType, TabRoute } from "types/globalTypes";
 import { DragDropContext, Droppable, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -13,7 +13,7 @@ import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/MenuContext";
 import { DraggableTab } from "./DraggableTab";
 
-export const constructEntityURL = (entity: OpenEntity) => `/${entity.entityType}/${entity.entityID}/${entity.tab}`;
+export const constructEntityURL = (entity: OpenEntity) => `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {
   const [openEntities, dispatch] = useContext(OpenEntitiesContext);
@@ -24,9 +24,10 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   const searchParams = useSearchParams();
 
   // Attributes of current entity
-  const urlEntityType = pathname.split("/")[1] as EntityType;
-  const urlEntityID = pathname.split("/")[2];
-  const urlTab = (pathname.split("/")[3] ?? "") as TabRoute;
+  const urlAssembly = pathname.split("/")[1] as Assembly;
+  const urlEntityType = pathname.split("/")[2] as EntityType;
+  const urlEntityID = pathname.split("/")[3];
+  const urlTab = (pathname.split("/")[4] ?? "") as TabRoute;
   const currentEntityState = openEntities.find((el) =>
     urlEntityType === "region" && el.entityType === "region"
       ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlEntityID)) //handles "%3A"/":" discrepency in url
@@ -94,13 +95,14 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
       dispatch({
         type: "addEntity",
         entity: {
+          assembly: urlAssembly,
           entityID: urlEntityID,
           entityType: urlEntityType,
           tab: urlTab,
         },
       });
     }
-  }, [currentEntityState, dispatch, urlEntityID, urlEntityType, urlTab]);
+  }, [currentEntityState, dispatch, urlAssembly, urlEntityID, urlEntityType, urlTab]);
 
   //sync the current view to the state
   useEffect(() => {

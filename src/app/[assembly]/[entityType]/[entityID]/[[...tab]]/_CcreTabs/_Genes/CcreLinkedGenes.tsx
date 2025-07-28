@@ -12,9 +12,10 @@ import useClosestgenes from "common/hooks/useClosestGenes";
 
 
 
-export default function CcreLinkedGenes({ accession, coordinates, assembly }: { accession: string; coordinates: GenomicRange, assembly: string; }) {
+export default function CcreLinkedGenes({ accession, coordinates }: { accession: string; coordinates: GenomicRange }) {
+  
   const { data: linkedGenes, loading, error } = useLinkedGenes(accession);
-  const { data: closestGenes, loading: closestGeneLoading, error: closestGeneError} = useClosestgenes(accession, assembly);
+  const { data: closestGenes, loading: closestGeneLoading, error: closestGeneError} = useClosestgenes(accession, "GRCh38");
   
   if (loading || closestGeneLoading) {
     const NUM_TABLES = 5;
@@ -104,7 +105,7 @@ export default function CcreLinkedGenes({ accession, coordinates, assembly }: { 
         params.value.startsWith("ENSG") ? (
           <i>{params.value}</i>
         ) : (
-          <LinkComponent href={`/gene/${params.value}`}>
+          <LinkComponent href={`/GRCh38/gene/${params.value}`}>
             <i>{params.value}</i>
           </LinkComponent>
         ),

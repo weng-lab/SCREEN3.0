@@ -6,11 +6,9 @@ import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 
 export default function DistanceLinkedCcres({
-  geneData,
-  allcCREs,
+  geneData  
 }: {
-  geneData: UseGeneDataReturn<{ name: string }>;
-  allcCREs: boolean;
+  geneData: UseGeneDataReturn<{ name: string }>;  
 }) {
   const { data: dataNearby, loading: loadingNearby, error: errorNearby } = useNearbycCREs(geneData?.data.id);
 
@@ -32,7 +30,7 @@ export default function DistanceLinkedCcres({
         distance: Math.abs(f?.start - geneData?.data.coordinates.start) || 0,
       };
     })
-    ?.filter((d) => allcCREs || d.isiCRE);
+    //?.filter((d) => allcCREs || d.isiCRE);
 
   const cols: CustomDataGridColDef<(typeof nearbyccres)[number]>[] = [
     {
@@ -40,7 +38,7 @@ export default function DistanceLinkedCcres({
       headerName: "Accession",
       renderCell: (params) => {
         return (
-          <LinkComponent href={`/ccre/${params.value}`} showExternalIcon={!params.row.isiCRE} openInNewTab={!params.row.isiCRE}>
+          <LinkComponent href={`/GRCh38/ccre/${params.value}`} showExternalIcon={!params.row.isiCRE} openInNewTab={!params.row.isiCRE}>
             {params.value}
           </LinkComponent>
         );
@@ -111,13 +109,13 @@ export default function DistanceLinkedCcres({
         <CustomDataGrid
           rows={nearbyccres}
           columns={cols}
-          tableTitle={allcCREs ? "Nearby cCREs" : "Nearby iCREs"}
+          tableTitle={"Nearby cCREs"}
           initialState={{
             sorting: {
               sortModel: [{ field: "distance", sort: "asc" }],
             },
           }}
-          emptyTableFallback={allcCREs ? "No Nearby cCREs found" : "No Nearby iCREs found"}
+          emptyTableFallback={"No Nearby cCREs found"}
         />
       )}
     </Box>
