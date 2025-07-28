@@ -22,16 +22,16 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
     let url = "";
     switch (r.type) {
       case "Gene":
-        url = `/gene/${r.title}`;
+        url = `/${props.assembly}/gene/${r.title}`;
         break;
       case "cCRE":
-        url = `/ccre/${r.title}`;
+        url = `/${props.assembly}/ccre/${r.title}`;
         break;
       case "Coordinate":
-        url = `/region/${r.domain.chromosome}:${r.domain.start}-${r.domain.end}`;
+        url = `/${props.assembly}/region/${r.domain.chromosome}:${r.domain.start}-${r.domain.end}`;
         break;
       case "SNP":
-        url = `/variant/${r.title}`;
+        url = `/${props.assembly}/variant/${r.title}`;
         break;
     }
     router.push(url);
@@ -39,7 +39,9 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
 
   return (
     <GenomeSearch
-      assembly={props.assembly}
+      //assembly={props.assembly}
+      assembly={"GRCh38"}
+      ccreLimit={3}
       showiCREFlag={false}
       queries={["Gene", "cCRE", "SNP", "Coordinate"]}
       onSearchSubmit={handleSearchSubmit}

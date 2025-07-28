@@ -30,7 +30,7 @@ export default function GWASLdr({ accession }: { accession: string }) {
     {
       field: "snpid",
       headerName: "rsID",
-      renderCell: (params) => <LinkComponent href={"/variant/" + params.value}>{params.value}</LinkComponent>,
+      renderCell: (params) => <LinkComponent href={"/GRCh38/variant/" + params.value}>{params.value}</LinkComponent>,
     },
     {
       field: "snp_chr",
@@ -102,7 +102,7 @@ export default function GWASLdr({ accession }: { accession: string }) {
           }}
           tableTitle={`GWAS Variants for ${accession}`}
           emptyTableFallback={
-            "This iCRE does not overlap a variant associated with significant changes in gene expression"
+            "This cCRE does not overlap a variant associated with significant changes in gene expression"
           }
         />
       )}

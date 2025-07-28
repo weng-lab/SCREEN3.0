@@ -9,6 +9,7 @@ export interface GenomicRange {
 }
 
 export type EntityType = "variant" | "gene" | "ccre" | "region"
+export type Assembly = "GRCh38" | "mm10"
 
 export function isValidGenomicEntity(value: string): value is EntityType {
   return value === "variant" || value === "gene" || value === "ccre" || value === "region";
@@ -53,7 +54,7 @@ export function isValidCcreTab(tab: string): tab is CcreRoute {
 }
 
 export function isValidRegionTab(tab: string): tab is RegionRoute {
-  return  isValidSharedTab(tab) || tab === "ccres" || tab === "genes" || tab === "variants"
+  return  isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || tab === "ccres" || tab === "genes" || tab === "variants"
 }
 
 export function isValidTab(tab: string): tab is SharedRoute | VariantRoute | GeneRoute | CcreRoute {

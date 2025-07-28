@@ -1,9 +1,9 @@
-import TwoPaneLayout from "../../../../../../common/components/TwoPaneLayout";
+import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout";
 import { useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
-import { BarData } from "../../../../../../common/components/VerticalBarPlot";
+import { BarData } from "../../../../../../../common/components/VerticalBarPlot";
 import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
 import { BarChart, ScatterPlot, CandlestickChart } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";

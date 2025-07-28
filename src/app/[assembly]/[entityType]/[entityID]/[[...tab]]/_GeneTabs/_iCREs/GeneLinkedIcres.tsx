@@ -6,17 +6,11 @@ import { useState } from "react";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 
 const GeneLinkedIcres = ({geneData}: {geneData: UseGeneDataReturn<{ name: string }>}) => {
-  const [allcCREs, setAllcCREs] = useState<boolean>(false)
-
-  const toggleOnlyICREs = () => {
-    setAllcCREs(!allcCREs)
-  }
-
+ 
   return (
     <Stack spacing={2} alignItems={"center"}>
-      <IcreCcreSwitch checked={allcCREs} onChange={toggleOnlyICREs} />
-      <DistanceLinkedCcres geneData={geneData} allcCREs={allcCREs} />
-      <ComputationalLinkedCcres geneData={geneData} allcCREs={allcCREs} />
+      <DistanceLinkedCcres geneData={geneData} />
+      <ComputationalLinkedCcres geneData={geneData}/>
     </Stack>
   );
 };

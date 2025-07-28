@@ -6,9 +6,9 @@ import RegionSearchHeader from "./RegionSearchHeader";
 import { parseGenomicRangeString } from "common/utility";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabs";
 
-export type ElementDetailsLayoutProps = EntityDetailsHeaderProps & { children: React.ReactNode };
+export type EntityDetailsLayoutProps = EntityDetailsHeaderProps & { children: React.ReactNode };
 
-export default function EntityDetailsLayout({ entityID, entityType, children }: ElementDetailsLayoutProps) {
+export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
   const verticalTabsWidth = 90
   
   return (
@@ -19,7 +19,7 @@ export default function EntityDetailsLayout({ entityID, entityType, children }: 
         {/* View tabs, shown only on desktop */}
         <Box sx={{ display: { xs: "none", md: "initial", height: "100%" } }} id="element-details-desktop-tabs">
           <Box sx={{ position: "fixed", height: "100%" }}>
-            <EntityDetailsTabs entityType={entityType} entityID={entityID} orientation="vertical" verticalTabsWidth={verticalTabsWidth} />
+            <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" verticalTabsWidth={verticalTabsWidth} />
           </Box>
           {/* Needed to bump over the rest of the content since above is using position="fixed" */}
           <div style={{ width: verticalTabsWidth }} /> 
@@ -38,14 +38,14 @@ export default function EntityDetailsLayout({ entityID, entityType, children }: 
           {entityType === "region" ? (
             <RegionSearchHeader region={parseGenomicRangeString(entityID)} />
           ) : (
-            <EntityDetailsHeader entityType={entityType} entityID={entityID} />
+            <EntityDetailsHeader assembly={assembly} entityType={entityType} entityID={entityID} />
           )}
           {/* View tabs, shown only on mobile */}
           <Box
             sx={{ display: { xs: "initial", md: "none" }, borderBottom: 1, borderColor: "divider" }}
             id="element-details-desktop-tabs"
           >
-            <EntityDetailsTabs entityType={entityType} entityID={entityID} orientation="horizontal" />
+            <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="horizontal" />
           </Box>
           {children}
         </Stack>

@@ -1,19 +1,20 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatPortal } from "common/utility";
-import { EntityType } from "types/globalTypes";
+import { Assembly, EntityType } from "types/globalTypes";
 import Image from "next/image";
 import Grid2 from "@mui/material/Grid2";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 
 export type EntityDetailsHeaderProps = {
+  assembly: Assembly;
   entityType: EntityType;
   entityID: string;
 };
 
-export const EntityDetailsHeader = ({ entityType, entityID }: EntityDetailsHeaderProps) => {
-  const { data: entityMetadata, loading, error } = useEntityMetadata({ entityType, entityID });
+export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
+  const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
   const c = entityMetadata?.__typename === "SCREENSearchResult" ? {chromosome: entityMetadata?.chrom, start: entityMetadata?.start, end: entityMetadata?.start + entityMetadata?.len } : entityMetadata?.coordinates;
   const coordinatesDisplay = c && `${c.chromosome}:${c.start.toLocaleString()}-${c.end.toLocaleString()}`;

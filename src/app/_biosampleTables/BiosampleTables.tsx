@@ -237,7 +237,7 @@ export const BiosampleTables = <
     }
 
     const handleModifyAll = (samples: BiosampleData<HasRNASeq>[], action: "select" | "deselect") => {
-      console.log("modifying all")
+      
       if (onChange && typeof onChange === 'function') {
         if (action === "select") {
           const toAdd = samples.filter(sample => !selectedSamples.some(x => x.name === sample.name));

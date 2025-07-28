@@ -74,7 +74,7 @@ export const DownloadRange: React.FC = () => {
   const handleSetSelectedBiosample = (biosample: RegistryBiosample) => {
     setSelectedBiosample(biosample)
     if (biosample) {
-      console.log(biosample)
+      
       setSelectedAssays(
         {
           atac: !!biosample.atac,

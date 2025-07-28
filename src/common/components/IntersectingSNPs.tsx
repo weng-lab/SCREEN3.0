@@ -10,7 +10,7 @@ const IntersectingSNPs = ({ region }: { region: GenomicRange }) => {
     data: dataSnps,
     loading: loadingSnps,
     error: errorSnps,
-  } = useSnpData({ coordinates: { chromosome: region.chromosome, start: region.start, end: region.end } });
+  } = useSnpData({ coordinates: { chromosome: region.chromosome, start: region.start, end: region.end },  assembly: "GRCh38"  });
 
   type RowObj = (typeof dataSnps)[number];
 
@@ -19,7 +19,7 @@ const IntersectingSNPs = ({ region }: { region: GenomicRange }) => {
       field: "id",
       headerName: "rsID",
       renderCell: (params) => (
-        <LinkComponent href={`/variant/${params.value}`}>
+        <LinkComponent href={`/GRCh38/variant/${params.value}`}>
           {params.value}
         </LinkComponent>
       ),

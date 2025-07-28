@@ -20,7 +20,7 @@ import {
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useState } from "react";
-import { EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import AddTracksModal, { BigWig } from "./addTracksModal";
 import ControlButtons from "./controls";
@@ -56,10 +56,12 @@ export default function GenomeBrowserView({
   coordinates,
   name,
   type,
+  assembly
 }: {
   coordinates: GenomicRange;
   name: string;
   type: EntityType;
+  assembly: string;
 }) {
   const [browserState, browserDispatch] = useBrowserState({
     domain: expandCoordinates(coordinates),
@@ -90,14 +92,14 @@ export default function GenomeBrowserView({
   }, [browserDispatch]);
   const onIcreClick = useCallback((item: Rect) => {
     const accession = item.name;
-    router.push(`/ccre/${accession}`);
+    router.push(`${assembly}/ccre/${accession}`);
   }, []);
   const onGeneClick = useCallback((gene: Transcript) => {
     const name = gene.name;
     if (name.includes("ENSG")) {
       return;
     }
-    router.push(`/gene/${name}`);
+    router.push(`${assembly}/gene/${name}`);
   }, []);
 
   // Initialize tracks and highlights
@@ -215,7 +217,7 @@ export default function GenomeBrowserView({
         >
           <GenomeSearch
             size="small"
-            assembly="GRCh38"
+            assembly={assembly as Assembly}
             onSearchSubmit={handeSearchSubmit}
             queries={["Gene", "SNP", "iCRE", "Coordinate"]}
             geneLimit={3}

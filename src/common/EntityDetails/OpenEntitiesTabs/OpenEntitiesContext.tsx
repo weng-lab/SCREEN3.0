@@ -1,9 +1,9 @@
 "use client";
 
 import { createContext, Dispatch, useReducer } from "react";
-import { EntityType, TabRoute } from "types/globalTypes";
+import { EntityType, TabRoute, Assembly } from "types/globalTypes";
 
-export type OpenEntity = { entityType: EntityType; entityID: string, tab: TabRoute };
+export type OpenEntity = { assembly: Assembly; entityType: EntityType; entityID: string, tab: TabRoute };
 
 export type OpenEntityState = OpenEntity[];
 

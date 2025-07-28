@@ -1,4 +1,4 @@
-import { EntityType, GenomicRange, TabRoute } from "types/globalTypes";
+import { Assembly, EntityType, GenomicRange, TabRoute } from "types/globalTypes";
 import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
 import { Typography, TypographyOwnProps, TypographyPropsVariantOverrides, Link } from "@mui/material";
 import { OpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
@@ -282,11 +282,12 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): O
   return decompressFromEncodedURIComponent(urlOpenEntities)
     .split(openEntityListDelimiter)
     .map((entry) => {
-      const [encodedEntityType, entityID, encodedTab = ""] = entry.split(openEntityDelimiter);
+      const [encodedAssembly, encodedEntityType, entityID, encodedTab = ""] = entry.split(openEntityDelimiter);
       return {
         entityType: entityTypeDecoding[encodedEntityType],
         entityID,
         tab: tabRouteDecoding[encodedTab],
+        assembly: assemblyDecoding[encodedAssembly],
       };
     })
     .filter((x) => x.entityType && x.entityID); // filter out any invalid
@@ -300,7 +301,7 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): O
 export function compressOpenEntitiesToURL(openEntities: OpenEntity[]): string {
   return compressToEncodedURIComponent(
     openEntities
-      .map((x) => [entityTypeEncoding[x.entityType], x.entityID, tabRouteEncoding[x.tab]].join(openEntityDelimiter))
+      .map((x) => [assemblyEncoding[x.assembly], entityTypeEncoding[x.entityType], x.entityID, tabRouteEncoding[x.tab]].join(openEntityDelimiter))
       .join(openEntityListDelimiter)
   );
 }
@@ -314,6 +315,15 @@ const entityTypeEncoding: {[key in EntityType]: string} = {
 
 const entityTypeDecoding: {[key: string]: EntityType} = Object.fromEntries(
   Object.entries(entityTypeEncoding).map(([entity, encoding]: [EntityType, string]) => [encoding, entity])
+);
+
+const assemblyEncoding: {[key in Assembly]: string} = {
+  'GRCh38': 'h',
+  'mm10': 'm'
+}
+
+const assemblyDecoding: {[key: string]: Assembly} = Object.fromEntries(
+  Object.entries(assemblyEncoding).map(([entity, encoding]: [Assembly, string]) => [encoding, entity])
 );
 
 const tabRouteEncoding: { [key in TabRoute]: string } = {

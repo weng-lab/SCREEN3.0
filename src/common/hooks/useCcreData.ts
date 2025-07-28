@@ -1,7 +1,7 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { gql } from "types/generated/gql";
 import { CCrescreenSearchQueryQuery } from "types/generated/graphql";
-import { EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
 
 const CCRE_QUERY = gql(`
   query cCRESCREENSearchQuery(
@@ -37,22 +37,29 @@ const CCRE_QUERY = gql(`
 `);
 
 type UseCcreDataParams = 
-  | { assembly: string, accession: string | string[]; coordinates?: never; entityType?: EntityType, nearbygeneslimit?: number }
-  | { assembly: string, coordinates: GenomicRange | GenomicRange[]; accession?: never; entityType?: EntityType, nearbygeneslimit?: number }
+  | { assembly: Assembly, accession?: string | string[]; coordinates?: never; entityType?: EntityType, nearbygeneslimit?: number }
+  | { assembly: Assembly, coordinates: GenomicRange | GenomicRange[]; accession?: never; entityType?: EntityType, nearbygeneslimit?: number }
 
 export type UseCcreDataReturn<T extends UseCcreDataParams> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { accession: string[] })
   ? { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"] | undefined; loading: boolean; error: ApolloError }
   : { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] | undefined; loading: boolean; error: ApolloError };
 
-export const useCcreData = <T extends UseCcreDataParams>({assembly, accession, coordinates, entityType}: T): UseCcreDataReturn<T> => {
+export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly, nearbygeneslimit}: T): UseCcreDataReturn<T> => {
+  
   const { data, loading, error } = useQuery(CCRE_QUERY, {
     variables: { 
-      coordinates,
-      accessions: accession,
-      assembly: assembly
+      coordinates: coordinates ? Array.isArray(coordinates) ? coordinates: [coordinates]: coordinates,
+      accessions: accession ? Array.isArray(accession) ? accession: [accession] : undefined,
+      assembly: assembly,
+      nearbygeneslimit: nearbygeneslimit || 3
+      
      },
-    skip: (entityType !== undefined) && entityType !== 'ccre'
+    skip: ((entityType !== undefined) && entityType !== 'ccre') ||
+    (
+      (!accession || (Array.isArray(accession) && accession.length === 0)) &&
+      (!coordinates || (Array.isArray(coordinates) && coordinates.length === 0))
+    )
   });
 
   return {

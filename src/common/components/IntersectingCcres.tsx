@@ -1,19 +1,24 @@
 'use client'
 import { Typography } from "@mui/material";
-import { GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { useCcreData } from "common/hooks/useCcreData";
 import { Table } from  "@weng-lab/ui-components";
-
+import { LinkComponent } from "common/components/LinkComponent";
 const IntersectingCcres = ({ region, assembly }: { region: GenomicRange, assembly: string }) => {
-  console.log(assembly,"Asm")
-  const { data: dataCcres, loading: loadingCcres, error: errorCcres } = useCcreData({coordinates: region, assembly: "GRCh38", nearbygeneslimit: 1});
+  
+  const { data: dataCcres, loading: loadingCcres, error: errorCcres } = useCcreData({coordinates: region, assembly: assembly as Assembly, nearbygeneslimit: 1});
 
   const columns: GridColDef<(typeof dataCcres)[number]>[] = [
     {
       field: "info.accession",
       renderHeader: () => <strong><p>Accession</p></strong>,
-      valueGetter: (_, row) => row.info.accession        
+      valueGetter: (_, row) => row.info.accession,
+      renderCell: (params) => (
+                <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
+                  <i>{params.value}</i>
+                </LinkComponent>
+              ),          
     },
     {
       field: "pct",      
@@ -26,7 +31,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange, assembl
     },
     {
       field: "start",
-      renderHeader: () => <strong><p>Star5</p></strong>,
+      renderHeader: () => <strong><p>Start</p></strong>,
       valueGetter: (_, row) => row.start.toLocaleString(),
     },
     {
@@ -77,7 +82,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange, assembl
       rows={dataCcres || []}
       columns={columns}
       loading={loadingCcres}     
-      label={`Intersecting Ccres`}      
+      label={`Intersecting cCREs`}      
       emptyTableFallback={"No intersecting cCREs found in this region"}
     />
   );
