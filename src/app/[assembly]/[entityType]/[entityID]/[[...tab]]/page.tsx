@@ -73,6 +73,7 @@ export default function DetailsPage({
         coordinates={ data.__typename === "SCREENSearchResult" ?  {chromosome: data.chrom, start: data.start, end: data.start + data.len} : data.coordinates}
         name={data.__typename === "Gene" ? data.name : data.__typename === "SCREENSearchResult" ? data.info.accession : data.__typename === "SNP" ? data.id : null}
         type={entityType}
+        assembly={assembly}
       />
     );
   }
