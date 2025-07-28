@@ -17,8 +17,8 @@ const SNP_Query = gql(`
 `)
 
 type UseSnpDataParams = 
-  | { rsID: string | string[]; coordinates?: never; entityType?: EntityType; assembly?: Assembly }
-  | { coordinates: GenomicRange | GenomicRange[]; rsID?: never; entityType?: EntityType; assembly?: Assembly }
+  | { rsID: string | string[]; coordinates?: never; entityType?: EntityType; assembly: Assembly }
+  | { coordinates: GenomicRange | GenomicRange[]; rsID?: never; entityType?: EntityType; assembly: Assembly }
 
 export type UseSnpDataReturn<T extends UseSnpDataParams> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { rsID: string[] })
@@ -32,9 +32,9 @@ export const useSnpData = <T extends UseSnpDataParams>({ rsID, coordinates, enti
       variables: {
         coordinates,
         snpids: rsID,
-        assembly
+        assembly: assembly
       },
-      skip: (entityType !== undefined) && entityType !== 'variant'
+      skip: (entityType !== undefined) && entityType !== 'variant' || (assembly!=="GRCh38")
     },
   );
 

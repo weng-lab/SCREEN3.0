@@ -15,11 +15,11 @@ type useEntityMetadataParams<T extends EntityType> = {
 type UseGenomicRangeReturn = { data: {__typename?: "Region", coordinates: GenomicRange}; loading: boolean; error: ApolloError }
 
 export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
-  ? UseGeneDataReturn<{ name: string }>
+  ? UseGeneDataReturn<{ name: string, assembly: Assembly }>
   : T extends "ccre"
   ? UseCcreDataReturn<{ accession: string, assembly: Assembly  }>
   : T extends "variant"
-  ? UseSnpDataReturn<{ rsID: string }>
+  ? UseSnpDataReturn<{ rsID: string, assembly: Assembly  }>
   : UseGenomicRangeReturn;
 
 export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, entityID }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
@@ -30,7 +30,7 @@ export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, 
    */
   const geneMetadata = useGeneData({name: entityID, entityType, assembly});
   const ccreMetadata = useCcreData({accession: entityID, entityType, assembly});
-  const snpMetadata = useSnpData({rsID: entityID, entityType, assembly});
+  const snpMetadata = useSnpData({rsID: entityID, entityType, assembly: "GRCh38"});
   //example to use useSnpFrequencies, returns ref,alt alleles and population frequencies 
   //const SnpFrequencies= useSnpFrequencies(elementID);
   

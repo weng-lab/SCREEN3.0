@@ -54,7 +54,7 @@ export function isValidCcreTab(tab: string): tab is CcreRoute {
 }
 
 export function isValidRegionTab(tab: string): tab is RegionRoute {
-  return  isValidSharedTab(tab) || tab === "ccres" || tab === "genes" || tab === "variants"
+  return  isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || tab === "ccres" || tab === "genes" || tab === "variants"
 }
 
 export function isValidTab(tab: string): tab is SharedRoute | VariantRoute | GeneRoute | CcreRoute {

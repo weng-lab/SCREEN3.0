@@ -5,7 +5,8 @@ function useLinkedGenes(accession: string) {
     variables: {
       accessions: [accession],
       assembly: "grch38"
-    }
+    },
+    skip: !accession
   })
   
   return {data: data?.linkedGenes as LinkedGeneInfo[], loading, error}

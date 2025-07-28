@@ -13,7 +13,7 @@ import {
 } from "types/globalTypes";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
-import IcreVariantsTab from "./_CcreTabs/_Variants/IcreVariantsTab";
+import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
 import GeneLinkedIcres from "./_GeneTabs/_iCREs/GeneLinkedIcres";
 import VariantInfo from "./_SnpTabs/_Variant/Variant";
 import IntersectingGenes from "common/components/IntersectingGenes";
@@ -32,7 +32,9 @@ export default function DetailsPage({
   params: Promise<{ assembly: Assembly; entityType: EntityType; entityID: string; tab: string }>;
 }) {
   const { assembly, entityType, entityID, tab: tabString } = use(params);
+  
   let tab = tabString;
+  
   /**
    * Since [[...tab]] is an optional catch-all route, tabs is an array.
    * tab is undefined when hitting /elementType/elementID (default tab's route).
@@ -85,7 +87,7 @@ export default function DetailsPage({
 
       switch (tab) {
         case "":
-          return <VariantInfo snpid={variantData.data.id} />;
+          return  assembly==="GRCh38" ? <VariantInfo snpid={variantData.data.id} /> : <></>;
         case "ccres":
           return <p>cCREs intersecting this variant page</p>;
         case "genes":
@@ -102,9 +104,9 @@ export default function DetailsPage({
 
       switch (tab) {
         case "":
-          return <GeneExpression geneData={geneData} />;
+          return assembly==="GRCh38" ? <GeneExpression geneData={geneData} /> : <></>;
         case "ccres":
-          return <GeneLinkedIcres geneData={geneData} />;
+          return assembly==="GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
         case "variants":
           return <p>This page should probably have eQTL data</p>;
       }
@@ -121,11 +123,12 @@ export default function DetailsPage({
         case "":
           return <p>This should have biosample specific z-scores</p>;
         case "genes":
-          return <CcreLinkedGenes assembly={"GRCh38"} accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} />;
+          return assembly==="GRCh38" ? <CcreLinkedGenes accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} /> : <>Linked Genes for Mouse cCREs</>;
         case "variants":
-          return <IcreVariantsTab CcreData={CcreData} />;
+          return assembly==="GRCh38" ? <CcreVariantsTab CcreData={CcreData} />: <p> Variants for mouse cCREs </p>;
       }
     }
+
 
     case "region": {
       if (!isValidRegionTab(tab)) {
@@ -136,12 +139,12 @@ export default function DetailsPage({
 
       switch (tab) {
         case "ccres":
-          return <IntersectingCcres assembly="GRCh38" region={region} />;
-          
+          return <IntersectingCcres assembly={assembly} region={region} />;          
         case "genes":
-          return <IntersectingGenes region={region} />;
+          return <IntersectingGenes assembly={assembly} region={region} />;
         case "variants":
-          return <IntersectingSNPs region={region} />;
+          //TODO: Add Mouse SNPs
+          return assembly === "mm10" ? <p>This page should have intersecting mouse SNPs</p> :  <IntersectingSNPs region={region} />;
       }
     }
   }

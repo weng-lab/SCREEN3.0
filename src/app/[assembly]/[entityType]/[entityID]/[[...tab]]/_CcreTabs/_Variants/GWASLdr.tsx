@@ -30,7 +30,7 @@ export default function GWASLdr({ accession }: { accession: string }) {
     {
       field: "snpid",
       headerName: "rsID",
-      renderCell: (params) => <LinkComponent href={"/variant/" + params.value}>{params.value}</LinkComponent>,
+      renderCell: (params) => <LinkComponent href={"/GRCh38/variant/" + params.value}>{params.value}</LinkComponent>,
     },
     {
       field: "snp_chr",

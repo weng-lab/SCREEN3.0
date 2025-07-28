@@ -39,7 +39,8 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
 
   return (
     <GenomeSearch
-      assembly={props.assembly}
+      //assembly={props.assembly}
+      assembly={"GRCh38"}
       ccreLimit={3}
       showiCREFlag={false}
       queries={["Gene", "cCRE", "SNP", "Coordinate"]}

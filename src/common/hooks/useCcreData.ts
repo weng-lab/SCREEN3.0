@@ -45,13 +45,15 @@ export type UseCcreDataReturn<T extends UseCcreDataParams> =
   ? { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"] | undefined; loading: boolean; error: ApolloError }
   : { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] | undefined; loading: boolean; error: ApolloError };
 
-export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly}: T): UseCcreDataReturn<T> => {
-  console.log(accession, coordinates,assembly,entityType)
+export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly, nearbygeneslimit}: T): UseCcreDataReturn<T> => {
+  
   const { data, loading, error } = useQuery(CCRE_QUERY, {
     variables: { 
-      coordinates: Array.isArray(coordinates) ? coordinates: [coordinates],
-      accessions: Array.isArray(accession) ? accession: [accession],
-      assembly: assembly
+      coordinates: coordinates ? Array.isArray(coordinates) ? coordinates: [coordinates]: coordinates,
+      accessions: accession ? Array.isArray(accession) ? accession: [accession] : undefined,
+      assembly: assembly,
+      nearbygeneslimit: nearbygeneslimit || 3
+      
      },
     skip: ((entityType !== undefined) && entityType !== 'ccre') ||
     (
