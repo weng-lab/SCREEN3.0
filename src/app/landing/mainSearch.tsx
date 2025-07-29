@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
-import { Box, Radio, RadioGroup, FormControlLabel, Typography, Stack, IconButton, FormHelperText, FormControl } from '@mui/material';
+import {
+    Box,
+    Radio,
+    RadioGroup,
+    FormControlLabel,
+    Typography,
+    Stack,
+    IconButton,
+    FormHelperText,
+    FormControl,
+} from '@mui/material';
 import AutoComplete from 'common/components/autocomplete';
 import { Search } from '@mui/icons-material';
-import { theme } from 'app/theme';
 
 const MainSearch: React.FC = () => {
     const [assembly, setAssembly] = useState<"GRCh38" | "mm10">('GRCh38');
@@ -13,43 +22,60 @@ const MainSearch: React.FC = () => {
                 sx={{
                     backgroundColor: "rgba(15, 25, 82, .8)",
                     borderRadius: 2,
-                    padding: 4,
+                    px: { xs: 2, sm: 3, md: 4 },
+                    py: { xs: 3, sm: 4 },
                     display: 'flex',
-                    width: "45%",
-                    minWidth: 450,
-                    marginTop: 2,
+                    width: { xs: "90%", sm: "80%", md: "60%", lg: "45%" },
+                    minWidth: { xs: "unset", md: 450 },
+                    mt: 2,
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexDirection: 'column',
+                    mx: "auto",
                 }}
             >
-                <Stack marginBottom={4} justifyContent={"center"} alignItems="center">
-                    <Typography variant="subtitle1" color="white">
-                        I&apos;m searching for cCRE&apos;s in:
-                    </Typography>
-                    <RadioGroup
-                        value={assembly}
-                        onChange={(e) => setAssembly(e.target.value as "GRCh38" | "mm10")}
-                        row
-                        sx={{ justifyContent: "center", alignItems: "center", gap: 6 }}
-                    >
-                        <FormControlLabel
-                            value="GRCh38"
-                            control={<Radio sx={{ color: 'white', '&.Mui-checked': { color: 'white' } }} />}
-                            label={<Typography color="white">Human</Typography>}
-                            sx={{ marginRight: 0 }}
-                        />
-                        <FormControlLabel
-                            value="mm10"
-                            control={<Radio sx={{ color: 'white', '&.Mui-checked': { color: 'white' } }} />}
-                            label={<Typography color="white">Mouse</Typography>}
-                            sx={{ marginRight: 0 }}
-                        />
-                    </RadioGroup>
+                <Stack spacing={2} mb={4} justifyContent="center" alignItems="center">
+                    <Stack justifyContent="center" alignItems="center">
+                        <Typography variant="subtitle1" color="white" textAlign="center">
+                            I&apos;m searching for cCRE&apos;s in:
+                        </Typography>
+                        <RadioGroup
+                            value={assembly}
+                            onChange={(e) => setAssembly(e.target.value as "GRCh38" | "mm10")}
+                            row
+                            sx={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: { xs: 2, sm: 4, md: 6 },
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            {["GRCh38", "mm10"].map((value) => (
+                                <FormControlLabel
+                                    key={value}
+                                    value={value}
+                                    control={
+                                        <Radio
+                                            sx={{
+                                                color: 'white',
+                                                '&.Mui-checked': { color: 'white' },
+                                            }}
+                                        />
+                                    }
+                                    label={
+                                        <Typography color="white">
+                                            {value === "GRCh38" ? "Human" : "Mouse"}
+                                        </Typography>
+                                    }
+                                    sx={{ marginRight: 0 }}
+                                />
+                            ))}
+                        </RadioGroup>
+                    </Stack>
                 </Stack>
-                <FormControl sx={{ width: 400 }} >
+                <FormControl sx={{ width: "75%" }}>
                     <AutoComplete
-                        sx={{ display: { xs: "none", md: "flex" } }}
+                        sx={{ display: { xs: "flex", md: "flex" } }}
                         style={{ width: "100%" }}
                         slots={{
                             button: (
@@ -92,13 +118,21 @@ const MainSearch: React.FC = () => {
                             },
                         }}
                     />
-                    <FormHelperText sx={{ marginLeft: 0, color: "white" }}>
+                    <FormHelperText sx={{ ml: 0, color: "white" }}>
                         Try &quot;<i>SOX4</i>&quot;, &quot;rs9466027&quot;, or &quot;chr11:12345678-12345679&quot;
                     </FormHelperText>
                 </FormControl>
             </Box>
-            <Box sx={{ width: "45%", display: "flex", justifyContent: "flex-end" }}>
-                <Typography variant="subtitle2" color={"#b2bcf0"}>
+            <Box
+                sx={{
+                    width: { xs: "90%", sm: "80%", md: "60%", lg: "45%" },
+                    display: "flex",
+                    justifyContent: { xs: "center", md: "flex-end" },
+                    mx: "auto",
+                    mt: 2,
+                }}
+            >
+                <Typography variant="subtitle2" color="#b2bcf0" textAlign={{ xs: "center", md: "right" }}>
                     Looking to search multiple regions?{" "}
                     <a href="#" style={{ color: "#b2bcf0", textDecoration: "underline" }}>
                         Click here!

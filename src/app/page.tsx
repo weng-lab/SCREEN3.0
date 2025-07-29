@@ -26,8 +26,8 @@ export default function Home() {
     { name: "All Candidate Enhancers", size: "129.1 MB", link: "/downloads/ccre/enhancers" },
   ];
 
-  //@todo: mobile freindly
-  //Fix the coloring, add all colors to theme
+  //@todo: Fix the coloring, add all colors to theme
+  //Add actual download links
   return (
     <div>
       <Box
@@ -71,7 +71,7 @@ export default function Home() {
         </Stack>
         <MainSearch />
       </Box>
-      <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: 20 }}>
+      <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: {xs: 5, md: 20} }}>
         <Typography
           sx={{
             fontWeight: 550,
@@ -142,7 +142,7 @@ export default function Home() {
           ))}
         </Grid2>
       </Box>
-      <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: 20 }}>
+      <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: {xs: 5, md: 20} }}>
         <Grid2
           container
           width="100%"
@@ -157,7 +157,7 @@ export default function Home() {
             </Typography>
           </Grid2>
           <Grid2 size={6} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }} width={"auto"}>
-            <Box sx={{ maxWidth: 400, width: "100%" }}>
+            <Box sx={{ maxWidth: 400, width: "100%", mt: {xs: 10, md: 0} }}>
               <Typography variant="h6" sx={{ fontWeight: 550 }} gutterBottom>
                 Available Downloads
               </Typography>
@@ -176,7 +176,7 @@ export default function Home() {
           </Grid2>
         </Grid2>
       </Box>
-      <Box width={"100%"} justifyContent={"flex-start"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: 20 }}>
+      <Box width={"100%"} justifyContent={"flex-start"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: {xs: 5, md: 20} }}>
         <Typography variant="h6" sx={{ fontWeight: 550 }}>📈 Trending Datasets</Typography>
         <Grid2 container spacing={5} justifyContent="flex-start" marginTop={2}>
           {trendingDataSets.map((data, index) => (
@@ -215,7 +215,7 @@ export default function Home() {
                   padding: 1,
                 }}
                 LinkComponent={Link}
-              // href={`/${elementType}/${element.name}`}
+              // href={``}
               >
                 <DownloadIcon />
               </IconButton>
