@@ -13,8 +13,12 @@ import {
 import AutoComplete from 'common/components/autocomplete';
 import { Search } from '@mui/icons-material';
 
-const MainSearch: React.FC = () => {
-    const [assembly, setAssembly] = useState<"GRCh38" | "mm10">('GRCh38');
+type MainSearchProps = {
+    assembly: "GRCh38" | "mm10";
+    handleAssemblyChange: (asmb: "GRCh38" | "mm10") => void;
+};
+
+const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange }) => {
 
     return (
         <>
@@ -41,7 +45,7 @@ const MainSearch: React.FC = () => {
                         </Typography>
                         <RadioGroup
                             value={assembly}
-                            onChange={(e) => setAssembly(e.target.value as "GRCh38" | "mm10")}
+                            onChange={(e) => handleAssemblyChange(e.target.value as "GRCh38" | "mm10")}
                             row
                             sx={{
                                 justifyContent: "center",
@@ -90,7 +94,7 @@ const MainSearch: React.FC = () => {
                             box: { gap: 1 },
                             input: {
                                 size: "small",
-                                label: "Enter a gene, cCRE, variant or locus",
+                                label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
                                 placeholder: "Enter a gene, cCRE, variant or locus",
                                 sx: {
                                     "& .MuiOutlinedInput-root": {
@@ -119,7 +123,10 @@ const MainSearch: React.FC = () => {
                         }}
                     />
                     <FormHelperText sx={{ ml: 0, color: "white" }}>
-                        Try &quot;<i>SOX4</i>&quot;, &quot;rs9466027&quot;, or &quot;chr11:12345678-12345679&quot;
+                        Try{" "}
+                        &quot;<i>{assembly === "GRCh38" ? "SOX4" : "Sox4"}</i>&quot;,
+                        &quot;<i>{assembly === "GRCh38" ? "rs9466027" : "EM10E0000207"}</i>&quot;,
+                        or &quot;chr11:12345678-12345679&quot;
                     </FormHelperText>
                 </FormControl>
             </Box>

@@ -257,7 +257,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                 box: { gap: 1 },
                 input: {
                   size: "small",
-                  label: "Enter a gene, cCRE, variant or locus",
+                  label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
                   placeholder: "Enter a gene, cCRE, variant or locus",
                   sx: {
                     "& .MuiOutlinedInput-root": {
