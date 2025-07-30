@@ -23,6 +23,7 @@ import { LinkComponent } from "./LinkComponent";
 import { useMenuControl } from "common/MenuContext";
 import HumanIcon from 'app/_utility/humanIcon';
 import MouseIcon from 'app/_utility/mouseIcon';
+import { usePathname } from "next/navigation"
 
 export type PageInfo = {
   pageName: string,
@@ -57,12 +58,36 @@ type ResponsiveAppBarProps = {
 
 function Header({ maintenance }: ResponsiveAppBarProps) {
   const { openMenu } = useMenuControl();
+  const pathname = usePathname()
+
+  const isHomePage = pathname === "/";
 
   // Hover dropdowns, deals with setting its position
   const [anchorDropdown0, setAnchorDropdown0] = useState<null | HTMLElement>(null)
   const [anchorDropdown1, setAnchorDropdown1] = useState<null | HTMLElement>(null)
   const [assembly, setAssembly] = React.useState<"GRCh38" | "mm10">("GRCh38");
   const [iconMenuAnchor, setIconMenuAnchor] = React.useState<null | HTMLElement>(null);
+
+  //Auto scroll and focus the main search bar
+  const handleFocusSearch = () => {
+    const searchEl = document.getElementById("main-search-component");
+    const headerEl = document.getElementById("header-helix");
+    if (!searchEl) return;
+
+    const observer = new IntersectionObserver(([entry], obs) => {
+      if (entry.isIntersecting) {
+        searchEl.focus();
+        obs.disconnect();
+      }
+    }, {
+      threshold: 1.0
+    });
+
+    observer.observe(headerEl);
+
+    // Scroll smoothly to the search bar
+    searchEl.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
 
   const handleIconMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setIconMenuAnchor(event.currentTarget);
@@ -202,7 +227,12 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               ))}
             </Stack>
           </Stack>
-          <Stack direction={"row"} spacing={2} alignItems={"center"} sx={{ display: { xs: "none", md: "flex" } }}>
+          {isHomePage ? (
+            <IconButton sx={{ color: "white" }} onClick={handleFocusSearch}>
+              <Search />
+            </IconButton>
+          ) : (
+            <Stack direction={"row"} spacing={2} alignItems={"center"} sx={{ display: { xs: "none", md: "flex" } }}>
             <Stack direction="row" alignItems="center" spacing={-1}>
               {assembly === "GRCh38" ? (
                 <HumanIcon color="white" size={45} />
@@ -278,6 +308,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               }}
             />
           </Stack>
+          )}
           {/* mobile view */}
           <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
             <IconButton

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Box,
     Radio,
@@ -89,7 +89,7 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
                             ),
                         }}
                         assembly={assembly}
-                        id="desktop-search-component"
+                        id="main-search-component"
                         slotProps={{
                             box: { gap: 1 },
                             input: {
@@ -129,22 +129,6 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
                         or &quot;chr11:12345678-12345679&quot;
                     </FormHelperText>
                 </FormControl>
-            </Box>
-            <Box
-                sx={{
-                    width: { xs: "90%", sm: "80%", md: "60%", lg: "45%" },
-                    display: "flex",
-                    justifyContent: { xs: "center", md: "flex-end" },
-                    mx: "auto",
-                    mt: 2,
-                }}
-            >
-                <Typography variant="subtitle2" color="#b2bcf0" textAlign={{ xs: "center", md: "right" }}>
-                    Looking to search multiple regions?{" "}
-                    <a href="#" style={{ color: "#b2bcf0", textDecoration: "underline" }}>
-                        Click here!
-                    </a>
-                </Typography>
             </Box>
         </>
     );

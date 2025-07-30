@@ -8,12 +8,18 @@ import Image from "next/image"
 import MainSearch from "./landing/mainSearch";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import DownloadIcon from '@mui/icons-material/Download';
+import MultipleRegionSearch from "./landing/multipleRegionSearch";
 
 export default function Home() {
   const [assembly, setAssembly] = useState<"GRCh38" | "mm10">('GRCh38');
+  const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
 
   const handleAssemblyChange = (asmb: "GRCh38" | "mm10") => {
     setAssembly(asmb);
+  }
+
+  const toggleMultipleRegionSearchVisible = () => {
+    setMultipleRegionSearchVisible(!multipleRegionSearchVisible);
   }
 
   const popularSearchesGRCh38 = [
@@ -45,10 +51,10 @@ export default function Home() {
     <div>
       <Box
         width="100%"
-        height="70vh"
+        height={multipleRegionSearchVisible ? "85vh" : "70vh"}
         sx={{
           background: `
-            linear-gradient(${alpha(theme.palette.secondary.main, 0.9)}, ${alpha(theme.palette.secondary.main, 0.9)}),
+            linear-gradient(${alpha(theme.palette.secondary.main, 0.9)}, ${alpha(theme.palette.secondary.main, 0.75)}),
             url("/backgroundHelix.png")
           `,
           backgroundSize: 'cover',
@@ -68,6 +74,7 @@ export default function Home() {
             width={120}
             style={{ width: "auto", height: 120 }}
             priority
+            id="header-helix"
           />
           <Typography variant="h4"
             sx={{
@@ -83,6 +90,31 @@ export default function Home() {
           </Typography>
         </Stack>
         <MainSearch assembly={assembly} handleAssemblyChange={handleAssemblyChange} />
+        <Box
+          sx={{
+            width: { xs: "90%", sm: "80%", md: "60%", lg: "45%" },
+            display: "flex",
+            justifyContent: { xs: "center", md: "flex-end" },
+            mx: "auto",
+          }}
+        >
+          <Typography
+            variant="subtitle2"
+            color="#b2bcf0"
+            textAlign={{ xs: "center", md: "right" }}
+          >
+            Looking to search multiple regions?{" "}
+            <span
+              onClick={toggleMultipleRegionSearchVisible}
+              style={{ color: "#b2bcf0", textDecoration: "underline", cursor: "pointer" }}
+            >
+              Click here!
+            </span>
+          </Typography>
+        </Box>
+        {multipleRegionSearchVisible && (
+          <MultipleRegionSearch assembly={assembly} multipleRegionSearchVisible={multipleRegionSearchVisible} toggleMultipleRegionSearchVisible={toggleMultipleRegionSearchVisible} />
+        )}
       </Box>
       <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
         <Typography
