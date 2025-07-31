@@ -42,46 +42,34 @@ const GeneExpressionTable = ({
       renderHeader: StopPropagationWrapper,
     },
     {
-      field: "biosample",
-      headerName: "Biosample",
+      field: "accession",
+      headerName: "Accession",
     },
     {
-      field: "value",
+      field: "tpm" as any, //Workaround for typing issue -- find better solution
       headerName: "TPM",
       type: "number",
-      valueGetter: (_, row) => row.value.toFixed(1),
+      valueGetter: (_, row) => row.gene_quantification_files[0].quantifications[0].tpm, //need to add average/showreplicates functionality
     },
     {
-      field: "stimulation",
-      headerName: "Stimulation",
-      valueGetter: (_, row) => (row.stimulation.charAt(0) === "u" ? "Unstim" : "Stim"),
+      field: "biosample",
+      headerName: "Sample",
     },
     {
-      field: "lineage",
-      headerName: "Lineage",
-      valueGetter: (_, row) => getCellCategoryDisplayname(row.lineage),
+      field: "tissue",
+      headerName: "Tissue",
     },
     {
-      field: "link",
+      field: "link" as any, //Workaround for typing issue -- find better solution
       headerName: "Experiment",
       sortable: false,
       disableColumnMenu: true,
+      valueGetter: (_, row) => row.accession,
       renderCell: (params) => {
         return (
-          <IconButton href={params.value} target="_blank" size="small">
+          <IconButton href={`https://www.encodeproject.org/experiments/${params.value}/`} target="_blank" size="small">
             <OpenInNew fontSize="small" />
           </IconButton>
-        );
-      },
-    },
-    {
-      field: "study",
-      headerName: "Study",
-      renderCell: (params) => {
-        return (
-          <Link href={getStudyLink(params.value)} target="_blank">
-            {params.value}
-          </Link>
         );
       },
     },
@@ -89,7 +77,7 @@ const GeneExpressionTable = ({
 
   const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
     const newIds = Array.from(ids.ids);
-    const selectedRows = newIds.map((id) => data.find((row) => row.name === id));
+    const selectedRows = newIds.map((id) => data.find((row) => row.accession === id));
     onSelectionChange(selectedRows);
   };
 
@@ -101,7 +89,7 @@ const GeneExpressionTable = ({
     }
 
     for (let i = 0; i < arr1.length; i++) {
-      if (arr1[i].name !== arr2[i].name) {
+      if (arr1[i].accession !== arr2[i].accession) {
         return false;
       }
     }
@@ -130,13 +118,13 @@ const GeneExpressionTable = ({
       pageSizeOptions={[10, 25, 50]}
       initialState={{
         sorting: {
-          sortModel: [{ field: "value", sort: "desc" }],
+          sortModel: [{ field: "tpm", sort: "desc" }],
         },
       }}
       checkboxSelection
-      getRowId={(row) => row.name} //needed to match up data with the ids returned by onRowSelectionModelChange
+      getRowId={(row) => row.accession} //needed to match up data with the ids returned by onRowSelectionModelChange
       onRowSelectionModelChange={handleRowSelectionModelChange}
-      rowSelectionModel= {{type: 'include', ids: new Set(selected.map((x) => x.name))}}
+      rowSelectionModel= {{type: 'include', ids: new Set(selected.map((x) => x.accession))}}
       keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
       onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
     />
