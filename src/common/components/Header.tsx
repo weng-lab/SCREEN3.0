@@ -228,7 +228,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
             </Stack>
           </Stack>
           {isHomePage ? (
-            <IconButton sx={{ color: "white" }} onClick={handleFocusSearch}>
+            <IconButton sx={{ color: "white", display: {xs: "none", md: "flex"}}} onClick={handleFocusSearch}>
               <Search />
             </IconButton>
           ) : (

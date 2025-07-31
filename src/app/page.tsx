@@ -1,6 +1,6 @@
 //Home Page
 "use client";
-import { Box, Button, Grow, Grid2, IconButton, Link, Stack, Typography } from "@mui/material";
+import { Box, Button, Grow, Grid2, IconButton, Link, Stack, Typography, Collapse } from "@mui/material";
 import React, { useState } from "react";
 import { theme } from "./theme";
 import { alpha } from '@mui/material/styles';
@@ -51,7 +51,8 @@ export default function Home() {
     <div>
       <Box
         width="100%"
-        height={multipleRegionSearchVisible ? "85vh" : "70vh"}
+        height={"auto"}
+        paddingY={20}
         sx={{
           background: `
             linear-gradient(${alpha(theme.palette.secondary.main, 0.9)}, ${alpha(theme.palette.secondary.main, 0.75)}),
@@ -112,9 +113,9 @@ export default function Home() {
             </span>
           </Typography>
         </Box>
-        {multipleRegionSearchVisible && (
-          <MultipleRegionSearch assembly={assembly} multipleRegionSearchVisible={multipleRegionSearchVisible} toggleMultipleRegionSearchVisible={toggleMultipleRegionSearchVisible} />
-        )}
+        <Collapse in={multipleRegionSearchVisible} sx={{width: "100%"}} timeout={500}>
+          <MultipleRegionSearch assembly={assembly} toggleMultipleRegionSearchVisible={toggleMultipleRegionSearchVisible} />
+        </Collapse>
       </Box>
       <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
         <Typography
