@@ -160,9 +160,9 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
                                     sx={{
                                         border: isDragActive ? "2px dashed blue" : "none",
                                         borderRadius: "10px",
-                                        minWidth: "250px",
                                         color: isDragActive ? "text.secondary" : "text.primary",
-                                        backgroundColor: "white"
+                                        backgroundColor: "white",
+                                        height: "192.5px", //exact height of text box with buttons so no height changes
                                     }}
                                 >
                                     <div {...getRootProps()} style={{ padding: "1rem" }}>
@@ -207,7 +207,7 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
                                     name="textUploadFile"
                                     multiline
                                     fullWidth
-                                    rows={4}
+                                    rows={5}
                                     placeholder="Copy and paste your data from Excel here"
                                     onKeyDown={handleKeyDown}
                                     value={textValue}
