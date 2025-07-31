@@ -11,7 +11,7 @@ export default function Footer() {
     },
     {
       title: "Explore/Tools",
-      links: ["Search cCREs", "Gene Expression", "GWAS", "ARGO"],
+      links: ["PsychScreen", "igSCREEN", "Factorbook", "GWAS", "ARGO",],
     },
     {
       title: "Data",
