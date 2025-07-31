@@ -65,6 +65,7 @@ export default function Home() {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
+          backgroundAttachment: 'fixed'
         }}
       >
         <Stack direction={"row"} alignItems={"center"} spacing={4}>
