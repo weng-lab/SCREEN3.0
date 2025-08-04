@@ -1,5 +1,5 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
-import { IconButton } from "@mui/material";
+import {  Link, Tooltip } from "@mui/material";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
@@ -7,8 +7,7 @@ import {
   GRID_CHECKBOX_SELECTION_COL_DEF,
   GridColDef
 } from "@mui/x-data-grid-pro";
-import { OpenInNew } from "@mui/icons-material";
-import { Dispatch, SetStateAction, useMemo } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
 import { Table } from  "@weng-lab/ui-components";
 
 export type GeneExpressionTableProps = GeneExpressionProps &
@@ -184,6 +183,22 @@ const GeneExpressionTable = ({
     {
       field: "accession",
       headerName: "Accession",
+      sortable: viewBy !== "byTissueTPM",
+      renderCell: (params) => {
+
+        return (
+            <Tooltip title="Open accession in ENCODE">
+              <Link
+                href={`https://www.encodeproject.org/experiments/${params.value}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "underline", color: "#1976d2" }}
+              >
+                {params.value}
+              </Link>
+            </Tooltip>
+        );
+      },
     },
     {
       field: "tpm" as any, //Workaround for typing issue -- find better solution
@@ -192,28 +207,17 @@ const GeneExpressionTable = ({
       valueGetter: (_, row) => {
         return (row.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm).toFixed(2) ?? 0;
       },
+      sortable: viewBy !== "byTissueTPM",
     },
     {
       field: "biosample",
       headerName: "Sample",
+      sortable: viewBy !== "byTissueTPM",
     },
     {
       field: "tissue",
       headerName: "Tissue",
-    },
-    {
-      field: "link" as any, //Workaround for typing issue -- find better solution
-      headerName: "Experiment",
-      sortable: false,
-      disableColumnMenu: true,
-      valueGetter: (_, row) => row.accession.split(" ")[0], //get rid of rep. # in link
-      renderCell: (params) => {
-        return (
-          <IconButton href={`https://www.encodeproject.org/experiments/${params.value}/`} target="_blank" size="small">
-            <OpenInNew fontSize="small" />
-          </IconButton>
-        );
-      },
+      sortable: viewBy !== "byTissueTPM",
     },
   ];
 
@@ -250,6 +254,13 @@ const GeneExpressionTable = ({
       console.log("Synced");
     }
   };
+
+  useEffect(() => {
+    const isCustomSorted = viewBy === "byTissueTPM";
+    if (isCustomSorted && apiRef?.current) {
+      apiRef.current.setSortModel([]); // completely clears internal sort
+    }
+  }, [viewBy, apiRef]);
 
   return (
     <Table
