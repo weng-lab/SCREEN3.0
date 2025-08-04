@@ -23,7 +23,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
     cellType: selectedBiosample ? selectedBiosample.name : undefined,
   });
 
-  console.log("selectedBiosample",selectedBiosample)
+  
   const showAtac = selectedBiosample ? (selectedBiosample && selectedBiosample.atac ? true : false) : true;
   const showCTCF = selectedBiosample ? (selectedBiosample && selectedBiosample.ctcf ? true : false) : true;
   const showDNase = selectedBiosample ? (selectedBiosample && selectedBiosample.dnase ? true : false) : true;
@@ -32,8 +32,6 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
 
   const handleBiosampleSelected = (biosample: RegistryBiosample | null) => {
     setSelectedBiosample(biosample);
-    // Do anything with biosample in this parent
-    console.log("Received in parent:", biosample);
   };
   const columns: GridColDef<(typeof dataCcres)[number]>[] = [
     {
@@ -135,7 +133,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
           <p>H3K27ac</p>
         </strong>
       ),
-      valueGetter: (_, row) => row.enhancer_zscore.toFixed(2),
+      valueGetter: (_, row) => selectedBiosample && selectedBiosample.h3k27ac ? row.ctspecific.h3k27ac_zscore.toFixed(2) :  row.enhancer_zscore.toFixed(2),
     }]: []),
    ...(showH3k4me3 ?  [{
       field: selectedBiosample && selectedBiosample.h3k4me3 ? "ctspecific.h3k4me3_zscore" :  "promoter_zscore",

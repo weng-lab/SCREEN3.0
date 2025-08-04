@@ -56,7 +56,7 @@ export type UseCcreDataReturn<T extends UseCcreDataParams> =
   : { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] | undefined; loading: boolean; error: ApolloError };
 
 export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly, nearbygeneslimit, cellType}: T): UseCcreDataReturn<T> => {
-  console.log("cellType",cellType)
+  
   const { data, loading, error } = useQuery(CCRE_QUERY, {
     variables: { 
       coordinates: coordinates ? Array.isArray(coordinates) ? coordinates: [coordinates]: coordinates,
