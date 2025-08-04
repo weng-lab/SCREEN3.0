@@ -10,7 +10,7 @@ import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Distribution, ViolinPoint } from "@weng-lab/visualization";
 import { Assembly } from "types/globalTypes";
-import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
@@ -31,6 +31,7 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
   const [replicates, setReplicates] = useState<"mean" | "all">("mean")
   const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM")
+  const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">("total RNA-seq")
 
   const handleReplicatesChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -56,6 +57,15 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   ) => {
     if ((newView !== null) && ((newView === "byTissueMaxTPM") || (newView === "byExperimentTPM") || (newView === "byTissueTPM"))) {
       setViewBy(newView)
+    }
+  };
+
+  const handleRNATypeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newRNA: string | null,
+  ) => {
+    if ((newRNA !== null) && ((newRNA === "all") || (newRNA === "polyA plus RNA-seq") || (newRNA === "total RNA-seq"))) {
+      setRNAType(newRNA)
     }
   };
 
@@ -91,6 +101,30 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   return (
     <>
       <Stack direction={"row"} gap={2} flexWrap={"wrap"}>
+        <FormControl>
+          <FormLabel>RNA-seq Type</FormLabel>
+          <ToggleButtonGroup
+            color="primary"
+            value={RNAtype}
+            exclusive
+            onChange={handleRNATypeChange}
+            aria-label="RNA-seq Type"
+            size="small"
+          >
+            {/* Human only has total RNA-seq, so disable other options when in human */}
+            <ToggleButton sx={{ textTransform: "none" }} value="total RNA-seq">Total</ToggleButton>
+            <Tooltip title={assembly === "GRCh38" && "Only available in mm10"}>
+              <div> {/** div needed to show tooltip when button disabled */}
+                <ToggleButton disabled={assembly === "GRCh38"} sx={{ textTransform: "none" }} value="polyA plus RNA-seq">PolyA+</ToggleButton>
+              </div>
+            </Tooltip>
+            <Tooltip title={assembly === "GRCh38" && "Only available in mm10"}>
+              <div>
+                <ToggleButton disabled={assembly === "GRCh38"} sx={{ textTransform: "none" }} value="all">All</ToggleButton>
+              </div>
+            </Tooltip>
+          </ToggleButtonGroup>
+        </FormControl>
         <FormControl>
           <FormLabel>Scale</FormLabel>
           <ToggleButtonGroup
@@ -147,6 +181,7 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
           scale={scale}
           replicates={replicates}
           viewBy={viewBy}
+          RNAtype={RNAtype}
         />
       }
       plots={[

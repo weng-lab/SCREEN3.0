@@ -18,6 +18,7 @@ export type GeneExpressionTableProps = GeneExpressionProps &
     scale: "linearTPM" | "logTPM";
     replicates: "mean" | "all";
     viewBy: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM";
+    RNAtype: "all" | "polyA plus RNA-seq" | "total RNA-seq";
   };
 
 const GeneExpressionTable = ({
@@ -29,11 +30,13 @@ const GeneExpressionTable = ({
   sortedFilteredData,
   scale,
   replicates,
-  viewBy
+  viewBy,
+  RNAtype
 }: GeneExpressionTableProps) => {
   const { data, loading, error } = geneExpressionData;
 
-  // const repLabel = file.biorep != null ? entry.accession === "ENCSR954PZB" ? ` rep. ${i + 1}` : ` rep. ${file.biorep}` : "";
+  //TODO: handle rnatype change for mouse
+
   // based on control buttons in parent, transform this data to match the expected format
   const transformedData: PointMetadata[] = useMemo(() => {
     if (!data?.length) return [];
@@ -50,6 +53,7 @@ const GeneExpressionTable = ({
             const scaledTPM =
               scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
 
+            //This specific accession has two boreps of "1" for some reson, ask Nishi
             const repLabel = file.biorep != null ? entry.accession === "ENCSR954PZB" ? ` rep. ${i + 1}` : ` rep. ${file.biorep}` : "";
             const modifiedAccession = `${entry.accession}${repLabel}`;
 
@@ -159,16 +163,16 @@ const GeneExpressionTable = ({
         break;
       }
     }
-
+    
     return result;
-  }, [data, scale, replicates, viewBy]);
+  }, [data, viewBy, replicates, scale]);
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
-  const StopPropagationWrapper = (params) => (
-    <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
-      <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
-    </div>
-  );
+  // const StopPropagationWrapper = (params) => (
+  //   <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
+  //     <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
+  //   </div>
+  // );
 
   const columns: GridColDef<PointMetadata>[] = [
     // {
@@ -226,6 +230,11 @@ const GeneExpressionTable = ({
       return false;
     }
 
+    const isEqual = JSON.stringify(arr1[0]) === JSON.stringify(arr2[0]);
+    if (!isEqual) {
+      return false;
+    }
+
     for (let i = 0; i < arr1.length; i++) {
       if (arr1[i].accession !== arr2[i].accession) {
         return false;
@@ -238,6 +247,7 @@ const GeneExpressionTable = ({
     const rows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as PointMetadata[];
     if (!arraysAreEqual(sortedFilteredData, rows)) {
       setSortedFilteredData(rows);
+      console.log("Synced");
     }
   };
 
