@@ -10,6 +10,7 @@ import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Distribution, ViolinPoint } from "@weng-lab/visualization";
 import { Assembly } from "types/globalTypes";
+import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
@@ -27,6 +28,36 @@ export type GeneExpressionProps = {
 const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
+  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
+  const [replicates, setReplicates] = useState<"mean" | "all">("mean")
+  const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM")
+
+  const handleReplicatesChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newReplicates: string | null,
+  ) => {
+    if ((newReplicates !== null) && ((newReplicates === "mean") || (newReplicates === "all"))) {
+      setReplicates(newReplicates)
+    }
+  };
+
+  const handleScaleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newScale: string | null,
+  ) => {
+    if ((newScale !== null) && ((newScale === "linearTPM") || (newScale === "logTPM"))) {
+      setScale(newScale)
+    }
+  };
+
+  const handleViewChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newView: string | null,
+  ) => {
+    if ((newView !== null) && ((newView === "byTissueMaxTPM") || (newView === "byExperimentTPM") || (newView === "byTissueTPM"))) {
+      setViewBy(newView)
+    }
+  };
 
   const geneExpressionData = useGeneExpression({ id: geneData?.data.id, assembly: assembly });
 
@@ -58,6 +89,52 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   };
 
   return (
+    <>
+      <Stack direction={"row"} gap={2} flexWrap={"wrap"}>
+        <FormControl>
+          <FormLabel>Scale</FormLabel>
+          <ToggleButtonGroup
+            color="primary"
+            value={scale}
+            exclusive
+            onChange={handleScaleChange}
+            aria-label="Scale"
+            size="small"
+          >
+            <ToggleButton sx={{ textTransform: "none" }} value="linearTPM">Linear TPM</ToggleButton>
+            <ToggleButton sx={{ textTransform: "none" }} value="logTPM">Log<sub>10</sub>(TPM + 1)</ToggleButton>
+          </ToggleButtonGroup>
+        </FormControl>
+        <FormControl>
+          <FormLabel>View By</FormLabel>
+          <ToggleButtonGroup
+            color="primary"
+            value={viewBy}
+            exclusive
+            onChange={handleViewChange}
+            aria-label="View By"
+            size="small"
+          >
+            <ToggleButton sx={{ textTransform: "none" }} value="byExperimentTPM">Experiment</ToggleButton>
+            <ToggleButton sx={{ textTransform: "none" }} value="byTissueTPM">Tissue</ToggleButton>
+            <ToggleButton sx={{ textTransform: "none" }} value="byTissueMaxTPM">Tissue Max</ToggleButton>
+          </ToggleButtonGroup>
+        </FormControl>
+        <FormControl>
+          <FormLabel>Replicates</FormLabel>
+          <ToggleButtonGroup
+            color="primary"
+            value={replicates}
+            exclusive
+            onChange={handleReplicatesChange}
+            aria-label="Scale"
+            size="small"
+          >
+            <ToggleButton sx={{ textTransform: "none" }} value="mean">Average</ToggleButton>
+            <ToggleButton sx={{ textTransform: "none" }} value="all">Show Replicates</ToggleButton>
+          </ToggleButtonGroup>
+        </FormControl>
+      </Stack>
     <TwoPaneLayout
       TableComponent={
         <GeneExpressionTable
@@ -67,6 +144,9 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
           sortedFilteredData={sortedFilteredData}
           setSortedFilteredData={setSortedFilteredData}
           geneExpressionData={geneExpressionData}
+          scale={scale}
+          replicates={replicates}
+          viewBy={viewBy}
         />
       }
       plots={[
@@ -112,6 +192,7 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
         // },
       ]}
     />
+    </>
   );
 };
 
