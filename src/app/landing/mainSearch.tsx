@@ -93,7 +93,7 @@ const MainSearch: React.FC = () => {
                         }}
                     />
                     <FormHelperText sx={{ marginLeft: 0, color: "white" }}>
-                        Try &quot;<i>SOX4</i>&quot;, &quot;rs9466027&quot;, or &quot;chr11:12345678-12345679&quot;
+                        Try &quot;<i>SOX4</i>&quot;, &quot;rs9466027&quot;, or &quot;chr12:53380176-53416446&quot;
                     </FormHelperText>
                 </FormControl>
             </Box>

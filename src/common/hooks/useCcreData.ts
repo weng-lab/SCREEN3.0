@@ -7,6 +7,7 @@ const CCRE_QUERY = gql(`
   query cCRESCREENSearchQuery(
     $accessions: [String!]
     $assembly: String!
+    $cellType: String
     $coordinates: [GenomicRangeInput]
     $nearbygeneslimit: Int
   ) {
@@ -14,6 +15,7 @@ const CCRE_QUERY = gql(`
       assembly: $assembly
       accessions: $accessions
       coordinates: $coordinates
+      cellType: $cellType
       nearbygeneslimit: $nearbygeneslimit
     ) {
       chrom
@@ -32,28 +34,36 @@ const CCRE_QUERY = gql(`
         gene        
         distance
       }
+      ctspecific {
+        ct
+        dnase_zscore
+        h3k4me3_zscore
+        h3k27ac_zscore
+        ctcf_zscore
+        atac_zscore
+      }  
     }
   }
 `);
 
 type UseCcreDataParams = 
-  | { assembly: Assembly, accession?: string | string[]; coordinates?: never; entityType?: EntityType, nearbygeneslimit?: number }
-  | { assembly: Assembly, coordinates: GenomicRange | GenomicRange[]; accession?: never; entityType?: EntityType, nearbygeneslimit?: number }
+  | { assembly: Assembly, accession?: string | string[]; coordinates?: never; entityType?: EntityType, nearbygeneslimit?: number, cellType?: string }
+  | { assembly: Assembly, coordinates: GenomicRange | GenomicRange[]; accession?: never; entityType?: EntityType, nearbygeneslimit?: number, cellType?: string }
 
 export type UseCcreDataReturn<T extends UseCcreDataParams> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { accession: string[] })
   ? { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"] | undefined; loading: boolean; error: ApolloError }
   : { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] | undefined; loading: boolean; error: ApolloError };
 
-export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly, nearbygeneslimit}: T): UseCcreDataReturn<T> => {
-  
+export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly, nearbygeneslimit, cellType}: T): UseCcreDataReturn<T> => {
+  console.log("cellType",cellType)
   const { data, loading, error } = useQuery(CCRE_QUERY, {
     variables: { 
       coordinates: coordinates ? Array.isArray(coordinates) ? coordinates: [coordinates]: coordinates,
       accessions: accession ? Array.isArray(accession) ? accession: [accession] : undefined,
       assembly: assembly,
-      nearbygeneslimit: nearbygeneslimit || 3
-      
+      nearbygeneslimit: nearbygeneslimit || 3,
+      cellType: cellType
      },
     skip: ((entityType !== undefined) && entityType !== 'ccre') ||
     (

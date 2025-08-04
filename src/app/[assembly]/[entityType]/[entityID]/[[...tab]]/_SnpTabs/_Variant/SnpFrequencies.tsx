@@ -1,6 +1,9 @@
 import { Skeleton } from "@mui/material";
-import { DataTable, DataTableColumn } from "@weng-lab/ui-components";
+//import { DataTable, DataTableColumn } from "@weng-lab/ui-components";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
+import { GridColDef } from "@mui/x-data-grid-pro";
+import { Table } from  "@weng-lab/ui-components";
+//import { LinkComponent } from "common/components/LinkComponent";
 
 type Frequency = {
   population: string;
@@ -21,27 +24,32 @@ export default function SnpFrequencies({ snpid }: { snpid: string }) {
     AMR: "American",
     AFR: "African",
   };
-
-  const frequencyColumns: DataTableColumn<Frequency>[] = [
-    { header: "Population", value: (row) => (row.population ? populations[row.population] : "") },
-    { header: "Frequency", value: (row) => (row.frequency ? row.frequency.toFixed(2) : "") },
-  ];
+ 
+  const columns: GridColDef<(typeof frequencies)[number]>[] = [
+    
+    {
+      field: "row.population",      
+      renderHeader: () => <strong><p>Population</p></strong>,
+      valueGetter: (_, row) => (row.population ? populations[row.population] : ""),
+    },    
+    {
+      field: "row.frequency",
+      renderHeader: () => <strong><p>Frequency</p></strong>,
+      valueGetter: (_, row) => (row.frequency ? row.frequency.toFixed(2) : ""),
+    }]
 
   return (
     <>
       {loading ? (
         <Skeleton variant={"rounded"} width={"100%"} height={400} />
       ) : (
-        <DataTable
-          key={Math.random()}
-          columns={frequencyColumns}
-          rows={frequencies}
-          sortColumn={1}
-          itemsPerPage={5}
-          searchable
-          tableTitle={"Population Frequencies"}
-          downloadFileName="populationFrequencies.tsv"
-        />
+        <Table
+        showToolbar
+        rows={frequencies || []}
+        columns={columns}     
+        loading={loading}    
+        label={`Population Frequencies`}            
+      />       
       )}
     </>
   );

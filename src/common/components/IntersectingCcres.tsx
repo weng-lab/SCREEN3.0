@@ -1,90 +1,198 @@
-'use client'
-import { Typography } from "@mui/material";
+"use client";
+import { Typography, Box, Button, Stack, IconButton } from "@mui/material";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { useCcreData } from "common/hooks/useCcreData";
-import { Table } from  "@weng-lab/ui-components";
+import { Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-const IntersectingCcres = ({ region, assembly }: { region: GenomicRange, assembly: string }) => {
-  
-  const { data: dataCcres, loading: loadingCcres, error: errorCcres } = useCcreData({coordinates: region, assembly: assembly as Assembly, nearbygeneslimit: 1});
+import { useState } from "react";
+import ConfigureGBModal from "./ConfigureGBModal";
+import { RegistryBiosample } from "app/_biosampleTables/types";
+import { Close } from "@mui/icons-material";
+const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembly: string }) => {
+  const [open, setOpen] = useState(false);
+  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample | null>(null);
+  const {
+    data: dataCcres,
+    loading: loadingCcres,
+    error: errorCcres,
+  } = useCcreData({
+    coordinates: region,
+    assembly: assembly as Assembly,
+    nearbygeneslimit: 1,
+    cellType: selectedBiosample ? selectedBiosample.name : undefined,
+  });
 
+  console.log("selectedBiosample",selectedBiosample)
+  const showAtac = selectedBiosample ? (selectedBiosample && selectedBiosample.atac ? true : false) : true;
+  const showCTCF = selectedBiosample ? (selectedBiosample && selectedBiosample.ctcf ? true : false) : true;
+  const showDNase = selectedBiosample ? (selectedBiosample && selectedBiosample.dnase ? true : false) : true;
+  const showH3k27ac = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k27ac ? true : false) : true;
+  const showH3k4me3 = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k4me3 ? true : false) : true;
+
+  const handleBiosampleSelected = (biosample: RegistryBiosample | null) => {
+    setSelectedBiosample(biosample);
+    // Do anything with biosample in this parent
+    console.log("Received in parent:", biosample);
+  };
   const columns: GridColDef<(typeof dataCcres)[number]>[] = [
     {
       field: "info.accession",
-      renderHeader: () => <strong><p>Accession</p></strong>,
+      renderHeader: () => (
+        <strong>
+          <p>Accession</p>
+        </strong>
+      ),
       valueGetter: (_, row) => row.info.accession,
       renderCell: (params) => (
-                <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
-                  <i>{params.value}</i>
-                </LinkComponent>
-              ),          
+        <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
+          <i>{params.value}</i>
+        </LinkComponent>
+      ),
     },
     {
-      field: "pct",      
-      renderHeader: () => <strong><p>Class</p></strong>,
-      valueGetter: (_, row) => row.pct === "PLS" ? "Promoter" : row.pct === "pELS" ? "Proximal Enhancer" : row.pct === "dELS" ? "Distal Enhancer" : row.pct,        
-    },    
+      field: "pct",
+      renderHeader: () => (
+        <strong>
+          <p>Class</p>
+        </strong>
+      ),
+      valueGetter: (_, row) =>
+        row.pct === "PLS"
+          ? "Promoter"
+          : row.pct === "pELS"
+          ? "Proximal Enhancer"
+          : row.pct === "dELS"
+          ? "Distal Enhancer"
+          : row.pct,
+    },
     {
       field: "chrom",
-      renderHeader: () => <strong><p>Chromosome</p></strong>,
+      renderHeader: () => (
+        <strong>
+          <p>Chromosome</p>
+        </strong>
+      ),
     },
     {
       field: "start",
-      renderHeader: () => <strong><p>Start</p></strong>,
+      renderHeader: () => (
+        <strong>
+          <p>Start</p>
+        </strong>
+      ),
       valueGetter: (_, row) => row.start.toLocaleString(),
     },
     {
       field: "end",
-      renderHeader: () => <strong><p>End</p></strong>,
+      renderHeader: () => (
+        <strong>
+          <p>End</p>
+        </strong>
+      ),
       valueGetter: (_, row) => (row.start + row.len).toLocaleString(),
-      sortComparator: (v1, v2) => v1 - v2, 
+      sortComparator: (v1, v2) => v1 - v2,
     },
-    {
-      field: "dnase_zscore",            
-      renderHeader: () => <strong><p>DNase</p></strong>,
-      valueGetter: (_, row) => row.dnase_zscore.toFixed(2),
-    },
-    {
-      field: "atac_zscore",      
-      renderHeader: () => <strong><p>ATAC</p></strong>,
-      valueGetter: (_, row) => row.atac_zscore.toFixed(2),
-    },
-    {
-      field: "ctcf_zscore",      
-      renderHeader: () => <strong><p>CTCF</p></strong>,
-      valueGetter: (_, row) => row.ctcf_zscore.toFixed(2),
-    },
-    {
-      field: "enhancer_zscore",      
-      renderHeader: () => <strong><p>H3K27ac</p></strong>,
+    ...(showDNase ?  [{
+      field: selectedBiosample && selectedBiosample.dnase ? "ctspecific.dnase_zscore" : "dnase_zscore",
+      renderHeader: () => (
+        <strong>
+          <p>DNase</p>
+        </strong>
+      ),
+      valueGetter: (_, row) => selectedBiosample && selectedBiosample.dnase ? row.ctspecific.dnase_zscore.toFixed(2) :  row.dnase_zscore.toFixed(2),
+    }]: []),
+    ...(showAtac
+      ? [
+          {
+            field: selectedBiosample && selectedBiosample.atac  ? "ctspecific.atac_zscore" : "atac_zscore" ,
+            renderHeader: () => (
+              <strong>
+                <p>ATAC</p>
+              </strong>
+            ),
+            valueGetter: (_, row) => selectedBiosample && selectedBiosample.atac  ? row.ctspecific.atac_zscore.toFixed(2) :  row.atac_zscore.toFixed(2),
+          },
+        ]
+      : []),
+    ...(showCTCF
+      ? [
+          {
+            field: selectedBiosample && selectedBiosample.ctcf  ? "ctspecific.ctcf_zscore" : "ctcf_zscore",
+            renderHeader: () => (
+              <strong>
+                <p>CTCF</p>
+              </strong>
+            ),
+            valueGetter: (_, row) =>  selectedBiosample && selectedBiosample.ctcf ? row.ctspecific.ctcf_zscore.toFixed(2) : row.ctcf_zscore.toFixed(2),
+          },
+        ]
+      : []),
+   ...(showH3k27ac ? [{
+      field:  selectedBiosample && selectedBiosample.h3k27ac ? "ctspecific.h3k27ac_zscore": "enhancer_zscore" ,
+      renderHeader: () => (
+        <strong>
+          <p>H3K27ac</p>
+        </strong>
+      ),
       valueGetter: (_, row) => row.enhancer_zscore.toFixed(2),
-    },
-    {
-      field: "promoter_zscore",      
-      renderHeader: () => <strong><p>H3K4me3</p></strong>,
-      valueGetter: (_, row) => row.promoter_zscore.toFixed(2),
-    },
+    }]: []),
+   ...(showH3k4me3 ?  [{
+      field: selectedBiosample && selectedBiosample.h3k4me3 ? "ctspecific.h3k4me3_zscore" :  "promoter_zscore",
+      renderHeader: () => (
+        <strong>
+          <p>H3K4me3</p>
+        </strong>
+      ),
+      valueGetter: (_, row) => selectedBiosample && selectedBiosample.h3k4me3 ? row.ctspecific.h3k4me3_zscore.toFixed(2) : row.promoter_zscore.toFixed(2),
+    }]: []),
     {
       field: "nearestgene",
-      renderHeader: () => <strong><p>Nearest&nbsp;Gene</p></strong>,
-      valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance} bp`,      
-      
-    }
-   
+      renderHeader: () => (
+        <strong>
+          <p>Nearest&nbsp;Gene</p>
+        </strong>
+      ),
+      valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
+    },
   ];
 
   return errorCcres ? (
     <Typography>Error Fetching Ccres</Typography>
   ) : (
-    <Table
-      showToolbar
-      rows={dataCcres || []}
-      columns={columns}
-      loading={loadingCcres}     
-      label={`Intersecting cCREs`}      
-      emptyTableFallback={"No intersecting cCREs found in this region"}
-    />
+    <>
+      <Box
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          event.stopPropagation();
+        }}
+      >
+        <Button variant="outlined" onClick={() => setOpen(true)}>
+          Select Biosample
+        </Button>
+        <ConfigureGBModal
+          assembly={assembly as Assembly}
+          open={open}
+          setOpen={setOpen}
+          onBiosampleSelect={handleBiosampleSelected}
+        />
+      </Box>
+      {selectedBiosample && <Stack mt={1} direction="row" alignItems={"center"}>
+          <Typography>{`Selected Biosample: ${selectedBiosample ? selectedBiosample.displayname : "none"}`}</Typography>
+          {selectedBiosample &&
+            <IconButton onClick={() => handleBiosampleSelected(null)}>
+              <Close />
+            </IconButton>
+          }
+        </Stack>}
+      <Table
+        showToolbar
+        rows={dataCcres || []}
+        columns={columns}
+        loading={loadingCcres}
+        label={`Intersecting cCREs`}
+        emptyTableFallback={"No intersecting cCREs found in this region"}
+      />
+    </>
   );
 };
 
