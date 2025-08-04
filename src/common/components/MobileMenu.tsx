@@ -1,13 +1,13 @@
 "use client";
 import { Search } from "@mui/icons-material";
-import { Box, Divider, Drawer, IconButton, List, ListItem, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Divider, Drawer, FormControlLabel, IconButton, List, ListItem, Radio, RadioGroup, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import MuiLink from "@mui/material/Link";
 import AutoComplete from "./autocomplete";
 import Link from "next/link";
 import { PageInfo } from "./Header";
 import CloseIcon from "@mui/icons-material/Close";
 import { useMenuControl } from "common/MenuContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export type MobileMenuProps = {
   pageLinks: PageInfo[];
@@ -15,6 +15,7 @@ export type MobileMenuProps = {
 
 export default function MobileMenu({ pageLinks }: MobileMenuProps) {
   const { isMenuOpen, setMenuCanBeOpen, closeMenu, setIsMenuMounted } = useMenuControl();
+  const [assembly, setAssembly] = useState<"GRCh38" | "mm10">('GRCh38');
 
   const theme = useTheme();
   // This breakpoint needs to match the breakpoints used below
@@ -52,6 +53,7 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
               id="mobile-search-component"
               style={{ width: "100%" }}
               closeDrawer={handleCloseDrawer}
+              assembly={assembly}
               slots={{
                 button: (
                   <IconButton sx={{ color: "black" }}>
@@ -63,7 +65,7 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
                 box: { gap: 1 },
                 input: {
                   size: "small",
-                  label: "Enter a gene, iCRE, variant or locus",
+                  label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
                   sx: {
                     "& .MuiOutlinedInput-root": {
                       backgroundColor: "#ffffff",
@@ -76,7 +78,34 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
               }}
             />
           </Stack>
-          <br />
+          <RadioGroup
+            value={assembly}
+            onChange={(e) => setAssembly(e.target.value as "GRCh38" | "mm10")}
+            row
+            sx={{
+              justifyContent: "center",
+              alignItems: "center",
+              gap: { xs: 2, sm: 4, md: 6 },
+              flexWrap: "wrap",
+              my: 1
+            }}
+          >
+            {["GRCh38", "mm10"].map((value) => (
+              <FormControlLabel
+                key={value}
+                value={value}
+                control={
+                  <Radio/>
+                }
+                label={
+                  <Typography >
+                    {value === "GRCh38" ? "Human" : "Mouse"}
+                  </Typography>
+                }
+                sx={{ marginRight: 0 }}
+              />
+            ))}
+          </RadioGroup>
           <Divider />
           <List>
             {pageLinks
