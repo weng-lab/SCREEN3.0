@@ -23,7 +23,7 @@ const GeneExpressionBarPlot = ({geneData, selected, sortedFilteredData, ...rest}
     return (
       sortedFilteredData.map((x, i) => {
         const anySelected = selected.length > 0
-        const isSelected = selected.some(y => y.accession === x.accession)
+        const isSelected = selected.some(y => y.gene_quantification_files[0].accession === x.gene_quantification_files[0].accession)
         return (
           {
             category: x.tissue,

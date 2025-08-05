@@ -46,14 +46,13 @@ const GeneExpressionTable = ({
       if (replicates === "all") {
         return files.flatMap((file, i) => {
           const quants = file.quantifications?.filter(Boolean) ?? [];
+          const quant = quants[0]
 
-          return quants.map((quant) => {
             const rawTPM = quant.tpm;
             const scaledTPM =
               scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
 
-            //This specific accession has two boreps of "1" for some reson, ask Nishi
-            const repLabel = file.biorep != null ? entry.accession === "ENCSR954PZB" ? ` rep. ${i + 1}` : ` rep. ${file.biorep}` : "";
+            const repLabel = file.biorep != null ? ` rep. ${file.biorep}` : "";
             const modifiedAccession = `${entry.accession}${repLabel}`;
 
             return {
@@ -71,7 +70,6 @@ const GeneExpressionTable = ({
                 },
               ],
             };
-          });
         });
       } else {
         // replicates === "mean"
@@ -91,7 +89,7 @@ const GeneExpressionTable = ({
             ...entry,
             gene_quantification_files: [
               {
-                accession: "averaged",
+                accession: files[0]?.accession,
                 biorep: null,
                 quantifications: [
                   {
@@ -162,6 +160,9 @@ const GeneExpressionTable = ({
         break;
       }
     }
+
+    console.log(result[1])
+    console.log(result[2])
     
     return result;
   }, [data, viewBy, replicates, scale]);
@@ -185,11 +186,10 @@ const GeneExpressionTable = ({
       headerName: "Accession",
       sortable: viewBy !== "byTissueTPM",
       renderCell: (params) => {
-
         return (
             <Tooltip title="Open accession in ENCODE">
               <Link
-                href={`https://www.encodeproject.org/experiments/${params.value}/`}
+                href={`https://www.encodeproject.org/experiments/${params.value.split(" ")[0]}/`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ textDecoration: "underline", color: "#1976d2" }}
@@ -223,7 +223,7 @@ const GeneExpressionTable = ({
 
   const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
     const newIds = Array.from(ids.ids);
-    const selectedRows = newIds.map((id) => data.find((row) => row.accession === id));
+    const selectedRows = newIds.map((id) => transformedData.find((row) => row.gene_quantification_files[0].accession === id));
     onSelectionChange(selectedRows);
   };
 
@@ -251,7 +251,6 @@ const GeneExpressionTable = ({
     const rows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as PointMetadata[];
     if (!arraysAreEqual(sortedFilteredData, rows)) {
       setSortedFilteredData(rows);
-      console.log("Synced");
     }
   };
 
@@ -277,9 +276,9 @@ const GeneExpressionTable = ({
         },
       }}
       checkboxSelection
-      getRowId={(row) => row.accession} //needed to match up data with the ids returned by onRowSelectionModelChange
+      getRowId={(row) => row.gene_quantification_files[0].accession} //needed to match up data with the ids returned by onRowSelectionModelChange
       onRowSelectionModelChange={handleRowSelectionModelChange}
-      rowSelectionModel={{ type: 'include', ids: new Set(selected.map((x) => x.accession)) }}
+      rowSelectionModel={{ type: 'include', ids: new Set(selected.map((x) => x.gene_quantification_files[0].accession)) }}
       keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
       onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
       divHeight={{height: "100%", minHeight: "580px", maxHeight: "600px"}}

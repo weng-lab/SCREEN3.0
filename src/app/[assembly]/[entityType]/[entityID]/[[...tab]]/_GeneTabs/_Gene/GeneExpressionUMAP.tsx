@@ -5,6 +5,8 @@ import { useMemo, useRef, useState } from "react";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
 import { scaleLinear } from "d3-scale";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
+import { tissueColors } from "common/lib/colors"
+import { theme } from "app/theme";
 
 export type GeneExpressionUmapProps<
   T,
@@ -70,11 +72,11 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   const scatterData: Point<PointMetadata>[] = useMemo(() => {
     if (!data) return [];
 
-    const isHighlighted = (x: PointMetadata) => selected.some((y) => y.name === x.name);
+    const isHighlighted = (x: PointMetadata) => selected.some((y) => y.accession === x.accession);
 
     return data
       .map((x) => {
-        const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.value)));
+        // const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.value)));
 
         return {
           x: x.umap_1,
@@ -82,16 +84,13 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           r: isHighlighted(x) ? 6 : 4,
           color:
             isHighlighted(x) || selected.length === 0
-              ? colorScheme === "expression"
-                ? gradientColor
-                : getCellCategoryColor(x.lineage)
+              ? tissueColors[x.tissue] ?? tissueColors.missing
               : "#CCCCCC",
-          shape: x.stimulation === "unstimulated" ? "circle" : ("triangle" as "circle" | "triangle"),
           metaData: x,
         };
       })
       .sort((a, b) => (isHighlighted(b.metaData) ? -1 : 0));
-  }, [data, colorScale, selected, colorScheme]);
+  }, [data, selected]);
 
   const legendEntries = useMemo(() => {
     if (!scatterData) return [];
@@ -99,7 +98,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
     if (colorScheme === "lineage") {
       // Count occurrences of each unique cellType
       const cellTypeCounts = scatterData.reduce((acc, point) => {
-        const cellType = point.metaData.lineage;
+        const cellType = point.metaData.tissue;
         acc.set(cellType, (acc.get(cellType) || 0) + 1);
         return acc;
       }, new Map<string, number>());
@@ -118,16 +117,16 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
     return (
       <>
         <Typography>
-          <b>Lineage:</b> {getCellCategoryDisplayname(point.metaData.lineage)}
+          <b>Accession:</b> {point.metaData.accession}
         </Typography>
         <Typography>
-          <b>Biosample:</b> {point.metaData.biosample}, {point.metaData.stimulation}
+          <b>Biosample:</b> {point.metaData.biosample}
         </Typography>
         <Typography>
-          <b>TPM:</b> {point.metaData.value.toFixed(1)}
+          <b>Tissue:</b> {point.metaData.tissue}
         </Typography>
         <Typography>
-          <b>Source:</b> {point.metaData.source}
+          <b>TPM:</b> {point.metaData.gene_quantification_files[0].quantifications[0].tpm.toFixed(2)}
         </Typography>
       </>
     );
@@ -154,7 +153,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
 
   return (
     <>
-      <ColorBySelect />
+      {/* <ColorBySelect /> */}
       <Box
         padding={1}
         //hacky height, have to subtract the pixel value of the Colorby select and the margin to line it up with the table
@@ -164,7 +163,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           borderRadius: 1,
           position: "relative",
           width: "100%",
-          height: "calc(100% - 72px)",
+          height: "100%",
         }}
         ref={graphContainerRef}
         mt={2}
@@ -176,12 +175,12 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         </Typography>
         <ScatterPlot
           {...rest}
-          controlsHighlight="#c83444"
+          controlsHighlight={theme.palette.primary.light}
           pointData={scatterData}
           selectable
           loading={loading}
           miniMap={map}
-          groupPointsAnchor="lineage"
+          groupPointsAnchor="tissue"
           tooltipBody={(point) => <TooltipBody {...point} />}
         />
         <Button

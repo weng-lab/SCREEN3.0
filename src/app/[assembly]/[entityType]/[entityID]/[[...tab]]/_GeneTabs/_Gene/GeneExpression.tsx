@@ -198,33 +198,33 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
             />
           ),
         },
-        // {
-        //   tabTitle: "UMAP",
-        //   icon: <ScatterPlot />,
-        //   plotComponent: (
-        //     <GeneExpressionUMAP
-        //       geneData={geneData}
-        //       selected={selected}
-        //       sortedFilteredData={sortedFilteredData}
-        //       geneExpressionData={geneExpressionData}
-        //       onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
-        //     />
-        //   ),
-        // },
-        // {
-        //   tabTitle: "Violin Plot",
-        //   icon: <CandlestickChart />,
-        //   plotComponent: (
-        //     <GeneExpressionViolinPlot
-        //       geneData={geneData}
-        //       selected={selected}
-        //       sortedFilteredData={sortedFilteredData}
-        //       geneExpressionData={geneExpressionData}
-        //       onViolinClicked={handleViolinClick}
-        //       onPointClicked={handleViolinPointClick}
-        //     />
-        //   ),
-        // },
+        {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: (
+            <GeneExpressionUMAP
+              geneData={geneData}
+              selected={selected}
+              sortedFilteredData={sortedFilteredData}
+              geneExpressionData={geneExpressionData}
+              onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
+            />
+          ),
+        },
+        {
+          tabTitle: "Violin Plot",
+          icon: <CandlestickChart />,
+          plotComponent: (
+            <GeneExpressionViolinPlot
+              geneData={geneData}
+              selected={selected}
+              sortedFilteredData={sortedFilteredData}
+              geneExpressionData={geneExpressionData}
+              onViolinClicked={handleViolinClick}
+              onPointClicked={handleViolinPointClick}
+            />
+          ),
+        },
       ]}
     />
     </>
