@@ -40,7 +40,9 @@ const GeneExpressionTable = ({
   const transformedData: PointMetadata[] = useMemo(() => {
     if (!data?.length) return [];
 
-    let result: PointMetadata[] = data.flatMap((entry) => {
+    const filteredData = data.filter(d => RNAtype === "all" || d.assay_term_name === RNAtype)
+
+    let result: PointMetadata[] = filteredData.flatMap((entry) => {
       const files = entry.gene_quantification_files?.filter(Boolean) ?? [];
 
       if (replicates === "all") {
@@ -160,12 +162,9 @@ const GeneExpressionTable = ({
         break;
       }
     }
-
-    console.log(result[1])
-    console.log(result[2])
     
     return result;
-  }, [data, viewBy, replicates, scale]);
+  }, [data, viewBy, RNAtype, replicates, scale]);
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
   // const StopPropagationWrapper = (params) => (
