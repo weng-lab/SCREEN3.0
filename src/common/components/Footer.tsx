@@ -1,27 +1,47 @@
 "use client";
 import { Typography, Box, Grid2, Link as MuiLink, Stack, Divider } from "@mui/material";
 import Image from "next/image";
+import { LinkComponent } from "./LinkComponent";
 
 export default function Footer() {
-  //TODO add links to the sections
   const sections = [
     {
       title: "About us",
-      links: ["SCREEN", "Weng Lab", "Moore Lab", "ENCODE Consortium", "UMass Chan Medical School"],
+      links: [
+        { name: "SCREEN", href: "/about" },
+        { name: "Weng Lab", href: "https://www.umassmed.edu/zlab/" },
+        { name: "Moore Lab", href: "https://sites.google.com/view/moore-lab/" },
+        { name: "ENCODE Consortium", href: "https://www.encodeproject.org/" },
+        { name: "UMass Chan Medical School", href: "https://www.umassmed.edu/" },
+      ],
     },
     {
       title: "Explore/Tools",
-      links: ["PsychScreen", "igSCREEN", "Factorbook", "GWAS", "ARGO",],
+      links: [
+        { name: "PsychScreen", href: "https://psychscreen.wenglab.org/psychscreen" },
+        { name: "igSCREEN", href: "https://igscreen.vercel.app/" },
+        { name: "Factorbook", href: "https://www.factorbook.org/" },
+        // { name: "GWAS", href: "/gwas" },
+        // { name: "ARGO", href: "/argo" },
+      ],
     },
     {
       title: "Data",
-      links: ["Downloads", "Version History"],
+      links: [
+        { name: "Downloads", href: "/downloads" },
+        { name: "Version History", href: "/version-history" },
+      ],
     },
     {
       title: "Help",
-      links: ["FAQs", "API Documentation", "Citations", "Contact Us/Feedback"],
+      links: [
+        { name: "API Documentation", href: "/about#api-documentation" },
+        { name: "Citations", href: "/about#citations" },
+        { name: "Contact Us/Feedback", href: "/about#contact-us" },
+      ],
     },
-  ]
+  ];
+
   return (
     <Box
       id="Footer"
@@ -53,9 +73,9 @@ export default function Footer() {
                 </Typography>
                 <Stack spacing={0.5}>
                   {section.links.map((link) => (
-                    <MuiLink href="#" key={link} underline="none" color="inherit">
-                      {link}
-                    </MuiLink>
+                    <LinkComponent href={link.href} key={link.name} underline="none" color="inherit" width={"fit-content"}>
+                      {link.name}
+                    </LinkComponent>
                   ))}
                 </Stack>
               </Grid2>
@@ -87,7 +107,7 @@ export default function Footer() {
               Weng Lab
             </MuiLink>
             ,{" "}
-            <MuiLink color="inherit" href="https://www.moore-lab.org/">
+            <MuiLink color="inherit" href="https://sites.google.com/view/moore-lab/">
               Moore Lab
             </MuiLink>{" "}
             {new Date().getFullYear()}.
@@ -99,7 +119,7 @@ export default function Footer() {
               Privacy & Policy
             </MuiLink>
             <MuiLink href="#" color="inherit" underline="hover">
-              Terms & Condition
+              Terms & Conditions
             </MuiLink>
           </Box>
         </Grid2>
