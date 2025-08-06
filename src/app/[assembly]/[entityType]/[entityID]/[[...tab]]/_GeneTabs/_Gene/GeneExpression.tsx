@@ -86,19 +86,20 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
             />
           ),
         },
-        {
-          tabTitle: "UMAP",
-          icon: <ScatterPlot />,
-          plotComponent: (
-            <GeneExpressionUMAP
-              geneData={geneData}
-              selected={selected}
-              sortedFilteredData={sortedFilteredData}
-              geneExpressionData={geneExpressionData}
-              onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
-            />
-          ),
-        },
+        // Add back once query returns umap coordiantes
+        // {
+        //   tabTitle: "UMAP",
+        //   icon: <ScatterPlot />,
+        //   plotComponent: (
+        //     <GeneExpressionUMAP
+        //       geneData={geneData}
+        //       selected={selected}
+        //       sortedFilteredData={sortedFilteredData}
+        //       geneExpressionData={geneExpressionData}
+        //       onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
+        //     />
+        //   ),
+        // },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
