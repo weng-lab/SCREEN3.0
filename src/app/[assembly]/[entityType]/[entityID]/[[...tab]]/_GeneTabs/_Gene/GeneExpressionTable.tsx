@@ -287,6 +287,11 @@ const GeneExpressionTable = ({
       sortable: viewBy !== "byTissueTPM",
     },
     {
+      field: "biosample_type",
+      headerName: "Biosample Type",
+      sortable: viewBy !== "byTissueTPM",
+    },
+    {
       field: "link",
       headerName: "Experiment",
       sortable: false,
