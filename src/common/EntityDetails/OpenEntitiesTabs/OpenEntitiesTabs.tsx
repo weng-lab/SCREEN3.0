@@ -233,12 +233,16 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   // ------- End "New Search" Button Helpers -------
 
-  return (
     /**
-     * @todo I think this defeats the purpose of using TabContext and TabPanel if we are dynamically switching the content of TabPanel
-     * https://mui.com/material-ui/react-tabs/#experimental-api
-     */
-    <TabContext value={0}>
+   * Index of current route's element within internal state
+   */
+  const tabIndex = useMemo(
+    () => openEntities.findIndex((el) => el.entityID === urlEntityID),
+    [openEntities, urlEntityID]
+  );
+
+  return (
+    <TabContext value={tabIndex}>
       {/* z index of scrollbar in DataGrid is 60 */}
       <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 61 }} id="open-elements-tabs">
         <Stack direction={"row"}>
@@ -289,7 +293,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
         </Stack>
       </Paper>
       {/* Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */}
-      <TabPanel value={0} sx={{ p: 0, flexGrow: 1, minHeight: 0 }} id="element-details-TabPanel">
+      <TabPanel value={tabIndex} sx={{ p: 0, flexGrow: 1, minHeight: 0 }} id="element-details-TabPanel">
         {children}
       </TabPanel>
     </TabContext>
