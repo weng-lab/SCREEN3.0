@@ -257,6 +257,20 @@ const GeneExpressionTable = ({
       valueGetter: (_, row) => {
         return capitalizeFirstLetter(row.biosample);
       },
+      //truncate
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: 250,
+          }}
+          title={params.value}
+        >
+          {params.value}
+        </div>
+      ),
     },
     {
       field: "tpm" as any, //Workaround for typing issue -- find better solution
