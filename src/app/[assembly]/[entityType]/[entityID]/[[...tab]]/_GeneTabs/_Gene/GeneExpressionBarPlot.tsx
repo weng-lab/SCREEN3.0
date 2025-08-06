@@ -1,20 +1,25 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression"
 import VerticalBarPlot, { BarData, BarPlotProps } from "common/components/VerticalBarPlot"
 import { useMemo } from "react"
-import { capitalizeFirstLetter, getCellCategoryColor, getCellCategoryDisplayname } from "common/utility"
+import { capitalizeFirstLetter } from "common/utility"
 import { Box } from "@mui/material"
 import { tissueColors } from "common/lib/colors"
 
-export type GeneExpressionBarPlotProps = 
-  GeneExpressionProps & 
+export type GeneExpressionBarPlotProps =
+  GeneExpressionProps &
   SharedGeneExpressionPlotProps &
   Partial<BarPlotProps<PointMetadata>>
 
-const GeneExpressionBarPlot = ({geneData, selected, sortedFilteredData, ...rest}: GeneExpressionBarPlotProps) => {
+const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest }: GeneExpressionBarPlotProps) => {
 
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
-    const name = capitalizeFirstLetter(biosample.replaceAll("_", " ")) 
-    return `${tpm.toFixed(2)}, ${name} (${accession}${biorep ? ', rep. ' + biorep : ''})`
+    const maxLength = 20;
+    let name = biosample.replaceAll("_", " ");
+    if (name.length > maxLength) {
+      name = name.slice(0, maxLength) + '...';
+    }
+    name = capitalizeFirstLetter(name);
+    return `${tpm.toFixed(2)}, ${name} (${accession}${biorep ? ', rep. ' + biorep : ''})`;
   }
 
   // Add functionality for replicates and log
@@ -38,8 +43,8 @@ const GeneExpressionBarPlot = ({geneData, selected, sortedFilteredData, ...rest}
     )
   }, [sortedFilteredData, selected])
 
-  return(
-    <Box width={"100%"} height={"100%"} overflow={"auto"} padding={1} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative"}}>
+  return (
+    <Box width={"100%"} height={"100%"} overflow={"auto"} padding={1} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative" }}>
       <VerticalBarPlot
         {...rest}
         data={plotData}

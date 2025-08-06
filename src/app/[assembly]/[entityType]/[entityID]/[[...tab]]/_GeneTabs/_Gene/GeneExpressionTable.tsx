@@ -13,6 +13,8 @@ import React from "react";
 import { Assembly } from "types/globalTypes";
 import TuneIcon from '@mui/icons-material/Tune';
 import AdvancedFiltersPopper from "./AdvancedFilters";
+import { OpenInNew } from "@mui/icons-material";
+import { capitalizeFirstLetter } from "common/utility"
 
 export type GeneExpressionTableProps = GeneExpressionProps &
   SharedGeneExpressionPlotProps & {
@@ -249,22 +251,11 @@ const GeneExpressionTable = ({
     //   renderHeader: StopPropagationWrapper,
     // },
     {
-      field: "accession",
-      headerName: "Accession",
+      field: "biosample",
+      headerName: "Sample",
       sortable: viewBy !== "byTissueTPM",
-      renderCell: (params) => {
-        return (
-          <Tooltip title="Open accession in ENCODE">
-            <Link
-              href={`https://www.encodeproject.org/experiments/${params.value.split(" ")[0]}/`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: "underline", color: "#1976d2" }}
-            >
-              {params.value}
-            </Link>
-          </Tooltip>
-        );
+      valueGetter: (_, row) => {
+        return capitalizeFirstLetter(row.biosample);
       },
     },
     {
@@ -277,14 +268,25 @@ const GeneExpressionTable = ({
       sortable: viewBy !== "byTissueTPM",
     },
     {
-      field: "biosample",
-      headerName: "Sample",
-      sortable: viewBy !== "byTissueTPM",
-    },
-    {
       field: "tissue",
       headerName: "Tissue",
       sortable: viewBy !== "byTissueTPM",
+    },
+    {
+      field: "link",
+      headerName: "Experiment",
+      sortable: false,
+      disableColumnMenu: true,
+      valueGetter: (_, row) => {
+        return (row.accession.split(" ")[0])
+      },
+      renderCell: (params) => {
+        return (
+          <IconButton href={`https://www.encodeproject.org/experiments/${params.value}/`} target="_blank" size="small">
+            <OpenInNew fontSize="small" />
+          </IconButton>
+        );
+      },
     },
   ];
 
