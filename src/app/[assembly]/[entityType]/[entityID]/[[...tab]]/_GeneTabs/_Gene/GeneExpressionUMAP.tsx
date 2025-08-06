@@ -42,10 +42,10 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   }
 
   //find the max logTPM for the domain fo the gradient
-  const maxValue = useMemo(() => {
-    if (!data || data.length === 0) return 0;
-    return Math.max(...data.map((x) => logTransform(x.value)));
-  }, [data]);
+  // const maxValue = useMemo(() => {
+  //   if (!data || data.length === 0) return 0;
+  //   return Math.max(...data.map((x) => logTransform(x.value)));
+  // }, [data]);
 
   //generate the domain for the gradient based on the max number
   const generateDomain = (max: number, steps: number) => {
@@ -55,19 +55,19 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   /**
    * @todo why is this using d3 scaleLinear and not visx
    */
-  const colorScale = useMemo(
-    () =>
-      scaleLinear<number, number>()
-        .domain(generateDomain(maxValue, 9)) // 9 evenly spaced domain stops (9 colors)
-        .range(Array.from({ length: 9 }, (_, i) => i / 8)) // Normalize range for interpolation
-        .clamp(true),
-    [maxValue]
-  );
+  // const colorScale = useMemo(
+  //   () =>
+  //     scaleLinear<number, number>()
+  //       .domain(generateDomain(maxValue, 9)) // 9 evenly spaced domain stops (9 colors)
+  //       .range(Array.from({ length: 9 }, (_, i) => i / 8)) // Normalize range for interpolation
+  //       .clamp(true),
+  //   [maxValue]
+  // );
 
-  const generateGradient = (maxValue: number) => {
-    const stops = generateDomain(maxValue, 9).map((value) => interpolateYlOrRd(colorScale(value)));
-    return `#808080, ${stops.join(", ")}`;
-  };
+  // const generateGradient = (maxValue: number) => {
+  //   const stops = generateDomain(maxValue, 9).map((value) => interpolateYlOrRd(colorScale(value)));
+  //   return `#808080, ${stops.join(", ")}`;
+  // };
 
   const scatterData: Point<PointMetadata>[] = useMemo(() => {
     if (!data) return [];
@@ -199,7 +199,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           </Typography>
           {colorScheme === "expression" ? (
             <>
-              <Typography>Log₁₀(TPM + 1)</Typography>
+              {/* <Typography>Log₁₀(TPM + 1)</Typography>
               <Box sx={{ display: "flex", alignItems: "center", width: "200px" }}>
                 <Typography sx={{ mr: 1 }}>0</Typography>
                 <Box
@@ -211,7 +211,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
                   }}
                 />
                 <Typography sx={{ ml: 1 }}>{maxValue.toFixed(2)}</Typography>
-              </Box>
+              </Box> */}
             </>
           ) : (
             /**
