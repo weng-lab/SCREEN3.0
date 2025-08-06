@@ -79,8 +79,8 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         // const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.value)));
 
         return {
-          x: x.umap_1,
-          y: x.umap_2,
+          x: 1,
+          y: 2,
           r: isHighlighted(x) ? 6 : 4,
           color:
             isHighlighted(x) || selected.length === 0
