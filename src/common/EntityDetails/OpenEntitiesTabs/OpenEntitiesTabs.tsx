@@ -233,13 +233,15 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   // ------- End "New Search" Button Helpers -------
 
-    /**
+  /**
    * Index of current route's element within internal state
    */
-  const tabIndex = useMemo(
-    () => openEntities.findIndex((el) => el.entityID === urlEntityID),
-    [openEntities, urlEntityID]
-  );
+  const tabIndex = useMemo(() => {
+    const i = openEntities.findIndex((el) => el.entityID === urlEntityID);
+    if (i === -1) {
+      return 0; //Fix MUI invalid tab error. Return 0 on initial load when usePathname (thus urlEntityID) hasn't resolved
+    } else return i;
+  }, [openEntities, urlEntityID]);
 
   return (
     <TabContext value={tabIndex}>
