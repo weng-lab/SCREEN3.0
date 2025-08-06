@@ -1,5 +1,5 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
-import {  Link, Tooltip } from "@mui/material";
+import {IconButton, Link, Tooltip } from "@mui/material";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
@@ -7,17 +7,18 @@ import {
   GRID_CHECKBOX_SELECTION_COL_DEF,
   GridColDef
 } from "@mui/x-data-grid-pro";
-import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
-import { Table } from  "@weng-lab/ui-components";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Table } from "@weng-lab/ui-components";
+import React from "react";
+import { Assembly } from "types/globalTypes";
+import TuneIcon from '@mui/icons-material/Tune';
+import AdvancedFiltersPopper from "./AdvancedFilters";
 
 export type GeneExpressionTableProps = GeneExpressionProps &
   SharedGeneExpressionPlotProps & {
     onSelectionChange: (selected: PointMetadata[]) => void;
     setSortedFilteredData: Dispatch<SetStateAction<PointMetadata[]>>;
-    scale: "linearTPM" | "logTPM";
-    replicates: "mean" | "all";
-    viewBy: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM";
-    RNAtype: "all" | "polyA plus RNA-seq" | "total RNA-seq";
+    assembly: Assembly;
   };
 
 const GeneExpressionTable = ({
@@ -27,14 +28,81 @@ const GeneExpressionTable = ({
   geneExpressionData,
   setSortedFilteredData,
   sortedFilteredData,
-  scale,
-  replicates,
-  viewBy,
-  RNAtype
+  assembly
 }: GeneExpressionTableProps) => {
   const { data, loading, error } = geneExpressionData;
+  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
+  const [replicates, setReplicates] = useState<"mean" | "all">("mean")
+  const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM")
+  const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">("total RNA-seq")
 
-  //TODO: handle rnatype change for mouse
+  //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
+  //setting the anchorEl to the button
+  const [virtualAnchor, setVirtualAnchor] = React.useState<{
+    getBoundingClientRect: () => DOMRect;
+  } | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (virtualAnchor) {
+      // If already open, close it
+      setVirtualAnchor(null);
+    } else {
+      // Open it, store the current position
+      const rect = event.currentTarget.getBoundingClientRect();
+      setVirtualAnchor({
+        getBoundingClientRect: () => rect,
+      });
+    }
+  };
+
+  const handleClickAway = () => {
+    if (virtualAnchor) {
+      setVirtualAnchor(null);
+    }
+  };
+
+  const handleReplicatesChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newReplicates: string | null,
+  ) => {
+    if ((newReplicates !== null) && ((newReplicates === "mean") || (newReplicates === "all"))) {
+      setReplicates(newReplicates)
+    }
+  };
+
+  const handleScaleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newScale: string | null,
+  ) => {
+    if ((newScale !== null) && ((newScale === "linearTPM") || (newScale === "logTPM"))) {
+      setScale(newScale)
+    }
+  };
+
+  const handleViewChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newView: string | null,
+  ) => {
+    if ((newView !== null) && ((newView === "byTissueMaxTPM") || (newView === "byExperimentTPM") || (newView === "byTissueTPM"))) {
+      setViewBy(newView)
+    }
+  };
+
+  const handleRNATypeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newRNA: string | null,
+  ) => {
+    if ((newRNA !== null) && ((newRNA === "all") || (newRNA === "polyA plus RNA-seq") || (newRNA === "total RNA-seq"))) {
+      setRNAType(newRNA)
+    }
+  };
+
+  const handleReset = () => {
+    setReplicates("mean");
+    setScale("linearTPM");
+    setViewBy("byExperimentTPM");
+    setRNAType("total RNA-seq");
+  }
 
   // based on control buttons in parent, transform this data to match the expected format
   const transformedData: PointMetadata[] = useMemo(() => {
@@ -50,28 +118,28 @@ const GeneExpressionTable = ({
           const quants = file.quantifications?.filter(Boolean) ?? [];
           const quant = quants[0]
 
-            const rawTPM = quant.tpm;
-            const scaledTPM =
-              scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
+          const rawTPM = quant.tpm;
+          const scaledTPM =
+            scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
 
-            const repLabel = file.biorep != null ? ` rep. ${file.biorep}` : "";
-            const modifiedAccession = `${entry.accession}${repLabel}`;
+          const repLabel = file.biorep != null ? ` rep. ${file.biorep}` : "";
+          const modifiedAccession = `${entry.accession}${repLabel}`;
 
-            return {
-              ...entry,
-              accession: modifiedAccession,
-              gene_quantification_files: [
-                {
-                  ...file,
-                  quantifications: [
-                    {
-                      ...quant,
-                      tpm: scaledTPM,
-                    },
-                  ],
-                },
-              ],
-            };
+          return {
+            ...entry,
+            accession: modifiedAccession,
+            gene_quantification_files: [
+              {
+                ...file,
+                quantifications: [
+                  {
+                    ...quant,
+                    tpm: scaledTPM,
+                  },
+                ],
+              },
+            ],
+          };
         });
       } else {
         // replicates === "mean"
@@ -162,7 +230,7 @@ const GeneExpressionTable = ({
         break;
       }
     }
-    
+
     return result;
   }, [data, viewBy, RNAtype, replicates, scale]);
 
@@ -186,16 +254,16 @@ const GeneExpressionTable = ({
       sortable: viewBy !== "byTissueTPM",
       renderCell: (params) => {
         return (
-            <Tooltip title="Open accession in ENCODE">
-              <Link
-                href={`https://www.encodeproject.org/experiments/${params.value.split(" ")[0]}/`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: "underline", color: "#1976d2" }}
-              >
-                {params.value}
-              </Link>
-            </Tooltip>
+          <Tooltip title="Open accession in ENCODE">
+            <Link
+              href={`https://www.encodeproject.org/experiments/${params.value.split(" ")[0]}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "underline", color: "#1976d2" }}
+            >
+              {params.value}
+            </Link>
+          </Tooltip>
         );
       },
     },
@@ -261,27 +329,54 @@ const GeneExpressionTable = ({
   }, [viewBy, apiRef]);
 
   return (
-    <Table
-      apiRef={apiRef}
-      label={`${geneData?.data.name} Expression`}
-      density="standard"
-      rows={transformedData}
-      columns={columns}
-      loading={loading}
-      pageSizeOptions={[10, 25, 50]}
-      initialState={{
-        sorting: {
-          sortModel: [{ field: "tpm", sort: "desc" }],
-        },
-      }}
-      checkboxSelection
-      getRowId={(row) => row.gene_quantification_files[0].accession} //needed to match up data with the ids returned by onRowSelectionModelChange
-      onRowSelectionModelChange={handleRowSelectionModelChange}
-      rowSelectionModel={{ type: 'include', ids: new Set(selected.map((x) => x.gene_quantification_files[0].accession)) }}
-      keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
-      onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
-      divHeight={{height: "100%", minHeight: "580px", maxHeight: "600px"}}
-    />
+    <>
+      <Table
+        apiRef={apiRef}
+        label={`${geneData?.data.name} Expression`}
+        density="standard"
+        rows={transformedData}
+        columns={columns}
+        loading={loading}
+        pageSizeOptions={[10, 25, 50]}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "tpm", sort: "desc" }],
+          },
+        }}
+        checkboxSelection
+        getRowId={(row) => row.gene_quantification_files[0].accession} //needed to match up data with the ids returned by onRowSelectionModelChange
+        onRowSelectionModelChange={handleRowSelectionModelChange}
+        rowSelectionModel={{ type: 'include', ids: new Set(selected.map((x) => x.gene_quantification_files[0].accession)) }}
+        keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
+        onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
+        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        toolbarSlot={
+          <Tooltip title="Advanced Filters">
+            <IconButton
+              size="small"
+              onClick={handleClick}
+            >
+              <TuneIcon />
+            </IconButton>
+          </Tooltip>
+        }
+      />
+      <AdvancedFiltersPopper
+        open={Boolean(virtualAnchor)}
+        anchorEl={virtualAnchor}
+        assembly={assembly}
+        RNAtype={RNAtype}
+        scale={scale}
+        viewBy={viewBy}
+        replicates={replicates}
+        handleClickAway={handleClickAway}
+        handleRNATypeChange={handleRNATypeChange}
+        handleScaleChange={handleScaleChange}
+        handleViewChange={handleViewChange}
+        handleReplicatesChange={handleReplicatesChange}
+        handleReset={handleReset}
+      />
+    </>
   );
 };
 

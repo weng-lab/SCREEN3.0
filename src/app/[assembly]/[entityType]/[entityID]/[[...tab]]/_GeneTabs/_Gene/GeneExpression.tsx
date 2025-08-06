@@ -28,46 +28,6 @@ export type GeneExpressionProps = {
 const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
-  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
-  const [replicates, setReplicates] = useState<"mean" | "all">("mean")
-  const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM")
-  const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">("total RNA-seq")
-
-  const handleReplicatesChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newReplicates: string | null,
-  ) => {
-    if ((newReplicates !== null) && ((newReplicates === "mean") || (newReplicates === "all"))) {
-      setReplicates(newReplicates)
-    }
-  };
-
-  const handleScaleChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newScale: string | null,
-  ) => {
-    if ((newScale !== null) && ((newScale === "linearTPM") || (newScale === "logTPM"))) {
-      setScale(newScale)
-    }
-  };
-
-  const handleViewChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newView: string | null,
-  ) => {
-    if ((newView !== null) && ((newView === "byTissueMaxTPM") || (newView === "byExperimentTPM") || (newView === "byTissueTPM"))) {
-      setViewBy(newView)
-    }
-  };
-
-  const handleRNATypeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newRNA: string | null,
-  ) => {
-    if ((newRNA !== null) && ((newRNA === "all") || (newRNA === "polyA plus RNA-seq") || (newRNA === "total RNA-seq"))) {
-      setRNAType(newRNA)
-    }
-  };
 
   const geneExpressionData = useGeneExpression({ id: geneData?.data.id, assembly: assembly });
 
@@ -100,75 +60,6 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
 
   return (
     <>
-      <Stack direction={"row"} gap={2} flexWrap={"wrap"}>
-        <FormControl>
-          <FormLabel>RNA-seq Type</FormLabel>
-          <ToggleButtonGroup
-            color="primary"
-            value={RNAtype}
-            exclusive
-            onChange={handleRNATypeChange}
-            aria-label="RNA-seq Type"
-            size="small"
-          >
-            {/* Human only has total RNA-seq, so disable other options when in human */}
-            <ToggleButton sx={{ textTransform: "none" }} value="total RNA-seq">Total</ToggleButton>
-            <Tooltip title={assembly === "GRCh38" && "Only available in mm10"}>
-              <div> {/** div needed to show tooltip when button disabled */}
-                <ToggleButton disabled={assembly === "GRCh38"} sx={{ textTransform: "none" }} value="polyA plus RNA-seq">PolyA+</ToggleButton>
-              </div>
-            </Tooltip>
-            <Tooltip title={assembly === "GRCh38" && "Only available in mm10"}>
-              <div>
-                <ToggleButton disabled={assembly === "GRCh38"} sx={{ textTransform: "none" }} value="all">All</ToggleButton>
-              </div>
-            </Tooltip>
-          </ToggleButtonGroup>
-        </FormControl>
-        <FormControl>
-          <FormLabel>Scale</FormLabel>
-          <ToggleButtonGroup
-            color="primary"
-            value={scale}
-            exclusive
-            onChange={handleScaleChange}
-            aria-label="Scale"
-            size="small"
-          >
-            <ToggleButton sx={{ textTransform: "none" }} value="linearTPM">Linear TPM</ToggleButton>
-            <ToggleButton sx={{ textTransform: "none" }} value="logTPM">Log<sub>10</sub>(TPM + 1)</ToggleButton>
-          </ToggleButtonGroup>
-        </FormControl>
-        <FormControl>
-          <FormLabel>View By</FormLabel>
-          <ToggleButtonGroup
-            color="primary"
-            value={viewBy}
-            exclusive
-            onChange={handleViewChange}
-            aria-label="View By"
-            size="small"
-          >
-            <ToggleButton sx={{ textTransform: "none" }} value="byExperimentTPM">Experiment</ToggleButton>
-            <ToggleButton sx={{ textTransform: "none" }} value="byTissueTPM">Tissue</ToggleButton>
-            <ToggleButton sx={{ textTransform: "none" }} value="byTissueMaxTPM">Tissue Max</ToggleButton>
-          </ToggleButtonGroup>
-        </FormControl>
-        <FormControl>
-          <FormLabel>Replicates</FormLabel>
-          <ToggleButtonGroup
-            color="primary"
-            value={replicates}
-            exclusive
-            onChange={handleReplicatesChange}
-            aria-label="Scale"
-            size="small"
-          >
-            <ToggleButton sx={{ textTransform: "none" }} value="mean">Average</ToggleButton>
-            <ToggleButton sx={{ textTransform: "none" }} value="all">Show Replicates</ToggleButton>
-          </ToggleButtonGroup>
-        </FormControl>
-      </Stack>
     <TwoPaneLayout
       TableComponent={
         <GeneExpressionTable
@@ -178,10 +69,7 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
           sortedFilteredData={sortedFilteredData}
           setSortedFilteredData={setSortedFilteredData}
           geneExpressionData={geneExpressionData}
-          scale={scale}
-          replicates={replicates}
-          viewBy={viewBy}
-          RNAtype={RNAtype}
+          assembly={assembly}
         />
       }
       plots={[
