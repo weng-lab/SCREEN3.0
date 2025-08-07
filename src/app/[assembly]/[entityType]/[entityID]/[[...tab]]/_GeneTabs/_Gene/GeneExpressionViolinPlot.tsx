@@ -1,41 +1,42 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
 import { useMemo } from "react";
-import { getCellCategoryColor, getCellCategoryDisplayname } from "common/utility";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
+import { tissueColors } from "common/lib/colors"
 
 export type GeneExpressionViolinPlotProps = GeneExpressionProps &
   SharedGeneExpressionPlotProps &
   Partial<ViolinPlotProps<PointMetadata>>;
 
 const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest }: GeneExpressionViolinPlotProps) => {
+  
   const violinData: Distribution<PointMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
 
     const grouped = sortedFilteredData.reduce((acc, item) => {
-      const key = item.lineage;
+      const key = item.tissue;
       if (!acc[key]) acc[key] = [];
       acc[key].push(item);
       return acc;
     }, {} as Record<string, PointMetadata[]>);
 
-    return Object.entries(grouped).map(([lineage, group]) => {
-      const values = group.map((d) => d.value);
-      const label = getCellCategoryDisplayname(lineage);
+    return Object.entries(grouped).map(([tissue, group]) => {
+      const values = group.map((d) => d.gene_quantification_files[0].quantifications[0].tpm );
+      const label = tissue;
       const violinColor =
-        selected.length === 0 || group.every((d) => selected.some((s) => s.name === d.name))
-          ? getCellCategoryColor(lineage)
-          : "grey";
+        selected.length === 0 || group.every((d) => selected.some((s) => s.gene_quantification_files[0].accession === d.gene_quantification_files[0].accession))
+          ? tissueColors[tissue] ?? tissueColors.missing 
+          : "#CCCCCC"
 
       const data: ViolinPoint<PointMetadata>[] = values.map((value, i) => {
-        const metadata = group[i];
-        const isSelected = selected.length === 0 || selected.some((s) => s.name === metadata.name) ? true : false;
-        const pointColor = isSelected ? getCellCategoryColor(lineage) : "grey";
+        const metaData = group[i];
+        const isSelected = selected.length === 0 || selected.some((s) => s.gene_quantification_files[0].accession === metaData.gene_quantification_files[0].accession) ? true : false;
+        const pointColor = isSelected ? tissueColors[tissue] ?? tissueColors.missing  : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 
         return values.length < 3
-          ? { value, radius: pointRadius, tissue: lineage, metadata, color: pointColor }
-          : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue: lineage, metadata, color: pointColor };
+          ? { value, radius: pointRadius, tissue: tissue, metaData, color: pointColor }
+          : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue: tissue, metaData, color: pointColor };
       });
 
       return { label, data, violinColor };
@@ -70,19 +71,16 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
                 </div>
               )} */}
               <div>
+                <strong>Accession:</strong> {point.metaData?.accession}
+              </div>
+              <div>
                 <strong>Biosample:</strong> {point.metaData?.biosample}
               </div>
               <div>
-                <strong>TPM:</strong> {point.value.toFixed(1)}
+                <strong>Tissue:</strong> {point.metaData?.tissue}
               </div>
               <div>
-                <strong>Stimulation:</strong> {point.metaData?.stimulation}
-              </div>
-              <div>
-                <strong>Lineage:</strong> {point.metaData?.lineage}
-              </div>
-              <div>
-                <strong>Study:</strong> {point.metaData?.study}
+                <strong>TPM:</strong> {point.metaData?.gene_quantification_files[0].quantifications[0].tpm.toFixed(2)}
               </div>
             </Box>
           );

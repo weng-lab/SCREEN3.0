@@ -79,7 +79,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
             {/* Used to force this container to have the same height as the below tabs. Prevents layout shift when closing the table */}
             <Tab sx={{visibility: "hidden", minWidth: 0, px: 0}}/>
           </Stack>
-          <div ref={tableRef}>
+          <div ref={tableRef} style={{ height: "60vh"}}>
             {TableComponent}
           </div>
         </Box>
@@ -103,7 +103,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
             //use table height unless its not open, then set px height for umap so it doesnt slowly resize
             height={tableOpen ? tableHeight : Figure.title === "UMAP" ? "700px" : "100%"}
             maxHeight={Figure.title !== "Bar Plot" ? "700px" : "none"}
-            minHeight={"698px"}
+            minHeight={"580px"}
           >
             {Figure.component}
           </Box>
