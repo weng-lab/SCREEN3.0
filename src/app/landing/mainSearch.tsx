@@ -126,7 +126,7 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
                         Try{" "}
                         &quot;<i>{assembly === "GRCh38" ? "SOX4" : "Sox4"}</i>&quot;,
                         &quot;<i>{assembly === "GRCh38" ? "rs9466027" : "EM10E0000207"}</i>&quot;,
-                        or &quot;chr11:12345678-12345679&quot;
+                        or &quot;chr12:53380176-53416446&quot;
                     </FormHelperText>
                 </FormControl>
             </Box>
