@@ -1,5 +1,5 @@
 "use client";
-import { Typography, Box, Button, Stack, IconButton } from "@mui/material";
+import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { useCcreData } from "common/hooks/useCcreData";
@@ -10,7 +10,7 @@ import ConfigureGBModal from "./ConfigureGBModal";
 import { RegistryBiosample } from "app/_biosampleTables/types";
 import { Close } from "@mui/icons-material";
 const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembly: string }) => {
-  const [open, setOpen] = useState(false);
+  //const [open, setOpen] = useState(false);
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample | null>(null);
   const {
     data: dataCcres,
@@ -24,6 +24,30 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
   });
 
   
+  //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
+  //setting the anchorEl to the button
+  const [virtualAnchor, setVirtualAnchor] = useState<{
+    getBoundingClientRect: () => DOMRect;
+  } | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (virtualAnchor) {
+      // If already open, close it
+      setVirtualAnchor(null);
+    } else {
+      // Open it, store the current position
+      const rect = event.currentTarget.getBoundingClientRect();
+      setVirtualAnchor({
+        getBoundingClientRect: () => rect,
+      });
+    }
+  };
+
+  const handleClickClose = () => {
+    if (virtualAnchor) {
+      setVirtualAnchor(null);
+    }
+  };
   const showAtac = selectedBiosample ? (selectedBiosample && selectedBiosample.atac ? true : false) : true;
   const showCTCF = selectedBiosample ? (selectedBiosample && selectedBiosample.ctcf ? true : false) : true;
   const showDNase = selectedBiosample ? (selectedBiosample && selectedBiosample.dnase ? true : false) : true;
@@ -152,6 +176,15 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
         </strong>
       ),
       valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
+      renderCell: (params) => (
+        <span>
+        <LinkComponent href={`/${assembly}/gene/${params.row.nearestgenes[0].gene}`}>
+          <i>{params.row.nearestgenes[0].gene}</i>
+        </LinkComponent>
+        &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
+        </span>
+      ),
+      
     },
   ];
 
@@ -159,21 +192,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
     <Typography>Error Fetching Ccres</Typography>
   ) : (
     <>
-      <Box
-        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-          event.stopPropagation();
-        }}
-      >
-        <Button variant="outlined" onClick={() => setOpen(true)}>
-          Select Biosample
-        </Button>
-        <ConfigureGBModal
-          assembly={assembly as Assembly}
-          open={open}
-          setOpen={setOpen}
-          onBiosampleSelect={handleBiosampleSelected}
-        />
-      </Box>
+      
       {selectedBiosample && <Stack mt={1} direction="row" alignItems={"center"}>
           <Typography>{`Selected Biosample: ${selectedBiosample ? selectedBiosample.displayname : "none"}`}</Typography>
           {selectedBiosample &&
@@ -189,7 +208,27 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
         loading={loadingCcres}
         label={`Intersecting cCREs`}
         emptyTableFallback={"No intersecting cCREs found in this region"}
+        toolbarSlot={
+          <Tooltip title="Advanced Filters">
+            <Button variant="outlined" onClick={handleClick}>
+            Select Biosample
+            </Button>
+          </Tooltip>
+        }
       />
+      <Box
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          event.stopPropagation();
+        }}
+      >
+        
+        <ConfigureGBModal
+          assembly={assembly as Assembly}
+          open={Boolean(virtualAnchor)}
+          setOpen={handleClickClose}
+          onBiosampleSelect={handleBiosampleSelected}
+        />
+      </Box>
     </>
   );
 };
