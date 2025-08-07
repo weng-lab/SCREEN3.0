@@ -1,47 +1,49 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { useMemo } from "react";
 import { gql } from "types/generated/gql";
-import { GeneExpressionQuery } from "types/generated/graphql";
+import { GeneexpressionQuery } from "types/generated/graphql";
+import { Assembly } from "types/globalTypes";
 
-
-//TODO: change from old igScreen query, must include assembly as well
 const GET_GENE_EXPRESSION = gql(`
-  query GeneExpression($gene_id: String!) {
-    immuneRnaUmapQuery(gene_id: $gene_id) {
-      umap_1    
-      umap_2
-      celltype
-      study
-      source
-      link
-      lineage
-      biosample
-      biosampleid    
-      expid
-      name    
-      value
-      stimulation
+query geneexpression($assembly: String!, $gene_id: [String]) {
+  gene_dataset(processed_assembly: $assembly) {
+    biosample
+    tissue
+  	cell_compartment
+    biosample_type
+  	assay_term_name
+    accession  
+    gene_quantification_files(assembly: $assembly) {
+      accession
+      biorep
+      quantifications(gene_id_prefix: $gene_id) {
+        tpm
+        file_accession
+      }
     }
   }
-`)
+}
+ `)
 
 export type UseGeneDataParams = {
   id: string
+  assembly: Assembly
 }
 
 export type UseGeneExpressionReturn = {
-  data: GeneExpressionQuery["immuneRnaUmapQuery"] | undefined;
+  data: GeneexpressionQuery["gene_dataset"] | undefined;
   loading: boolean;
   error: ApolloError
 }
 
-export const useGeneExpression = ({ id }: UseGeneDataParams): UseGeneExpressionReturn => {
+export const useGeneExpression = ({ id, assembly }: UseGeneDataParams): UseGeneExpressionReturn => {
 
   const { data, loading, error } = useQuery(
     GET_GENE_EXPRESSION,
     {
       variables: {
-        gene_id: id.split('.')[0]
+        gene_id: id.split('.')[0],
+        assembly: assembly,
       },
       skip: !id
     },
@@ -54,18 +56,18 @@ export const useGeneExpression = ({ id }: UseGeneDataParams): UseGeneExpressionR
     if (!data) return data
     return {
       ...data,
-      immuneRnaUmapQuery: data.immuneRnaUmapQuery.map((x) => {
+      gene_dataset: data.gene_dataset.map((x) => {
         return {
           ...x,
           biosample: x.biosample.replaceAll('\"', ''),
-          biosampleid: x.biosampleid.replaceAll('\"', '')
+          biosampleid: x.biosample_type.replaceAll('\"', '')
         }
       })
     }
   }, [data])
 
   return {
-    data: correctedData?.immuneRnaUmapQuery,
+    data: correctedData?.gene_dataset,
     loading,
     error,
   }

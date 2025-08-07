@@ -9,6 +9,8 @@ import { BarChart, ScatterPlot, CandlestickChart } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Distribution, ViolinPoint } from "@weng-lab/visualization";
+import { Assembly } from "types/globalTypes";
+import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
@@ -20,13 +22,14 @@ export type SharedGeneExpressionPlotProps = {
 
 export type GeneExpressionProps = {
   geneData: UseGeneDataReturn<{ name: string }>;
+  assembly?: Assembly;
 };
 
-const GeneExpression = ({ geneData }: GeneExpressionProps) => {
+const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
 
-  const geneExpressionData = useGeneExpression({ id: geneData?.data.id });
+  const geneExpressionData = useGeneExpression({ id: geneData?.data.id, assembly: assembly });
 
   const handlePointsSelected = (pointsInfo: PointMetadata[]) => {
     setSelected([...selected, ...pointsInfo]);
@@ -44,7 +47,7 @@ const GeneExpression = ({ geneData }: GeneExpressionProps) => {
 
   const handleViolinClick = (violin: Distribution<PointMetadata>) => {
     const metadataArray = violin.data.map((point) => point.metaData);
-    if (selected.length === metadataArray.length && selected[0].lineage === metadataArray[0].lineage) {
+    if (selected.length === metadataArray.length && selected[0].tissue === metadataArray[0].tissue) {
       setSelected([]);
     } else setSelected(metadataArray);
   };
@@ -56,6 +59,7 @@ const GeneExpression = ({ geneData }: GeneExpressionProps) => {
   };
 
   return (
+    <>
     <TwoPaneLayout
       TableComponent={
         <GeneExpressionTable
@@ -65,6 +69,7 @@ const GeneExpression = ({ geneData }: GeneExpressionProps) => {
           sortedFilteredData={sortedFilteredData}
           setSortedFilteredData={setSortedFilteredData}
           geneExpressionData={geneExpressionData}
+          assembly={assembly}
         />
       }
       plots={[
@@ -81,19 +86,20 @@ const GeneExpression = ({ geneData }: GeneExpressionProps) => {
             />
           ),
         },
-        {
-          tabTitle: "UMAP",
-          icon: <ScatterPlot />,
-          plotComponent: (
-            <GeneExpressionUMAP
-              geneData={geneData}
-              selected={selected}
-              sortedFilteredData={sortedFilteredData}
-              geneExpressionData={geneExpressionData}
-              onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
-            />
-          ),
-        },
+        // Add back once query returns umap coordiantes
+        // {
+        //   tabTitle: "UMAP",
+        //   icon: <ScatterPlot />,
+        //   plotComponent: (
+        //     <GeneExpressionUMAP
+        //       geneData={geneData}
+        //       selected={selected}
+        //       sortedFilteredData={sortedFilteredData}
+        //       geneExpressionData={geneExpressionData}
+        //       onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
+        //     />
+        //   ),
+        // },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
@@ -110,6 +116,7 @@ const GeneExpression = ({ geneData }: GeneExpressionProps) => {
         },
       ]}
     />
+    </>
   );
 };
 

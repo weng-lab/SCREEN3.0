@@ -105,7 +105,7 @@ export default function DetailsPage({
 
       switch (tab) {
         case "":
-          return assembly==="GRCh38" ? <GeneExpression geneData={geneData} /> : <></>;
+          return <GeneExpression geneData={geneData} assembly={assembly} />;
         case "ccres":
           return assembly==="GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
         case "variants":
