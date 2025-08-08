@@ -212,7 +212,7 @@ export default function About() {
               <Typography variant="h5">Integration with other encyclopedia annotations</Typography>
               <Typography variant="body1" paragraph>In addition to hosting the Registry of cCREs, SCREEN also hosts other Encyclopedia annotations and displays them in the context of cCREs. Under the cCRE Details page for each cCRE are tabs displaying overlapping Encyclopedia annotations with links to their derived experiments or annotations. Such annotations include TF peaks, histone mark peaks, ChromHMM states, TSS derived from RAMPAGE and long read RNA-seq data, 3D chromatin interactions, and gene expression.</Typography>
             </Grid>
-            <Grid size={12}>
+            <Grid size={12} id="citations">
               <Typography variant="h5">How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN</Typography>
               <Typography variant="h6">The Registry of cCREs and SCREEN</Typography>
               <ul style={{ listStyleType: "circle", listStylePosition: "inside" }}>
