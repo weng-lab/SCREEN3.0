@@ -1,6 +1,6 @@
 import { Add } from "@mui/icons-material";
-import { Tab, Stack, Paper, Tooltip } from "@mui/material";
-import { OpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
+import { Stack, Paper, Tooltip, Divider, Tab } from "@mui/material";
+import { OpenEntity, OpenEntitiesContext, OpenEntityState } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -12,8 +12,11 @@ import TabPanel from "@mui/lab/TabPanel";
 import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/MenuContext";
 import { DraggableTab } from "./DraggableTab";
+import HumanIcon from "app/_utility/humanIcon";
+import MouseIcon from "app/_utility/mouseIcon";
 
-export const constructEntityURL = (entity: OpenEntity) => `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
+export const constructEntityURL = (entity: OpenEntity) =>
+  `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {
   const [openEntities, dispatch] = useContext(OpenEntitiesContext);
@@ -243,6 +246,51 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     } else return i;
   }, [openEntities, urlEntityID]);
 
+  const multipleAssembliesOpen = useMemo(() => {
+    const assemblies = openEntities.map((x) => x.assembly);
+    return assemblies.includes("GRCh38") && assemblies.includes("mm10");
+  }, [openEntities]);
+
+  const DragTab = useCallback(
+    ({ entity, key, index }: { entity: OpenEntity; key: number; index: number }) => (
+      <DraggableTab
+        key={key}
+        index={index}
+        closable={moreThanOneEntityOpen}
+        entity={entity}
+        isSelected={currentEntityState?.entityID === entity.entityID}
+        handleCloseTab={handleCloseTab}
+        handleTabClick={handleTabClick}
+      />
+    ),
+    [currentEntityState?.entityID, handleCloseTab, handleTabClick, moreThanOneEntityOpen]
+  );
+
+  // const OpenTabs = useCallback(
+  //   ({ openEntities }: { openEntities: OpenEntityState }) => {
+  //     if (multipleAssembliesOpen) {
+  //       return (
+  //         <>
+  //           <HumanIcon size={25} />
+  //           {openEntities
+  //             .filter((x) => x.assembly === "GRCh38")
+  //             .map((entity, i) => (
+  //               <Tab key={i} index={i} entity={entity} />
+  //             ))}
+  //           <Divider orientation="vertical" />
+  //           <MouseIcon size={25} />
+  //           {openEntities
+  //             .filter((x) => x.assembly === "mm10")
+  //             .map((entity, i) => (
+  //               <Tab key={i} index={i} entity={entity} />
+  //             ))}
+  //         </>
+  //       );
+  //     } else return openEntities.map((entity, i) => <Tab key={i} index={i} entity={entity} />);
+  //   },
+  //   [Tab, multipleAssembliesOpen]
+  // );
+
   return (
     <TabContext value={tabIndex}>
       {/* z index of scrollbar in DataGrid is 60 */}
@@ -269,15 +317,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
                     {...provided.droppableProps} //contains attributes for styling and element lookups
                   >
                     {openEntities.map((entity, i) => (
-                      <DraggableTab
-                        key={i}
-                        index={i}
-                        closable={moreThanOneEntityOpen}
-                        entity={entity}
-                        isSelected={currentEntityState?.entityID === entity.entityID}
-                        handleCloseTab={handleCloseTab}
-                        handleTabClick={handleTabClick}
-                      />
+                      <DragTab key={i} index={i} entity={entity} />
                     ))}
                     {!snapshot.draggingFromThisWith && (
                       <Tooltip title="New Search" placement="right">
