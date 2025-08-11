@@ -4,6 +4,8 @@ const GbIconPath = '/assets/GbIcon.svg'
 const CcreIconPath = '/assets/CcreIcon.svg'
 const GeneIconPath = '/assets/GeneIcon.svg'
 const VariantIconPath = '/assets/VariantIcon.svg'
+const ConservationIconPath = '/assets/ConservationIcon.svg'
+const FunctionalIconPath = '/assets/FunctionalCharacterizationIcon.svg'
 
 export const sharedTabs: SharedTab[] = [
   {
@@ -11,7 +13,35 @@ export const sharedTabs: SharedTab[] = [
     href: "browser",
     iconPath: GbIconPath
   },
+  {
+    label: "Conservation",
+    href: "conservation",
+    iconPath: ConservationIconPath
+  },
+  {
+    label: "Functional Characterization",
+    href: "functional",
+    iconPath: FunctionalIconPath
+  },
 ];
+
+export const moreTabs: SharedTab[] = [
+  {
+    label: "Genome Browser",
+    href: "browser",
+    iconPath: GbIconPath
+  },
+  {
+    label: "Conservation",
+    href: "conservation",
+    iconPath: ConservationIconPath
+  },
+  {
+    label: "Functional Characterization",
+    href: "functional",
+    iconPath: FunctionalIconPath
+  },
+]
 
 export const variantDetailsTabs: VariantDetailsTab[] = [
   {

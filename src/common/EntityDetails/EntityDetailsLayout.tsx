@@ -9,7 +9,7 @@ import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabs";
 export type EntityDetailsLayoutProps = EntityDetailsHeaderProps & { children: React.ReactNode };
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
-  const verticalTabsWidth = 90
+  const verticalTabsWidth = 100
   
   return (
     // Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/. Children wrapped in <TabPanel>

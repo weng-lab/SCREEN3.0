@@ -1,12 +1,13 @@
 'use client'
 
-import { Tabs, Tab } from "@mui/material";
+import { Tabs, Tab, Menu, MenuItem } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ElementDetailsTab, GeneDetailsTab, EntityType, CcreDetailsTab, RegionDetailsTab, VariantDetailsTab, Assembly } from "types/globalTypes";
-import { geneDetailsTabs, icreDetailsTabs, regionDetailsTabs, sharedTabs, variantDetailsTabs } from "./tabsConfig";
+import { geneDetailsTabs, icreDetailsTabs, regionDetailsTabs, sharedTabs, moreTabs, variantDetailsTabs } from "./tabsConfig";
 import Image from "next/image";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 export type ElementDetailsTabsProps = {
   assembly: Assembly
@@ -20,8 +21,17 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
   const pathname = usePathname();
   const searchParams = useSearchParams()
   const currentTab = pathname.substring(pathname.lastIndexOf('/') + 1) === entityID ? "" : pathname.substring(pathname.lastIndexOf('/') + 1)
-  
+
   const [value, setValue] = React.useState(currentTab);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -79,6 +89,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
         width: verticalTabs ? verticalTabsWidth : "initial",
         height: '100%',
         backgroundColor: verticalTabs && '#F2F2F2',
+
       }}
     >
       {tabs.map((tab, index) => (
@@ -89,8 +100,45 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
           href={`/${assembly}/${entityType}/${entityID}/${tab.href}` + '?' + searchParams.toString()}
           key={tab.href}
           icon={<Image width={verticalTabs ? 50 : 40} height={verticalTabs ? 50 : 40} src={tab.iconPath} alt={tab.label + " icon"} />}
+          sx={{ fontSize: "12px" }}
         />
       ))}
+      <Tab
+        label={"More"}
+        icon={<MoreHorizIcon />}
+        onClick={handleMoreClick}
+      />
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: verticalTabs ? "top" : "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        {moreTabs.map((tab) => (
+          <MenuItem
+            key={tab.label}
+            component={Link}
+            href={`/${assembly}/${entityType}/${entityID}/${tab.href}?${searchParams.toString()}`}
+            onClick={handleClose}
+          >
+            <Image
+              width={30}
+              height={30}
+              src={tab.iconPath}
+              alt={`${tab.label} icon`}
+              style={{ marginRight: 8 }}
+            />
+            {tab.label}
+          </MenuItem>
+        ))}
+      </Menu>
     </Tabs>
   );
 }
