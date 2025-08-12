@@ -13,34 +13,9 @@ export const sharedTabs: SharedTab[] = [
     href: "browser",
     iconPath: GbIconPath
   },
-  {
-    label: "Conservation",
-    href: "conservation",
-    iconPath: ConservationIconPath
-  },
-  {
-    label: "Functional Characterization",
-    href: "functional",
-    iconPath: FunctionalIconPath
-  },
 ];
 
 export const moreTabs: SharedTab[] = [
-  {
-    label: "Genome Browser",
-    href: "browser",
-    iconPath: GbIconPath
-  },
-  {
-    label: "Conservation",
-    href: "conservation",
-    iconPath: ConservationIconPath
-  },
-  {
-    label: "Functional Characterization",
-    href: "functional",
-    iconPath: FunctionalIconPath
-  },
 ]
 
 export const variantDetailsTabs: VariantDetailsTab[] = [
@@ -79,7 +54,7 @@ export const geneDetailsTabs: GeneDetailsTab[] = [
   },
 ];
 
-export const icreDetailsTabs: CcreDetailsTab[] = [
+export const ccreDetailsTabs: CcreDetailsTab[] = [
   {
     label: "cCRE",
     href: "",
@@ -94,6 +69,16 @@ export const icreDetailsTabs: CcreDetailsTab[] = [
     label: "Variants",
     href: "variants",
     iconPath: VariantIconPath
+  },
+  {
+    label: "Conservation",
+    href: "conservation",
+    iconPath: ConservationIconPath
+  },
+  {
+    label: "Functional Characterization",
+    href: "functional",
+    iconPath: FunctionalIconPath
   },
 ];
 

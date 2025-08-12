@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { ElementDetailsTab, GeneDetailsTab, EntityType, CcreDetailsTab, RegionDetailsTab, VariantDetailsTab, Assembly } from "types/globalTypes";
-import { geneDetailsTabs, icreDetailsTabs, regionDetailsTabs, sharedTabs, moreTabs, variantDetailsTabs } from "./tabsConfig";
+import { geneDetailsTabs, ccreDetailsTabs, regionDetailsTabs, sharedTabs, moreTabs, variantDetailsTabs } from "./tabsConfig";
 import Image from "next/image";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
@@ -54,7 +54,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
         elementSpecificTabs = variantDetailsTabs
         break
       case ("ccre"):
-        elementSpecificTabs = icreDetailsTabs
+        elementSpecificTabs = ccreDetailsTabs
         break
       case ("region"):
         elementSpecificTabs = regionDetailsTabs
