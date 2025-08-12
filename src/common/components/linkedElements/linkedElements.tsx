@@ -1,15 +1,16 @@
 import { Stack } from "@mui/material";
 import { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { LinkedICREInfo } from "common/hooks/useLinkedICREs";
-import CustomDataGrid, { CustomDataGridColDef, CustomDataGridProps } from "../CustomDataGrid";
+import { Table, TableProps } from "@weng-lab/ui-components";
+import { GridColDef } from "@mui/x-data-grid-pro";
 
-export interface TableDef<T extends LinkedGeneInfo | LinkedICREInfo> extends CustomDataGridProps<T> {
+export interface TableDef<T extends LinkedGeneInfo | LinkedICREInfo> extends TableProps {
   sortColumn: keyof T & string; // Constrain to string keys
   sortDirection: "asc" | "desc";
 }
 
 // Combined types for GridColDef and GridRenderCellParams for linkedGenes and linkedICREs
-export type colDef = CustomDataGridColDef<LinkedGeneInfo> | CustomDataGridColDef<LinkedICREInfo>;
+export type colDef = GridColDef<LinkedGeneInfo> | GridColDef<LinkedICREInfo>;
 
 export default function LinkedElements<T extends LinkedGeneInfo | LinkedICREInfo>({
   tables,
@@ -19,7 +20,7 @@ export default function LinkedElements<T extends LinkedGeneInfo | LinkedICREInfo
   return (
     <Stack spacing={2}>
       {tables.map((table, index) => (
-        <CustomDataGrid
+        <Table
           key={index}
           initialState={{
             sorting: {
@@ -27,6 +28,7 @@ export default function LinkedElements<T extends LinkedGeneInfo | LinkedICREInfo
             },
           }}
           {...table}
+          divHeight={{height: "300px"}}
         />
       ))}
     </Stack>

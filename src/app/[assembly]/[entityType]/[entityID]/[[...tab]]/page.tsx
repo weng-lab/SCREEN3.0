@@ -14,7 +14,7 @@ import {
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
-import GeneLinkedIcres from "./_GeneTabs/_iCREs/GeneLinkedIcres";
+import GeneLinkedIcres from "./_GeneTabs/_cCREs/GeneLinkedIcres";
 import VariantInfo from "./_SnpTabs/_Variant/Variant";
 import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
@@ -94,6 +94,7 @@ export default function DetailsPage({
         case "genes":
           return <p>This page should probably have eQTL data</p>;
       }
+      break;
     }
 
     case "gene": {
@@ -111,6 +112,7 @@ export default function DetailsPage({
         case "variants":
           return <p>This page should probably have eQTL data</p>;
       }
+      break;
     }
 
     case "ccre": {
@@ -128,6 +130,7 @@ export default function DetailsPage({
         case "variants":
           return assembly==="GRCh38" ? <CcreVariantsTab CcreData={CcreData} />: <p> Variants for mouse cCREs </p>;
       }
+      break;
     }
 
 

@@ -10,7 +10,6 @@ import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Distribution, ViolinPoint } from "@weng-lab/visualization";
 import { Assembly } from "types/globalTypes";
-import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
