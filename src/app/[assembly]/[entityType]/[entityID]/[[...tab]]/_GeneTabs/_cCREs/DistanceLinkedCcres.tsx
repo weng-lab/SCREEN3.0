@@ -1,9 +1,10 @@
-import { Box, Skeleton } from "@mui/material";
+import { Box, Skeleton, Tooltip } from "@mui/material";
 import useNearbycCREs from "common/hooks/useNearBycCREs";
 import { useCcreData } from "common/hooks/useCcreData";
-import CustomDataGrid, { CustomDataGridColDef } from "common/components/CustomDataGrid";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
+import { Table, TableProps } from "@weng-lab/ui-components";
+import { GridColDef } from "@mui/x-data-grid-pro";
 
 export default function DistanceLinkedCcres({
   geneData  
@@ -30,15 +31,14 @@ export default function DistanceLinkedCcres({
         distance: Math.abs(f?.start - geneData?.data.coordinates.start) || 0,
       };
     })
-    //?.filter((d) => allcCREs || d.isiCRE);
 
-  const cols: CustomDataGridColDef<(typeof nearbyccres)[number]>[] = [
+  const cols: GridColDef<(typeof nearbyccres)[number]>[] = [
     {
       field: "ccre",
       headerName: "Accession",
       renderCell: (params) => {
         return (
-          <LinkComponent href={`/GRCh38/ccre/${params.value}`} showExternalIcon={!params.row.isiCRE} openInNewTab={!params.row.isiCRE}>
+          <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
             {params.value}
           </LinkComponent>
         );
@@ -47,19 +47,25 @@ export default function DistanceLinkedCcres({
     {
       field: "group",
       headerName: "Class",
-      tooltip: (
-        <div>
-          See{" "}
-          <LinkComponent
-            openInNewTab
-            color="inherit"
-            showExternalIcon
-            href={"https://screen.wenglab.org/about#classifications"}
-          >
-            SCREEN
-          </LinkComponent>{" "}
-          for Class definitions
-        </div>
+      renderCell: (params) => (
+        <Tooltip
+          title={
+            <div>
+              See{" "}
+              <LinkComponent
+                openInNewTab
+                color="inherit"
+                showExternalIcon
+                href="https://screen.wenglab.org/about#classifications"
+              >
+                SCREEN
+              </LinkComponent>{" "}
+              for Class definitions
+            </div>
+          }
+        >
+          <span>{params.value}</span>
+        </Tooltip>
       ),
     },
     {
@@ -104,18 +110,19 @@ export default function DistanceLinkedCcres({
   return (
     <Box width={"100%"}>
       {geneData.loading || loadingNearby || loadingCcreDetails ? (
-        <Skeleton variant="rounded" width={"100%"} height={100} />
+        <Skeleton variant="rounded" width={"100%"} height={300} />
       ) : (
-        <CustomDataGrid
+        <Table
           rows={nearbyccres}
           columns={cols}
-          tableTitle={"Nearby cCREs"}
+          label={"Nearby cCREs"}
           initialState={{
             sorting: {
               sortModel: [{ field: "distance", sort: "asc" }],
             },
           }}
           emptyTableFallback={"No Nearby cCREs found"}
+          divHeight={{height: "300px"}}
         />
       )}
     </Box>

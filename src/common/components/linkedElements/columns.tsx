@@ -115,18 +115,12 @@ export const slopeCol: colDef = {
   type: "number",
 };
 
-export const accessionCol: colDef = {
+export const accessionCol = (assembly: string): colDef => ({
   field: "accession",
   headerName: "Accession",
-  renderCell: (params: renderCellParams) => {
-    return (
-      <LinkComponent
-        href={`/ccre/${params.value}`}        
-        showExternalIcon={!params.row.isiCRE}
-        openInNewTab={!params.row.isiCRE}
-      >
-        {params.value}
-      </LinkComponent>
-    );
-  },
-};
+  renderCell: (params: renderCellParams) => (
+    <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
+      {params.value}
+    </LinkComponent>
+  ),
+});

@@ -4,6 +4,7 @@ import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from ".
 import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
 import { accessionCol } from "common/components/linkedElements/columns";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
+import { usePathname } from "next/navigation";
 
 
 export default function ComputationalLinkedCcres({
@@ -12,21 +13,23 @@ export default function ComputationalLinkedCcres({
   geneData: UseGeneDataReturn<{ name: string }>;  
 }) {
   const { data, loading, error } = useLinkedICREs(geneData?.data.id);
+  const pathname = usePathname()
+  const assembly = pathname.split("/")[1]
 
   if (geneData.loading || loading) {
     return (
       <Grid2 container spacing={2} width={"100%"}>
         <Grid2 size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={100} />
+          <Skeleton variant="rounded" width={"100%"} height={300} />
         </Grid2>
         <Grid2 size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={100} />
+          <Skeleton variant="rounded" width={"100%"} height={300} />
         </Grid2>
         <Grid2 size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={100} />
+          <Skeleton variant="rounded" width={"100%"} height={300} />
         </Grid2>
         <Grid2 size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={100} />
+          <Skeleton variant="rounded" width={"100%"} height={300} />
         </Grid2>
       </Grid2>
     );
@@ -65,33 +68,33 @@ export default function ComputationalLinkedCcres({
 
   const tables: TableDef<LinkedICREInfo>[] = [
     {
-      tableTitle: "Intact Hi-C Loops",
+      label: "Intact Hi-C Loops",
       rows: HiCLinked,
-      columns: [accessionCol, ...IntactHiCLoopsCols.slice(2)],
+      columns: [accessionCol(assembly), ...IntactHiCLoopsCols.slice(2)],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No intact Hi-C loops overlap a cCRE and the promoter of this gene`
     },
     {
-      tableTitle: "ChIA-PET",
+      label: "ChIA-PET",
       rows: ChIAPETLinked,
-      columns: [accessionCol, ...ChIAPETCols.slice(2)],
+      columns: [accessionCol(assembly), ...ChIAPETCols.slice(2)],
       sortColumn: "score",
       sortDirection: "desc",
       emptyTableFallback: `No ChIA-PET interactions overlap a cCRE and the promoter of this gene`,
     },
     {
-      tableTitle: "CRISPRi-FlowFISH",
+      label: "CRISPRi-FlowFISH",
       rows: crisprLinked,
-      columns: [accessionCol, ...CrisprFlowFISHCols.slice(2)],
+      columns: [accessionCol(assembly), ...CrisprFlowFISHCols.slice(2)],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No cCREs targeted in a CRISPRi-FlowFISH experiment were linked to this gene`,
     },
     {
-      tableTitle: "eQTLs",
+      label: "eQTLs",
       rows: eqtlLinked,
-      columns: [accessionCol, ...eQTLCols.slice(2)],
+      columns: [accessionCol(assembly), ...eQTLCols.slice(2)],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No cCREs overlap variants associated with significant changes in expression of this gene`,
