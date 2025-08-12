@@ -94,6 +94,7 @@ export default function DetailsPage({
         case "genes":
           return <p>This page should probably have eQTL data</p>;
       }
+      break;
     }
 
     case "gene": {
@@ -111,6 +112,7 @@ export default function DetailsPage({
         case "variants":
           return <p>This page should probably have eQTL data</p>;
       }
+      break;
     }
 
     case "ccre": {
@@ -128,6 +130,7 @@ export default function DetailsPage({
         case "variants":
           return assembly==="GRCh38" ? <CcreVariantsTab CcreData={CcreData} />: <p> Variants for mouse cCREs </p>;
       }
+      break;
     }
 
 
