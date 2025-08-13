@@ -1,5 +1,5 @@
 import { Add } from "@mui/icons-material";
-import { Stack, Paper, Tooltip, Divider, Tab } from "@mui/material";
+import { Stack, Paper, Tooltip, Divider, Tab, Box } from "@mui/material";
 import { OpenEntity, OpenEntitiesContext, OpenEntityState } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -86,6 +86,10 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   useEffect(() => {
     if (!openEntities.length || isRoutingRef.current) return;
     const newUrl = pathname + "?open=" + compressOpenEntitiesToURL(openEntities);
+    console.log("pushing " + newUrl)
+    console.log("openEntities:")
+    console.log(openEntities)
+    console.log("moreThanOneEntityOpen " + moreThanOneEntityOpen)
     router.push(newUrl);
   }, [openEntities, pathname, navigateAndMark, router]);
 
@@ -252,9 +256,8 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   }, [openEntities]);
 
   const DragTab = useCallback(
-    ({ entity, key, index }: { entity: OpenEntity; key: number; index: number }) => (
+    ({ entity, index }: { entity: OpenEntity; index: number }) => (
       <DraggableTab
-        key={key}
         index={index}
         closable={moreThanOneEntityOpen}
         entity={entity}
@@ -266,30 +269,89 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     [currentEntityState?.entityID, handleCloseTab, handleTabClick, moreThanOneEntityOpen]
   );
 
-  // const OpenTabs = useCallback(
-  //   ({ openEntities }: { openEntities: OpenEntityState }) => {
-  //     if (multipleAssembliesOpen) {
-  //       return (
-  //         <>
-  //           <HumanIcon size={25} />
-  //           {openEntities
-  //             .filter((x) => x.assembly === "GRCh38")
-  //             .map((entity, i) => (
-  //               <Tab key={i} index={i} entity={entity} />
-  //             ))}
-  //           <Divider orientation="vertical" />
-  //           <MouseIcon size={25} />
-  //           {openEntities
-  //             .filter((x) => x.assembly === "mm10")
-  //             .map((entity, i) => (
-  //               <Tab key={i} index={i} entity={entity} />
-  //             ))}
-  //         </>
-  //       );
-  //     } else return openEntities.map((entity, i) => <Tab key={i} index={i} entity={entity} />);
-  //   },
-  //   [Tab, multipleAssembliesOpen]
-  // );
+  const IconWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <Box p={1} display={"flex"} alignItems={"center"}>
+      {children}
+    </Box>
+  );
+
+  const HumanTabGroupIcon = useCallback(
+    () => (
+      <IconWrapper>
+        <HumanIcon size={25} />
+      </IconWrapper>
+    ),
+    []
+  );
+  const MouseTabGroupIcon = useCallback(
+    () => (
+      <IconWrapper>
+        <MouseIcon size={25} />
+      </IconWrapper>
+    ),
+    []
+  );
+
+  const OpenTabs = useCallback(
+    () => {
+      const border: boolean = false
+      if (multipleAssembliesOpen) {
+        const firstAssembly = openEntities[0].assembly
+        const secondAssembly = firstAssembly === "GRCh38" ? "mm10" : "GRCh38"
+        return (
+          <>
+            {firstAssembly == "GRCh38" ? <HumanTabGroupIcon /> : <MouseTabGroupIcon />}
+            <Droppable droppableId="droppable-human" type="human" direction="horizontal">
+              {(provided, snapshot) => {
+                return (
+                  <div ref={provided.innerRef} {...provided.droppableProps} style={border ? {border: "1px solid red"}: {}}>
+                    {openEntities
+                      .filter((x) => x.assembly === firstAssembly)
+                      .map((entity, i) => (
+                        <DragTab key={i} index={i} entity={entity} />
+                      ))}
+                    {provided.placeholder}
+                  </div>
+                );
+              }}
+            </Droppable>
+            <Divider flexItem orientation="vertical" sx={{marginY: 1}} />
+            {secondAssembly == "mm10" ? <MouseTabGroupIcon /> : <HumanTabGroupIcon />}
+            <Droppable droppableId="droppable-mouse" type="mouse" direction="horizontal">
+              {(provided, snapshot) => {
+                return (
+                  <div ref={provided.innerRef} {...provided.droppableProps} style={border ? {border: "1px solid red"}: {}}>
+                    {openEntities
+                      .filter((x) => x.assembly === secondAssembly)
+                      .map((entity, i) => (
+                        <DragTab key={i} index={i} entity={entity} />
+                      ))}
+                    {provided.placeholder}
+                  </div>
+                );
+              }}
+            </Droppable>
+          </>
+        );
+      } else
+        return (
+          //Create one shared droppable area
+          <Droppable droppableId="droppable" direction="horizontal">
+            {(provided, snapshot) => {
+              return (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
+                  {openEntities.map((entity, i) => (
+                    <DragTab key={i} index={i} entity={entity} />
+                  ))}
+                  {provided.placeholder}
+                </div>
+              );
+            }}
+          </Droppable>
+        );
+    },
+    [DragTab, HumanTabGroupIcon, MouseTabGroupIcon, multipleAssembliesOpen, openEntities]
+  );
 
   return (
     <TabContext value={tabIndex}>
@@ -297,39 +359,28 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
       <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 61 }} id="open-elements-tabs">
         <Stack direction={"row"}>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="droppable" direction="horizontal">
-              {(provided, snapshot) => {
-                return (
-                  <TabList
-                    ref={provided.innerRef} //need to expose highest DOM node to the Droppable component
-                    variant="scrollable"
-                    allowScrollButtonsMobile
-                    scrollButtons={snapshot.draggingFromThisWith ? false : "auto"} //prevent scroll buttons from appearing when dragging first or last item
-                    sx={{
-                      "& .MuiTabs-scrollButtons.Mui-disabled": {
-                        opacity: 0.3,
-                      },
-                      "& .MuiTabs-indicator": {
-                        display: "none", // hide selected indicator since we're adding one back in to fix drag behavior
-                      },
-                      flexGrow: 1,
-                    }}
-                    {...provided.droppableProps} //contains attributes for styling and element lookups
-                  >
-                    {openEntities.map((entity, i) => (
-                      <DragTab key={i} index={i} entity={entity} />
-                    ))}
-                    {!snapshot.draggingFromThisWith && (
-                      <Tooltip title="New Search" placement="right">
-                        <Tab onClick={handleFocusSearch} icon={<Add fontSize="small" />} sx={{ minWidth: 0 }} />
-                      </Tooltip>
-                    )}
-                    {/* Currently not using placeholder element, but could do so with the below */}
-                    {/* {provided.placeholder} */}
-                  </TabList>
-                );
+            <TabList
+              variant="scrollable"
+              allowScrollButtonsMobile
+              scrollButtons={"auto"}
+              sx={{
+                "& .MuiTabs-scrollButtons.Mui-disabled": {
+                  opacity: 0.3,
+                },
+                "& .MuiTabs-indicator": {
+                  display: "none", // hide selected indicator since we're adding one back in to fix drag behavior
+                },
+                "& .MuiTabs-flexContainer": {
+                  alignItems: "center"
+                },
+                flexGrow: 1,
               }}
-            </Droppable>
+            >
+              <OpenTabs />
+              <Tooltip title="New Search" placement="right">
+                <Tab onClick={handleFocusSearch} icon={<Add fontSize="small" />} sx={{ minWidth: 0 }} />
+              </Tooltip>
+            </TabList>
           </DragDropContext>
           <OpenEntitiesTabsMenu handleCloseAll={handleCloseAll} handleSort={handleSort} />
         </Stack>
