@@ -80,18 +80,14 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   /**
    * Sync URL with current internal state (skip if not initialized yet)
-   * Important - this relies on openEntitiess being an empty array on initial load, and it never being reset to empty
+   * Important - this relies on openEntities being an empty array on initial load, and it never being reset to empty
    * Otherwise would need to check isInitializedRef.current
    */
   useEffect(() => {
     if (!openEntities.length || isRoutingRef.current) return;
     const newUrl = pathname + "?open=" + compressOpenEntitiesToURL(openEntities);
-    console.log("pushing " + newUrl)
-    console.log("openEntities:")
-    console.log(openEntities)
-    console.log("moreThanOneEntityOpen " + moreThanOneEntityOpen)
-    router.push(newUrl);
-  }, [openEntities, pathname, navigateAndMark, router]);
+    router.replace(newUrl); //don't use navigateAndMark since it's only set to false when navigating between elements (would be stuck false)
+  }, [navigateAndMark, openEntities, pathname, router]);
 
   /**
    *
@@ -175,14 +171,8 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   //  ------- <OpenEntitiesTabsMenu> Helpers -------
 
-  const moreThanOneEntityOpen = useMemo(() => {
-    if (openEntities.length > 1) {
-      return true;
-    } else return false;
-  }, [openEntities]);
-
   const handleCloseAll = useCallback(
-    moreThanOneEntityOpen
+    openEntities.length > 1
       ? () => {
           dispatch({
             type: "setState",
@@ -194,7 +184,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   );
 
   const handleSort = useCallback(
-    moreThanOneEntityOpen
+    openEntities.length > 1
       ? () => {
           const sortOrder: EntityType[] = ["region", "gene", "ccre", "variant"];
           dispatch({
@@ -255,20 +245,6 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     return assemblies.includes("GRCh38") && assemblies.includes("mm10");
   }, [openEntities]);
 
-  const DragTab = useCallback(
-    ({ entity, index }: { entity: OpenEntity; index: number }) => (
-      <DraggableTab
-        index={index}
-        closable={moreThanOneEntityOpen}
-        entity={entity}
-        isSelected={currentEntityState?.entityID === entity.entityID}
-        handleCloseTab={handleCloseTab}
-        handleTabClick={handleTabClick}
-      />
-    ),
-    [currentEntityState?.entityID, handleCloseTab, handleTabClick, moreThanOneEntityOpen]
-  );
-
   const IconWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Box p={1} display={"flex"} alignItems={"center"}>
       {children}
@@ -292,66 +268,102 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     []
   );
 
-  const OpenTabs = useCallback(
-    () => {
-      const border: boolean = false
-      if (multipleAssembliesOpen) {
-        const firstAssembly = openEntities[0].assembly
-        const secondAssembly = firstAssembly === "GRCh38" ? "mm10" : "GRCh38"
-        return (
-          <>
-            {firstAssembly == "GRCh38" ? <HumanTabGroupIcon /> : <MouseTabGroupIcon />}
-            <Droppable droppableId="droppable-human" type="human" direction="horizontal">
-              {(provided, snapshot) => {
-                return (
-                  <div ref={provided.innerRef} {...provided.droppableProps} style={border ? {border: "1px solid red"}: {}}>
-                    {openEntities
-                      .filter((x) => x.assembly === firstAssembly)
-                      .map((entity, i) => (
-                        <DragTab key={i} index={i} entity={entity} />
-                      ))}
-                    {provided.placeholder}
-                  </div>
-                );
-              }}
-            </Droppable>
-            <Divider flexItem orientation="vertical" sx={{marginY: 1}} />
-            {secondAssembly == "mm10" ? <MouseTabGroupIcon /> : <HumanTabGroupIcon />}
-            <Droppable droppableId="droppable-mouse" type="mouse" direction="horizontal">
-              {(provided, snapshot) => {
-                return (
-                  <div ref={provided.innerRef} {...provided.droppableProps} style={border ? {border: "1px solid red"}: {}}>
-                    {openEntities
-                      .filter((x) => x.assembly === secondAssembly)
-                      .map((entity, i) => (
-                        <DragTab key={i} index={i} entity={entity} />
-                      ))}
-                    {provided.placeholder}
-                  </div>
-                );
-              }}
-            </Droppable>
-          </>
-        );
-      } else
-        return (
-          //Create one shared droppable area
-          <Droppable droppableId="droppable" direction="horizontal">
+  const OpenTabs = useCallback(() => {
+    const border: boolean = false;
+    const sharedTabProps = {
+      handleCloseTab: handleCloseTab,
+      handleTabClick: handleTabClick,
+      closable: openEntities.length > 1,
+    };
+    if (multipleAssembliesOpen) {
+      const firstAssembly = openEntities[0].assembly;
+      const secondAssembly = firstAssembly === "GRCh38" ? "mm10" : "GRCh38";
+      return (
+        <>
+          {firstAssembly == "GRCh38" ? <HumanTabGroupIcon /> : <MouseTabGroupIcon />}
+          <Droppable droppableId="droppable-human" type="human" direction="horizontal">
             {(provided, snapshot) => {
               return (
-                <div ref={provided.innerRef} {...provided.droppableProps}>
-                  {openEntities.map((entity, i) => (
-                    <DragTab key={i} index={i} entity={entity} />
-                  ))}
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  style={border ? { border: "1px solid red" } : {}}
+                >
+                  {openEntities
+                    .filter((x) => x.assembly === firstAssembly)
+                    .map((entity, i) => (
+                      <DraggableTab
+                        key={i}
+                        index={i}
+                        entity={entity}
+                        isSelected={currentEntityState?.entityID === entity.entityID}
+                        {...sharedTabProps}
+                      />
+                    ))}
                   {provided.placeholder}
                 </div>
               );
             }}
           </Droppable>
-        );
-    },
-    [DragTab, HumanTabGroupIcon, MouseTabGroupIcon, multipleAssembliesOpen, openEntities]
-  );
+          <Divider flexItem orientation="vertical" sx={{ marginY: 1 }} />
+          {secondAssembly == "mm10" ? <MouseTabGroupIcon /> : <HumanTabGroupIcon />}
+          <Droppable droppableId="droppable-mouse" type="mouse" direction="horizontal">
+            {(provided, snapshot) => {
+              return (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  style={border ? { border: "1px solid red" } : {}}
+                >
+                  {openEntities
+                    .filter((x) => x.assembly === secondAssembly)
+                    .map((entity, i) => (
+                      <DraggableTab
+                        key={i}
+                        index={i}
+                        entity={entity}
+                        isSelected={currentEntityState?.entityID === entity.entityID}
+                        {...sharedTabProps}
+                      />
+                    ))}
+                  {provided.placeholder}
+                </div>
+              );
+            }}
+          </Droppable>
+        </>
+      );
+    } else
+      return (
+        //Create one shared droppable area
+        <Droppable droppableId="droppable" direction="horizontal">
+          {(provided, snapshot) => {
+            return (
+              <div ref={provided.innerRef} {...provided.droppableProps}>
+                {openEntities.map((entity, i) => (
+                  <DraggableTab
+                    key={i}
+                    index={i}
+                    entity={entity}
+                    isSelected={currentEntityState?.entityID === entity.entityID}
+                    {...sharedTabProps}
+                  />
+                ))}
+                {provided.placeholder}
+              </div>
+            );
+          }}
+        </Droppable>
+      );
+  }, [
+    HumanTabGroupIcon,
+    MouseTabGroupIcon,
+    currentEntityState?.entityID,
+    handleCloseTab,
+    handleTabClick,
+    multipleAssembliesOpen,
+    openEntities,
+  ]);
 
   return (
     <TabContext value={tabIndex}>

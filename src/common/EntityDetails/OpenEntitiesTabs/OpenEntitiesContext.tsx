@@ -15,7 +15,6 @@ export type OpenEntityAction =
   | { type: "setState"; state: OpenEntityState }
 
 const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAction) => {
-
   let newState: OpenEntityState
   switch (action.type) {
     //Add Entity to the end of the part of the array containing the assembly, if none exist add to the end
@@ -25,7 +24,9 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
       } else {
         const lastIndexOfAssembly = openEntities.findLastIndex((x) => x.assembly === action.entity.assembly);
         if (lastIndexOfAssembly !== -1) { // if that assembly is open already, add to end of that part of list
-          newState = openEntities.splice(lastIndexOfAssembly + 1, 0, action.entity);
+          const newEntities = [...openEntities]
+          newEntities.splice(lastIndexOfAssembly + 1, 0, action.entity)
+          newState = newEntities;
         } else { // else add to the end
           newState = [...openEntities, action.entity];
         }
