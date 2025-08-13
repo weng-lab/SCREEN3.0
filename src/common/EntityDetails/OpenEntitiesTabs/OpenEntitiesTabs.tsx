@@ -171,36 +171,18 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   //  ------- <OpenEntitiesTabsMenu> Helpers -------
 
-  const handleCloseAll = useCallback(
-    openEntities.length > 1
-      ? () => {
-          dispatch({
-            type: "setState",
-            state: [currentEntityState],
-          });
-        }
-      : undefined, // fallback to undefined and menu will disable the option
-    [currentEntityState, dispatch]
-  );
+  const handleCloseAll = useCallback(() => {
+    dispatch({
+      type: "setState",
+      state: [currentEntityState],
+    });
+  }, [currentEntityState, dispatch]);
 
-  const handleSort = useCallback(
-    openEntities.length > 1
-      ? () => {
-          const sortOrder: EntityType[] = ["region", "gene", "ccre", "variant"];
-          dispatch({
-            type: "setState",
-            state: [...openEntities].sort((a, b) => {
-              const typeComparison = sortOrder.indexOf(a.entityType) - sortOrder.indexOf(b.entityType);
-              if (typeComparison === 0) {
-                return a.entityID.localeCompare(b.entityID);
-              }
-              return typeComparison;
-            }),
-          });
-        }
-      : undefined, // fallback to undefined and menu will disable the option
-    [dispatch, openEntities]
-  );
+  const handleSort = useCallback(() => {
+    dispatch({
+      type: "sort",
+    });
+  }, [dispatch]);
 
   // ------- End <OpenEntitiesTabsMenu> Helpers -------
 
@@ -383,7 +365,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
                   display: "none", // hide selected indicator since we're adding one back in to fix drag behavior
                 },
                 "& .MuiTabs-flexContainer": {
-                  alignItems: "center"
+                  alignItems: "center",
                 },
                 flexGrow: 1,
               }}
@@ -394,7 +376,13 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
               </Tooltip>
             </TabList>
           </DragDropContext>
-          <OpenEntitiesTabsMenu handleCloseAll={handleCloseAll} handleSort={handleSort} />
+          {/* We need to handle the case where there is one open for each assembly, and sorting should be disabled. */}
+          <OpenEntitiesTabsMenu
+            handleCloseAll={handleCloseAll}
+            disableCloseAll={openEntities.length === 1}
+            handleSort={handleSort}
+            disableSort={openEntities.length === 1}
+          />
         </Stack>
       </Paper>
       {/* Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */}

@@ -12,7 +12,8 @@ export type OpenEntityAction =
   | { type: "removeEntity"; entity: OpenEntity }
   | { type: "updateEntity"; entity: OpenEntity }
   | { type: "reorder"; entity: OpenEntity; startIndex: number; endIndex: number }
-  | { type: "setState"; state: OpenEntityState }
+  | { type: "sort" }
+  | { type: "setState"; state: OpenEntityState };
 
 const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAction) => {
   let newState: OpenEntityState
@@ -53,6 +54,31 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
 
       const [removed] = listToReorder.splice(action.startIndex, 1);
       listToReorder.splice(action.endIndex, 0, removed)
+
+      const humanListIsFirst = openEntities[0].assembly === "GRCh38"
+
+      if (humanListIsFirst){
+        newState = [...humanList, ...mouseList]
+      } else newState = [...mouseList, ...humanList]
+
+      break;
+    }
+    case "sort": {
+      const humanList = Array.from(openEntities.filter(x => x.assembly === "GRCh38"))
+      const mouseList = Array.from(openEntities.filter(x => x.assembly === "mm10"))
+      
+      const sortOrder: EntityType[] = ["region", "gene", "ccre", "variant"];
+      
+      const sortFn = (a: OpenEntity, b: OpenEntity) => {
+        const typeComparison = sortOrder.indexOf(a.entityType) - sortOrder.indexOf(b.entityType);
+        if (typeComparison === 0) {
+          return a.entityID.localeCompare(b.entityID);
+        }
+        return typeComparison;
+      }
+
+      humanList.sort(sortFn)
+      mouseList.sort(sortFn)
 
       const humanListIsFirst = openEntities[0].assembly === "GRCh38"
 

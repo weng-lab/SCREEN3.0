@@ -7,8 +7,10 @@ import { MenuList, ListItemIcon, ListItemText } from "@mui/material";
 import { Category, Close } from "@mui/icons-material";
 
 type OpenEntitiesTabsMenuProps = {
-  handleCloseAll?: () => void;
-  handleSort?: () => void;
+  handleCloseAll: () => void;
+  handleSort: () => void;
+  disableCloseAll: boolean;
+  disableSort: boolean;
 };
 
 const OpenEntitiesTabsMenu = (props: OpenEntitiesTabsMenuProps) => {
@@ -53,13 +55,13 @@ const OpenEntitiesTabsMenu = (props: OpenEntitiesTabsMenuProps) => {
           horizontal: "right",
         }}
       >
-        <MenuItem onClick={handleSortClick} disabled={!props.handleSort}>
+        <MenuItem onClick={handleSortClick} disabled={props.disableSort}>
           <ListItemIcon>
             <Category fontSize="small"/>
           </ListItemIcon>
           <ListItemText>Sort Tabs</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleCloseAllClick} disabled={!props.handleCloseAll}>
+        <MenuItem onClick={handleCloseAllClick} disabled={props.disableCloseAll}>
           <ListItemIcon>
             <Close fontSize="small"/>
           </ListItemIcon>
