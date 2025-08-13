@@ -335,6 +335,8 @@ const tabRouteEncoding: { [key in TabRoute]: string } = {
   genes: "g",
   ccres: "c",
   variants: "v",
+  conservation: "s",
+  functional: "f",
   "": "",
 };
 

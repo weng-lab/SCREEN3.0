@@ -62,7 +62,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
 
   const tables: TableDef<LinkedGeneInfo>[] = [
     {
-      tableTitle: "Intact Hi-C Loops",
+      label: "Intact Hi-C Loops",
       rows: HiCLinked,
       columns: IntactHiCLoopsCols,
       sortColumn: "p_val",
@@ -70,7 +70,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       emptyTableFallback: "No intact Hi-C loops overlap this cCRE and the promoter of a gene",
     },
     {
-      tableTitle: "ChIA-PET Interactions",
+      label: "ChIA-PET Interactions",
       rows: ChIAPETLinked,
       columns: ChIAPETCols,
       sortColumn: "score",
@@ -78,7 +78,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       emptyTableFallback: "No ChIA-PET interactions overlap this cCRE and the promoter of a gene",
     },
     {
-      tableTitle: "CRISPRi-FlowFISH",
+      label: "CRISPRi-FlowFISH",
       rows: crisprLinked,
       columns: CrisprFlowFISHCols,
       sortColumn: "p_val",
@@ -86,7 +86,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       emptyTableFallback: "This cCRE was not targeted in a CRISPRi-FlowFISH experiment",
     },
     {
-      tableTitle: "eQTLs",
+      label: "eQTLs",
       rows: eqtlLinked,
       columns: eQTLCols,
       sortColumn: "p_val",

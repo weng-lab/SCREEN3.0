@@ -68,12 +68,12 @@ export default function Footer() {
           <Grid2 container spacing={4}>
             {sections.map((section) => (
               <Grid2 size={{ xs: 6, sm: 3 }} key={section.title}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
                   {section.title}
                 </Typography>
                 <Stack spacing={0.5}>
                   {section.links.map((link) => (
-                    <LinkComponent href={link.href} key={link.name} underline="none" color="inherit" width={"fit-content"}>
+                    <LinkComponent href={link.href} key={link.name} underline="none" color="inherit" width={"fit-content"} variant="subtitle2">
                       {link.name}
                     </LinkComponent>
                   ))}
@@ -83,7 +83,18 @@ export default function Footer() {
           </Grid2>
         </Grid2>
       </Grid2>
-      <Typography variant="body2" sx={{ mt: 6, mb: 2 }} textAlign={"center"} color={"#b2bcf0"}>
+      <Typography variant="body2" textAlign={"center"} sx={{ mt: 6, mb: 2 }}>
+        Copyright ©{" "}
+        <MuiLink color="inherit" href="https://www.umassmed.edu/zlab/">
+          Weng Lab
+        </MuiLink>
+        ,{" "}
+        <MuiLink color="inherit" href="https://sites.google.com/view/moore-lab/">
+          Moore Lab
+        </MuiLink>{" "}
+        {new Date().getFullYear()}.
+      </Typography>
+      <Typography variant="body2" textAlign={"center"} color={"#b2bcf0"}>
         How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN: <br />
         <MuiLink
           href="https://www.nature.com/articles/s41586-020-2493-4"
@@ -93,37 +104,6 @@ export default function Footer() {
           &quot;ENCODE Project Consortium, et al. Nature 2020.&quot;
         </MuiLink>
       </Typography>
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", my: 3 }} />
-      <Grid2
-        container
-        justifyContent="space-between"
-        flexDirection={{ xs: "column", md: "row" }}
-        alignItems="center"
-      >
-        <Grid2>
-          <Typography variant="body2">
-            Copyright ©{" "}
-            <MuiLink color="inherit" href="https://www.umassmed.edu/zlab/">
-              Weng Lab
-            </MuiLink>
-            ,{" "}
-            <MuiLink color="inherit" href="https://sites.google.com/view/moore-lab/">
-              Moore Lab
-            </MuiLink>{" "}
-            {new Date().getFullYear()}.
-          </Typography>
-        </Grid2>
-        <Grid2>
-          <Box display="flex" gap={2} justifyContent={{ xs: "flex-start", md: "flex-end" }}>
-            <MuiLink href="#" color="inherit" underline="hover">
-              Privacy & Policy
-            </MuiLink>
-            <MuiLink href="#" color="inherit" underline="hover">
-              Terms & Conditions
-            </MuiLink>
-          </Box>
-        </Grid2>
-      </Grid2>
     </Box>
   );
 }
