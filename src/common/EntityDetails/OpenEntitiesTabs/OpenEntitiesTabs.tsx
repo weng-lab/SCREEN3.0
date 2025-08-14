@@ -1,19 +1,17 @@
 import { Add } from "@mui/icons-material";
-import { Stack, Paper, Tooltip, Divider, Tab, Box } from "@mui/material";
-import { OpenEntity, OpenEntitiesContext, OpenEntityState } from "./OpenEntitiesContext";
+import { Stack, Paper, Tooltip, Tab } from "@mui/material";
+import { OpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Assembly, EntityType, TabRoute } from "types/globalTypes";
-import { DragDropContext, Droppable, OnDragEndResponder } from "@hello-pangea/dnd";
+import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/MenuContext";
-import { DraggableTab } from "./DraggableTab";
-import HumanIcon from "app/_utility/humanIcon";
-import MouseIcon from "app/_utility/mouseIcon";
+import { OpenTabs } from "./OpenTabs";
 
 export const constructEntityURL = (entity: OpenEntity) =>
   `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
@@ -227,125 +225,13 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     return assemblies.includes("GRCh38") && assemblies.includes("mm10");
   }, [openEntities]);
 
-  const IconWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <Box p={1} display={"flex"} alignItems={"center"}>
-      {children}
-    </Box>
-  );
-
-  const HumanTabGroupIcon = useCallback(
-    () => (
-      <IconWrapper>
-        <HumanIcon size={25} />
-      </IconWrapper>
-    ),
-    []
-  );
-  const MouseTabGroupIcon = useCallback(
-    () => (
-      <IconWrapper>
-        <MouseIcon size={25} />
-      </IconWrapper>
-    ),
-    []
-  );
-
-  const OpenTabs = useCallback(() => {
-    const border: boolean = false;
-    const sharedTabProps = {
-      handleCloseTab: handleCloseTab,
-      handleTabClick: handleTabClick,
-      closable: openEntities.length > 1,
-    };
-    if (multipleAssembliesOpen) {
-      const firstAssembly = openEntities[0].assembly;
-      const secondAssembly = firstAssembly === "GRCh38" ? "mm10" : "GRCh38";
-      return (
-        <>
-          {firstAssembly == "GRCh38" ? <HumanTabGroupIcon /> : <MouseTabGroupIcon />}
-          <Droppable droppableId="droppable-human" type="human" direction="horizontal">
-            {(provided, snapshot) => {
-              return (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  style={border ? { border: "1px solid red" } : {}}
-                >
-                  {openEntities
-                    .filter((x) => x.assembly === firstAssembly)
-                    .map((entity, i) => (
-                      <DraggableTab
-                        key={i}
-                        index={i}
-                        entity={entity}
-                        isSelected={currentEntityState?.entityID === entity.entityID}
-                        {...sharedTabProps}
-                      />
-                    ))}
-                  {provided.placeholder}
-                </div>
-              );
-            }}
-          </Droppable>
-          <Divider flexItem orientation="vertical" sx={{ marginY: 1 }} />
-          {secondAssembly == "mm10" ? <MouseTabGroupIcon /> : <HumanTabGroupIcon />}
-          <Droppable droppableId="droppable-mouse" type="mouse" direction="horizontal">
-            {(provided, snapshot) => {
-              return (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  style={border ? { border: "1px solid red" } : {}}
-                >
-                  {openEntities
-                    .filter((x) => x.assembly === secondAssembly)
-                    .map((entity, i) => (
-                      <DraggableTab
-                        key={i}
-                        index={i}
-                        entity={entity}
-                        isSelected={currentEntityState?.entityID === entity.entityID}
-                        {...sharedTabProps}
-                      />
-                    ))}
-                  {provided.placeholder}
-                </div>
-              );
-            }}
-          </Droppable>
-        </>
-      );
-    } else
-      return (
-        //Create one shared droppable area
-        <Droppable droppableId="droppable" direction="horizontal">
-          {(provided, snapshot) => {
-            return (
-              <div ref={provided.innerRef} {...provided.droppableProps}>
-                {openEntities.map((entity, i) => (
-                  <DraggableTab
-                    key={i}
-                    index={i}
-                    entity={entity}
-                    isSelected={currentEntityState?.entityID === entity.entityID}
-                    {...sharedTabProps}
-                  />
-                ))}
-                {provided.placeholder}
-              </div>
-            );
-          }}
-        </Droppable>
-      );
-  }, [
-    HumanTabGroupIcon,
-    MouseTabGroupIcon,
-    currentEntityState?.entityID,
+  const openTabsProps = {
+    openEntities,
+    currentEntityState,
     handleCloseTab,
     handleTabClick,
     multipleAssembliesOpen,
-    openEntities,
-  ]);
+  };
 
   return (
     <TabContext value={tabIndex}>
@@ -370,7 +256,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
                 flexGrow: 1,
               }}
             >
-              <OpenTabs />
+              <OpenTabs {...openTabsProps} />
               <Tooltip title="New Search" placement="right">
                 <Tab onClick={handleFocusSearch} icon={<Add fontSize="small" />} sx={{ minWidth: 0 }} />
               </Tooltip>
