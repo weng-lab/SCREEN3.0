@@ -116,6 +116,25 @@ export const OpenTabs: React.FC<OpenTabsProps> = ({
       </>
     );
   }
+  /**
+   * <DragDropContext>
+   *  <Droppable>
+   *    {provided => 
+   *      <TabList {...provided}>
+   *        <DraggableTab>
+   *    
+   *  }
+   */
+
+  /**
+   * <DragDropContext>
+   *  <Droppable>
+   *    {provided => 
+   *      <TabList {...provided}>
+   *        <DraggableTab>
+   *    
+   *  }
+   */
   
   return (
     <DroppableSection

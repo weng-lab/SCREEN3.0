@@ -1,5 +1,5 @@
 import { Add } from "@mui/icons-material";
-import { Stack, Paper, Tooltip, Tab } from "@mui/material";
+import { Stack, Paper, Tooltip, Tab, CircularProgress, IconButton, Box } from "@mui/material";
 import { OpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -232,12 +232,15 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     multipleAssembliesOpen,
   };
 
+  // const 
+
   return (
     <TabContext value={tabIndex}>
       {/* z index of scrollbar in DataGrid is 60 */}
       <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 61 }} id="open-elements-tabs">
         <Stack direction={"row"}>
           <DragDropContext onDragEnd={onDragEnd}>
+            {/* This TabList is just in the wrong place I think. It's children should  */}
             <TabList
               variant="scrollable"
               allowScrollButtonsMobile
@@ -252,15 +255,18 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
                 "& .MuiTabs-flexContainer": {
                   alignItems: "center",
                 },
-                flexGrow: 1,
               }}
             >
               <OpenTabs {...openTabsProps} />
-              <Tooltip title="New Search" placement="right">
-                <Tab onClick={handleFocusSearch} icon={<Add fontSize="small" />} sx={{ minWidth: 0 }} />
-              </Tooltip>
             </TabList>
           </DragDropContext>
+          <Box sx={{ flexGrow: 1, justifyContent: "flex-start", alignContent: "center" }}>
+            <Tooltip title="New Search" placement="right">
+              <IconButton onClick={handleFocusSearch}>
+                <Add fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
           {/* We need to handle the case where there is one open for each assembly, and sorting should be disabled. */}
           <OpenEntitiesTabsMenu
             handleCloseAll={handleCloseAll}

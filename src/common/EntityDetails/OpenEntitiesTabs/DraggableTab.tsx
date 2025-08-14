@@ -46,7 +46,7 @@ export const DraggableTab = ({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
-            label={formatEntityID(entity.entityID)}
+            label={formatEntityID(entity)}
             onClick={() => handleTabClick(entity)}
             iconPosition="end"
             icon={closable && <CloseTabButton entity={entity} handleCloseTab={handleCloseTab} />}
@@ -59,13 +59,13 @@ export const DraggableTab = ({
   );
 };
 
-const formatEntityID = (id: string) => {
-  if (id.includes("%3A")) {
-    const region = parseGenomicRangeString(id);
+const formatEntityID = (entity: OpenEntity) => {
+  if (entity.entityID.includes("%3A")) {
+    const region = parseGenomicRangeString(entity.entityID);
     return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
-  } else {
-    return id;
-  }
+  } else if (entity.entityType === "gene") {
+    return <i>{entity.entityID}</i>;
+  } else return entity.entityID;
 };
 
 // Create a styled close button that looks like an IconButton
