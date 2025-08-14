@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { Box, Divider } from "@mui/material";
 import { OpenEntity } from "./OpenEntitiesContext";
 import { DraggableTab } from "./DraggableTab";
@@ -31,6 +32,52 @@ const MouseTabGroupIcon = () => (
   </IconWrapper>
 );
 
+interface DroppableSectionProps {
+  droppableId: string;
+  type?: string;
+  entities: OpenEntity[];
+  currentEntityState: OpenEntity;
+  sharedTabProps: {
+    handleCloseTab: (entity: OpenEntity) => void;
+    handleTabClick: (entity: OpenEntity) => void;
+    closable: boolean;
+  };
+}
+
+/**
+ * A reusable component for rendering a droppable section of tabs
+ */
+const DroppableSection: React.FC<DroppableSectionProps> = ({
+  droppableId,
+  type,
+  entities,
+  currentEntityState,
+  sharedTabProps,
+}) => (
+  <Droppable droppableId={droppableId} type={type} direction="horizontal">
+    {(provided, snapshot) => (
+      <div ref={provided.innerRef} {...provided.droppableProps} style={{ display: "flex" }}>
+        {entities.map((entity, i) => (
+          <DraggableTab
+            key={i}
+            index={i}
+            entity={entity}
+            isSelected={currentEntityState?.entityID === entity.entityID}
+            {...sharedTabProps}
+          />
+        ))}
+        <div style={{ visibility: "hidden" }}>{provided.placeholder}</div>
+      </div>
+    )}
+  </Droppable>
+);
+
+/**
+ * Note: needed to set display: flex on the Droppable div to fix positioning issues with
+ * the placeholder element. The other fix would be to set vertical-align: middle
+ * on the placeholder directly. Also, need to wrap the placeholder and make it invisible to
+ * fix default styles it was inheriting from being a <button>
+ */
 export const OpenTabs: React.FC<OpenTabsProps> = ({
   openEntities,
   currentEntityState,
@@ -39,8 +86,8 @@ export const OpenTabs: React.FC<OpenTabsProps> = ({
   multipleAssembliesOpen,
 }) => {
   const sharedTabProps = {
-    handleCloseTab: handleCloseTab,
-    handleTabClick: handleTabClick,
+    handleCloseTab,
+    handleTabClick,
     closable: openEntities.length > 1,
   };
 
@@ -50,77 +97,32 @@ export const OpenTabs: React.FC<OpenTabsProps> = ({
     return (
       <>
         {firstAssembly == "GRCh38" ? <HumanTabGroupIcon /> : <MouseTabGroupIcon />}
-        <Droppable droppableId="droppable-human" type="human" direction="horizontal">
-          {(provided, snapshot) => {
-            console.log("abcd")
-            return (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {openEntities
-                  .filter((x) => x.assembly === firstAssembly)
-                  .map((entity, i) => (
-                    <DraggableTab
-                      key={i}
-                      index={i}
-                      entity={entity}
-                      isSelected={currentEntityState?.entityID === entity.entityID}
-                      {...sharedTabProps}
-                    />
-                  ))}
-                {provided.placeholder}
-              </div>
-            );
-          }}
-        </Droppable>
+        <DroppableSection
+          droppableId="droppable-human"
+          type="human"
+          entities={openEntities.filter((x) => x.assembly === firstAssembly)}
+          currentEntityState={currentEntityState}
+          sharedTabProps={sharedTabProps}
+        />
         <Divider flexItem orientation="vertical" sx={{ marginY: 1 }} />
         {secondAssembly == "mm10" ? <MouseTabGroupIcon /> : <HumanTabGroupIcon />}
-        <Droppable droppableId="droppable-mouse" type="mouse" direction="horizontal" >
-          {(provided, snapshot) => {
-            return (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {openEntities
-                  .filter((x) => x.assembly === secondAssembly)
-                  .map((entity, i) => (
-                    <DraggableTab
-                      key={i}
-                      index={i}
-                      entity={entity}
-                      isSelected={currentEntityState?.entityID === entity.entityID}
-                      {...sharedTabProps}
-                    />
-                  ))}
-                {provided.placeholder}
-              </div>
-            );
-          }}
-        </Droppable>
+        <DroppableSection
+          droppableId="droppable-mouse"
+          type="mouse"
+          entities={openEntities.filter((x) => x.assembly === secondAssembly)}
+          currentEntityState={currentEntityState}
+          sharedTabProps={sharedTabProps}
+        />
       </>
     );
-  } else
-    return (
-      //Create one shared droppable area
-      <Droppable droppableId="droppable" direction="horizontal">
-        {(provided, snapshot) => {
-          return (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              {openEntities.map((entity, i) => (
-                <DraggableTab
-                  key={i}
-                  index={i}
-                  entity={entity}
-                  isSelected={currentEntityState?.entityID === entity.entityID}
-                  {...sharedTabProps}
-                />
-              ))}
-              {provided.placeholder}
-            </div>
-          );
-        }}
-      </Droppable>
-    );
+  }
+  
+  return (
+    <DroppableSection
+      droppableId="droppable"
+      entities={openEntities}
+      currentEntityState={currentEntityState}
+      sharedTabProps={sharedTabProps}
+    />
+  );
 };

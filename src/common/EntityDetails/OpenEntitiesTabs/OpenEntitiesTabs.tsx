@@ -62,7 +62,6 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
    */
   const navigateAndMark = useCallback(
     (url: string) => {
-      console.log("called with " + url);
       isRoutingRef.current = true;
       router.push(url);
     },
