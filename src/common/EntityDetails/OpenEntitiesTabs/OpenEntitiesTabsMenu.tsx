@@ -3,12 +3,14 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { MenuList, ListItemIcon, ListItemText } from "@mui/material";
+import { MenuList, ListItemIcon, ListItemText, Box, Tooltip } from "@mui/material";
 import { Category, Close } from "@mui/icons-material";
 
 type OpenEntitiesTabsMenuProps = {
-  handleCloseAll?: () => void;
-  handleSort?: () => void;
+  handleCloseAll: () => void;
+  handleSort: () => void;
+  disableCloseAll: boolean;
+  disableSort: boolean;
 };
 
 const OpenEntitiesTabsMenu = (props: OpenEntitiesTabsMenuProps) => {
@@ -36,9 +38,13 @@ const OpenEntitiesTabsMenu = (props: OpenEntitiesTabsMenuProps) => {
 
   return (
     <>
-      <IconButton onClick={handleOpenMenu}>
-        <MoreVertIcon />
-      </IconButton>
+      <Box sx={{ justifyContent: "flex-start", alignContent: "center" }}>
+        <Tooltip title="Manage Tabs" placement="left">
+          <IconButton onClick={handleOpenMenu}>
+            <MoreVertIcon fontSize="small"/>
+          </IconButton>
+        </Tooltip>
+      </Box>
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -53,15 +59,15 @@ const OpenEntitiesTabsMenu = (props: OpenEntitiesTabsMenuProps) => {
           horizontal: "right",
         }}
       >
-        <MenuItem onClick={handleSortClick} disabled={!props.handleSort}>
+        <MenuItem onClick={handleSortClick} disabled={props.disableSort}>
           <ListItemIcon>
-            <Category fontSize="small"/>
+            <Category fontSize="small" />
           </ListItemIcon>
           <ListItemText>Sort Tabs</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleCloseAllClick} disabled={!props.handleCloseAll}>
+        <MenuItem onClick={handleCloseAllClick} disabled={props.disableCloseAll}>
           <ListItemIcon>
-            <Close fontSize="small"/>
+            <Close fontSize="small" />
           </ListItemIcon>
           <ListItemText>Close Other Tabs</ListItemText>
         </MenuItem>
