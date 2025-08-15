@@ -1,11 +1,9 @@
 import { Draggable } from "@hello-pangea/dnd";
-import { AccessibilityNew, Close, Man, PestControlRodent } from "@mui/icons-material";
-import { Box, styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
+import { Close, Man, PestControlRodent } from "@mui/icons-material";
+import { styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
 import { OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { useCallback, useContext, useMemo, useState } from "react";
-import HumanIcon from "app/_utility/humanIcon";
-import MouseIcon from "app/_utility/mouseIcon";
 
 export type DraggableTabProps = TabProps & {
   entity: OpenEntity;
@@ -27,12 +25,12 @@ export const DraggableTab = ({
 }: DraggableTabProps) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [openEntities] = useContext(OpenEntitiesContext);
-  
+
   const multipleAssembliesOpen = useMemo(() => {
     const assemblies = openEntities.map((x) => x.assembly);
     return assemblies.includes("GRCh38") && assemblies.includes("mm10");
   }, [openEntities]);
-  
+
   const Icon = useCallback(() => {
     if (isHovered && closable) return <CloseTabButton entity={entity} handleCloseTab={handleCloseTab} />;
     if (multipleAssembliesOpen) {
@@ -51,40 +49,40 @@ export const DraggableTab = ({
     }
   }, [closable, entity, handleCloseTab, isHovered, multipleAssembliesOpen]);
 
-  const dragID = entity.entityID + entity.assembly
-  
+  const dragID = entity.entityID + entity.assembly;
+
   return (
     <Draggable key={dragID} draggableId={dragID} index={index} disableInteractiveElementBlocking>
       {(provided, snapshot) => {
         const draggingStyles: SxProps<Theme> = snapshot.isDragging
-        ? {
-          backgroundColor: "white",
-          border: (theme) => `1px solid ${theme.palette.primary.main}`,
-          borderRadius: 1,
-        }
-        : {};
+          ? {
+              backgroundColor: "white",
+              border: (theme) => `1px solid ${theme.palette.primary.main}`,
+              borderRadius: 1,
+            }
+          : {};
         const selectedStyles: SxProps<Theme> = isSelected
-        ? {
-          borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
-          borderTop: (theme) => `2px solid transparent`,
-        }
-        : {};
-        
+          ? {
+              borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
+              borderTop: (theme) => `2px solid transparent`,
+            }
+          : {};
+
         return (
           <Tab
-          value={index}
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
-          label={formatEntityID(entity)}
-          onClick={() => handleTabClick(entity)}
-          iconPosition="end"
-          icon={<Icon/>}
-          sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          {...props}
+            value={index}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
+            label={formatEntityID(entity)}
+            onClick={() => handleTabClick(entity)}
+            iconPosition="end"
+            icon={<Icon />}
+            sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            {...props}
           />
         );
       }}

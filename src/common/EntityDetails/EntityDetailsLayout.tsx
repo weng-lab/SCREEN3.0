@@ -4,7 +4,7 @@ import EntityDetailsTabs from "./EntityDetailsTabs";
 import { EntityDetailsHeader, EntityDetailsHeaderProps } from "./EntityDetailsHeader";
 import RegionSearchHeader from "./RegionSearchHeader";
 import { parseGenomicRangeString } from "common/utility";
-import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabs";
+import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 
 export type EntityDetailsLayoutProps = EntityDetailsHeaderProps & { children: React.ReactNode };
 
