@@ -1,8 +1,11 @@
 import { Draggable } from "@hello-pangea/dnd";
-import { Close } from "@mui/icons-material";
-import { styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
-import { OpenEntity } from "./OpenEntitiesContext";
+import { AccessibilityNew, Close, Man, PestControlRodent } from "@mui/icons-material";
+import { Box, styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
+import { OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
+import { useCallback, useContext, useMemo, useState } from "react";
+import HumanIcon from "app/_utility/humanIcon";
+import MouseIcon from "app/_utility/mouseIcon";
 
 export type DraggableTabProps = TabProps & {
   entity: OpenEntity;
@@ -22,36 +25,66 @@ export const DraggableTab = ({
   handleCloseTab,
   ...props
 }: DraggableTabProps) => {
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [openEntities] = useContext(OpenEntitiesContext);
+  
+  const multipleAssembliesOpen = useMemo(() => {
+    const assemblies = openEntities.map((x) => x.assembly);
+    return assemblies.includes("GRCh38") && assemblies.includes("mm10");
+  }, [openEntities]);
+  
+  const Icon = useCallback(() => {
+    if (isHovered && closable) return <CloseTabButton entity={entity} handleCloseTab={handleCloseTab} />;
+    if (multipleAssembliesOpen) {
+      if (entity.assembly === "GRCh38") {
+        return (
+          <IconWrapper>
+            <Man fontSize="inherit" />
+          </IconWrapper>
+        );
+      } else
+        return (
+          <IconWrapper>
+            <PestControlRodent fontSize="inherit" />
+          </IconWrapper>
+        );
+    }
+  }, [closable, entity, handleCloseTab, isHovered, multipleAssembliesOpen]);
+
+  const dragID = entity.entityID + entity.assembly
+  
   return (
-    <Draggable key={entity.entityID} draggableId={entity.entityID} index={index} disableInteractiveElementBlocking>
+    <Draggable key={dragID} draggableId={dragID} index={index} disableInteractiveElementBlocking>
       {(provided, snapshot) => {
         const draggingStyles: SxProps<Theme> = snapshot.isDragging
-          ? {
-              backgroundColor: "white",
-              border: (theme) => `1px solid ${theme.palette.primary.main}`,
-              borderRadius: 1,
-            }
-          : {};
+        ? {
+          backgroundColor: "white",
+          border: (theme) => `1px solid ${theme.palette.primary.main}`,
+          borderRadius: 1,
+        }
+        : {};
         const selectedStyles: SxProps<Theme> = isSelected
-          ? {
-              borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
-              borderTop: (theme) => `2px solid transparent`,
-            }
-          : {};
-
+        ? {
+          borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
+          borderTop: (theme) => `2px solid transparent`,
+        }
+        : {};
+        
         return (
           <Tab
-            value={index}
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
-            label={formatEntityID(entity)}
-            onClick={() => handleTabClick(entity)}
-            iconPosition="end"
-            icon={closable && <CloseTabButton entity={entity} handleCloseTab={handleCloseTab} />}
-            sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
-            {...props}
+          value={index}
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
+          label={formatEntityID(entity)}
+          onClick={() => handleTabClick(entity)}
+          iconPosition="end"
+          icon={<Icon/>}
+          sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          {...props}
           />
         );
       }}
@@ -70,7 +103,7 @@ const formatEntityID = (entity: OpenEntity) => {
 
 // Create a styled close button that looks like an IconButton
 // Needed to prevent IconButton from being child of button in tab (hydration error)
-const CloseIconButton = styled("div")(({ theme }) => ({
+const IconWrapper = styled("div")(({ theme }) => ({
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -94,13 +127,13 @@ const CloseTabButton = ({
   handleCloseTab: (el: OpenEntity) => void;
 }) => {
   return (
-    <CloseIconButton
+    <IconWrapper
       onClick={(event) => {
         event.stopPropagation();
         handleCloseTab(entity);
       }}
     >
       <Close fontSize="inherit" />
-    </CloseIconButton>
+    </IconWrapper>
   );
 };

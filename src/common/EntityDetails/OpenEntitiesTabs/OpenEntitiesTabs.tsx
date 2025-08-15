@@ -7,7 +7,6 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "r
 import { Assembly, EntityType, TabRoute } from "types/globalTypes";
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/MenuContext";
@@ -31,7 +30,8 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   const urlTab = (pathname.split("/")[4] ?? "") as TabRoute;
   const currentEntityState = openEntities.find((el) =>
     urlEntityType === "region" && el.entityType === "region"
-      ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlEntityID)) //handles "%3A"/":" discrepency in url
+      ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlEntityID)) &&
+        el.assembly === urlAssembly
       : el.entityID === urlEntityID
   );
 
@@ -144,9 +144,9 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     (elToClose: OpenEntity) => {
       if (openEntities.length > 1) {
         // only need to navigate if you're closing the tab that you're on
-        const needToNavigate = elToClose.entityID === urlEntityID;
+        const needToNavigate = elToClose.entityID === urlEntityID && elToClose.assembly === urlAssembly;
         if (needToNavigate) {
-          const toCloseIndex = openEntities.findIndex((openEl) => openEl.entityID === elToClose.entityID);
+          const toCloseIndex = openEntities.findIndex((openEl) => openEl.entityID === elToClose.entityID && elToClose.assembly === urlAssembly);
 
           //if elToClose is last tab, go to the tab on left. Else, go to the tab on the right
           const elToNavTo =
@@ -161,7 +161,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
         });
       }
     },
-    [openEntities, urlEntityID, dispatch, navigateAndMark]
+    [openEntities, urlEntityID, urlAssembly, dispatch, navigateAndMark]
   );
 
   //  ------- End <DraggableTab> Helpers -------
@@ -219,20 +219,12 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     } else return i;
   }, [openEntities, urlEntityID]);
 
-  const multipleAssembliesOpen = useMemo(() => {
-    const assemblies = openEntities.map((x) => x.assembly);
-    return assemblies.includes("GRCh38") && assemblies.includes("mm10");
-  }, [openEntities]);
-
   const openTabsProps = {
     openEntities,
     currentEntityState,
     handleCloseTab,
     handleTabClick,
-    multipleAssembliesOpen,
   };
-
-  // const 
 
   return (
     <TabContext value={tabIndex}>
@@ -240,25 +232,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
       <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 61 }} id="open-elements-tabs">
         <Stack direction={"row"}>
           <DragDropContext onDragEnd={onDragEnd}>
-            {/* This TabList is just in the wrong place I think. It's children should  */}
-            <TabList
-              variant="scrollable"
-              allowScrollButtonsMobile
-              scrollButtons={"auto"}
-              sx={{
-                "& .MuiTabs-scrollButtons.Mui-disabled": {
-                  opacity: 0.3,
-                },
-                "& .MuiTabs-indicator": {
-                  display: "none", // hide selected indicator since we're adding one back in to fix drag behavior
-                },
-                "& .MuiTabs-flexContainer": {
-                  alignItems: "center",
-                },
-              }}
-            >
-              <OpenTabs {...openTabsProps} />
-            </TabList>
+            <OpenTabs {...openTabsProps} />
           </DragDropContext>
           <Box sx={{ flexGrow: 1, justifyContent: "flex-start", alignContent: "center" }}>
             <Tooltip title="New Search" placement="right">
