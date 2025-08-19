@@ -16,7 +16,6 @@ export type OpenEntityAction =
   | { type: "setState"; state: OpenEntityState };
 
 const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAction) => {
-  console.log(action.type);
   let newState: OpenEntityState;
   switch (action.type) {
     //Add Entity to the end of the part of the array containing the assembly, if none exist add to the end
@@ -72,8 +71,6 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
       break;
     }
   }
-  console.log("new state");
-  console.log(newState);
   return newState;
 };
 
