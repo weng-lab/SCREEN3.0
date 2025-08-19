@@ -1,9 +1,9 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression"
-import VerticalBarPlot, { BarData, BarPlotProps } from "common/components/VerticalBarPlot"
 import { useMemo } from "react"
 import { capitalizeFirstLetter } from "common/utility"
 import { Box } from "@mui/material"
 import { tissueColors } from "common/lib/colors"
+import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
 
 export type GeneExpressionBarPlotProps =
   GeneExpressionProps &
@@ -45,7 +45,7 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
 
   return (
     <Box width={"100%"} height={"100%"} overflow={"auto"} padding={1} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative" }}>
-      <VerticalBarPlot
+      <BarPlot
         {...rest}
         data={plotData}
         topAxisLabel={`${geneData?.data.name} Expression - TPM`}

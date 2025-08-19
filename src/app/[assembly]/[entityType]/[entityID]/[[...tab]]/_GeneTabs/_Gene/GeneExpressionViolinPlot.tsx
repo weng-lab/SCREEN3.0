@@ -29,14 +29,14 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
           : "#CCCCCC"
 
       const data: ViolinPoint<PointMetadata>[] = values.map((value, i) => {
-        const metaData = group[i];
-        const isSelected = selected.length === 0 || selected.some((s) => s.gene_quantification_files[0].accession === metaData.gene_quantification_files[0].accession) ? true : false;
+        const metadata = group[i];
+        const isSelected = selected.length === 0 || selected.some((s) => s.gene_quantification_files[0].accession === metadata.gene_quantification_files[0].accession) ? true : false;
         const pointColor = isSelected ? tissueColors[tissue] ?? tissueColors.missing  : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 
         return values.length < 3
-          ? { value, radius: pointRadius, tissue: tissue, metaData, color: pointColor }
-          : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue: tissue, metaData, color: pointColor };
+          ? { value, radius: pointRadius, tissue: tissue, metadata, color: pointColor }
+          : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue: tissue, metadata, color: pointColor };
       });
 
       return { label, data, violinColor };
@@ -65,22 +65,22 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
         pointTooltipBody={(point) => {
           return (
             <Box>
-              {/* {point.outlier && (
+              {point.outlier && (
                 <div>
                   <strong>Outlier</strong>
                 </div>
-              )} */}
+              )}
               <div>
-                <strong>Accession:</strong> {point.metaData?.accession}
+                <strong>Accession:</strong> {point.metadata?.accession}
               </div>
               <div>
-                <strong>Biosample:</strong> {point.metaData?.biosample}
+                <strong>Biosample:</strong> {point.metadata?.biosample}
               </div>
               <div>
-                <strong>Tissue:</strong> {point.metaData?.tissue}
+                <strong>Tissue:</strong> {point.metadata?.tissue}
               </div>
               <div>
-                <strong>TPM:</strong> {point.metaData?.gene_quantification_files[0].quantifications[0].tpm.toFixed(2)}
+                <strong>TPM:</strong> {point.metadata?.gene_quantification_files[0].quantifications[0].tpm.toFixed(2)}
               </div>
             </Box>
           );
