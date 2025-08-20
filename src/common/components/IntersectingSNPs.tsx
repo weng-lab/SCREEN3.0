@@ -3,8 +3,7 @@ import { Typography } from "@mui/material";
 import { GenomicRange } from "types/globalTypes";
 import { useSnpData } from "common/hooks/useSnpData";
 import { LinkComponent } from "./LinkComponent";
-import { GridColDef } from "@mui/x-data-grid-pro";
-import { Table } from  "@weng-lab/ui-components";
+import { Table, GridColDef } from  "@weng-lab/ui-components";
 const IntersectingSNPs = ({ region }: { region: GenomicRange }) => {
   const {
     data: dataSnps,

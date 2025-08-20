@@ -1,8 +1,7 @@
 import { Stack } from "@mui/material";
 import { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { LinkedICREInfo } from "common/hooks/useLinkedICREs";
-import { Table, TableProps } from "@weng-lab/ui-components";
-import { GridColDef } from "@mui/x-data-grid-pro";
+import { Table, TableProps, GridColDef } from "@weng-lab/ui-components";
 
 export interface TableDef<T extends LinkedGeneInfo | LinkedICREInfo> extends TableProps {
   sortColumn: keyof T & string; // Constrain to string keys

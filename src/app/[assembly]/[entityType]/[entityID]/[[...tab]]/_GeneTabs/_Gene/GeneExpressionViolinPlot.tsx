@@ -64,7 +64,7 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
         }}
         pointTooltipBody={(point) => {
           return (
-            <Box>
+            <Box maxWidth={300}>
               {point.outlier && (
                 <div>
                   <strong>Outlier</strong>

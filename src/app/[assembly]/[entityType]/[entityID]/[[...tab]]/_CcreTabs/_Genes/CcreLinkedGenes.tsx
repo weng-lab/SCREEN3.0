@@ -1,12 +1,9 @@
-import { Grid2 as Grid, Skeleton, Stack, Typography } from "@mui/material";
+import { Grid, Skeleton, Stack, Typography } from "@mui/material";
 import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
-import { useQuery } from "@apollo/client";
-import { calcDistRegionToRegion } from "common/utility";
 import { GenomicRange } from "types/globalTypes";
-import CustomDataGrid, { CustomDataGridColDef } from "common/components/CustomDataGrid";
-import { gql } from "types/generated";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import useClosestgenes from "common/hooks/useClosestGenes";
 
@@ -96,7 +93,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
   ];
 
  
-  const closestGenesCols: CustomDataGridColDef<(typeof closestGenes)[number]>[] = [
+  const closestGenesCols: GridColDef[] = [
     {
       field: "name",
       headerName: "Name",
@@ -119,11 +116,10 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
 
   return (
     <Stack spacing={2}>
-      <CustomDataGrid
+      <Table
         rows={closestGenes}
         columns={closestGenesCols}
-        hideFooter
-        tableTitle="Closest Genes"
+        label="Closest Genes"
         emptyTableFallback={"No closest genes found"}
       />
       <LinkedElements tables={tables} />

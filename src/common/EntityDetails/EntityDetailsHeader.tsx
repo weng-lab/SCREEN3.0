@@ -3,7 +3,7 @@ import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatPortal } from "common/utility";
 import { Assembly, EntityType } from "types/globalTypes";
 import Image from "next/image";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 
@@ -65,7 +65,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
     );
 
   return (
-    <Grid2
+    <Grid
       sx={{ p: 1 }}
       border={(theme) => `1px solid ${theme.palette.divider}`}
       borderRadius={1}
@@ -73,7 +73,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
       justifyContent={"space-between"}
       container
     >
-      <Grid2 size={{ xs: 12, sm: 9 }}>
+      <Grid size={{ xs: 12, sm: 9 }}>
         <Stack>
           <Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>
           <Typography variant="h4">
@@ -89,16 +89,16 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           </Typography>
           <Typography>{loading ? <Skeleton width={215} /> : subtitle}</Typography>
         </Stack>
-      </Grid2>
+      </Grid>
       {
         /**
          * @todo this layout is too complicated, simplify
          */
       }
-      <Grid2 size={{ xs: 12, sm: 3 }}>
-        <Grid2 container direction="column" spacing={1} sx={{ height: "100%" }} textAlign={"right"}>
-          <Grid2 container spacing={1} sx={{ flexGrow: 1 }} order={{ xs: 2, sm: 1 }} justifyContent={"flex-end"}>
-            <Grid2 size={12} display={entityType === "ccre" ? "none" : "flex"} height={{ xs: 65, sm: "auto" }}>
+      <Grid size={{ xs: 12, sm: 3 }}>
+        <Grid container direction="column" spacing={1} sx={{ height: "100%" }} textAlign={"right"}>
+          <Grid container spacing={1} sx={{ flexGrow: 1 }} order={{ xs: 2, sm: 1 }} justifyContent={"flex-end"}>
+            <Grid size={12} display={entityType === "ccre" ? "none" : "flex"} height={{ xs: 65, sm: "auto" }}>
               <Button
                 variant="contained"
                 href={
@@ -123,13 +123,13 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
                   alt="genecard-snpcard-button"
                 />
               </Button>
-            </Grid2>
-          </Grid2>
-          <Grid2 display={"flex"} justifyContent={{ xs: "flex-starrt", sm: "flex-end" }} order={{ xs: 1, sm: 2 }}>
+            </Grid>
+          </Grid>
+          <Grid display={"flex"} justifyContent={{ xs: "flex-starrt", sm: "flex-end" }} order={{ xs: 1, sm: 2 }}>
             <Typography>{loading ? <Skeleton width={215} /> : coordinatesDisplay}</Typography>
-          </Grid2>
-        </Grid2>
-      </Grid2>
-    </Grid2>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
