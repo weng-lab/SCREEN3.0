@@ -48,7 +48,8 @@ export default function useLinkedICREs(geneid: string) {
 }
 
 /**
- * @todo this type should extend the type exposed by auto generated type instead of being entire redefined.
+ * @todo this type should extend 
+ * the type exposed by auto generated type instead of being entire redefined.
  */
 export type LinkedICREInfo = {
   accession?: string;

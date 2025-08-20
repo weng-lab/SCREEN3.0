@@ -3,6 +3,7 @@ import { Close } from "@mui/icons-material";
 import { styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
 import { OpenEntity } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
+import { EntityType } from "types/globalTypes";
 
 export type DraggableTabProps = TabProps & {
   entity: OpenEntity;
@@ -46,7 +47,7 @@ export const DraggableTab = ({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
-            label={formatEntityID(entity.entityID)}
+            label={formatEntityID(entity.entityID, entity.entityType)}
             onClick={() => handleTabClick(entity)}
             iconPosition="end"
             icon={closable && <CloseTabButton entity={entity} handleCloseTab={handleCloseTab} />}
@@ -59,11 +60,17 @@ export const DraggableTab = ({
   );
 };
 
-const formatEntityID = (id: string) => {
-  if (id.includes("%3A")) {
+const formatEntityID = (id: string, entityType: EntityType) => {
+  if (id && id.includes("%3A")) {
     const region = parseGenomicRangeString(id);
     return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
   } else {
+    if(entityType === "gwas")
+    {
+      const g = id.split("-")
+      const study_name = g[g.length-1].replaceAll("_"," ");
+      return study_name;
+    }
     return id;
   }
 };

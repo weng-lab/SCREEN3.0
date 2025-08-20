@@ -5,6 +5,7 @@ import { EntityDetailsHeader, EntityDetailsHeaderProps } from "./EntityDetailsHe
 import RegionSearchHeader from "./RegionSearchHeader";
 import { parseGenomicRangeString } from "common/utility";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabs";
+import { GwasStudyHeader } from "./GwasStudyHeader";
 
 export type EntityDetailsLayoutProps = EntityDetailsHeaderProps & { children: React.ReactNode };
 
@@ -37,7 +38,7 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
         >
           {entityType === "region" ? (
             <RegionSearchHeader region={parseGenomicRangeString(entityID)} />
-          ) : (
+          ) : entityType === "gwas" ? <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} />: (
             <EntityDetailsHeader assembly={assembly} entityType={entityType} entityID={entityID} />
           )}
           {/* View tabs, shown only on mobile */}

@@ -4,8 +4,8 @@ import { Tabs, Tab } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
-import { ElementDetailsTab, GeneDetailsTab, EntityType, CcreDetailsTab, RegionDetailsTab, VariantDetailsTab, Assembly } from "types/globalTypes";
-import { geneDetailsTabs, icreDetailsTabs, regionDetailsTabs, sharedTabs, variantDetailsTabs } from "./tabsConfig";
+import { ElementDetailsTab, GeneDetailsTab, EntityType, CcreDetailsTab, RegionDetailsTab, VariantDetailsTab, Assembly, GWASDetailsTab } from "types/globalTypes";
+import { geneDetailsTabs, gwasDetailsTabs, icreDetailsTabs, regionDetailsTabs, sharedTabs, variantDetailsTabs } from "./tabsConfig";
 import Image from "next/image";
 
 export type ElementDetailsTabsProps = {
@@ -35,7 +35,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
   }, [currentTab, value])
 
   const tabs: ElementDetailsTab[] = useMemo(() => {
-    let elementSpecificTabs: VariantDetailsTab[] | GeneDetailsTab[] | CcreDetailsTab[] | RegionDetailsTab[];
+    let elementSpecificTabs: VariantDetailsTab[] | GeneDetailsTab[] | CcreDetailsTab[] | RegionDetailsTab[] | GWASDetailsTab[];
     switch (entityType) {
       case ("gene"):
         elementSpecificTabs = geneDetailsTabs
@@ -48,6 +48,9 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
         break
       case ("region"):
         elementSpecificTabs = regionDetailsTabs
+        break
+      case ("gwas"):
+          elementSpecificTabs = gwasDetailsTabs
     }
     return [
       ...elementSpecificTabs,

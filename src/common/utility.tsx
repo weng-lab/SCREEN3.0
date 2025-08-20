@@ -94,6 +94,8 @@ export function formatPortal(subpath: string): string {
       return "cCRE";
     case "region":
       return "Region";
+    case "gwas":
+        return "GWAS Study";
     default:
       return null;
   }
@@ -314,7 +316,8 @@ const entityTypeEncoding: {[key in EntityType]: string} = {
   'gene': 'g',
   'ccre': 'c',
   'variant': 'v',
-  'region': 'r'
+  'region': 'r',
+  'gwas': 'gw'
 }
 
 const entityTypeDecoding: {[key: string]: EntityType} = Object.fromEntries(
@@ -335,9 +338,12 @@ const tabRouteEncoding: { [key in TabRoute]: string } = {
   genes: "g",
   ccres: "c",
   variants: "v",
+  "biosample_enrichment": "bs",
   "": "",
 };
 
 const tabRouteDecoding: { [key: string]: TabRoute } = Object.fromEntries(
   Object.entries(tabRouteEncoding).map(([tab, encoding]: [TabRoute, string]) => [encoding, tab])
 );
+
+

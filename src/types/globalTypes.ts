@@ -8,11 +8,11 @@ export interface GenomicRange {
   end: number;
 }
 
-export type EntityType = "variant" | "gene" | "ccre" | "region"
+export type EntityType = "variant" | "gene" | "ccre" | "region" | "gwas"
 export type Assembly = "GRCh38" | "mm10"
 
 export function isValidGenomicEntity(value: string): value is EntityType {
-  return value === "variant" || value === "gene" || value === "ccre" || value === "region";
+  return value === "variant" || value === "gene" || value === "ccre" || value === "region" || value === "gwas";
 }
 
 
@@ -32,6 +32,8 @@ export type CcreRoute = SharedRoute | EntityDefaultTab | "genes" | "variants"
 
 //region search does not have "base" tab like gene/snp/ccre. Always region/[region]/[elementType]
 export type RegionRoute = SharedRoute | "ccres" | "genes" | "variants"
+
+export type GWASRoute = SharedRoute | "ccres" | "genes" | "variants" | "biosample_enrichment"
 
 export function isValidSharedTab(tab: string): tab is SharedRoute {
   return tab === "browser"
@@ -57,11 +59,15 @@ export function isValidRegionTab(tab: string): tab is RegionRoute {
   return  isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || tab === "ccres" || tab === "genes" || tab === "variants"
 }
 
-export function isValidTab(tab: string): tab is SharedRoute | VariantRoute | GeneRoute | CcreRoute {
-  return isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || isValidVariantTab(tab) || isValidGeneTab(tab) || isValidCcreTab(tab)
+export function isValidGWASTab(tab: string): tab is GWASRoute {
+  return  isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || tab === "ccres" || tab === "genes" || tab === "variants" || tab === "biosample_enrichment"
 }
 
-export type TabRoute = VariantRoute | GeneRoute | CcreRoute | RegionRoute
+export function isValidTab(tab: string): tab is SharedRoute | VariantRoute | GeneRoute | CcreRoute | GWASRoute {
+  return isValidSharedTab(tab) || isValidEntityDefaultTab(tab) || isValidVariantTab(tab) || isValidGeneTab(tab) || isValidCcreTab(tab) || isValidGWASTab(tab)
+}
+
+export type TabRoute = VariantRoute | GeneRoute | CcreRoute | RegionRoute | GWASRoute
 
 /**
  * label is for the display name of the tab.
@@ -91,4 +97,8 @@ export interface CcreDetailsTab extends ElementDetailsTab {
 
 export interface RegionDetailsTab extends ElementDetailsTab {
   href: RegionRoute
+}
+
+export interface GWASDetailsTab extends ElementDetailsTab {
+  href: GWASRoute
 }

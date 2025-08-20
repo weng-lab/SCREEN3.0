@@ -10,6 +10,7 @@ import {
   isValidTab,
   isValidRegionTab,
   Assembly,
+  isValidGWASTab,
 } from "types/globalTypes";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
@@ -21,6 +22,10 @@ import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
 import IntersectingCcres from "common/components/IntersectingCcres";
+import VariantEnrichment from "./_GwasTabs/_Variant/VariantEnrichment";
+import CcreGWASStudySNPs from "./_GwasTabs/_Ccre/CcreGWASStudySNPs";
+import { GWASStudyGenes } from "./_GwasTabs/_Gene/GWASStudyGenes";
+import { GWASStudySNPs } from "./_GwasTabs/_Variant/GWASStudySNPs";
 
 export default function DetailsPage({
   params,
@@ -54,11 +59,12 @@ export default function DetailsPage({
 
   const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
+  console.log(data, loading, error)
   if (loading) {
     return <CircularProgress />;
   }
 
-  if (data.__typename !== "SCREENSearchResult" && !data?.coordinates) {
+  if (data.__typename !== "SCREENSearchResult" && data.__typename !== "GWAS" && !data?.coordinates) {
     return <Typography>Issue fetching data on {entityID}</Typography>;
   }
 
@@ -68,6 +74,11 @@ export default function DetailsPage({
 
   //Handle shared tabs
   if (tab === "browser") {
+    if(data.__typename === "GWAS"){
+      return (<>
+        GWAS Browser
+      </>)
+    } else {
     return (
       <GenomeBrowserView
         coordinates={ data.__typename === "SCREENSearchResult" ?  {chromosome: data.chrom, start: data.start, end: data.start + data.len} : data.coordinates}
@@ -76,6 +87,7 @@ export default function DetailsPage({
         assembly={assembly}
       />
     );
+  }
   }
 
   switch (entityType) {
@@ -115,7 +127,7 @@ export default function DetailsPage({
 
     case "ccre": {
       if (!isValidCcreTab(tab)) {
-        throw new Error("Unknown iCRE details tab: " + tab);
+        throw new Error("Unknown cCRE details tab: " + tab);
       }
 
       const CcreData = { data, loading, error } as useEntityMetadataReturn<"ccre">;
@@ -146,6 +158,22 @@ export default function DetailsPage({
         case "variants":
           //TODO: Add Mouse SNPs
           return assembly === "mm10" ? <p>This page should have intersecting mouse SNPs</p> :  <IntersectingSNPs region={region} />;
+      }
+    }
+
+    case "gwas": {
+      if (!isValidGWASTab(tab)) {
+        throw new Error("Unknown gwas details tab: " + tab);
+      }
+      switch (tab) {
+        case "ccres":
+          return <CcreGWASStudySNPs study_name={entityID}/>;          
+        case "genes":
+          return <GWASStudyGenes study_name={entityID}/>;
+        case "variants":          
+          return <GWASStudySNPs study_name={entityID}/>;
+        case "biosample_enrichment":
+          return <VariantEnrichment study_name={entityID}/>;   
       }
     }
   }

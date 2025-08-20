@@ -1,16 +1,16 @@
 import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout";
 import { useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
-import GeneExpressionUMAP from "./GeneExpressionUMAP";
+//import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
-import { BarData } from "../../../../../../../common/components/VerticalBarPlot";
+import { BarData } from "@weng-lab/visualization";
 import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
 import { BarChart, ScatterPlot, CandlestickChart } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Distribution, ViolinPoint } from "@weng-lab/visualization";
 import { Assembly } from "types/globalTypes";
-import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
+//import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
@@ -46,16 +46,16 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   };
 
   const handleViolinClick = (violin: Distribution<PointMetadata>) => {
-    const metadataArray = violin.data.map((point) => point.metaData);
+    const metadataArray = violin.data.map((point) => point.metadata);
     if (selected.length === metadataArray.length && selected[0].tissue === metadataArray[0].tissue) {
       setSelected([]);
     } else setSelected(metadataArray);
   };
 
   const handleViolinPointClick = (point: ViolinPoint<PointMetadata>) => {
-    if (selected.includes(point.metaData)) {
-      setSelected(selected.filter((x) => x !== point.metaData));
-    } else setSelected([...selected, point.metaData]);
+    if (selected.includes(point.metadata)) {
+      setSelected(selected.filter((x) => x !== point.metadata));
+    } else setSelected([...selected, point.metadata]);
   };
 
   return (

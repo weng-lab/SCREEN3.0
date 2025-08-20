@@ -16,7 +16,7 @@ export type EntityDetailsHeaderProps = {
 export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
-  const c = entityMetadata?.__typename === "SCREENSearchResult" ? {chromosome: entityMetadata?.chrom, start: entityMetadata?.start, end: entityMetadata?.start + entityMetadata?.len } : entityMetadata?.coordinates;
+  const c = entityMetadata?.__typename !== "GWAS" && (entityMetadata?.__typename === "SCREENSearchResult" ? {chromosome: entityMetadata?.chrom, start: entityMetadata?.start, end: entityMetadata?.start + entityMetadata?.len } : entityMetadata?.coordinates);
   const coordinatesDisplay = c && `${c.chromosome}:${c.start.toLocaleString()}-${c.end.toLocaleString()}`;
 
   const description = useGeneDescription(entityID, entityType).description;

@@ -13,6 +13,7 @@ type useEntityMetadataParams<T extends EntityType> = {
 
 //faking a return type of the same form as the others to make it easy
 type UseGenomicRangeReturn = { data: {__typename?: "Region", coordinates: GenomicRange}; loading: boolean; error: ApolloError }
+type UseGWASReturn = { data:  {__typename?: "GWAS", study_name: string, value: string, author: string, pubmedid: string}; loading: boolean; error: ApolloError }
 
 export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
   ? UseGeneDataReturn<{ name: string, assembly: Assembly }>
@@ -20,7 +21,7 @@ export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
   ? UseCcreDataReturn<{ accession: string, assembly: Assembly  }>
   : T extends "variant"
   ? UseSnpDataReturn<{ rsID: string, assembly: Assembly  }>
-  : UseGenomicRangeReturn;
+  : T extends "gwas" ? UseGWASReturn : UseGenomicRangeReturn;
 
 export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, entityID }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
   /**
@@ -45,6 +46,17 @@ export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, 
       try {
         const region = parseGenomicRangeString(entityID)
         return {data: {coordinates: region}, loading: false, error: undefined} as useEntityMetadataReturn<T>
+      } catch (error) {
+        return {data: undefined, loading: false, error} as useEntityMetadataReturn<T>
+      }
+    case "gwas": 
+    //const studyval= "Dastani_Z-22479202-Adiponectin_levels"
+    const g = entityID.split("-")
+    const study_name = g[g.length-1].replaceAll("_"," ");
+    const pubmedid = g[g.length-2].replaceAll("_"," ");
+    const author = g.slice(0, g.length - 2).join("-").replaceAll("_"," ");
+      try {        
+        return {data: {__typename: "GWAS",study_name, author, value: entityID, pubmedid}, loading: false, error: undefined} as useEntityMetadataReturn<T>
       } catch (error) {
         return {data: undefined, loading: false, error} as useEntityMetadataReturn<T>
       }
