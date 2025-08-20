@@ -3,7 +3,7 @@ import { Search } from "@mui/icons-material";
 import EditIcon from "@mui/icons-material/Edit";
 import HighlightIcon from "@mui/icons-material/Highlight";
 import { Box, Button, IconButton } from "@mui/material";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
   BigBedTrackProps,
@@ -196,8 +196,8 @@ export default function GenomeBrowserView({
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
   return (
-    <Grid2 container spacing={2} sx={{ mt: "0rem", mb: "1rem" }} justifyContent="center" alignItems="center">
-      <Grid2
+    <Grid container spacing={2} sx={{ mt: "0rem", mb: "1rem" }} justifyContent="center" alignItems="center">
+      <Grid
         size={{ xs: 12, lg: 12 }}
         style={{
           display: "flex",
@@ -297,10 +297,10 @@ export default function GenomeBrowserView({
           <h3 style={{ marginBottom: "0px", marginTop: "0px" }}>hg38</h3>
         </Box>
         <ControlButtons browserState={browserState} browserDispatch={browserDispatch} />
-      </Grid2>
-      <Grid2 size={{ xs: 12, lg: 12 }}>
+      </Grid>
+      <Grid size={{ xs: 12, lg: 12 }}>
         <GenomeBrowser width={"100%"} browserState={browserState} browserDispatch={browserDispatch} />
-      </Grid2>
+      </Grid>
       <Box
         sx={{
           width: "100%",
@@ -314,7 +314,7 @@ export default function GenomeBrowserView({
         setOpen={setHighlightDialogOpen}
         highlights={browserState.highlights as GBHighlight[]}
       />
-    </Grid2>
+    </Grid>
   );
 }
 

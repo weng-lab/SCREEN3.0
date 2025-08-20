@@ -133,9 +133,9 @@ const CustomDataGrid = <T extends CustomDataGridRow>(props: CustomDataGridProps<
                 <Tooltip title={col.tooltip}>
                   <Box display="inline-flex" alignItems="center">
                     {col.renderHeader ? (
-                      <col.renderHeader {...params} /> // use renderHeader if specified
+                      (<col.renderHeader {...params} />) // use renderHeader if specified
                     ) : (
-                      <Typography variant="inherit">{col?.headerName ?? col.field}</Typography> // fallback to headerName and then field
+                      (<Typography variant="inherit">{col?.headerName ?? col.field}</Typography>) // fallback to headerName and then field
                     )}
                     <InfoOutlined sx={{ fontSize: "inherit", marginLeft: 0.5 }} />
                   </Box>

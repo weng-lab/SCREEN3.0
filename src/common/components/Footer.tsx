@@ -1,5 +1,5 @@
 "use client";
-import { Typography, Box, Grid2, Link as MuiLink, Stack, Divider } from "@mui/material";
+import { Typography, Box, Grid, Link as MuiLink, Stack, Divider } from "@mui/material";
 import Image from "next/image";
 import { LinkComponent } from "./LinkComponent";
 
@@ -55,19 +55,19 @@ export default function Footer() {
         py: { xs: 6, md: 8 },
       }}
     >
-      <Grid2 container spacing={6}>
-        <Grid2 size={{ xs: 12, md: 4 }}>
+      <Grid container spacing={6}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box display="flex" flexDirection="column" alignItems="flex-start">
             <Image src={"/on-dark.svg"} alt="Logo" width={120} height={60} />
             <Typography variant="body1" sx={{ mt: 2, textAlign: "left" }}>
               Search Candidate Regulatory Elements by ENCODE
             </Typography>
           </Box>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 8 }}>
-          <Grid2 container spacing={4}>
+        </Grid>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Grid container spacing={4}>
             {sections.map((section) => (
-              <Grid2 size={{ xs: 6, sm: 3 }} key={section.title}>
+              <Grid size={{ xs: 6, sm: 3 }} key={section.title}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
                   {section.title}
                 </Typography>
@@ -78,11 +78,11 @@ export default function Footer() {
                     </LinkComponent>
                   ))}
                 </Stack>
-              </Grid2>
+              </Grid>
             ))}
-          </Grid2>
-        </Grid2>
-      </Grid2>
+          </Grid>
+        </Grid>
+      </Grid>
       <Typography variant="body2" textAlign={"center"} sx={{ mt: 6, mb: 2 }}>
         Copyright ©{" "}
         <MuiLink color="inherit" href="https://www.umassmed.edu/zlab/">

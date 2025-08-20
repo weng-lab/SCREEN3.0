@@ -1,12 +1,9 @@
-import { Grid2 as Grid, Skeleton, Stack, Typography } from "@mui/material";
+import { Grid, Skeleton, Stack, Typography } from "@mui/material";
 import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
-import { useQuery } from "@apollo/client";
-import { calcDistRegionToRegion } from "common/utility";
 import { GenomicRange } from "types/globalTypes";
 import CustomDataGrid, { CustomDataGridColDef } from "common/components/CustomDataGrid";
-import { gql } from "types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import useClosestgenes from "common/hooks/useClosestGenes";
 
