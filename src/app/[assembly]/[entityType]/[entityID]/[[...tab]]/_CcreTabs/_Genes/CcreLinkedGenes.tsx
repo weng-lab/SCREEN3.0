@@ -3,7 +3,7 @@ import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
 import { GenomicRange } from "types/globalTypes";
-import CustomDataGrid, { CustomDataGridColDef } from "common/components/CustomDataGrid";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import useClosestgenes from "common/hooks/useClosestGenes";
 
@@ -93,7 +93,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
   ];
 
  
-  const closestGenesCols: CustomDataGridColDef<(typeof closestGenes)[number]>[] = [
+  const closestGenesCols: GridColDef[] = [
     {
       field: "name",
       headerName: "Name",
@@ -116,11 +116,10 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
 
   return (
     <Stack spacing={2}>
-      <CustomDataGrid
+      <Table
         rows={closestGenes}
         columns={closestGenesCols}
-        hideFooter
-        tableTitle="Closest Genes"
+        label="Closest Genes"
         emptyTableFallback={"No closest genes found"}
       />
       <LinkedElements tables={tables} />

@@ -1,14 +1,13 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
-import {IconButton, Link, Tooltip } from "@mui/material";
+import {IconButton, Tooltip } from "@mui/material";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   useGridApiRef,
-  GRID_CHECKBOX_SELECTION_COL_DEF,
-  GridColDef
-} from "@mui/x-data-grid-pro";
+  GridColDef,
+  Table
+} from "@weng-lab/ui-components";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { Table } from "@weng-lab/ui-components";
 import React from "react";
 import { Assembly } from "types/globalTypes";
 import TuneIcon from '@mui/icons-material/Tune';

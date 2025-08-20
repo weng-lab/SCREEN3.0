@@ -1,9 +1,8 @@
 "use client";
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { Assembly, GenomicRange } from "types/globalTypes";
-import { GridColDef } from "@mui/x-data-grid-pro";
 import { useCcreData } from "common/hooks/useCcreData";
-import { Table } from "@weng-lab/ui-components";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useState } from "react";
 import ConfigureGBModal from "./ConfigureGBModal";

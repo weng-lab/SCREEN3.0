@@ -1,7 +1,7 @@
 import { Box, Skeleton } from "@mui/material";
 import useGWASLdr from "common/hooks/useGWASLdr";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
-import CustomDataGrid, { CustomDataGridColDef } from "common/components/CustomDataGrid";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 
 export default function SnpGWASLdr({ snpid }: { snpid: string }) {
@@ -21,7 +21,7 @@ export default function SnpGWASLdr({ snpid }: { snpid: string }) {
       zscore,
     };
   });
-  const cols: CustomDataGridColDef<(typeof gwasnps)[number]>[] = [
+  const cols: GridColDef[] = [
     {
       field: "disease",
       headerName: "Disease",
@@ -69,7 +69,7 @@ export default function SnpGWASLdr({ snpid }: { snpid: string }) {
       {loading ? (
         <Skeleton variant="rounded" width={"100%"} height={100} />
       ) : (
-        <CustomDataGrid
+        <Table
           rows={gwasnps}
           columns={cols}
           initialState={{
@@ -77,7 +77,7 @@ export default function SnpGWASLdr({ snpid }: { snpid: string }) {
               sortModel: [{ field: "zscore", sort: "desc" }],
             },
           }}
-          tableTitle="GWAS Variants"
+          label="GWAS Variants"
           emptyTableFallback={"This variant is not identified in any genome wide association studies (GWAS)"}
         />
       )}

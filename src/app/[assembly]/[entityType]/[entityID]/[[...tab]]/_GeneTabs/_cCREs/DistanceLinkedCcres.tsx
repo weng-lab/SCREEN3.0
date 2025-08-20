@@ -3,8 +3,7 @@ import useNearbycCREs from "common/hooks/useNearBycCREs";
 import { useCcreData } from "common/hooks/useCcreData";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
-import { Table, TableProps } from "@weng-lab/ui-components";
-import { GridColDef } from "@mui/x-data-grid-pro";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 
 export default function DistanceLinkedCcres({
   geneData  
@@ -32,7 +31,7 @@ export default function DistanceLinkedCcres({
       };
     })
 
-  const cols: GridColDef<(typeof nearbyccres)[number]>[] = [
+  const cols: GridColDef[] = [
     {
       field: "ccre",
       headerName: "Accession",

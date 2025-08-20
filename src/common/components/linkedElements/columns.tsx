@@ -1,4 +1,4 @@
-import { GridRenderCellParams } from "@mui/x-data-grid-pro";
+import { GridRenderCellParams } from "@weng-lab/ui-components";
 import { Typography } from "@mui/material";
 import { LinkedICREInfo } from "common/hooks/useLinkedICREs";
 import { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
