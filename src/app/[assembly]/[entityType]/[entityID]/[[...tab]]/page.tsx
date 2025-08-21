@@ -21,6 +21,7 @@ import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
 import IntersectingCcres from "common/components/IntersectingCcres";
+import EQTLs from "common/components/EQTLTables";
 
 export default function DetailsPage({
   params,
@@ -110,7 +111,7 @@ export default function DetailsPage({
         case "ccres":
           return assembly==="GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
         case "variants":
-          return <p>This page should probably have eQTL data</p>;
+          return <EQTLs data={geneData.data} entityType="gene" assembly={assembly}/>;
       }
       break;
     }
