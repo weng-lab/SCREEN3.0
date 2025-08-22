@@ -5,6 +5,8 @@ const CcreIconPath = '/assets/CcreIcon.svg'
 const GeneIconPath = '/assets/GeneIcon.svg'
 const VariantIconPath = '/assets/VariantIcon.svg'
 const EnrichementIconPath = '/assets/bs_enrichment.svg'
+const ConservationIconPath = '/assets/ConservationIcon.svg'
+const FunctionalIconPath = '/assets/FunctionalCharacterizationIcon.svg'
 
 export const sharedTabs: SharedTab[] = [
   {
@@ -13,6 +15,9 @@ export const sharedTabs: SharedTab[] = [
     iconPath: GbIconPath
   },
 ];
+
+export const moreTabs: SharedTab[] = [
+]
 
 export const variantDetailsTabs: VariantDetailsTab[] = [
   {
@@ -50,7 +55,7 @@ export const geneDetailsTabs: GeneDetailsTab[] = [
   },
 ];
 
-export const icreDetailsTabs: CcreDetailsTab[] = [
+export const ccreDetailsTabs: CcreDetailsTab[] = [
   {
     label: "cCRE",
     href: "",
@@ -65,6 +70,16 @@ export const icreDetailsTabs: CcreDetailsTab[] = [
     label: "Variants",
     href: "variants",
     iconPath: VariantIconPath
+  },
+  {
+    label: "Conservation",
+    href: "conservation",
+    iconPath: ConservationIconPath
+  },
+  {
+    label: "Functional Characterization",
+    href: "functional",
+    iconPath: FunctionalIconPath
   },
 ];
 

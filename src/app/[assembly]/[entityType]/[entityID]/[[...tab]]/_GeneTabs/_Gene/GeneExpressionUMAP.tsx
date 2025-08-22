@@ -218,7 +218,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
              * @todo clean this up. No way this legend needs to be this complicated
              */
             /* Normal legend for cell types */
-            <Box
+            (<Box
               sx={{
                 display: "flex",
                 justifyContent: legendEntries.length / 4 >= 3 ? "space-between" : "flex-start",
@@ -241,7 +241,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
                   ))}
                 </Box>
               ))}
-            </Box>
+            </Box>)
           )}
         </Box>
       )}

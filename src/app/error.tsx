@@ -3,7 +3,7 @@
 // See https://nextjs.org/docs/app/api-reference/file-conventions/error
 
 import { useEffect } from "react"
-import { Alert, AlertTitle, Button, Grid2, Snackbar } from "@mui/material"
+import { Alert, AlertTitle, Button, Grid, Snackbar } from "@mui/material"
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 
   return (
     <div>
-      <Grid2 container alignItems="center" justifyContent="center" direction="column" sx={{ minHeight: "90vh" }}>
+      <Grid container alignItems="center" justifyContent="center" direction="column" sx={{ minHeight: "90vh" }}>
         <Snackbar
           id="errorpopper"
           open={true}
@@ -27,7 +27,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
             There was an error loading. — <strong>{"Error"}</strong>
           </Alert>
         </Snackbar>
-      </Grid2>
+      </Grid>
       <Button
         onClick={
           // Attempt to recover by trying to re-render the segment

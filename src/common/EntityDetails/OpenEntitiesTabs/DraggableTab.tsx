@@ -1,9 +1,10 @@
 import { Draggable } from "@hello-pangea/dnd";
-import { Close } from "@mui/icons-material";
+import { Close, Man, PestControlRodent } from "@mui/icons-material";
 import { styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
-import { OpenEntity } from "./OpenEntitiesContext";
+import { OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { EntityType } from "types/globalTypes";
+import { useCallback, useContext, useMemo, useState } from "react";
 
 export type DraggableTabProps = TabProps & {
   entity: OpenEntity;
@@ -23,8 +24,36 @@ export const DraggableTab = ({
   handleCloseTab,
   ...props
 }: DraggableTabProps) => {
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [openEntities] = useContext(OpenEntitiesContext);
+
+  const multipleAssembliesOpen = useMemo(() => {
+    const assemblies = openEntities.map((x) => x.assembly);
+    return assemblies.includes("GRCh38") && assemblies.includes("mm10");
+  }, [openEntities]);
+
+  const Icon = useCallback(() => {
+    if (isHovered && closable) return <CloseTabButton entity={entity} handleCloseTab={handleCloseTab} />;
+    if (multipleAssembliesOpen) {
+      if (entity.assembly === "GRCh38") {
+        return (
+          <IconWrapper>
+            <Man fontSize="inherit" />
+          </IconWrapper>
+        );
+      } else
+        return (
+          <IconWrapper>
+            <PestControlRodent fontSize="inherit" />
+          </IconWrapper>
+        );
+    }
+  }, [closable, entity, handleCloseTab, isHovered, multipleAssembliesOpen]);
+
+  const dragID = entity.entityID + entity.assembly;
+
   return (
-    <Draggable key={entity.entityID} draggableId={entity.entityID} index={index} disableInteractiveElementBlocking>
+    <Draggable key={dragID} draggableId={dragID} index={index} disableInteractiveElementBlocking>
       {(provided, snapshot) => {
         const draggingStyles: SxProps<Theme> = snapshot.isDragging
           ? {
@@ -50,8 +79,10 @@ export const DraggableTab = ({
             label={formatEntityID(entity.entityID, entity.entityType)}
             onClick={() => handleTabClick(entity)}
             iconPosition="end"
-            icon={closable && <CloseTabButton entity={entity} handleCloseTab={handleCloseTab} />}
+            icon={<Icon />}
             sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             {...props}
           />
         );
@@ -64,6 +95,8 @@ const formatEntityID = (id: string, entityType: EntityType) => {
   if (id && id.includes("%3A")) {
     const region = parseGenomicRangeString(id);
     return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
+  } else if (entityType === "gene") {
+    return <i>{id}</i>;
   } else {
     if(entityType === "gwas")
     {
@@ -77,7 +110,7 @@ const formatEntityID = (id: string, entityType: EntityType) => {
 
 // Create a styled close button that looks like an IconButton
 // Needed to prevent IconButton from being child of button in tab (hydration error)
-const CloseIconButton = styled("div")(({ theme }) => ({
+const IconWrapper = styled("div")(({ theme }) => ({
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -101,13 +134,13 @@ const CloseTabButton = ({
   handleCloseTab: (el: OpenEntity) => void;
 }) => {
   return (
-    <CloseIconButton
+    <IconWrapper
       onClick={(event) => {
         event.stopPropagation();
         handleCloseTab(entity);
       }}
     >
       <Close fontSize="inherit" />
-    </CloseIconButton>
+    </IconWrapper>
   );
 };

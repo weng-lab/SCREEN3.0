@@ -5,8 +5,8 @@ import { BarChart } from "@mui/icons-material";
 import VariantEnrichmentTable from "./VariantEnrichmentTable";
 import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnrichmentData";
 import VariantEnrichmentBarPlot from "./VariantEnrichmentBarPlot";
-import { BarData } from "common/components/VerticalBarPlot";
 
+import { BarData } from "@weng-lab/visualization";
 export type VariantEnrichmentProps = {
   study_name: string;  
 };

@@ -3,7 +3,8 @@ import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatPortal } from "common/utility";
 import { Assembly, EntityType } from "types/globalTypes";
 
-import Grid2 from "@mui/material/Grid2";
+//import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { LinkComponent } from "common/components/LinkComponent";
 
 export type GwasStudyHeaderProps = {
@@ -15,8 +16,6 @@ export type GwasStudyHeaderProps = {
 export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHeaderProps) => {
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
-
-
   const subtitle =
     entityType === "gwas" && entityMetadata.__typename==="GWAS" ? (
       entityMetadata.author 
@@ -25,7 +24,7 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
     );
 
   return (
-    <Grid2
+    <Grid
       sx={{ p: 1 }}
       border={(theme) => `1px solid ${theme.palette.divider}`}
       borderRadius={1}
@@ -33,7 +32,7 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
       justifyContent={"space-between"}
       container
     >
-      <Grid2 size={{ xs: 12, sm: 9 }}>
+      <Grid size={12}>
         <Stack>
           <Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>
           <Typography variant="h4">
@@ -47,8 +46,8 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
                     </LinkComponent>}
           </>}</Typography>
         </Stack>
-      </Grid2>
+      </Grid>
     
-    </Grid2>
+    </Grid>
   );
 };

@@ -19,7 +19,7 @@ export function isValidGenomicEntity(value: string): value is EntityType {
 /**
  * @note If we are now adding studies and biosamples as "Entities", this will need to be changed.
  */
-export type SharedRoute = "browser"
+export type SharedRoute = "browser" | "conservation" | "functional"
 
 //empty route is for the elements default tab. For example /gene/SP1 will be the gene expression. Otherwise would need to assign /gene/SP1/gene
 export type EntityDefaultTab = ""

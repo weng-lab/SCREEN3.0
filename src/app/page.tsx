@@ -1,6 +1,6 @@
 //Home Page
 "use client";
-import { Box, Button, Grow, Grid2, IconButton, Link, Stack, Typography, Collapse } from "@mui/material";
+import { Box, Button, Grow, Grid, IconButton, Link, Stack, Typography, Collapse } from "@mui/material";
 import React, { useState } from "react";
 import { theme } from "./theme";
 import { alpha } from '@mui/material/styles';
@@ -137,10 +137,10 @@ export default function Home() {
         >
           Browse these example searches to get started with SCREEN. You can search for genes, cCREs, variants, or specific loci.
         </Typography>
-        <Grid2 container spacing={5} justifyContent="flex-start" marginTop={6} width={"100%"}>
+        <Grid container spacing={5} justifyContent="flex-start" marginTop={6} width={"100%"}>
           {popularSearches.map((entity, index) => (
             <Grow in timeout={800 + index * 300} key={`${assembly}-${index}`}>
-              <Grid2
+              <Grid
                 size={{ xs: 12, md: 4 }}
                 display="flex"
                 flexDirection="column"
@@ -181,26 +181,26 @@ export default function Home() {
                 >
                   <ArrowForwardIcon />
                 </IconButton>
-              </Grid2>
+              </Grid>
             </Grow>
           ))}
-        </Grid2>
+        </Grid>
       </Box>
       <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
-        <Grid2
+        <Grid
           container
           width="100%"
           justifyContent="space-around"
         >
-          <Grid2 size={6} width={"auto"}>
+          <Grid size={6} width={"auto"}>
             <Typography variant="h4" sx={{ fontWeight: 550, mb: 2 }}>
               Access SCREEN Data Instantly!
             </Typography>
             <Typography variant="body1" maxWidth={500}>
               Download comprehensive datasets of candidate cis-Regulatory Elements (cCREs) from ENCODE for in-depth analysis.
             </Typography>
-          </Grid2>
-          <Grid2 size={6} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }} width={"auto"}>
+          </Grid>
+          <Grid size={6} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }} width={"auto"}>
             <Box sx={{ maxWidth: 400, width: "100%", mt: { xs: 10, md: 0 } }}>
               <Typography variant="h6" sx={{ fontWeight: 550 }} gutterBottom>
                 Available Downloads
@@ -217,14 +217,14 @@ export default function Home() {
                 Go to Downloads
               </Button>
             </Box>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Box>
       <Box width={"100%"} justifyContent={"flex-start"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
         <Typography variant="h6" sx={{ fontWeight: 550 }}>📈 Trending Datasets</Typography>
-        <Grid2 container spacing={5} justifyContent="flex-start" marginTop={2}>
+        <Grid container spacing={5} justifyContent="flex-start" marginTop={2}>
           {trendingDataSets.map((data, index) => (
-            <Grid2
+            <Grid
               key={index}
               size={{
                 xs: 12,
@@ -263,9 +263,9 @@ export default function Home() {
               >
                 <DownloadIcon />
               </IconButton>
-            </Grid2>
+            </Grid>
           ))}
-        </Grid2>
+        </Grid>
       </Box>
     </div>
   );

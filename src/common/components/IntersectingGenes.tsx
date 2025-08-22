@@ -1,10 +1,9 @@
 'use client'
 import { Typography } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid-pro";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { useGeneData } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
-import { Table } from  "@weng-lab/ui-components";
+import { Table, GridColDef } from  "@weng-lab/ui-components";
 const IntersectionGenes = ({ region, assembly }: { region: GenomicRange, assembly: string }) => {
   const { data: dataGenes, loading: loadingGenes, error: errorGenes } = useGeneData({ coordinates: region, assembly: assembly as Assembly });
 

@@ -1,12 +1,9 @@
-import { Grid2 as Grid, Skeleton, Stack, Typography } from "@mui/material";
+import { Grid, Skeleton, Stack, Typography } from "@mui/material";
 import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
-import { useQuery } from "@apollo/client";
-import { calcDistRegionToRegion } from "common/utility";
 import { GenomicRange } from "types/globalTypes";
-import CustomDataGrid, { CustomDataGridColDef } from "common/components/CustomDataGrid";
-import { gql } from "types/generated";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import useClosestgenes from "common/hooks/useClosestGenes";
 
@@ -62,7 +59,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
 
   const tables: TableDef<LinkedGeneInfo>[] = [
     {
-      tableTitle: "Intact Hi-C Loops",
+      label: "Intact Hi-C Loops",
       rows: HiCLinked,
       columns: IntactHiCLoopsCols,
       sortColumn: "p_val",
@@ -70,7 +67,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       emptyTableFallback: "No intact Hi-C loops overlap this cCRE and the promoter of a gene",
     },
     {
-      tableTitle: "ChIA-PET Interactions",
+      label: "ChIA-PET Interactions",
       rows: ChIAPETLinked,
       columns: ChIAPETCols,
       sortColumn: "score",
@@ -78,7 +75,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       emptyTableFallback: "No ChIA-PET interactions overlap this cCRE and the promoter of a gene",
     },
     {
-      tableTitle: "CRISPRi-FlowFISH",
+      label: "CRISPRi-FlowFISH",
       rows: crisprLinked,
       columns: CrisprFlowFISHCols,
       sortColumn: "p_val",
@@ -86,7 +83,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       emptyTableFallback: "This cCRE was not targeted in a CRISPRi-FlowFISH experiment",
     },
     {
-      tableTitle: "eQTLs",
+      label: "eQTLs",
       rows: eqtlLinked,
       columns: eQTLCols,
       sortColumn: "p_val",
@@ -96,7 +93,7 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
   ];
 
  
-  const closestGenesCols: CustomDataGridColDef<(typeof closestGenes)[number]>[] = [
+  const closestGenesCols: GridColDef[] = [
     {
       field: "name",
       headerName: "Name",
@@ -119,11 +116,10 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
 
   return (
     <Stack spacing={2}>
-      <CustomDataGrid
+      <Table
         rows={closestGenes}
         columns={closestGenesCols}
-        hideFooter
-        tableTitle="Closest Genes"
+        label="Closest Genes"
         emptyTableFallback={"No closest genes found"}
       />
       <LinkedElements tables={tables} />

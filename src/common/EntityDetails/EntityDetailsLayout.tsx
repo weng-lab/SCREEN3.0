@@ -4,19 +4,18 @@ import EntityDetailsTabs from "./EntityDetailsTabs";
 import { EntityDetailsHeader, EntityDetailsHeaderProps } from "./EntityDetailsHeader";
 import RegionSearchHeader from "./RegionSearchHeader";
 import { parseGenomicRangeString } from "common/utility";
-import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabs";
+import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { GwasStudyHeader } from "./GwasStudyHeader";
-
 export type EntityDetailsLayoutProps = EntityDetailsHeaderProps & { children: React.ReactNode };
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
-  const verticalTabsWidth = 90
+  const verticalTabsWidth = 100
   
   return (
     // Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/. Children wrapped in <TabPanel>
     <OpenEntityTabs>
       {/* Everything below the open elements tabs */}
-      <Stack direction={"row"} id="element-details-wrapper">
+      <Stack direction={"row"} id="element-details-wrapper" height={"100%"}>
         {/* View tabs, shown only on desktop */}
         <Box sx={{ display: { xs: "none", md: "initial", height: "100%" } }} id="element-details-desktop-tabs">
           <Box sx={{ position: "fixed", height: "100%" }}>

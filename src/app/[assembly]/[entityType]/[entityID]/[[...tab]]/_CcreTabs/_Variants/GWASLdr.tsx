@@ -2,7 +2,7 @@ import { Box, Skeleton } from "@mui/material";
 import useGWASLdr from "common/hooks/useGWASLdr";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { useMemo } from "react";
-import CustomDataGrid, { CustomDataGridColDef } from "common/components/CustomDataGrid";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 
 export default function GWASLdr({ accession }: { accession: string }) {
@@ -26,7 +26,7 @@ export default function GWASLdr({ accession }: { accession: string }) {
     });
   }, [data, snpAlleles]);
 
-  const cols: CustomDataGridColDef<(typeof gwasSnps)[number]>[] = [
+  const cols: GridColDef[] = [
     {
       field: "snpid",
       headerName: "rsID",
@@ -91,7 +91,7 @@ export default function GWASLdr({ accession }: { accession: string }) {
       {loading ? (
         <Skeleton variant="rounded" width={"100%"} height={100} />
       ) : (
-        <CustomDataGrid
+        <Table
           rows={gwasSnps}
           columns={cols}
           loading={loading || loadingSnpAlleles}
@@ -100,7 +100,7 @@ export default function GWASLdr({ accession }: { accession: string }) {
               sortModel: [{ field: "zscore", sort: "desc" }],
             },
           }}
-          tableTitle={`GWAS Variants for ${accession}`}
+          label={`GWAS Variants for ${accession}`}
           emptyTableFallback={
             "This cCRE does not overlap a variant associated with significant changes in gene expression"
           }

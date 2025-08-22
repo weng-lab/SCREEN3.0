@@ -31,13 +31,12 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
       const data: ViolinPoint<PointMetadata>[] = values.map((value, i) => {
         const metadata = group[i];
         const isSelected = selected.length === 0 || selected.some((s) => s.gene_quantification_files[0].accession === metadata.gene_quantification_files[0].accession) ? true : false;
-        //const isSelected = selected.length === 0 || selected.some((s) => s.gene_quantification_files[0].accession === metaData.gene_quantification_files[0].accession) ? true : false;
         const pointColor = isSelected ? tissueColors[tissue] ?? tissueColors.missing  : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 
         return values.length < 3
-        ? { value, radius: pointRadius, tissue: tissue, metadata, color: pointColor }
-        : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue: tissue, metadata, color: pointColor };
+          ? { value, radius: pointRadius, tissue: tissue, metadata, color: pointColor }
+          : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue: tissue, metadata, color: pointColor };
       });
 
       return { label, data, violinColor };
@@ -65,12 +64,12 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
         }}
         pointTooltipBody={(point) => {
           return (
-            <Box>
-             {point.outlier && (
+            <Box maxWidth={300}>
+              {point.outlier && (
                 <div>
                   <strong>Outlier</strong>
                 </div>
-              )} 
+              )}
               <div>
                 <strong>Accession:</strong> {point.metadata?.accession}
               </div>

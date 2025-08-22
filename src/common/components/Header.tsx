@@ -16,7 +16,7 @@ import Image from "next/image";
 import AutoComplete from "./autocomplete";
 import { Search } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu"
-import { useState } from "react";
+import { useRef, useState } from "react";
 import MobileMenu from "./MobileMenu";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { LinkComponent } from "./LinkComponent";
@@ -65,8 +65,10 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   // Hover dropdowns, deals with setting its position
   const [anchorDropdown0, setAnchorDropdown0] = useState<null | HTMLElement>(null)
   const [anchorDropdown1, setAnchorDropdown1] = useState<null | HTMLElement>(null)
+
   const [assembly, setAssembly] = React.useState<"GRCh38" | "mm10">("GRCh38");
   const [iconMenuAnchor, setIconMenuAnchor] = React.useState<null | HTMLElement>(null);
+  const dropdownRef = useRef<HTMLButtonElement | null>(null);
 
   //Auto scroll and focus the main search bar
   const handleFocusSearch = () => {
@@ -89,8 +91,10 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
     searchEl.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
-  const handleIconMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setIconMenuAnchor(event.currentTarget);
+  const handleIconMenuOpen = () => {
+    if (dropdownRef.current) {
+      setIconMenuAnchor(dropdownRef.current);
+    }
   };
 
   const handleIconMenuClose = () => {
@@ -228,86 +232,91 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
             </Stack>
           </Stack>
           {isHomePage ? (
-            <IconButton sx={{ color: "white", display: {xs: "none", md: "flex"}}} onClick={handleFocusSearch}>
+            <IconButton sx={{ color: "white", display: { xs: "none", md: "flex" } }} onClick={handleFocusSearch}>
               <Search />
             </IconButton>
           ) : (
             <Stack direction={"row"} spacing={2} alignItems={"center"} sx={{ display: { xs: "none", md: "flex" } }}>
-            <Stack direction="row" alignItems="center" spacing={-1}>
-              {assembly === "GRCh38" ? (
-                <HumanIcon color="white" size={45} />
-              ) : (
-                <MouseIcon color="white" size={45} />
-              )}
-              <IconButton
-                onClick={handleIconMenuOpen}
-                size="small"
-                sx={{ color: "white" }}
-                aria-controls={Boolean(iconMenuAnchor) ? "icon-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={Boolean(iconMenuAnchor) ? "true" : undefined}
-              >
-                <ArrowDropDownIcon />
-              </IconButton>
-              <Menu
-                id="icon-menu"
-                anchorEl={iconMenuAnchor}
-                open={Boolean(iconMenuAnchor)}
-                onClose={handleIconMenuClose}
-                PaperProps={{ sx: { minWidth: 120, mt: 1 } }}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-              >
-                <MenuItem selected={assembly === "GRCh38"} onClick={() => handleIconSelect("GRCh38")}>
-                  Human
-                </MenuItem>
-                <MenuItem selected={assembly === "mm10"} onClick={() => handleIconSelect("mm10")}>
-                  Mouse
-                </MenuItem>
-              </Menu>
-            </Stack>
-            <AutoComplete
-              style={{ width: 400 }}
-              id="desktop-search-component"
-              slots={{
-                button: (
-                  <IconButton sx={{ color: "white" }}>
-                    <Search />
+              <Stack direction="row" alignItems="center" spacing={-1}>
+                {assembly === "GRCh38" ? (
+                  <IconButton onClick={handleIconMenuOpen}>
+                    <HumanIcon color="white" size={45} />
                   </IconButton>
-                ),
-              }}
-              assembly={assembly}
-              slotProps={{
-                box: { gap: 1 },
-                input: {
-                  size: "small",
-                  label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
-                  placeholder: "Enter a gene, cCRE, variant or locus",
-                  sx: {
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#ffffff",
-                      "& fieldset": { border: "none" },
-                      "&:hover fieldset": { border: "none" },
-                      "&.Mui-focused fieldset": { border: "none" },
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "#666666",
-                      "&.Mui-focused": { color: "#444444" },
-                    },
-                    "& .MuiInputLabel-shrink": {
-                      display: "none",
+                ) : (
+                  <IconButton onClick={handleIconMenuOpen}>
+                    <MouseIcon color="white" size={45} />
+                  </IconButton>
+                )}
+                <IconButton
+                ref={dropdownRef}
+                  onClick={handleIconMenuOpen}
+                  size="small"
+                  sx={{ color: "white" }}
+                  aria-controls={Boolean(iconMenuAnchor) ? "icon-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={Boolean(iconMenuAnchor) ? "true" : undefined}
+                >
+                  <ArrowDropDownIcon />
+                </IconButton>
+                <Menu
+                  id="icon-menu"
+                  anchorEl={iconMenuAnchor}
+                  open={Boolean(iconMenuAnchor)}
+                  onClose={handleIconMenuClose}
+                  PaperProps={{ sx: { minWidth: 120, mt: 1 } }}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  <MenuItem selected={assembly === "GRCh38"} onClick={() => handleIconSelect("GRCh38")}>
+                    Human
+                  </MenuItem>
+                  <MenuItem selected={assembly === "mm10"} onClick={() => handleIconSelect("mm10")}>
+                    Mouse
+                  </MenuItem>
+                </Menu>
+              </Stack>
+              <AutoComplete
+                style={{ width: 400 }}
+                id="desktop-search-component"
+                slots={{
+                  button: (
+                    <IconButton sx={{ color: "white" }}>
+                      <Search />
+                    </IconButton>
+                  ),
+                }}
+                assembly={assembly}
+                slotProps={{
+                  box: { gap: 1 },
+                  input: {
+                    size: "small",
+                    label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
+                    placeholder: "Enter a gene, cCRE, variant or locus",
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: "#ffffff",
+                        "& fieldset": { border: "none" },
+                        "&:hover fieldset": { border: "none" },
+                        "&.Mui-focused fieldset": { border: "none" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: "#666666",
+                        "&.Mui-focused": { color: "#444444" },
+                      },
+                      "& .MuiInputLabel-shrink": {
+                        display: "none",
+                      },
                     },
                   },
-                },
-              }}
-            />
-          </Stack>
+                }}
+              />
+            </Stack>
           )}
           {/* mobile view */}
           <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
