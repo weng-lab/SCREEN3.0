@@ -93,7 +93,7 @@ export default function DetailsPage({
         case "ccres":
           return <p>cCREs intersecting this variant page</p>;
         case "genes":
-          return <p>This page should probably have eQTL data</p>;
+          return <EQTLs data={variantData.data} entityType="variant" assembly={assembly} />;
       }
       break;
     }
@@ -129,7 +129,7 @@ export default function DetailsPage({
         case "genes":
           return assembly==="GRCh38" ? <CcreLinkedGenes accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} /> : <>Linked Genes for Mouse cCREs</>;
         case "variants":
-          return assembly==="GRCh38" ? <CcreVariantsTab CcreData={CcreData} />: <p> Variants for mouse cCREs </p>;
+          return assembly==="GRCh38" ? <CcreVariantsTab CcreData={CcreData} assembly={assembly}/>: <p> Variants for mouse cCREs </p>;
       }
       break;
     }

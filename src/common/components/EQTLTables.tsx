@@ -221,10 +221,10 @@ export default function EQTLs<T extends EntityType>({
     return (
       <Grid container spacing={2}>
         <Grid size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={500} />
+          <Skeleton variant="rounded" width={"100%"} height={300} />
         </Grid>
         <Grid size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={500} />
+          <Skeleton variant="rounded" width={"100%"} height={300} />
         </Grid>
       </Grid>
     );
@@ -261,6 +261,7 @@ export default function EQTLs<T extends EntityType>({
             },
           }}
           emptyTableFallback={"No OneK1K eQTLs found"}
+          divHeight={{height: "300px"}}
         />
       </Box>
     </Stack>
