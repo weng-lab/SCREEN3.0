@@ -1,6 +1,6 @@
 'use client'
 
-import { Tabs, Tab, Menu, MenuItem } from "@mui/material";
+import { Tabs, Tab, Menu, MenuItem, Box } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
@@ -103,42 +103,46 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
           sx={{ fontSize: "12px" }}
         />
       ))}
-      <Tab
-        label={"More"}
-        icon={<MoreHorizIcon />}
-        onClick={handleMoreClick}
-      />
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: verticalTabs ? "top" : "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-      >
-        {moreTabs.map((tab) => (
-          <MenuItem
-            key={tab.label}
-            component={Link}
-            href={`/${assembly}/${entityType}/${entityID}/${tab.href}?${searchParams.toString()}`}
-            onClick={handleClose}
+      {entityType === "ccre" && (
+        <Box>
+          <Tab
+            label={"More"}
+            icon={<MoreHorizIcon />}
+            onClick={handleMoreClick}
+          />
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: verticalTabs ? "top" : "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
           >
-            <Image
-              width={30}
-              height={30}
-              src={tab.iconPath}
-              alt={`${tab.label} icon`}
-              style={{ marginRight: 8 }}
-            />
-            {tab.label}
-          </MenuItem>
-        ))}
-      </Menu>
+            {moreTabs.map((tab) => (
+              <MenuItem
+                key={tab.label}
+                component={Link}
+                href={`/${assembly}/${entityType}/${entityID}/${tab.href}?${searchParams.toString()}`}
+                onClick={handleClose}
+              >
+                <Image
+                  width={30}
+                  height={30}
+                  src={tab.iconPath}
+                  alt={`${tab.label} icon`}
+                  style={{ marginRight: 8 }}
+                />
+                {tab.label}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+      )}
     </Tabs>
   );
 }

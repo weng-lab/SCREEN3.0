@@ -21,6 +21,7 @@ import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
 import IntersectingCcres from "common/components/IntersectingCcres";
+import EQTLs from "common/components/EQTLTables";
 
 export default function DetailsPage({
   params,
@@ -92,7 +93,7 @@ export default function DetailsPage({
         case "ccres":
           return <p>cCREs intersecting this variant page</p>;
         case "genes":
-          return <p>This page should probably have eQTL data</p>;
+          return <EQTLs data={variantData.data} entityType="variant" assembly={assembly} />;
       }
       break;
     }
@@ -110,7 +111,7 @@ export default function DetailsPage({
         case "ccres":
           return assembly==="GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
         case "variants":
-          return <p>This page should probably have eQTL data</p>;
+          return <EQTLs data={geneData.data} entityType="gene" assembly={assembly}/>;
       }
       break;
     }
@@ -128,7 +129,7 @@ export default function DetailsPage({
         case "genes":
           return assembly==="GRCh38" ? <CcreLinkedGenes accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} /> : <>Linked Genes for Mouse cCREs</>;
         case "variants":
-          return assembly==="GRCh38" ? <CcreVariantsTab CcreData={CcreData} />: <p> Variants for mouse cCREs </p>;
+          return assembly==="GRCh38" ? <CcreVariantsTab CcreData={CcreData} assembly={assembly}/>: <p> Variants for mouse cCREs </p>;
       }
       break;
     }
