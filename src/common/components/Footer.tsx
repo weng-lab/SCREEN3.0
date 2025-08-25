@@ -51,18 +51,39 @@ export default function Footer() {
         backgroundColor: (theme) => theme.palette.primary.main,
         zIndex: (theme) => theme.zIndex.appBar,
         color: "#fff",
-        px: { xs: 4, md: 10 },
-        py: { xs: 6, md: 8 },
+        paddingX: 6,
+
       }}
     >
-      <Grid container spacing={6}>
+      <Grid container spacing={6} my={3}>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Box display="flex" flexDirection="column" alignItems="flex-start">
+          <Stack spacing={1} alignItems="flex-start">
             <Image src={"/on-dark.svg"} alt="Logo" width={120} height={60} />
-            <Typography variant="body1" sx={{ mt: 2, textAlign: "left" }}>
+            <Typography variant="body1" sx={{textAlign: "left" }}>
               Search Candidate Regulatory Elements by ENCODE
             </Typography>
-          </Box>
+            <Typography variant="body2">
+              Copyright ©{" "}
+              <MuiLink color="inherit" href="https://www.umassmed.edu/zlab/">
+                Weng Lab
+              </MuiLink>
+              ,{" "}
+              <MuiLink color="inherit" href="https://sites.google.com/view/moore-lab/">
+                Moore Lab
+              </MuiLink>{" "}
+              {new Date().getFullYear()}.
+            </Typography>
+            <Typography variant="body2" color={"#b2bcf0"}>
+              How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN: <br />
+              <MuiLink
+                href="https://www.nature.com/articles/s41586-020-2493-4"
+                color={"#b2bcf0"}
+                underline="always"
+              >
+                &quot;ENCODE Project Consortium, et al. Nature 2020.&quot;
+              </MuiLink>
+            </Typography>
+          </Stack>
         </Grid>
         <Grid size={{ xs: 12, md: 8 }}>
           <Grid container spacing={4}>
@@ -83,27 +104,6 @@ export default function Footer() {
           </Grid>
         </Grid>
       </Grid>
-      <Typography variant="body2" textAlign={"center"} sx={{ mt: 6, mb: 2 }}>
-        Copyright ©{" "}
-        <MuiLink color="inherit" href="https://www.umassmed.edu/zlab/">
-          Weng Lab
-        </MuiLink>
-        ,{" "}
-        <MuiLink color="inherit" href="https://sites.google.com/view/moore-lab/">
-          Moore Lab
-        </MuiLink>{" "}
-        {new Date().getFullYear()}.
-      </Typography>
-      <Typography variant="body2" textAlign={"center"} color={"#b2bcf0"}>
-        How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN: <br />
-        <MuiLink
-          href="https://www.nature.com/articles/s41586-020-2493-4"
-          color={"#b2bcf0"}
-          underline="always"
-        >
-          &quot;ENCODE Project Consortium, et al. Nature 2020.&quot;
-        </MuiLink>
-      </Typography>
     </Box>
   );
 }
