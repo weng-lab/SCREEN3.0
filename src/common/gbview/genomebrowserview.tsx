@@ -20,7 +20,7 @@ import {
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useState } from "react";
-import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import AddTracksModal, { BigWig } from "./addTracksModal";
 import ControlButtons from "./controls";
@@ -29,6 +29,7 @@ import { randomColor, trackColor } from "./utils";
 import BedTooltip from "./bedTooltip";
 import { Exon } from "types/generated/graphql";
 import { useRouter } from "next/navigation";
+import { EntityType } from "common/EntityDetails/entityTabsConfig";
 
 interface Transcript {
   id: string;
@@ -52,7 +53,7 @@ function expandCoordinates(coordinates: GenomicRange) {
   };
 }
 
-export default function GenomeBrowserView({
+export default function GenomeBrowserView<A extends Assembly>({
   coordinates,
   name,
   type,
@@ -60,8 +61,8 @@ export default function GenomeBrowserView({
 }: {
   coordinates: GenomicRange;
   name: string;
-  type: EntityType;
-  assembly: string;
+  type: EntityType<A>;
+  assembly: A;
 }) {
   const [browserState, browserDispatch] = useBrowserState({
     domain: expandCoordinates(coordinates),

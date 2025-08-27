@@ -2,8 +2,8 @@
 import { CircularProgress, Typography } from "@mui/material";
 import GenomeBrowserView from "common/gbview/genomebrowserview";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import { EntityType, Assembly } from "types/globalTypes";
-import { entityTabsConfig, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
+import { Assembly, isValidAssembly } from "types/globalTypes";
+import { entityTabsConfig, EntityType, isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
@@ -16,23 +16,20 @@ import { use } from "react";
 import IntersectingCcres from "common/components/IntersectingCcres";
 import EQTLs from "common/components/EQTLTables";
 
-//Let all tabs access single data?
-//want single place to define all things. page.tsx pulls all tabs and components, component fetches own data. Types are either now unnecessary or generated from single array
-
-//Need universal single data fetch fail (for non-table errorfallback pages (any?))
-
-//use loading file?? if removing useElementMetadata
-
 export default function DetailsPage({
   params,
 }: {
-  /**
-   * Should be able to safely type this as EntityType instead of string
-   * since the layout wrapping this ensures the type is fulfilled
-   */
-  params: Promise<{ assembly: Assembly; entityType: EntityType; entityID: string; tab: string }>;
+  params: Promise<{ assembly: string; entityType: string; entityID: string; tab: string }>;
 }) {
   const { assembly, entityType, entityID, tab: tabString } = use(params);
+
+  if (!isValidAssembly(assembly)) {
+    throw new Error(`Unknown assembly: ${assembly}`);
+  }
+
+  if (!isValidEntityType(assembly, entityType)) {
+    throw new Error(`Unknown entity for ${assembly}: ${entityType}`);
+  }
   
   let tab = tabString;
   
@@ -66,8 +63,7 @@ export default function DetailsPage({
   }
 
   // Find component we need to render for this route
-  const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
-  
+  // const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
   // Once each component is refactored to independently fetch it's own data we can simply do the following:
   // return <ComponentToRender />
 
@@ -89,7 +85,7 @@ export default function DetailsPage({
 
   switch (entityType) {
     case "variant": {
-      const variantData = { data, loading, error } as useEntityMetadataReturn<"variant">;
+      const variantData = { data, loading, error } as useEntityMetadataReturn<typeof assembly, "variant">;
 
       switch (tab) {
         case "":
@@ -103,7 +99,7 @@ export default function DetailsPage({
     }
 
     case "gene": {
-      const geneData = { data, loading, error } as useEntityMetadataReturn<"gene">;
+      const geneData = { data, loading, error } as useEntityMetadataReturn<typeof assembly, "gene">;
 
       switch (tab) {
         case "":
@@ -117,7 +113,7 @@ export default function DetailsPage({
     }
 
     case "ccre": {
-      const CcreData = { data, loading, error } as useEntityMetadataReturn<"ccre">;
+      const CcreData = { data, loading, error } as useEntityMetadataReturn<typeof assembly, "ccre">;
 
       switch (tab) {
         case "":

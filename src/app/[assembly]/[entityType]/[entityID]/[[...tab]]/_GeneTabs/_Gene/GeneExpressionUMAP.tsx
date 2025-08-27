@@ -2,24 +2,24 @@ import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } fro
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { getCellCategoryColor, getCellCategoryDisplayname } from "common/utility";
 import { useMemo, useRef, useState } from "react";
-import { interpolateYlOrRd } from "d3-scale-chromatic";
-import { scaleLinear } from "d3-scale";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
 import { tissueColors } from "common/lib/colors"
 import { theme } from "app/theme";
+import { Assembly } from "types/globalTypes";
 
 export type GeneExpressionUmapProps<
-  T,
+A extends Assembly,  
+T,
   S extends boolean | undefined,
   Z extends boolean | undefined
-> = GeneExpressionProps & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
+> = GeneExpressionProps<A> & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
 
-const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends boolean | undefined>({
+const GeneExpressionUMAP = <A extends Assembly, T extends PointMetadata, S extends true, Z extends boolean | undefined>({
   geneData,
   selected,
   geneExpressionData,
   ...rest
-}: GeneExpressionUmapProps<T, S, Z>) => {
+}: GeneExpressionUmapProps<A, T, S, Z>) => {
   const [colorScheme, setColorScheme] = useState<"expression" | "lineage">("expression");
   const [showLegend, setShowLegend] = useState<boolean>(true);
 

@@ -1,7 +1,8 @@
 import { ApolloError, useQuery } from "@apollo/client";
+import { EntityType } from "common/EntityDetails/entityTabsConfig";
 import { gql } from "types/generated/gql";
 import { SnpQuery } from "types/generated/graphql";
-import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 
 const SNP_Query = gql(`
   query Snp($snpids: [String], $coordinates: [GenomicRangeInput], $assembly: String!) {
@@ -16,16 +17,16 @@ const SNP_Query = gql(`
   }
 `)
 
-type UseSnpDataParams = 
-  | { rsID: string | string[]; coordinates?: never; entityType?: EntityType; assembly: Assembly }
-  | { coordinates: GenomicRange | GenomicRange[]; rsID?: never; entityType?: EntityType; assembly: Assembly }
+type UseSnpDataParams<A extends Assembly> = 
+  | { rsID: string | string[]; coordinates?: never; entityType?: EntityType<A>; assembly: A }
+  | { coordinates: GenomicRange | GenomicRange[]; rsID?: never; entityType?: EntityType<A>; assembly: A }
 
-export type UseSnpDataReturn<T extends UseSnpDataParams> =
+export type UseSnpDataReturn<A extends Assembly, T extends UseSnpDataParams<A>> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { rsID: string[] })
   ? { data: SnpQuery["snpQuery"] | undefined; loading: boolean; error: ApolloError }
   : { data: SnpQuery["snpQuery"][0] | undefined; loading: boolean; error: ApolloError };
 
-export const useSnpData = <T extends UseSnpDataParams>({ rsID, coordinates, entityType, assembly }: T): UseSnpDataReturn<T> => {
+export const useSnpData = <A extends Assembly, T extends UseSnpDataParams<A>>({ rsID, coordinates, entityType, assembly }: T): UseSnpDataReturn<A, T> => {
   const { data, loading, error } = useQuery(
     SNP_Query,
     {
@@ -45,5 +46,5 @@ export const useSnpData = <T extends UseSnpDataParams>({ rsID, coordinates, enti
     data: (coordinates || typeof rsID === "object") ? data?.snpQuery : data?.snpQuery[0],
     loading,
     error,
-  } as UseSnpDataReturn<T>
+  } as UseSnpDataReturn<A, T>
 }

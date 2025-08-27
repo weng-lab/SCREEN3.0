@@ -5,7 +5,8 @@ import { EntityDetailsHeader } from "./EntityDetailsHeader";
 import RegionSearchHeader from "./RegionSearchHeader";
 import { parseGenomicRangeString } from "common/utility";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
-import { Assembly, EntityType } from "types/globalTypes";
+import { Assembly } from "types/globalTypes";
+import { EntityType } from "./entityTabsConfig";
 
 export type EntityDetailsLayoutProps<A extends Assembly> = {
   assembly: A;

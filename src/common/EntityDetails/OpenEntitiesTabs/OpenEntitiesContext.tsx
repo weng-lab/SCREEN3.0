@@ -1,23 +1,27 @@
 "use client";
 
 import { createContext, Dispatch, useReducer } from "react";
-import { EntityType, Assembly } from "types/globalTypes";
-import { EntityRoute } from "../entityTabsConfig";
+import { Assembly } from "types/globalTypes";
+import { EntityRoute, EntityType } from "../entityTabsConfig";
 
-export type OpenEntity<A extends Assembly, E extends EntityType<A>> = {
+export type OpenEntity<A extends Assembly = Assembly, E extends EntityType<A> = EntityType<Assembly>> = {
   assembly: Assembly;
   entityType: EntityType<A>;
   entityID: string;
   tab: EntityRoute<A, E>;
 };
 
-export type OpenEntityState = OpenEntity<any, any>[];
+export type OpenEntityState = OpenEntity[];
+
+/**
+ * @todo figure out if passing <any, any> as type arguments is correct
+ */
 
 export type OpenEntityAction =
-  | { type: "addEntity"; entity: OpenEntity<any, any> }
-  | { type: "removeEntity"; entity: OpenEntity<any, any> }
-  | { type: "updateEntity"; entity: OpenEntity<any, any> }
-  | { type: "reorder"; entity: OpenEntity<any, any>; startIndex: number; endIndex: number }
+  | { type: "addEntity"; entity: OpenEntity }
+  | { type: "removeEntity"; entity: OpenEntity }
+  | { type: "updateEntity"; entity: OpenEntity }
+  | { type: "reorder"; entity: OpenEntity; startIndex: number; endIndex: number }
   | { type: "sort" }
   | { type: "setState"; state: OpenEntityState };
 

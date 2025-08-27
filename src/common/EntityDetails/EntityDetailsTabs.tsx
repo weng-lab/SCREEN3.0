@@ -4,20 +4,20 @@ import { Tabs, Tab, Menu, MenuItem, Box } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useMemo } from "react";
-import { EntityType, Assembly } from "types/globalTypes";
+import { Assembly } from "types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { generateTabsForEntity } from "./entityTabsConfig";
+import { EntityType, getTabsForEntity } from "./entityTabsConfig";
 
-export type ElementDetailsTabsProps = {
-  assembly: Assembly
-  entityType: EntityType
+export type ElementDetailsTabsProps<A extends Assembly> = {
+  assembly: A
+  entityType: EntityType<A>
   entityID: string
   orientation: "horizontal" | "vertical"
   verticalTabsWidth?: number
 }
 
-const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, verticalTabsWidth }: ElementDetailsTabsProps) => {
+const EntityDetailsTabs = <A extends Assembly>({ assembly, entityType, entityID, orientation, verticalTabsWidth }: ElementDetailsTabsProps<A>) => {
   const pathname = usePathname();
   const searchParams = useSearchParams()
   const currentTab = pathname.substring(pathname.lastIndexOf('/') + 1) === entityID ? "" : pathname.substring(pathname.lastIndexOf('/') + 1)
@@ -44,11 +44,12 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
     }
   }, [currentTab, value])
 
-  const tabs = useMemo(() => generateTabsForEntity(entityType), [entityType]);
+  const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 
   const horizontalTabs = orientation === "horizontal"
   const verticalTabs = orientation === "vertical"
 
+  const iconTabs = tabs.filter(x => x.iconPath)
   const moreTabs = tabs.filter(x => !x.iconPath)
 
   return (
@@ -75,13 +76,13 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
 
       }}
     >
-      {tabs.map((tab, index) => (
+      {iconTabs.map((tab, index) => (
         <Tab
           label={tab.label}
-          value={tab.href}
+          value={tab.route}
           LinkComponent={Link}
-          href={`/${assembly}/${entityType}/${entityID}/${tab.href}` + '?' + searchParams.toString()}
-          key={tab.href}
+          href={`/${assembly}/${entityType}/${entityID}/${tab.route}` + '?' + searchParams.toString()}
+          key={tab.route}
           icon={<Image width={verticalTabs ? 50 : 40} height={verticalTabs ? 50 : 40} src={tab.iconPath} alt={tab.label + " icon"} />}
           sx={{ fontSize: "12px" }}
         />
@@ -110,7 +111,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
               <MenuItem
                 key={tab.label}
                 component={Link}
-                href={`/${assembly}/${entityType}/${entityID}/${tab.href}?${searchParams.toString()}`}
+                href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
                 onClick={handleClose}
               >
                 <Image

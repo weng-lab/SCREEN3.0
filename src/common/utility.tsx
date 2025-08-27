@@ -1,9 +1,10 @@
-import { Assembly, EntityType, GenomicRange, TabRoute } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
 import { Typography, TypographyOwnProps, Link, LinkProps } from "@mui/material";
 import { OpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { Launch } from "@mui/icons-material";
+import { AllRoutes, EntityRoute, EntityType } from "./EntityDetails/entityTabsConfig";
 
 export function getClassDisplayname(input: string) {
   switch (input) {
@@ -308,15 +309,19 @@ export function compressOpenEntitiesToURL(openEntities: OpenEntity[]): string {
   );
 }
 
-const entityTypeEncoding: {[key in EntityType]: string} = {
+/**
+ * @todo remove the need to manually map the entities and tabs to single letters. Should be able to do this automatically
+ */
+
+const entityTypeEncoding: {[key in (EntityType<"GRCh38"> | EntityType<"mm10">)]: string} = {
   'gene': 'g',
   'ccre': 'c',
   'variant': 'v',
   'region': 'r'
 }
 
-const entityTypeDecoding: {[key: string]: EntityType} = Object.fromEntries(
-  Object.entries(entityTypeEncoding).map(([entity, encoding]: [EntityType, string]) => [encoding, entity])
+const entityTypeDecoding: {[key: string]: (EntityType<"GRCh38"> | EntityType<"mm10">)} = Object.fromEntries(
+  Object.entries(entityTypeEncoding).map(([entity, encoding]: [EntityType<"GRCh38"> | EntityType<"mm10">, string]) => [encoding, entity])
 );
 
 const assemblyEncoding: {[key in Assembly]: string} = {
@@ -328,16 +333,17 @@ const assemblyDecoding: {[key: string]: Assembly} = Object.fromEntries(
   Object.entries(assemblyEncoding).map(([entity, encoding]: [Assembly, string]) => [encoding, entity])
 );
 
-const tabRouteEncoding: { [key in TabRoute]: string } = {
+const tabRouteEncoding: { [key in AllRoutes]: string } = {
   browser: "b",
   genes: "g",
   ccres: "c",
   variants: "v",
   conservation: "s",
-  functional: "f",
   "": "",
+  "functional-characterization": "f",
+  "transcript-expression": "t"
 };
 
-const tabRouteDecoding: { [key: string]: TabRoute } = Object.fromEntries(
-  Object.entries(tabRouteEncoding).map(([tab, encoding]: [TabRoute, string]) => [encoding, tab])
+const tabRouteDecoding: { [key: string]: AllRoutes } = Object.fromEntries(
+  Object.entries(tabRouteEncoding).map(([tab, encoding]: [AllRoutes, string]) => [encoding, tab])
 );

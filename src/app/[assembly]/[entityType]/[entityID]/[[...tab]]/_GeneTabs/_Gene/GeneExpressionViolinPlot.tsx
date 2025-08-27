@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
 import { tissueColors } from "common/lib/colors"
 
-export type GeneExpressionViolinPlotProps = GeneExpressionProps &
+export type GeneExpressionViolinPlotProps = GeneExpressionProps<"GRCh38" | "mm10"> &
   SharedGeneExpressionPlotProps &
   Partial<ViolinPlotProps<PointMetadata>>;
 

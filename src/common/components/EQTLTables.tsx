@@ -3,12 +3,13 @@ import { Grid, Skeleton, Stack, Box } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";
 import { gql } from "types/generated";
 import { useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import { Assembly, EntityType } from "types/globalTypes";
+import { Assembly } from "types/globalTypes";
 import { LinkComponent } from "./LinkComponent";
 import {
   GridColDef,
   Table
 } from "@weng-lab/ui-components";
+import { EntityType } from "common/EntityDetails/entityTabsConfig";
 
 const EQTL_QUERY = gql(`
 query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
@@ -31,14 +32,14 @@ query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
 } 
 `);
 
-export default function EQTLs<T extends EntityType>({
+export default function EQTLs<A extends Assembly, E extends EntityType<A>>({
   data,
   entityType,
   assembly,
 }: {
-  entityType: T;
-  data: useEntityMetadataReturn<T>["data"];
-  assembly: Assembly;
+  entityType: E;
+  data: useEntityMetadataReturn<A, E>["data"];
+  assembly: A;
 }) {
   let variables: Record<string, any> = {};
   let gtexTitle: string;
@@ -46,17 +47,17 @@ export default function EQTLs<T extends EntityType>({
 
   //Change query variables and table title based on element type
   if (entityType === "gene") {
-    const geneData = data as useEntityMetadataReturn<"gene">["data"];
+    const geneData = data as useEntityMetadataReturn<A, "gene">["data"];
     variables = { genes: [geneData.name] };
     gtexTitle = `GTEX whole-blood eQTLs for ${geneData.name}`;
     onekTitle = `OneK1K eQTLs for ${geneData.name}`;
   } else if (entityType === "ccre") {
-    const ccreData = data as useEntityMetadataReturn<"ccre">["data"];
+    const ccreData = data as useEntityMetadataReturn<A, "ccre">["data"];
     variables = { ccre: [ccreData.info.accession] };
     gtexTitle = `GTEX whole-blood eQTLs for ${ccreData.info.accession}`;
     onekTitle = `OneK1K eQTLs for ${ccreData.info.accession}`;
   } else {
-    const snpData = data as useEntityMetadataReturn<"variant">["data"];
+    const snpData = data as useEntityMetadataReturn<A, "variant">["data"];
     variables = { snps: [snpData.id] };
     gtexTitle = `GTEX whole-blood eQTLs for ${snpData.id}`;
     onekTitle = `OneK1K eQTLs for ${snpData.id}`;

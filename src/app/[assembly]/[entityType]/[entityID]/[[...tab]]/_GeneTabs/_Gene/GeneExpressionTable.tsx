@@ -15,14 +15,14 @@ import AdvancedFiltersPopper from "./AdvancedFilters";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility"
 
-export type GeneExpressionTableProps = GeneExpressionProps &
+export type GeneExpressionTableProps<A extends Assembly> = GeneExpressionProps<A> &
   SharedGeneExpressionPlotProps & {
     onSelectionChange: (selected: PointMetadata[]) => void;
     setSortedFilteredData: Dispatch<SetStateAction<PointMetadata[]>>;
-    assembly: Assembly;
+    assembly: A;
   };
 
-const GeneExpressionTable = ({
+const GeneExpressionTable = <A extends Assembly>({
   geneData,
   selected,
   onSelectionChange,
@@ -30,7 +30,7 @@ const GeneExpressionTable = ({
   setSortedFilteredData,
   sortedFilteredData,
   assembly
-}: GeneExpressionTableProps) => {
+}: GeneExpressionTableProps<A>) => {
   const { data, loading, error } = geneExpressionData;
   const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
   const [replicates, setReplicates] = useState<"mean" | "all">("mean")

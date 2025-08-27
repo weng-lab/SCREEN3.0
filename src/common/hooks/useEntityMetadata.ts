@@ -1,9 +1,10 @@
-import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 import { useGeneData, UseGeneDataReturn } from "./useGeneData";
 import { useSnpData, UseSnpDataReturn } from "./useSnpData";
 import { ApolloError } from "@apollo/client";
 import { parseGenomicRangeString } from "common/utility";
 import { useCcreData, UseCcreDataReturn } from "./useCcreData";
+import { EntityType } from "common/EntityDetails/entityTabsConfig";
 
 type useEntityMetadataParams<A extends Assembly, E extends EntityType<A>> = {
   assembly: A;
@@ -19,11 +20,11 @@ type UseGenomicRangeReturn = { data: {__typename?: "Region", coordinates: Genomi
  * This will need to be changed if this file persists and we add entities that are assembly specific
  */
 export type useEntityMetadataReturn<A extends Assembly, E extends EntityType<A>> = E extends "gene"
-  ? UseGeneDataReturn<{ name: string, assembly: A }>
+  ? UseGeneDataReturn<A, { name: string, assembly: A }>
   : E extends "ccre"
-  ? UseCcreDataReturn<{ accession: string, assembly: A  }>
+  ? UseCcreDataReturn<A, { accession: string, assembly: A  }>
   : E extends "variant"
-  ? UseSnpDataReturn<{ rsID: string, assembly: A  }>
+  ? UseSnpDataReturn<A, { rsID: string, assembly: A  }>
   : UseGenomicRangeReturn;
 
 export const useEntityMetadata = <A extends Assembly, E extends EntityType<A>>({ assembly, entityType, entityID }: useEntityMetadataParams<A, E>): useEntityMetadataReturn<A, E> => {

@@ -1,4 +1,4 @@
-import { Assembly, EntityType } from "types/globalTypes";
+import { Assembly } from "types/globalTypes";
 import type { ReactElement } from "react";
 import VariantInfo from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpTabs/_Variant/Variant";
 import EQTLs from "common/components/EQTLTables";
@@ -19,8 +19,28 @@ const ConservationIconPath = "/assets/ConservationIcon.svg";
 const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
 
 /**
- * I feel like a route encoding is unnecessary, we just map in alphabetical order?
+ * To add a new tab to an existing entity:
+ * 1) Add a new object with route, label, icon, and component to render to correct tab list
+ * 
+ * To add a new entity and with new tabs:
+ * 1) Add entity to validEntityTypes
+ * 2) Create list of tabs for the entity
+ * 3) Create type for the routes of that entity
+ * 4) Add an entry to the TabList type that adds a new TabConfig<NewEntityRoutes>[]
+ * 5) Add the entity and corresponding tabs to the entityTabsConfig object
+ * 
  */
+
+export const validEntityTypes = {
+  GRCh38: ["ccre", "gene", "variant", "region"],
+  mm10: ["ccre", "gene", "variant", "region"]
+} as const;
+
+export type EntityType<A extends Assembly> = typeof validEntityTypes[A][number]
+
+export const isValidEntityType = <A extends Assembly>(assembly: A, entityType: string): entityType is EntityType<A> => {
+  return (validEntityTypes[assembly] as readonly string[]).includes(entityType)
+}
 
 type TabConfig<R extends string = string> = {
   route: R;
@@ -35,24 +55,32 @@ type TabConfig<R extends string = string> = {
   component: ({ args }: any) => ReactElement;
 };
 
+/**
+ * TabList type takes in assembly and EntityType and returns corresponding string literal union
+ * The prettier auto-formatting on this is pretty horrendous, appologies
+ */
+type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
+  ? E extends "ccre"
+    ? readonly TabConfig<HumanCcreRoutes>[]
+    : E extends "gene"
+    ? readonly TabConfig<HumanGeneRoutes>[]
+    : E extends "variant"
+    ? readonly TabConfig<HumanVariantRoutes>[]
+    : readonly TabConfig<HumanRegionRoutes>[]
+  : E extends "ccre"
+  ? readonly TabConfig<MouseCcreRoutes>[]
+  : E extends "gene"
+  ? readonly TabConfig<MouseGeneRoutes>[]
+  : E extends "variant"
+  ? readonly TabConfig<MouseVariantRoutes>[]
+  : readonly TabConfig<MouseRegionRoutes>[];
+
 type EntityTabsConfig = {
-  [A in Assembly]: {
-    [E in EntityType<A>]: readonly (
-      | TabConfig<HumanVariantRoutes>
-      | TabConfig<HumanGeneRoutes>
-      | TabConfig<HumanCcreRoutes>
-      | TabConfig<HumanRegionRoutes>
-      | TabConfig<MouseVariantRoutes>
-      | TabConfig<MouseGeneRoutes>
-      | TabConfig<MouseCcreRoutes>
-      | TabConfig<MouseRegionRoutes>
-    )[];
+  readonly [A in Assembly]: {
+    readonly [E in EntityType<A>]: TabList<A, E>;
   };
 };
 
-/**
- * Type definitions for valid routes
- */
 type ExtractRoutes<T extends readonly { route: string }[]> = T[number]['route'];
 
 // Individual route types for each entity
@@ -66,8 +94,13 @@ type MouseGeneRoutes = ExtractRoutes<typeof mouseGeneTabs>;
 type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
 type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>; 
 
+export type AllRoutes = HumanVariantRoutes | HumanGeneRoutes | HumanCcreRoutes | HumanRegionRoutes | MouseVariantRoutes | MouseGeneRoutes | MouseCcreRoutes | MouseRegionRoutes
+
 // Generic type to get routes for any assembly/entity combination
-export type EntityRoute<A extends Assembly, E extends EntityType<A>> = ExtractRoutes<(typeof entityTabsConfig)[A][E]>;
+export type EntityRoute<A extends Assembly, E extends EntityType<A>> = 
+  E extends keyof (typeof entityTabsConfig)[A] 
+    ? ExtractRoutes<(typeof entityTabsConfig)[A][E]>
+    : never;
 
 const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[] = [
   {
@@ -85,6 +118,7 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
   { route: "genes", label: "Genes", iconPath: GeneIconPath, component: EQTLs },
   { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
 ] as const;
+
 
 const humanGeneTabs = [
   { route: "", label: "Genes", iconPath: GeneIconPath, component: GeneExpression },
@@ -207,16 +241,13 @@ const mouseRegionTabs = [
   { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
 ] as const;
 
-/**
- * Todo put back in the type
- */
-export const entityTabsConfig = {
+export const entityTabsConfig: EntityTabsConfig = {
   GRCh38: {
     variant: humanVariantTabs,
     gene: humanGeneTabs,
     ccre: humanCcreTabs,
     region: humanRegionTabs,
-  } as const,
+  },
   mm10: {
     variant: mouseVariantTabs,
     gene: mouseGeneTabs,
@@ -225,11 +256,7 @@ export const entityTabsConfig = {
   },
 } as const;
 
-type _EntityType<A extends Assembly> = keyof typeof entityTabsConfig[A]
-
-const x: _EntityType<"GRCh38"> = "region"
-
-export const isValidRouteForEntity = <A extends Assembly>(
+export const isValidRouteForEntity = <A extends Assembly, B>(
   assembly: A,
   entityType: EntityType<A>,
   route: string
@@ -237,22 +264,7 @@ export const isValidRouteForEntity = <A extends Assembly>(
   return entityTabsConfig[assembly][entityType].some((x) => x.route === route);
 };
 
-// // Helper to get routes for an entity type
-// export const getRoutesForEntity = <T extends EntityType>(entityType: T): RouteType<T>[] => {
-//   const config = entityConfig[entityType];
-//   return Object.keys(config.routes) as RouteType<T>[];
-// };
-
-// // Helper to get tab config for a route
-// export const getTabConfig = <T extends EntityType>(entityType: T, route: RouteType<T>): TabConfig => {
-//   return entityConfig[entityType].routes[route];
-// };
-
-// // Helper to generate tab array for EntityDetailsTabs
-// export const generateTabsForEntity = <T extends EntityType>(entityType: T) => {
-//   const config = entityConfig[entityType];
-//   return Object.entries(config.routes).map(([route, tabConfig]) => ({
-//     ...tabConfig,
-//     href: route,
-//   }));
-// };
+// Helper to generate tab array for EntityDetailsTabs
+export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(assembly: A, entityType: E) => {
+  return entityTabsConfig[assembly][entityType]
+};

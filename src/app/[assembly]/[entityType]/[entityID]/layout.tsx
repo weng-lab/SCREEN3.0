@@ -1,7 +1,8 @@
 "use client";
 import EntityDetailsLayout from "common/EntityDetails/EntityDetailsLayout";
-import { isValidAssembly, isValidEntityType } from "types/globalTypes";
+import { isValidAssembly } from "types/globalTypes";
 import { use } from "react";
+import { isValidEntityType } from "common/EntityDetails/entityTabsConfig";
 
 export default function Layout({
   children,
@@ -13,8 +14,6 @@ export default function Layout({
   
   const { assembly, entityType, entityID } = use(params);
 
-  // Want to ensure that the assembly and entity are valid before passing so that the config object can be safely accessed
-  
   if (!isValidAssembly(assembly)) {
     throw new Error(`Unknown assembly: ${assembly}`);
   }

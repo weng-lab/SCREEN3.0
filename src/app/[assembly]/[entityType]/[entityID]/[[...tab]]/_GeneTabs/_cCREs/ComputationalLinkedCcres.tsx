@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 export default function ComputationalLinkedCcres({
   geneData  
 }: {
-  geneData: UseGeneDataReturn<{ name: string }>;  
+  geneData: UseGeneDataReturn<"GRCh38", { name: string }>;  
 }) {
   const { data, loading, error } = useLinkedICREs(geneData?.data.id);
   const pathname = usePathname()

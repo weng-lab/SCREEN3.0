@@ -1,5 +1,5 @@
+import { EntityType } from 'common/EntityDetails/entityTabsConfig';
 import { useEffect, useState } from 'react';
-import { EntityType } from 'types/globalTypes';
 
 interface Frequency {
   population: string;
@@ -18,7 +18,7 @@ export interface UseSnpFrequenciesResult {
   error: string | null;
 }
 
-export function useSnpFrequencies(rsids: string[], entityType: EntityType = "variant"): UseSnpFrequenciesResult {
+export function useSnpFrequencies(rsids: string[], entityType: EntityType<"GRCh38"> = "variant"): UseSnpFrequenciesResult {
   const [data, setData] = useState<{ [rsid: string]: SnpFrequencies | null }>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

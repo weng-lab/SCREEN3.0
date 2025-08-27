@@ -1,11 +1,12 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatPortal } from "common/utility";
-import { Assembly, EntityType } from "types/globalTypes";
+import { Assembly } from "types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
+import { EntityType } from "./entityTabsConfig";
 
 export type EntityDetailsHeaderProps<A extends Assembly> = {
   assembly: A;
@@ -19,7 +20,7 @@ export const EntityDetailsHeader = <A extends Assembly>({ assembly, entityType, 
   const c = entityMetadata?.__typename === "SCREENSearchResult" ? {chromosome: entityMetadata?.chrom, start: entityMetadata?.start, end: entityMetadata?.start + entityMetadata?.len } : entityMetadata?.coordinates;
   const coordinatesDisplay = c && `${c.chromosome}:${c.start.toLocaleString()}-${c.end.toLocaleString()}`;
 
-  const description = useGeneDescription(entityID, entityType).description;
+  const description = useGeneDescription(entityID, assembly, entityType).description;
   const SnpAlleleFrequencies = useSnpFrequencies([entityID], entityType);
 
   //All data used in the subtitle of the element header based on the element type

@@ -4,13 +4,14 @@ import { OpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Assembly, EntityType } from "types/globalTypes";
+import { isValidAssembly } from "types/globalTypes";
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/MenuContext";
 import { OpenTabs } from "./OpenEntitiesTabs";
+import { isValidEntityType, isValidRouteForEntity } from "../entityTabsConfig";
 
 /**
  * @todo before going on, make sure that this file checks to make sure that the route is valid before adding it into state
@@ -28,10 +29,21 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   const searchParams = useSearchParams();
 
   // Attributes of current entity
-  const urlAssembly = pathname.split("/")[1] as Assembly;
-  const urlEntityType = pathname.split("/")[2] as EntityType<typeof urlAssembly>;
+  const urlAssembly = pathname.split("/")[1]
+  if (!isValidAssembly(urlAssembly)) {
+    throw new Error(`Unknown assembly: ${urlAssembly}`)
+  }
+  const urlEntityType = pathname.split("/")[2]
+  if (!isValidEntityType(urlAssembly, urlEntityType)) {
+    throw new Error(`Unknown entity type "${urlEntityType}" in assembly "${urlAssembly}"`)
+  }
+
   const urlEntityID = pathname.split("/")[3];
   const urlTab = (pathname.split("/")[4] ?? "")
+  if (!isValidRouteForEntity(urlAssembly, urlEntityType, urlTab)){
+    throw new Error(`Unknown tab route "${urlTab}" for entity type "${urlEntityType}" in assembly "${urlAssembly}"`)
+  }
+
   const currentEntityState = openEntities.find((el) =>
     urlEntityType === "region" && el.entityType === "region"
       ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlEntityID)) &&
