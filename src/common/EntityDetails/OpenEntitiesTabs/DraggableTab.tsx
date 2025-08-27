@@ -4,6 +4,9 @@ import { styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
 import { OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { useCallback, useContext, useMemo, useState } from "react";
+import HumanIcon from 'app/_utility/humanIcon';
+import MouseIcon from 'app/_utility/mouseIcon';
+import { theme } from "app/theme";
 
 export type DraggableTabProps = TabProps & {
   entity: OpenEntity;
@@ -37,17 +40,17 @@ export const DraggableTab = ({
       if (entity.assembly === "GRCh38") {
         return (
           <IconWrapper>
-            <Man fontSize="inherit" />
+            <HumanIcon size={16} halo={false} color={isSelected ? theme.palette.primary.main : "grey"}/>
           </IconWrapper>
         );
       } else
         return (
           <IconWrapper>
-            <PestControlRodent fontSize="inherit" />
+            <MouseIcon size={16} color={isSelected ? theme.palette.primary.main : "grey"}/>
           </IconWrapper>
         );
     }
-  }, [closable, entity, handleCloseTab, isHovered, multipleAssembliesOpen]);
+  }, [closable, entity, handleCloseTab, isHovered, isSelected, multipleAssembliesOpen]);
 
   const dragID = entity.entityID + entity.assembly;
 

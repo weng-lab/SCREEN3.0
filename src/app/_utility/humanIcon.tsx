@@ -7,6 +7,7 @@ type HumanIconProps = {
   strokeLinecap?: "butt" | "round" | "square";
   strokeLinejoin?: "miter" | "round" | "bevel";
   size?: number;
+  halo?: boolean
 };
 
 const HumanIcon = ({
@@ -16,6 +17,7 @@ const HumanIcon = ({
   strokeLinecap = "round",
   strokeLinejoin = "round",
   size = 256,
+  halo = true
 }: HumanIconProps) => (
   <svg
     width={size}
@@ -42,7 +44,7 @@ const HumanIcon = ({
     />
     <path
       d="M76.5261 62.0742C49.2921 97.2373 42.2991 144.388 56.3211 186.095C60.9561 199.847 67.9851 212.861 77.5161 224.975C70.8471 221.06 64.9071 215.822 59.7231 209.909C23.2731 168.14 28.7901 93.0433 76.5261 62.0742Z"
-      fill={color}
+      fill={!halo ? "transparent" : color}
       stroke={stroke}
       strokeWidth={strokeWidth}
       strokeLinecap={strokeLinecap}
@@ -50,7 +52,7 @@ const HumanIcon = ({
     />
     <path
       d="M181.52 62.0742C229.256 93.0523 234.764 168.131 198.323 209.909C193.139 215.831 187.199 221.06 180.53 224.975C190.061 212.861 197.09 199.838 201.725 186.095C215.756 144.388 208.754 97.2463 181.52 62.0742Z"
-      fill={color}
+      fill={!halo ? "transparent" : color}
       stroke={stroke}
       strokeWidth={strokeWidth}
       strokeLinecap={strokeLinecap}
