@@ -3,11 +3,11 @@
 import { Tabs, Tab, Menu, MenuItem, Box } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import React, { useEffect, useMemo, useState } from "react";
-import { ElementDetailsTab, GeneDetailsTab, EntityType, CcreDetailsTab, RegionDetailsTab, VariantDetailsTab, Assembly } from "types/globalTypes";
-import { geneDetailsTabs, ccreDetailsTabs, regionDetailsTabs, sharedTabs, moreTabs, variantDetailsTabs } from "./tabsConfig";
+import React, { useEffect, useState, useMemo } from "react";
+import { EntityType, Assembly } from "types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { generateTabsForEntity } from "./entityTabsConfig";
 
 export type ElementDetailsTabsProps = {
   assembly: Assembly
@@ -44,29 +44,12 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
     }
   }, [currentTab, value])
 
-  const tabs: ElementDetailsTab[] = useMemo(() => {
-    let elementSpecificTabs: VariantDetailsTab[] | GeneDetailsTab[] | CcreDetailsTab[] | RegionDetailsTab[];
-    switch (entityType) {
-      case ("gene"):
-        elementSpecificTabs = geneDetailsTabs
-        break
-      case ("variant"):
-        elementSpecificTabs = variantDetailsTabs
-        break
-      case ("ccre"):
-        elementSpecificTabs = ccreDetailsTabs
-        break
-      case ("region"):
-        elementSpecificTabs = regionDetailsTabs
-    }
-    return [
-      ...elementSpecificTabs,
-      ...sharedTabs,
-    ]
-  }, [entityType])
+  const tabs = useMemo(() => generateTabsForEntity(entityType), [entityType]);
 
   const horizontalTabs = orientation === "horizontal"
   const verticalTabs = orientation === "vertical"
+
+  const moreTabs = tabs.filter(x => !x.iconPath)
 
   return (
     <Tabs
@@ -103,7 +86,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
           sx={{ fontSize: "12px" }}
         />
       ))}
-      {entityType === "ccre" && (
+      {moreTabs.length && (
         <Box>
           <Tab
             label={"More"}

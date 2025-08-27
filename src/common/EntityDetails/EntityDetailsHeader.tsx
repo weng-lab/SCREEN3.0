@@ -7,13 +7,13 @@ import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 
-export type EntityDetailsHeaderProps = {
-  assembly: Assembly;
-  entityType: EntityType;
+export type EntityDetailsHeaderProps<A extends Assembly> = {
+  assembly: A;
+  entityType: EntityType<A>;
   entityID: string;
 };
 
-export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
+export const EntityDetailsHeader = <A extends Assembly>({ assembly, entityType, entityID }: EntityDetailsHeaderProps<A>) => {
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
   const c = entityMetadata?.__typename === "SCREENSearchResult" ? {chromosome: entityMetadata?.chrom, start: entityMetadata?.start, end: entityMetadata?.start + entityMetadata?.len } : entityMetadata?.coordinates;

@@ -5,24 +5,28 @@ import { ApolloError } from "@apollo/client";
 import { parseGenomicRangeString } from "common/utility";
 import { useCcreData, UseCcreDataReturn } from "./useCcreData";
 
-type useEntityMetadataParams<T extends EntityType> = {
-  assembly: Assembly,
-  entityType: T,
-  entityID: string
-}
+type useEntityMetadataParams<A extends Assembly, E extends EntityType<A>> = {
+  assembly: A;
+  entityType: E;
+  entityID: string;
+};
 
 //faking a return type of the same form as the others to make it easy
 type UseGenomicRangeReturn = { data: {__typename?: "Region", coordinates: GenomicRange}; loading: boolean; error: ApolloError }
 
-export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
-  ? UseGeneDataReturn<{ name: string, assembly: Assembly }>
-  : T extends "ccre"
-  ? UseCcreDataReturn<{ accession: string, assembly: Assembly  }>
-  : T extends "variant"
-  ? UseSnpDataReturn<{ rsID: string, assembly: Assembly  }>
+
+/**
+ * This will need to be changed if this file persists and we add entities that are assembly specific
+ */
+export type useEntityMetadataReturn<A extends Assembly, E extends EntityType<A>> = E extends "gene"
+  ? UseGeneDataReturn<{ name: string, assembly: A }>
+  : E extends "ccre"
+  ? UseCcreDataReturn<{ accession: string, assembly: A  }>
+  : E extends "variant"
+  ? UseSnpDataReturn<{ rsID: string, assembly: A  }>
   : UseGenomicRangeReturn;
 
-export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, entityID }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
+export const useEntityMetadata = <A extends Assembly, E extends EntityType<A>>({ assembly, entityType, entityID }: useEntityMetadataParams<A, E>): useEntityMetadataReturn<A, E> => {
   /**
    * elementType is being passed to these hooks to prevent data from being fetched unless
    * it actually should be fetched. Need to call all hooks to follow rules of hooks:
@@ -36,17 +40,17 @@ export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, 
   
   switch (entityType) {
     case "gene":
-      return geneMetadata as useEntityMetadataReturn<T>;
+      return geneMetadata as useEntityMetadataReturn<A, E>;
     case "ccre":
-      return ccreMetadata as useEntityMetadataReturn<T>;
+      return ccreMetadata as useEntityMetadataReturn<A, E>;
     case "variant":
-      return snpMetadata as useEntityMetadataReturn<T>;
+      return snpMetadata as useEntityMetadataReturn<A, E>;
     case "region":
       try {
         const region = parseGenomicRangeString(entityID)
-        return {data: {coordinates: region}, loading: false, error: undefined} as useEntityMetadataReturn<T>
+        return {data: {coordinates: region}, loading: false, error: undefined} as useEntityMetadataReturn<A, E>
       } catch (error) {
-        return {data: undefined, loading: false, error} as useEntityMetadataReturn<T>
+        return {data: undefined, loading: false, error} as useEntityMetadataReturn<A, E>
       }
   }
 }

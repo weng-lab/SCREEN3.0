@@ -1,17 +1,23 @@
 "use client";
 
 import { createContext, Dispatch, useReducer } from "react";
-import { EntityType, TabRoute, Assembly } from "types/globalTypes";
+import { EntityType, Assembly } from "types/globalTypes";
+import { EntityRoute } from "../entityTabsConfig";
 
-export type OpenEntity = { assembly: Assembly; entityType: EntityType; entityID: string; tab: TabRoute };
+export type OpenEntity<A extends Assembly, E extends EntityType<A>> = {
+  assembly: Assembly;
+  entityType: EntityType<A>;
+  entityID: string;
+  tab: EntityRoute<A, E>;
+};
 
-export type OpenEntityState = OpenEntity[];
+export type OpenEntityState = OpenEntity<any, any>[];
 
 export type OpenEntityAction =
-  | { type: "addEntity"; entity: OpenEntity }
-  | { type: "removeEntity"; entity: OpenEntity }
-  | { type: "updateEntity"; entity: OpenEntity }
-  | { type: "reorder"; entity: OpenEntity; startIndex: number; endIndex: number }
+  | { type: "addEntity"; entity: OpenEntity<any, any> }
+  | { type: "removeEntity"; entity: OpenEntity<any, any> }
+  | { type: "updateEntity"; entity: OpenEntity<any, any> }
+  | { type: "reorder"; entity: OpenEntity<any, any>; startIndex: number; endIndex: number }
   | { type: "sort" }
   | { type: "setState"; state: OpenEntityState };
 
@@ -48,9 +54,9 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
     }
     case "sort": {
       const assemblyOrder: Assembly[] = ["GRCh38", "mm10"];
-      const entityOrder: EntityType[] = ["region", "gene", "ccre", "variant"];
+      const entityOrder: (EntityType<"GRCh38"> | EntityType<"mm10">)[] = ["region", "gene", "ccre", "variant"];
 
-      const sortFn = (a: OpenEntity, b: OpenEntity) => {
+      const sortFn = (a: OpenEntity<any, any>, b: OpenEntity<any, any>) => {
       const assemblyComparison = assemblyOrder.indexOf(a.assembly) - assemblyOrder.indexOf(b.assembly);
       if (assemblyComparison !== 0) return assemblyComparison;
 

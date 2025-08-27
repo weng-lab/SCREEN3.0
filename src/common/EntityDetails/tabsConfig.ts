@@ -15,9 +15,6 @@ export const sharedTabs: SharedTab[] = [
   },
 ];
 
-export const moreTabs: SharedTab[] = [
-]
-
 export const variantDetailsTabs: VariantDetailsTab[] = [
   {
     label: "Variant",
