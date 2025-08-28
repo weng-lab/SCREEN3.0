@@ -114,13 +114,6 @@ const EntityDetailsTabs = <A extends Assembly>({ assembly, entityType, entityID,
                 href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
                 onClick={handleClose}
               >
-                <Image
-                  width={30}
-                  height={30}
-                  src={tab.iconPath}
-                  alt={`${tab.label} icon`}
-                  style={{ marginRight: 8 }}
-                />
                 {tab.label}
               </MenuItem>
             ))}
