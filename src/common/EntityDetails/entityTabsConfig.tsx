@@ -136,7 +136,7 @@ const humanGeneTabs = [
 const humanCcreTabs = [
   {
     route: "",
-    label: "cCREs",
+    label: "cCRE",
     iconPath: CcreIconPath,
     component: () => <p>This should have biosample specific z-scores</p>,
   },
@@ -211,7 +211,7 @@ const mouseGeneTabs = [
 const mouseCcreTabs = [
   {
     route: "",
-    label: "cCREs",
+    label: "cCRE",
     iconPath: CcreIconPath,
     component: () => <p>This should have biosample specific z-scores</p>,
   },
