@@ -122,11 +122,11 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
 
 
 const humanGeneTabs = [
-  { route: "", label: "Genes", iconPath: GeneIconPath, component: GeneExpression },
+  { route: "", label: "Gene", iconPath: GeneIconPath, component: GeneExpression },
   { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: GeneLinkedIcres },
   {
     route: "variants",
-    label: "Variant",
+    label: "Variants",
     iconPath: VariantIconPath,
     component: EQTLs,
   },
@@ -197,11 +197,11 @@ const mouseVariantTabs = [
 ] as const;
 
 const mouseGeneTabs = [
-  { route: "", label: "Genes", iconPath: GeneIconPath, component: GeneExpression },
+  { route: "", label: "Gene", iconPath: GeneIconPath, component: GeneExpression },
   { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: () => <p>Linked mouse cCREs</p> },
   {
     route: "variants",
-    label: "Variant",
+    label: "Variants",
     iconPath: VariantIconPath,
     component: EQTLs,
   },
