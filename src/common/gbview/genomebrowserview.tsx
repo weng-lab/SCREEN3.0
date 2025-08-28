@@ -7,6 +7,7 @@ import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
   BigBedTrackProps,
+  BigWigTrackProps,
   BrowserActionType,
   DefaultBigBed,
   DefaultBigWig,
@@ -15,6 +16,7 @@ import {
   GenomeBrowser,
   GQLCytobands,
   TranscriptHumanVersion,
+  TranscriptMouseVersion,
   TranscriptTrackProps,
   useBrowserState,
 } from "@weng-lab/genomebrowser";
@@ -73,7 +75,7 @@ export default function GenomeBrowserView({
   const router = useRouter();
 
   // Bed track mouse over, out, and click handlers
-  const icreMouseOver = useCallback(
+  const ccreMouseOver = useCallback(
     (item: Rect) => {
       const newHighlight = {
         domain: { start: item.start + 150, end: item.end + 150 },
@@ -87,30 +89,34 @@ export default function GenomeBrowserView({
     },
     [browserDispatch]
   );
-  const icreMouseOut = useCallback(() => {
+
+  const ccreMouseOut = useCallback(() => {
     browserDispatch({ type: BrowserActionType.REMOVE_LAST_HIGHLIGHT });
   }, [browserDispatch]);
-  const onIcreClick = useCallback((item: Rect) => {
+
+  const onCcreClick = useCallback((item: Rect) => {
     const accession = item.name;
-    router.push(`${assembly}/ccre/${accession}`);
-  }, []);
+    router.push(`/${assembly}/ccre/${accession}`);
+  }, [assembly, router]);
+
   const onGeneClick = useCallback((gene: Transcript) => {
     const name = gene.name;
     if (name.includes("ENSG")) {
       return;
     }
-    router.push(`${assembly}/gene/${name}`);
-  }, []);
+    router.push(`/${assembly}/gene/${name}`);
+  }, [assembly, router]);
 
   // Initialize tracks and highlights
   useEffect(() => {
     const tracks = defaultTracks(
       type === "gene" ? name : "",
-      icreMouseOver,
-      icreMouseOut,
-      onIcreClick,
+      ccreMouseOver,
+      ccreMouseOut,
+      onCcreClick,
       BedTooltip,
-      onGeneClick
+      onGeneClick,
+      assembly as Assembly
     );
     tracks.forEach((track) => {
       browserDispatch({ type: BrowserActionType.ADD_TRACK, track });
@@ -127,7 +133,7 @@ export default function GenomeBrowserView({
         id: name,
       },
     });
-  }, [coordinates, name, type, icreMouseOver, icreMouseOut, onIcreClick, browserDispatch]);
+  }, [coordinates, name, type, ccreMouseOver, ccreMouseOut, onCcreClick, browserDispatch, onGeneClick, assembly]);
 
   // Bulk ATAC Modal
   const [showAddTracksModal, setShowAddTracksModal] = useState(false);
@@ -320,11 +326,12 @@ export default function GenomeBrowserView({
 
 function defaultTracks(
   geneName: string,
-  icreMouseOver: (item: Rect) => void,
-  icreMouseOut: () => void,
-  onIcreClick: (item: Rect) => void,
+  ccreMouseOver: (item: Rect) => void,
+  ccreMouseOut: () => void,
+  onCcreClick: (item: Rect) => void,
   tooltipContent: React.FC<Rect>,
-  onGeneClick: (gene: Transcript) => void
+  onGeneClick: (gene: Transcript) => void,
+  assembly: Assembly,
 ) {
   const geneTrack = {
     ...DefaultTranscript,
@@ -333,50 +340,177 @@ function defaultTracks(
     title: "GENCODE genes",
     height: 100,
     color: "#AAAAAA",
-    version: TranscriptHumanVersion.V40,
-    assembly: "GRCh38",
+    version: assembly === "GRCh38" ? TranscriptHumanVersion.V40 : TranscriptMouseVersion.V25,
+    assembly: assembly,
     queryType: "gene",
     displayMode: DisplayMode.SQUISH,
     geneName: geneName,
     onTranscriptClick: onGeneClick,
   } as TranscriptTrackProps;
 
-  const icreTrack = {
+  const ccreTrack = {
     ...DefaultBigBed,
     titleSize: 16,
     id: "default-icre",
-    title: "All Immune cCREs",
+    title: "All cCREs colored by group",
     displayMode: DisplayMode.DENSE,
-    color: "#9378bc",
+    color: "#D05F45",
     rowHeight: 10,
     height: 50,
-    onMouseOver: icreMouseOver,
-    onMouseOut: icreMouseOut,
-    onClick: onIcreClick,
+    onMouseOver: ccreMouseOver,
+    onMouseOut: ccreMouseOut,
+    onClick: onCcreClick,
     tooltipContent: tooltipContent,
-    url: "http://downloads.wenglab.org/igscreen/iCREs.bigBed",
+    url: `https://downloads.wenglab.org/${assembly}-cCREs.DCC.bigBed`,
   } as BigBedTrackProps;
 
-  const atacBigWig = {
-    ...DefaultBigWig,
-    title: "ATAC merged signal",
-    url: "https://downloads.wenglab.org/igscreen/ATAC_merged_signal.bigWig",
-    color: "#02c7b9",
-    height: 100,
-    titleSize: 16,
-    displayMode: DisplayMode.FULL,
-    id: "atac-bigwig",
-  };
+  const humanTracks = [
+    {
+      ...DefaultBigWig,
+      id: "default-dnase",
+      title: "Agregated DNase-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#06da93",
+      height: 100,
+      url: "https://downloads.wenglab.org/DNAse_All_ENCODE_MAR20_2024_merged.bw",
+    } as BigWigTrackProps,
+    {
+      ...DefaultBigWig,
+      id: "default-h3k4me3",
+      title: "Aggregated H3K4me3 ChIP-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#ff0000",
+      height: 100,
+      url: "https://downloads.wenglab.org/H3K4me3_All_ENCODE_MAR20_2024_merged.bw",
+    } as BigWigTrackProps,
+    {
+      ...DefaultBigWig,
+      id: "default-h3k27ac",
+      title: "Aggregated H3K27ac ChIP-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#ffcd00",
+      height: 100,
+      url: "https://downloads.wenglab.org/H3K27ac_All_ENCODE_MAR20_2024_merged.bw",
+    } as BigWigTrackProps,
+    {
+      ...DefaultBigWig,
+      id: "default-ctcf",
+      title: "Aggregated CTCF ChIP-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#00b0d0",
+      height: 100,
+      url: "https://downloads.wenglab.org/CTCF_All_ENCODE_MAR20_2024_merged.bw",
+    } as BigWigTrackProps,
+    {
+      ...DefaultBigWig,
+      id: "default-atac",
+      title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#02c7b9",
+      height: 100,
+      url: "https://downloads.wenglab.org/ATAC_All_ENCODE_MAR20_2024_merged.bw",
+    } as BigWigTrackProps,
+  ];
 
-  const dnaseBigWig = {
-    ...DefaultBigWig,
-    title: "DNase merged signal",
-    url: "https://downloads.wenglab.org/igscreen/DNase_merged_signal.bigWig",
-    color: "#06DA93",
-    height: 100,
-    titleSize: 16,
-    displayMode: DisplayMode.FULL,
-    id: "dnase-bigwig",
-  };
-  return [geneTrack, icreTrack, atacBigWig, dnaseBigWig];
+  const mouseTracks = [
+    {
+      ...DefaultBigWig,
+      id: "default-dnase",
+      title: "Aggregated DNase-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#06da93",
+      height: 100,
+      url: "https://downloads.wenglab.org/DNase_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+    } as BigWigTrackProps,
+    {
+      ...DefaultBigWig,
+      id: "default-h3k4me3",
+      title: "Aggregated H3K4me3 ChIP-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#ff0000",
+      height: 100,
+      url: "https://downloads.wenglab.org/H3K4me3_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+    } as BigWigTrackProps,
+    {
+      ...DefaultBigWig,
+      id: "default-h3k27ac",
+      title: "Aggregated H3K27ac ChIP-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#ffcd00",
+      height: 100,
+      url: "https://downloads.wenglab.org/H3K27ac_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+    } as BigWigTrackProps,
+    {
+      ...DefaultBigWig,
+      id: "default-ctcf",
+      title: "Aggregated CTCF ChIP-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#00b0d0",
+      height: 100,
+      url: "https://downloads.wenglab.org/CTCF_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+    } as BigWigTrackProps,
+    {
+      ...DefaultBigWig,
+      id: "default-atac",
+      title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
+      titleSize: 16,
+      displayMode: DisplayMode.FULL,
+      color: "#02c7b9",
+      height: 100,
+      url: "https://downloads.wenglab.org/ATAC_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+    } as BigWigTrackProps
+  ];
+
+  const allTracks = assembly === "GRCh38"
+    ? [geneTrack, ccreTrack, ...humanTracks]
+    : [geneTrack, ccreTrack, ...mouseTracks];
+
+  return allTracks;
 }
+
+// const icreTrack = {
+//     ...DefaultBigBed,
+//     titleSize: 16,
+//     id: "default-icre",
+//     title: "All Immune cCREs",
+//     displayMode: DisplayMode.DENSE,
+//     color: "#9378bc",
+//     rowHeight: 10,
+//     height: 50,
+//     onMouseOver: icreMouseOver,
+//     onMouseOut: icreMouseOut,
+//     onClick: onIcreClick,
+//     tooltipContent: tooltipContent,
+//     url: "http://downloads.wenglab.org/igscreen/iCREs.bigBed",
+//   } as BigBedTrackProps;
+
+//   const atacBigWig = {
+//     ...DefaultBigWig,
+//     title: "ATAC merged signal",
+//     url: "https://downloads.wenglab.org/igscreen/ATAC_merged_signal.bigWig",
+//     color: "#02c7b9",
+//     height: 100,
+//     titleSize: 16,
+//     displayMode: DisplayMode.FULL,
+//     id: "atac-bigwig",
+//   };
+
+//   const dnaseBigWig = {
+//     ...DefaultBigWig,
+//     title: "DNase merged signal",
+//     url: "https://downloads.wenglab.org/igscreen/DNase_merged_signal.bigWig",
+//     color: "#06DA93",
+//     height: 100,
+//     titleSize: 16,
+//     displayMode: DisplayMode.FULL,
+//     id: "dnase-bigwig",
+//   };
