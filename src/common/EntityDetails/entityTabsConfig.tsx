@@ -37,6 +37,7 @@ export const validEntityTypes = {
 } as const;
 
 export type EntityType<A extends Assembly> = typeof validEntityTypes[A][number]
+export type AnyEntityType = EntityType<"GRCh38"> | EntityType<"mm10">
 
 export const isValidEntityType = <A extends Assembly>(assembly: A, entityType: string): entityType is EntityType<A> => {
   return (validEntityTypes[assembly] as readonly string[]).includes(entityType)
@@ -94,7 +95,7 @@ type MouseGeneRoutes = ExtractRoutes<typeof mouseGeneTabs>;
 type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
 type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>; 
 
-export type AllRoutes = HumanVariantRoutes | HumanGeneRoutes | HumanCcreRoutes | HumanRegionRoutes | MouseVariantRoutes | MouseGeneRoutes | MouseCcreRoutes | MouseRegionRoutes
+export type AnyTabRoute = HumanVariantRoutes | HumanGeneRoutes | HumanCcreRoutes | HumanRegionRoutes | MouseVariantRoutes | MouseGeneRoutes | MouseCcreRoutes | MouseRegionRoutes
 
 // Generic type to get routes for any assembly/entity combination
 export type EntityRoute<A extends Assembly, E extends EntityType<A>> = 

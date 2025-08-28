@@ -27,6 +27,7 @@ export type useEntityMetadataReturn<A extends Assembly, E extends EntityType<A>>
   ? UseSnpDataReturn<A, { rsID: string, assembly: A  }>
   : UseGenomicRangeReturn;
 
+  
 export const useEntityMetadata = <A extends Assembly, E extends EntityType<A>>({ assembly, entityType, entityID }: useEntityMetadataParams<A, E>): useEntityMetadataReturn<A, E> => {
   /**
    * elementType is being passed to these hooks to prevent data from being fetched unless

@@ -4,7 +4,7 @@ import { Typography, TypographyOwnProps, Link, LinkProps } from "@mui/material";
 import { OpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { Launch } from "@mui/icons-material";
-import { AllRoutes, EntityRoute, EntityType } from "./EntityDetails/entityTabsConfig";
+import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig } from "./EntityDetails/entityTabsConfig";
 
 export function getClassDisplayname(input: string) {
   switch (input) {
@@ -287,9 +287,9 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): O
     .map((entry) => {
       const [encodedAssembly, encodedEntityType, entityID, encodedTab = ""] = entry.split(openEntityDelimiter);
       return {
-        entityType: entityTypeDecoding[encodedEntityType],
+        entityType: decodeEntityType(encodedEntityType),
         entityID,
-        tab: tabRouteDecoding[encodedTab],
+        tab: decodeTabRoute(encodedTab),
         assembly: assemblyDecoding[encodedAssembly],
       };
     })
@@ -304,25 +304,30 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): O
 export function compressOpenEntitiesToURL(openEntities: OpenEntity[]): string {
   return compressToEncodedURIComponent(
     openEntities
-      .map((x) => [assemblyEncoding[x.assembly], entityTypeEncoding[x.entityType], x.entityID, tabRouteEncoding[x.tab]].join(openEntityDelimiter))
+      .map((x) => [assemblyEncoding[x.assembly], encodeEntityType(x.entityType), x.entityID,  encodeTabRoute(x.tab)].join(openEntityDelimiter))
       .join(openEntityListDelimiter)
   );
 }
 
-/**
- * @todo remove the need to manually map the entities and tabs to single letters. Should be able to do this automatically
- */
-
-const entityTypeEncoding: {[key in (EntityType<"GRCh38"> | EntityType<"mm10">)]: string} = {
-  'gene': 'g',
-  'ccre': 'c',
-  'variant': 'v',
-  'region': 'r'
+const encodeEntityType = (entity: AnyEntityType): string => {
+  const allEntityTypes = [...new Set(Object.values(validEntityTypes).flat())]
+  return String(allEntityTypes.indexOf(entity))
 }
 
-const entityTypeDecoding: {[key: string]: (EntityType<"GRCh38"> | EntityType<"mm10">)} = Object.fromEntries(
-  Object.entries(entityTypeEncoding).map(([entity, encoding]: [EntityType<"GRCh38"> | EntityType<"mm10">, string]) => [encoding, entity])
-);
+const decodeEntityType = (key: string): AnyEntityType => {
+  const allEntityTypes = [...new Set(Object.values(validEntityTypes).flat())]
+  return allEntityTypes[+key]
+}
+
+const encodeTabRoute = (tab: AnyTabRoute): string => {
+  const allTabRoutes: AnyTabRoute[] = Object.values(entityTabsConfig).map(assemblyConfig => Object.values(assemblyConfig)).flat(2).map(x => x.route)
+  return String(allTabRoutes.indexOf(tab))
+}
+
+const decodeTabRoute = (key: string): AnyTabRoute => {
+  const allTabRoutes: AnyTabRoute[] = Object.values(entityTabsConfig).map(assemblyConfig => Object.values(assemblyConfig)).flat(2).map(x => x.route)
+  return allTabRoutes[+key]
+}
 
 const assemblyEncoding: {[key in Assembly]: string} = {
   'GRCh38': 'h',
@@ -331,19 +336,4 @@ const assemblyEncoding: {[key in Assembly]: string} = {
 
 const assemblyDecoding: {[key: string]: Assembly} = Object.fromEntries(
   Object.entries(assemblyEncoding).map(([entity, encoding]: [Assembly, string]) => [encoding, entity])
-);
-
-const tabRouteEncoding: { [key in AllRoutes]: string } = {
-  browser: "b",
-  genes: "g",
-  ccres: "c",
-  variants: "v",
-  conservation: "s",
-  "": "",
-  "functional-characterization": "f",
-  "transcript-expression": "t"
-};
-
-const tabRouteDecoding: { [key: string]: AllRoutes } = Object.fromEntries(
-  Object.entries(tabRouteEncoding).map(([tab, encoding]: [AllRoutes, string]) => [encoding, tab])
 );
