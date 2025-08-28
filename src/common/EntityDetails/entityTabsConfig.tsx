@@ -155,14 +155,14 @@ const humanCcreTabs = [
   },
   {
     route: "functional-characterization",
-    label: "functional-characterization",
+    label: "F unctional Characterization",
     iconPath: FunctionalIconPath,
     component: () => <p>This should have functional characterization data</p>,
   },
   { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
   {
     route: "transcript-expression",
-    label: "transcript expression",
+    label: "Transcript Expression",
     component: () => <p>This should have transcipt expression data</p>,
   },
 ] as const;
