@@ -55,7 +55,7 @@ export default function GenomeBrowserView({
   coordinates,
   name,
   type,
-  assembly
+  assembly,
 }: {
   coordinates: GenomicRange;
   name: string;
@@ -79,84 +79,85 @@ export default function GenomeBrowserView({
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
-  const currentDomain = browserStore((state) => state.domain);
 
   useEffect(() => {
     console.log([browserStore]);
   }, [browserStore]);
+
   const router = useRouter();
 
-  const onCcreClick = useCallback((item: Rect) => {
-    const accession = item.name;
-    router.push(`/${assembly}/ccre/${accession}`);
-  }, [assembly, router]);
+  const onCcreClick = useCallback(
+    (item: Rect) => {
+      const accession = item.name;
+      router.push(`/${assembly}/ccre/${accession}`);
+    },
+    [assembly, router]
+  );
 
-  const onGeneClick = useCallback((gene: Transcript) => {
-    const name = gene.name;
-    if (name.includes("ENSG")) {
-      return;
-    }
-    router.push(`/${assembly}/gene/${name}`);
-  }, [assembly, router]);
-
+  const onGeneClick = useCallback(
+    (gene: Transcript) => {
+      const name = gene.name;
+      if (name.includes("ENSG")) {
+        return;
+      }
+      router.push(`/${assembly}/gene/${name}`);
+    },
+    [assembly, router]
+  );
 
   const initialTracks: Track[] = useMemo(() => {
     const tracks = assembly === "GRCh38" ? humanTracks : mouseTracks;
-    const defaultTracks: Track[] = [{
-      id: "gene-track",
-      title: "GENCODE genes",
-      titleSize: 12,
-      height: 50,
-      color: "#AAAAAA",
-      trackType: TrackType.Transcript,
-      assembly: assembly,
-      version: assembly === "GRCh38" ? 40 : 25,
-      displayMode: DisplayMode.Squish,
-      geneName: type === "gene" ? name : "",
-      onHover: (item: Transcript) => {
-        addHighlight({
-          id: item.name + "-temp" || "dsadsfd",
-          domain: { start: item.coordinates.start, end: item.coordinates.end },
-          color: item.color || "blue",
-        });
+    const defaultTracks: Track[] = [
+      {
+        id: "gene-track",
+        title: "GENCODE genes",
+        titleSize: 12,
+        height: 50,
+        color: "#AAAAAA",
+        trackType: TrackType.Transcript,
+        assembly: assembly,
+        version: assembly === "GRCh38" ? 40 : 25,
+        displayMode: DisplayMode.Squish,
+        geneName: type === "gene" ? name : "",
+        onHover: (item: Transcript) => {
+          addHighlight({
+            id: item.name + "-temp" || "dsadsfd",
+            domain: { start: item.coordinates.start, end: item.coordinates.end },
+            color: item.color || "blue",
+          });
+        },
+        onLeave: (item: Transcript) => {
+          removeHighlight(item.name + "-temp" || "dsadsfd");
+        },
+        onClick: (item: Transcript) => {
+          onGeneClick(item);
+        },
       },
-      onLeave: (item: Transcript) => {
-        removeHighlight(item.name + "-temp" || "dsadsfd");
+      {
+        id: "ccre-track",
+        title: "All cCREs colored by group",
+        titleSize: 12,
+        height: 20,
+        color: "#D05F45",
+        trackType: TrackType.BigBed,
+        displayMode: DisplayMode.Dense,
+        url: `https://downloads.wenglab.org/${assembly}-cCREs.DCC.bigBed`,
+        onHover: (rect) => {
+          addHighlight({
+            id: rect.name + "-temp" || "ihqoviun",
+            domain: { start: rect.start, end: rect.end },
+            color: rect.color || "blue",
+          });
+        },
+        onLeave: (rect) => {
+          removeHighlight(rect.name + "-temp" || "ihqoviun");
+        },
+        onClick: (item: Rect) => {
+          onCcreClick(item);
+        },
+        tooltip: (rect: Rect) => <CCRETooltip assembly={assembly} name={rect.name || ""} {...rect} />,
       },
-      onClick: (item: Transcript) => {
-        onGeneClick(item);
-      },
-    },
-    {
-      id: "ccre-track",
-      title: "All cCREs colored by group",
-      titleSize: 12,
-      height: 20,
-      color: "#D05F45",
-      trackType: TrackType.BigBed,
-      displayMode: DisplayMode.Dense,
-      url: `https://downloads.wenglab.org/${assembly}-cCREs.DCC.bigBed`,
-      onHover: (rect) => {
-        addHighlight({
-          id: rect.name + "-temp" || "ihqoviun",
-          domain: { start: rect.start, end: rect.end },
-          color: rect.color || "blue",
-        });
-      },
-      onLeave: (rect) => {
-        removeHighlight(rect.name + "-temp" || "ihqoviun");
-      },
-      onClick: (item: Rect) => {
-        onCcreClick(item);
-      },
-      tooltip: (rect: Rect) => (
-        <CCRETooltip
-          assembly={assembly}
-          name={rect.name || ""}
-          {...rect}
-        />
-      ),
-    }]
+    ];
 
     return [...defaultTracks, ...tracks];
   }, [assembly, type, name, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
@@ -262,10 +263,7 @@ export default function GenomeBrowserView({
           display={"flex"}
           alignItems={"center"}
         >
-          <h3 style={{ marginBottom: "0px", marginTop: "0px" }}>
-            {currentDomain.chromosome}:{currentDomain.start.toLocaleString()}-{currentDomain.end.toLocaleString()}
-          </h3>
-
+          <DomainDisplay browserStore={browserStore} />
           <svg id="cytobands" width={"700px"} height={20}>
             {/* <GQLCytobands
               assembly="hg38"
@@ -290,6 +288,15 @@ export default function GenomeBrowserView({
       ></Box>
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
     </Grid>
+  );
+}
+
+function DomainDisplay({ browserStore }: { browserStore: BrowserStoreInstance }) {
+  const currentDomain = browserStore((state) => state.domain);
+  return (
+    <h3 style={{ marginBottom: "0px", marginTop: "0px" }}>
+      {currentDomain.chromosome}:{currentDomain.start.toLocaleString()}-{currentDomain.end.toLocaleString()}
+    </h3>
   );
 }
 
