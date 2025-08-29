@@ -1,64 +1,53 @@
 import { Box, Button, Typography } from "@mui/material";
-import {
-  BrowserActionType,
-  BrowserAction,
-  BrowserState,
-} from "@weng-lab/genomebrowser";
+
 import { useCallback } from "react";
+import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 
-export default function ControlButtons({
-  browserState,
-  browserDispatch,
-}: {
-  browserState: BrowserState;
-  browserDispatch: React.Dispatch<BrowserAction>;
-}) {
-  const domain = browserState.domain;
+export default function ControlButtons({ browserStore }: { browserStore: BrowserStoreInstance }) {
+  const domain = browserStore((state) => state.domain);
+  const setDomain = browserStore((state) => state.setDomain);
 
-  const zoom = useCallback((factor: number) => {
-    browserDispatch({ type: BrowserActionType.SET_LOADING });
+  const zoom = useCallback(
+    (factor: number) => {
+      // Calculate new domain width
+      const width = domain.end - domain.start;
+      const newWidth = Math.round(width * factor);
+      const center = Math.round((domain.start + domain.end) / 2);
 
-    // Calculate new domain width
-    const width = domain.end - domain.start;
-    const newWidth = Math.round(width * factor);
-    const center = Math.round((domain.start + domain.end) / 2);
+      // Calculate new start and end based on center point
+      const newStart = Math.max(0, Math.round(center - newWidth / 2));
+      const newEnd = Math.round(center + newWidth / 2);
 
-    // Calculate new start and end based on center point
-    const newStart = Math.max(0, Math.round(center - newWidth / 2));
-    const newEnd = Math.round(center + newWidth / 2);
-
-    // Dispatch with exact coordinates instead of using factor
-    browserDispatch({
-      type: BrowserActionType.SET_DOMAIN,
-      domain: {
+      // Dispatch with exact coordinates instead of using factor
+      setDomain({
         ...domain,
         start: newStart,
         end: newEnd,
-      },
-    });
-  }, [domain, browserDispatch]);
+      });
+    },
+    [domain, setDomain]
+  );
 
-  const shift = useCallback((delta: number) => {
-    browserDispatch({ type: BrowserActionType.SET_LOADING });
+  const shift = useCallback(
+    (delta: number) => {
+      console.log("Shifting by:", delta);
+      // Round the delta to ensure consistent integer values
+      const roundedDelta = Math.round(delta);
+      const width = domain.end - domain.start;
 
-    // Round the delta to ensure consistent integer values
-    const roundedDelta = Math.round(delta);
-    const width = domain.end - domain.start;
+      // Ensure we don't go below 0
+      const newStart = Math.max(0, Math.round(domain.start + roundedDelta));
+      const newEnd = Math.round(newStart + width);
 
-    // Ensure we don't go below 0
-    const newStart = Math.max(0, Math.round(domain.start + roundedDelta));
-    const newEnd = Math.round(newStart + width);
-
-    // Dispatch with exact coordinates instead of using delta
-    browserDispatch({
-      type: BrowserActionType.SET_DOMAIN,
-      domain: {
+      // Dispatch with exact coordinates instead of using delta
+      setDomain({
         ...domain,
         start: newStart,
         end: newEnd,
-      },
-    });
-  }, [domain, browserDispatch]);
+      });
+    },
+    [domain, setDomain]
+  );
 
   // Reusable button group component
   const ButtonGroup = ({
@@ -73,10 +62,7 @@ export default function ControlButtons({
     }[];
   }) => (
     <Box display={"flex"} flexDirection={"row"} alignItems={"center"}>
-      <Typography 
-        variant="body2" 
-        pr={1}
-      >
+      <Typography variant="body2" pr={1}>
         {title}
       </Typography>
       {buttons.map((btn, index) => {
@@ -88,9 +74,9 @@ export default function ControlButtons({
             onClick={() => btn.onClick(btn.value)}
             title={`${title} ${btn.value.toLocaleString()}`}
             sx={{
-              padding: '2px 8px',
-              minWidth: '30px',
-              fontSize: '0.8rem'
+              padding: "2px 8px",
+              minWidth: "30px",
+              fontSize: "0.8rem",
             }}
           >
             {btn.label}
@@ -141,12 +127,7 @@ export default function ControlButtons({
   ];
 
   return (
-    <Box
-      justifyContent={"space-around"}
-      flexDirection={"row"}
-      display={"flex"}
-      width={"100%"}
-    >
+    <Box justifyContent={"space-around"} flexDirection={"row"} display={"flex"} width={"100%"}>
       {buttonGroups.map((group, index) => (
         <ButtonGroup key={index} title={group.title} buttons={group.buttons} />
       ))}
