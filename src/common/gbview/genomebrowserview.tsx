@@ -8,7 +8,6 @@ import { useTheme } from "@mui/material/styles";
 import {
   BigWigConfig,
   Browser,
-  BrowserStoreInstance,
   Chromosome,
   createBrowserStore,
   createTrackStore,
@@ -27,6 +26,10 @@ import { randomColor } from "./utils";
 import { Exon } from "types/generated/graphql";
 import { useRouter } from "next/navigation";
 import CCRETooltip from "./ccretooltip";
+import ConfigureGBModal from "common/components/ConfigureGBModal";
+import { RegistryBiosample } from "app/_biosampleTables/types";
+import DomainDisplay from "./domainDisplay";
+import GBButtons from "./gbViewButtons";
 
 interface Transcript {
   id: string;
@@ -228,72 +231,19 @@ export default function GenomeBrowserView({
               },
             }}
           />
-          <Box display="flex" gap={2}>
-            <Button
-              variant="contained"
-              startIcon={<HighlightIcon />}
-              size="small"
-              onClick={() => setHighlightDialogOpen(true)}
-            >
-              View Current Highlights
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<EditIcon />}
-              size="small"
-              sx={{
-                backgroundColor: theme.palette.primary.main,
-                color: "white",
-              }}
-              // onClick={() => }
-            >
-              Select Biosample
-            </Button>
-          </Box>
+          <GBButtons browserStore={browserStore} assembly={assembly}/>
         </Box>
-        <Box
-          width={"100%"}
-          justifyContent={"space-between"}
-          flexDirection={"row"}
-          display={"flex"}
-          alignItems={"center"}
-        >
-          <DomainDisplay browserStore={browserStore} />
-          <svg id="cytobands" width={"700px"} height={20}>
-            {/* <GQLCytobands
-              assembly="hg38"
-              chromosome={browserState.domain.chromosome}
-              currentDomain={browserState.domain}
-            /> */}
-          </svg>
-          <h3 style={{ marginBottom: "0px", marginTop: "0px" }}>hg38</h3>
-        </Box>
+        <DomainDisplay browserStore={browserStore} assembly={assembly} />
         <ControlButtons browserStore={browserStore} />
       </Grid>
       <Grid size={{ xs: 12, lg: 12 }}>
         <Browser browserStore={browserStore} trackStore={trackStore} />
       </Grid>
-      <Box
-        sx={{
-          width: "100%",
-          height: 40,
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      ></Box>
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
     </Grid>
   );
 }
 
-function DomainDisplay({ browserStore }: { browserStore: BrowserStoreInstance }) {
-  const currentDomain = browserStore((state) => state.domain);
-  return (
-    <h3 style={{ marginBottom: "0px", marginTop: "0px" }}>
-      {currentDomain.chromosome}:{currentDomain.start.toLocaleString()}-{currentDomain.end.toLocaleString()}
-    </h3>
-  );
-}
 
 const humanTracks: Track[] = [
   {

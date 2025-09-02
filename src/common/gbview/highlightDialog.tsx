@@ -47,6 +47,7 @@ const VALID_CHROMOSOMES: Chromosome[] = [
 // Highlight Creation Form Component
 function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreInstance }) {
   const addHighlight = browserStore((state) => state.addHighlight);
+  const currentDomain = browserStore((state) => state.domain);
 
   const [newHighlight, setNewHighlight] = useState({
     id: "",
@@ -92,6 +93,12 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
       }));
     }
   };
+
+  const handleSetCurrentDomain = () => {
+    handleInputChange("chromosome", currentDomain.chromosome);
+    handleInputChange("start", currentDomain.start.toString());
+    handleInputChange("end", currentDomain.end.toString());
+  }
 
   const handleAddHighlight = () => {
     // Validate all fields
@@ -163,17 +170,7 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-              fullWidth
-              label="ID"
-              value={newHighlight.id}
-              onChange={(e) => handleInputChange("id", e.target.value)}
-              size="small"
-              placeholder="Enter highlight ID"
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               fullWidth
               label="Chromosome"
@@ -185,7 +182,7 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
               helperText={errors.chromosome}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               fullWidth
               label="Start Position"
@@ -198,7 +195,7 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
               helperText={errors.start}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               fullWidth
               label="End Position"
@@ -221,11 +218,30 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
               type="color"
               sx={{
                 "& input[type='color']": {
-                  height: "40px",
+                  height: "23px",
                   cursor: "pointer",
                 },
               }}
             />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              label="ID"
+              value={newHighlight.id}
+              onChange={(e) => handleInputChange("id", e.target.value)}
+              size="small"
+              placeholder="Enter highlight ID"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleSetCurrentDomain}
+            >
+              Use Current Domain
+            </Button>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Button
@@ -234,7 +250,6 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
               startIcon={<Add />}
               onClick={handleAddHighlight}
               disabled={!newHighlight.id || !newHighlight.chromosome || !newHighlight.start || !newHighlight.end}
-              sx={{ height: "40px" }}
             >
               Add Highlight
             </Button>
