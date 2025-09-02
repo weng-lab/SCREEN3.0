@@ -52,8 +52,9 @@ type TabConfig<R extends string = string> = {
   iconPath?: string;
   /**
    * The component to render for that tab view
+   * @note NOT USED CURRENTLY
    */
-  component: ({ args }: any) => ReactElement;
+  component: (props: any) => ReactElement;
 };
 
 /**
@@ -163,7 +164,7 @@ const humanCcreTabs = [
   {
     route: "transcript-expression",
     label: "Transcript Expression",
-    component: () => <p>This should have transcipt expression data</p>,
+    component: () => <p>This should have transcript expression data</p>,
   },
 ] as const;
 

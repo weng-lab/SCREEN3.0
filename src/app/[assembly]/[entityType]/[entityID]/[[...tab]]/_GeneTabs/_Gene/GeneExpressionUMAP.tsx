@@ -5,21 +5,19 @@ import { useMemo, useRef, useState } from "react";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
 import { tissueColors } from "common/lib/colors"
 import { theme } from "app/theme";
-import { Assembly } from "types/globalTypes";
 
 export type GeneExpressionUmapProps<
-A extends Assembly,  
 T,
   S extends boolean | undefined,
   Z extends boolean | undefined
 > = GeneExpressionProps & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
 
-const GeneExpressionUMAP = <A extends Assembly, T extends PointMetadata, S extends true, Z extends boolean | undefined>({
+const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends boolean | undefined>({
   geneData,
   selected,
   geneExpressionData,
   ...rest
-}: GeneExpressionUmapProps<A, T, S, Z>) => {
+}: GeneExpressionUmapProps<T, S, Z>) => {
   const [colorScheme, setColorScheme] = useState<"expression" | "lineage">("expression");
   const [showLegend, setShowLegend] = useState<boolean>(true);
 

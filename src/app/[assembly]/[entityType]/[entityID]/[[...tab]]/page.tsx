@@ -2,8 +2,8 @@
 import { CircularProgress, Typography } from "@mui/material";
 import GenomeBrowserView from "common/gbview/genomebrowserview";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import { Assembly, isValidAssembly } from "types/globalTypes";
-import { entityTabsConfig, EntityType, isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
+import { isValidAssembly } from "types/globalTypes";
+import { isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
@@ -63,7 +63,7 @@ export default function DetailsPage({
   }
 
   // Find component we need to render for this route
-  const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
+  // const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
   // Once each component is refactored to independently fetch it's own data we can simply do the following:
   // return <ComponentToRender />
 
