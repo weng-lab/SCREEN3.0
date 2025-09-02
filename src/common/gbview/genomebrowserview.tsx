@@ -15,16 +15,15 @@ import {
   DisplayMode,
   InitialBrowserState,
   Track,
-  TrackStoreInstance,
   TrackType,
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import ControlButtons from "./controls";
 import HighlightDialog from "./highlightDialog";
-import { randomColor, trackColor } from "./utils";
+import { randomColor } from "./utils";
 import { Exon } from "types/generated/graphql";
 import { useRouter } from "next/navigation";
 import CCRETooltip from "./ccretooltip";
@@ -79,10 +78,6 @@ export default function GenomeBrowserView({
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
-
-  useEffect(() => {
-    console.log([browserStore]);
-  }, [browserStore]);
 
   const router = useRouter();
 

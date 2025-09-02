@@ -30,7 +30,6 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
 
   const shift = useCallback(
     (delta: number) => {
-      console.log("Shifting by:", delta);
       // Round the delta to ensure consistent integer values
       const roundedDelta = Math.round(delta);
       const width = domain.end - domain.start;
