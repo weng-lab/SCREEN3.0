@@ -9,7 +9,7 @@ import {
   GridColDef,
   Table
 } from "@weng-lab/ui-components";
-import { EntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 
 const EQTL_QUERY = gql(`
 query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
@@ -32,14 +32,14 @@ query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
 } 
 `);
 
-export default function EQTLs<A extends Assembly, E extends EntityType<A>>({
+export default function EQTLs<T extends AnyEntityType>({
   data,
   entityType,
   assembly,
 }: {
-  entityType: E;
-  data: useEntityMetadataReturn<A, E>["data"];
-  assembly: A;
+  entityType: AnyEntityType;
+  data: useEntityMetadataReturn<T>["data"];
+  assembly: Assembly;
 }) {
   let variables: Record<string, any> = {};
   let gtexTitle: string;
@@ -47,17 +47,17 @@ export default function EQTLs<A extends Assembly, E extends EntityType<A>>({
 
   //Change query variables and table title based on element type
   if (entityType === "gene") {
-    const geneData = data as useEntityMetadataReturn<A, "gene">["data"];
+    const geneData = data as useEntityMetadataReturn<"gene">["data"];
     variables = { genes: [geneData.name] };
     gtexTitle = `GTEX whole-blood eQTLs for ${geneData.name}`;
     onekTitle = `OneK1K eQTLs for ${geneData.name}`;
   } else if (entityType === "ccre") {
-    const ccreData = data as useEntityMetadataReturn<A, "ccre">["data"];
+    const ccreData = data as useEntityMetadataReturn<"ccre">["data"];
     variables = { ccre: [ccreData.info.accession] };
     gtexTitle = `GTEX whole-blood eQTLs for ${ccreData.info.accession}`;
     onekTitle = `OneK1K eQTLs for ${ccreData.info.accession}`;
   } else {
-    const snpData = data as useEntityMetadataReturn<A, "variant">["data"];
+    const snpData = data as useEntityMetadataReturn<"variant">["data"];
     variables = { snps: [snpData.id] };
     gtexTitle = `GTEX whole-blood eQTLs for ${snpData.id}`;
     onekTitle = `OneK1K eQTLs for ${snpData.id}`;

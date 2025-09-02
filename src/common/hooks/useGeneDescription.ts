@@ -1,6 +1,5 @@
-import { EntityType } from 'common/EntityDetails/entityTabsConfig';
+import { AnyEntityType } from 'common/EntityDetails/entityTabsConfig';
 import { useEffect, useState } from 'react';
-import { Assembly } from 'types/globalTypes';
 
 export interface UseGeneDescriptionResult {
   description: string | null;
@@ -8,7 +7,7 @@ export interface UseGeneDescriptionResult {
   error: string | null;
 }
 
-export function useGeneDescription<A extends Assembly>(name: string, assembly: A, entityType: EntityType<A> = "gene"): UseGeneDescriptionResult {
+export function useGeneDescription(name: string, entityType: AnyEntityType = "gene"): UseGeneDescriptionResult {
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

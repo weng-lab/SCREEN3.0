@@ -7,7 +7,7 @@ import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
 import { Assembly } from "types/globalTypes"
 
 export type GeneExpressionBarPlotProps =
-  GeneExpressionProps<"GRCh38" | "mm10"> &
+  GeneExpressionProps &
   SharedGeneExpressionPlotProps &
   Partial<BarPlotProps<PointMetadata>>
 

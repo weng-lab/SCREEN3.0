@@ -29,7 +29,7 @@ import { randomColor, trackColor } from "./utils";
 import BedTooltip from "./bedTooltip";
 import { Exon } from "types/generated/graphql";
 import { useRouter } from "next/navigation";
-import { EntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType, EntityType } from "common/EntityDetails/entityTabsConfig";
 
 interface Transcript {
   id: string;
@@ -53,7 +53,7 @@ function expandCoordinates(coordinates: GenomicRange) {
   };
 }
 
-export default function GenomeBrowserView<A extends Assembly>({
+export default function GenomeBrowserView({
   coordinates,
   name,
   type,
@@ -61,8 +61,8 @@ export default function GenomeBrowserView<A extends Assembly>({
 }: {
   coordinates: GenomicRange;
   name: string;
-  type: EntityType<A>;
-  assembly: A;
+  type: AnyEntityType;
+  assembly: Assembly;
 }) {
   const [browserState, browserDispatch] = useBrowserState({
     domain: expandCoordinates(coordinates),

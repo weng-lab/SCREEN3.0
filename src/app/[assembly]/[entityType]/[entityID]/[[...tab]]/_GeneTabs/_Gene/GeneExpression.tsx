@@ -19,12 +19,12 @@ export type SharedGeneExpressionPlotProps = {
   sortedFilteredData: PointMetadata[];
 };
 
-export type GeneExpressionProps<A extends Assembly> = {
-  geneData: UseGeneDataReturn<A, { name: string }>;
-  assembly: A;
+export type GeneExpressionProps = {
+  geneData: UseGeneDataReturn<{ name: string }>;
+  assembly: Assembly;
 };
 
-const GeneExpression = <A extends Assembly>({ geneData, assembly }: GeneExpressionProps<A>) => {
+const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
 

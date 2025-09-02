@@ -1,5 +1,5 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { EntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import { gql } from "types/generated/gql";
 import { GeneQuery } from "types/generated/graphql";
 import { Assembly, GenomicRange } from "types/globalTypes";
@@ -24,16 +24,16 @@ const GENE_Query = gql(`
  * which limits the input here to GenomicRange and not also GenomicRange[]
  */
 
-export type UseGeneDataParams<A extends Assembly> = 
-  | { name: string | string[]; coordinates?: never; entityType?: EntityType<A>; assembly?: A }
-  | { coordinates: GenomicRange; name?: never; entityType?: EntityType<A>; assembly?: A }
+export type UseGeneDataParams = 
+  | { name: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly?: Assembly }
+  | { coordinates: GenomicRange; name?: never; entityType?: AnyEntityType; assembly?: Assembly }
 
-export type UseGeneDataReturn<A extends Assembly, T extends UseGeneDataParams<A>> =
+export type UseGeneDataReturn<T extends UseGeneDataParams> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { name: string[] })
   ? { data: GeneQuery["gene"] | undefined; loading: boolean; error: ApolloError }
   : { data: GeneQuery["gene"][0] | undefined; loading: boolean; error: ApolloError };
 
-export const useGeneData = <A extends Assembly, T extends UseGeneDataParams<A>>({name, coordinates, entityType, assembly}: T): UseGeneDataReturn<A, T> => {
+export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, entityType, assembly}: T): UseGeneDataReturn<T> => {
 
   const { data, loading, error } = useQuery(
     GENE_Query,
@@ -57,5 +57,5 @@ export const useGeneData = <A extends Assembly, T extends UseGeneDataParams<A>>(
     data: (coordinates || typeof name === "object") ? data?.gene : data?.gene[0],
     loading,
     error,
-  } as UseGeneDataReturn<A, T>
+  } as UseGeneDataReturn<T>
 }

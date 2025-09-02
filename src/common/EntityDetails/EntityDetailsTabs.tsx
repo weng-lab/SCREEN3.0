@@ -7,17 +7,17 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Assembly } from "types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { EntityType, getTabsForEntity } from "./entityTabsConfig";
+import { AnyEntityType, getTabsForEntity } from "./entityTabsConfig";
 
-export type ElementDetailsTabsProps<A extends Assembly> = {
-  assembly: A
-  entityType: EntityType<A>
+export type ElementDetailsTabsProps = {
+  assembly: Assembly
+  entityType: AnyEntityType
   entityID: string
   orientation: "horizontal" | "vertical"
   verticalTabsWidth?: number
 }
 
-const EntityDetailsTabs = <A extends Assembly>({ assembly, entityType, entityID, orientation, verticalTabsWidth }: ElementDetailsTabsProps<A>) => {
+const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, verticalTabsWidth }: ElementDetailsTabsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams()
   const currentTab = pathname.substring(pathname.lastIndexOf('/') + 1) === entityID ? "" : pathname.substring(pathname.lastIndexOf('/') + 1)

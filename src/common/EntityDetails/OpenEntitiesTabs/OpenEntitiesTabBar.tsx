@@ -1,6 +1,6 @@
 import { Add } from "@mui/icons-material";
 import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
-import { OpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
+import { OpenEntity, OpenEntitiesContext, AnyOpenEntity } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -17,7 +17,7 @@ import { isValidEntityType, isValidRouteForEntity } from "../entityTabsConfig";
  * @todo before going on, make sure that this file checks to make sure that the route is valid before adding it into state
  */
 
-export const constructEntityURL = (entity: OpenEntity) =>
+export const constructEntityURL = (entity: AnyOpenEntity) =>
   `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {
@@ -59,7 +59,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     if (!isInitializedRef.current) {
       const openParam = searchParams.get("open");
       if (openParam) {
-        const openEntitiesFromUrl: OpenEntity[] = decompressOpenEntitiesFromURL(openParam);
+        const openEntitiesFromUrl: AnyOpenEntity[] = decompressOpenEntitiesFromURL(openParam);
         if (openEntitiesFromUrl.length > 0) {
           dispatch({ type: "setState", state: openEntitiesFromUrl });
         }
@@ -150,14 +150,14 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   // ------- <DraggableTab> Helpers -------
 
   const handleTabClick = useCallback(
-    (elToOpen: OpenEntity) => {
+    (elToOpen: AnyOpenEntity) => {
       navigateAndMark(constructEntityURL(elToOpen) + "?" + searchParams.toString());
     },
     [navigateAndMark, searchParams]
   );
 
   const handleCloseTab = useCallback(
-    (elToClose: OpenEntity) => {
+    (elToClose: AnyOpenEntity) => {
       if (openEntities.length > 1) {
         // only need to navigate if you're closing the tab that you're on
         const needToNavigate = elToClose.entityID === urlEntityID && elToClose.assembly === urlAssembly;

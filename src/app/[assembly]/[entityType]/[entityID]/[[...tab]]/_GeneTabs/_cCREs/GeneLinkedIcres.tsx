@@ -3,7 +3,7 @@ import ComputationalLinkedCcres from "./ComputationalLinkedCcres";
 import DistanceLinkedCcres from "./DistanceLinkedCcres";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 
-const GeneLinkedIcres = ({geneData}: {geneData: UseGeneDataReturn<"GRCh38", { name: string }>}) => {
+const GeneLinkedIcres = ({geneData}: {geneData: UseGeneDataReturn<{ name: string }>}) => {
  
   return (
     <Stack spacing={2} alignItems={"center"}>

@@ -1,7 +1,7 @@
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
 import { Typography, TypographyOwnProps, Link, LinkProps } from "@mui/material";
-import { OpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { Launch } from "@mui/icons-material";
 import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig } from "./EntityDetails/entityTabsConfig";
@@ -281,7 +281,7 @@ const openEntityDelimiter = '/'
  * @param urlOpen properly formatted URI Encoded query parameter representing ```OpenEntity[]``` state
  * @returns ```OpenEntity[]```
  */
-export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): OpenEntity[] {
+export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): AnyOpenEntity[] {
   return decompressFromEncodedURIComponent(urlOpenEntities)
     .split(openEntityListDelimiter)
     .map((entry) => {
@@ -301,7 +301,7 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): O
  * @param openEntities
  * @returns URI encoded query parameter representing the ```OpenEntity[]``` state
  */
-export function compressOpenEntitiesToURL(openEntities: OpenEntity[]): string {
+export function compressOpenEntitiesToURL(openEntities: AnyOpenEntity[]): string {
   return compressToEncodedURIComponent(
     openEntities
       .map((x) => [assemblyEncoding[x.assembly], encodeEntityType(x.entityType), x.entityID,  encodeTabRoute(x.tab)].join(openEntityDelimiter))

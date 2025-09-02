@@ -2,28 +2,27 @@
 
 import { createContext, Dispatch, useReducer } from "react";
 import { Assembly } from "types/globalTypes";
-import { EntityRoute, EntityType } from "../entityTabsConfig";
+import { AnyEntityType, EntityRoute, EntityType } from "../entityTabsConfig";
 
-export type OpenEntity<A extends Assembly = Assembly, E extends EntityType<A> = EntityType<Assembly>> = {
-  assembly: Assembly;
+export type OpenEntity<A extends Assembly, E extends EntityType<A>> = {
+  assembly: A;
   entityType: EntityType<A>;
   entityID: string;
   tab: EntityRoute<A, E>;
 };
 
-export type OpenEntityState = OpenEntity[];
+export type OpenEntityState = AnyOpenEntity[];
 
-/**
- * @todo figure out if passing <any, any> as type arguments is correct
- */
+export type AnyOpenEntity = OpenEntity<Assembly, EntityType<Assembly>>
 
 export type OpenEntityAction =
-  | { type: "addEntity"; entity: OpenEntity }
-  | { type: "removeEntity"; entity: OpenEntity }
-  | { type: "updateEntity"; entity: OpenEntity }
-  | { type: "reorder"; entity: OpenEntity; startIndex: number; endIndex: number }
+  | { type: "addEntity"; entity: AnyOpenEntity }
+  | { type: "removeEntity"; entity: AnyOpenEntity }
+  | { type: "updateEntity"; entity: AnyOpenEntity }
+  | { type: "reorder"; entity: AnyOpenEntity; startIndex: number; endIndex: number }
   | { type: "sort" }
   | { type: "setState"; state: OpenEntityState };
+
 
 const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAction) => {
   let newState: OpenEntityState;
@@ -58,9 +57,9 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
     }
     case "sort": {
       const assemblyOrder: Assembly[] = ["GRCh38", "mm10"];
-      const entityOrder: (EntityType<"GRCh38"> | EntityType<"mm10">)[] = ["region", "gene", "ccre", "variant"];
+      const entityOrder: AnyEntityType[] = ["region", "gene", "ccre", "variant"];
 
-      const sortFn = (a: OpenEntity<any, any>, b: OpenEntity<any, any>) => {
+      const sortFn = (a: AnyOpenEntity, b: AnyOpenEntity) => {
       const assemblyComparison = assemblyOrder.indexOf(a.assembly) - assemblyOrder.indexOf(b.assembly);
       if (assemblyComparison !== 0) return assemblyComparison;
 

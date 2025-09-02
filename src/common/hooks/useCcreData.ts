@@ -1,5 +1,5 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { EntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import { gql } from "types/generated/gql";
 import { CCrescreenSearchQueryQuery } from "types/generated/graphql";
 import { Assembly, GenomicRange } from "types/globalTypes";
@@ -47,16 +47,21 @@ const CCRE_QUERY = gql(`
   }
 `);
 
-type UseCcreDataParams<A extends Assembly> = 
-  | { assembly: A, accession?: string | string[]; coordinates?: never; entityType?: EntityType<A>, nearbygeneslimit?: number, cellType?: string }
-  | { assembly: A, coordinates: GenomicRange | GenomicRange[]; accession?: never; entityType?: EntityType<A>, nearbygeneslimit?: number, cellType?: string }
+/**
+ * I suppose the advantage is that there can potentially be a mapping between the entityType and assembly (soon wiht biosample), but the issue is that that type specification means that I need to needlessly pass the assembly as a type to this function which is not at all used in the return (just for blocking)
+ */
 
-export type UseCcreDataReturn<A extends Assembly, T extends UseCcreDataParams<A>> =
-  T extends ({ coordinates: GenomicRange | GenomicRange[] } | { accession: string[] })
-  ? { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"] | undefined; loading: boolean; error: ApolloError }
-  : { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] | undefined; loading: boolean; error: ApolloError };
 
-export const useCcreData = <A extends Assembly, T extends UseCcreDataParams<A>>({accession, coordinates, entityType, assembly, nearbygeneslimit, cellType}: T): UseCcreDataReturn<A, T> => {
+type UseCcreDataParams = 
+| { assembly: Assembly, accession?: string | string[]; coordinates?: never; entityType?: AnyEntityType, nearbygeneslimit?: number, cellType?: string }
+| { assembly: Assembly, coordinates: GenomicRange | GenomicRange[]; accession?: never; entityType?: AnyEntityType, nearbygeneslimit?: number, cellType?: string }
+
+export type UseCcreDataReturn<T extends UseCcreDataParams> =
+T extends ({ coordinates: GenomicRange | GenomicRange[] } | { accession: string[] })
+? { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"] | undefined; loading: boolean; error: ApolloError }
+: { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] | undefined; loading: boolean; error: ApolloError };
+
+export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly, nearbygeneslimit, cellType}: T): UseCcreDataReturn<T> => {
   
   const { data, loading, error } = useQuery(CCRE_QUERY, {
     variables: { 
@@ -65,20 +70,20 @@ export const useCcreData = <A extends Assembly, T extends UseCcreDataParams<A>>(
       assembly: assembly,
       nearbygeneslimit: nearbygeneslimit || 3,
       cellType: cellType
-     },
+    },
     skip: ((entityType !== undefined) && entityType !== 'ccre') ||
     (
       (!accession || (Array.isArray(accession) && accession.length === 0)) &&
       (!coordinates || (Array.isArray(coordinates) && coordinates.length === 0))
     )
   });
-
+  
   return {
     /**
      * return either whole array or just first item depending on input
-     */
-    data: (coordinates || typeof accession === "object") ? data?.cCRESCREENSearch : data?.cCRESCREENSearch[0],
-    loading,
-    error,
-  } as UseCcreDataReturn<A, T>
+    */
+   data: (coordinates || typeof accession === "object") ? data?.cCRESCREENSearch : data?.cCRESCREENSearch[0],
+   loading,
+   error,
+  } as UseCcreDataReturn<T>
 }

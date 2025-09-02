@@ -6,15 +6,15 @@ import RegionSearchHeader from "./RegionSearchHeader";
 import { parseGenomicRangeString } from "common/utility";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "types/globalTypes";
-import { EntityType } from "./entityTabsConfig";
+import { AnyEntityType } from "./entityTabsConfig";
 
-export type EntityDetailsLayoutProps<A extends Assembly> = {
-  assembly: A;
-  entityType: EntityType<A>;
+export type EntityDetailsLayoutProps = {
+  assembly: Assembly;
+  entityType: AnyEntityType;
   entityID: string;
 } & { children: React.ReactNode };
 
-export default function EntityDetailsLayout<A extends Assembly>({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps<A>) {
+export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
   const verticalTabsWidth = 100
   
   return (
