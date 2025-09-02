@@ -12,7 +12,7 @@ A extends Assembly,
 T,
   S extends boolean | undefined,
   Z extends boolean | undefined
-> = GeneExpressionProps<A> & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
+> = GeneExpressionProps & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
 
 const GeneExpressionUMAP = <A extends Assembly, T extends PointMetadata, S extends true, Z extends boolean | undefined>({
   geneData,
