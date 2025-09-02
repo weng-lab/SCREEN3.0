@@ -1,7 +1,8 @@
 import { ApolloError, useQuery } from "@apollo/client";
+import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import { gql } from "types/generated/gql";
 import { GeneQuery } from "types/generated/graphql";
-import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 
 const GENE_Query = gql(`
   query Gene($chromosome: String, $start: Int, $end: Int, $name: [String], $assembly: String!, $version: Int) {
@@ -24,8 +25,8 @@ const GENE_Query = gql(`
  */
 
 export type UseGeneDataParams = 
-  | { name: string | string[]; coordinates?: never; entityType?: EntityType; assembly?: Assembly }
-  | { coordinates: GenomicRange; name?: never; entityType?: EntityType; assembly?: Assembly }
+  | { name: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly?: Assembly }
+  | { coordinates: GenomicRange; name?: never; entityType?: AnyEntityType; assembly?: Assembly }
 
 export type UseGeneDataReturn<T extends UseGeneDataParams> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { name: string[] })

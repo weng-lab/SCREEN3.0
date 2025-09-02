@@ -1,9 +1,10 @@
-import { Assembly, EntityType, GenomicRange, TabRoute } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
 import { Typography, TypographyOwnProps, Link, LinkProps } from "@mui/material";
-import { OpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { Launch } from "@mui/icons-material";
+import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig } from "./EntityDetails/entityTabsConfig";
 
 export function getClassDisplayname(input: string) {
   switch (input) {
@@ -280,15 +281,15 @@ const openEntityDelimiter = '/'
  * @param urlOpen properly formatted URI Encoded query parameter representing ```OpenEntity[]``` state
  * @returns ```OpenEntity[]```
  */
-export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): OpenEntity[] {
+export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): AnyOpenEntity[] {
   return decompressFromEncodedURIComponent(urlOpenEntities)
     .split(openEntityListDelimiter)
     .map((entry) => {
       const [encodedAssembly, encodedEntityType, entityID, encodedTab = ""] = entry.split(openEntityDelimiter);
       return {
-        entityType: entityTypeDecoding[encodedEntityType],
+        entityType: decodeEntityType(encodedEntityType),
         entityID,
-        tab: tabRouteDecoding[encodedTab],
+        tab: decodeTabRoute(encodedTab),
         assembly: assemblyDecoding[encodedAssembly],
       };
     })
@@ -300,24 +301,33 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): O
  * @param openEntities
  * @returns URI encoded query parameter representing the ```OpenEntity[]``` state
  */
-export function compressOpenEntitiesToURL(openEntities: OpenEntity[]): string {
+export function compressOpenEntitiesToURL(openEntities: AnyOpenEntity[]): string {
   return compressToEncodedURIComponent(
     openEntities
-      .map((x) => [assemblyEncoding[x.assembly], entityTypeEncoding[x.entityType], x.entityID, tabRouteEncoding[x.tab]].join(openEntityDelimiter))
+      .map((x) => [assemblyEncoding[x.assembly], encodeEntityType(x.entityType), x.entityID,  encodeTabRoute(x.tab)].join(openEntityDelimiter))
       .join(openEntityListDelimiter)
   );
 }
 
-const entityTypeEncoding: {[key in EntityType]: string} = {
-  'gene': 'g',
-  'ccre': 'c',
-  'variant': 'v',
-  'region': 'r'
+const encodeEntityType = (entity: AnyEntityType): string => {
+  const allEntityTypes = [...new Set(Object.values(validEntityTypes).flat())]
+  return String(allEntityTypes.indexOf(entity))
 }
 
-const entityTypeDecoding: {[key: string]: EntityType} = Object.fromEntries(
-  Object.entries(entityTypeEncoding).map(([entity, encoding]: [EntityType, string]) => [encoding, entity])
-);
+const decodeEntityType = (key: string): AnyEntityType => {
+  const allEntityTypes = [...new Set(Object.values(validEntityTypes).flat())]
+  return allEntityTypes[+key]
+}
+
+const encodeTabRoute = (tab: AnyTabRoute): string => {
+  const allTabRoutes: AnyTabRoute[] = Object.values(entityTabsConfig).map(assemblyConfig => Object.values(assemblyConfig)).flat(2).map(x => x.route)
+  return String(allTabRoutes.indexOf(tab))
+}
+
+const decodeTabRoute = (key: string): AnyTabRoute => {
+  const allTabRoutes: AnyTabRoute[] = Object.values(entityTabsConfig).map(assemblyConfig => Object.values(assemblyConfig)).flat(2).map(x => x.route)
+  return allTabRoutes[+key]
+}
 
 const assemblyEncoding: {[key in Assembly]: string} = {
   'GRCh38': 'h',
@@ -326,18 +336,4 @@ const assemblyEncoding: {[key in Assembly]: string} = {
 
 const assemblyDecoding: {[key: string]: Assembly} = Object.fromEntries(
   Object.entries(assemblyEncoding).map(([entity, encoding]: [Assembly, string]) => [encoding, entity])
-);
-
-const tabRouteEncoding: { [key in TabRoute]: string } = {
-  browser: "b",
-  genes: "g",
-  ccres: "c",
-  variants: "v",
-  conservation: "s",
-  functional: "f",
-  "": "",
-};
-
-const tabRouteDecoding: { [key: string]: TabRoute } = Object.fromEntries(
-  Object.entries(tabRouteEncoding).map(([tab, encoding]: [TabRoute, string]) => [encoding, tab])
 );

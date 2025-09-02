@@ -4,13 +4,14 @@ import { capitalizeFirstLetter } from "common/utility"
 import { Box } from "@mui/material"
 import { tissueColors } from "common/lib/colors"
 import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
+import { Assembly } from "types/globalTypes"
 
 export type GeneExpressionBarPlotProps =
   GeneExpressionProps &
   SharedGeneExpressionPlotProps &
   Partial<BarPlotProps<PointMetadata>>
 
-const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest }: GeneExpressionBarPlotProps) => {
+const GeneExpressionBarPlot = ({ geneData, selected, assembly, sortedFilteredData, ...rest }: GeneExpressionBarPlotProps) => {
 
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
     const maxLength = 20;

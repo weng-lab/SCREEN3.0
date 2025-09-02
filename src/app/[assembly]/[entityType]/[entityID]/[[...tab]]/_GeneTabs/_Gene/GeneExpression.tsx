@@ -5,7 +5,7 @@ import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
 import { BarData } from "@weng-lab/visualization";
 import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
-import { BarChart, ScatterPlot, CandlestickChart } from "@mui/icons-material";
+import { BarChart, CandlestickChart } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Distribution, ViolinPoint } from "@weng-lab/visualization";
@@ -21,7 +21,7 @@ export type SharedGeneExpressionPlotProps = {
 
 export type GeneExpressionProps = {
   geneData: UseGeneDataReturn<{ name: string }>;
-  assembly?: Assembly;
+  assembly: Assembly;
 };
 
 const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
@@ -58,7 +58,6 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   };
 
   return (
-    <>
     <TwoPaneLayout
       TableComponent={
         <GeneExpressionTable
@@ -77,6 +76,7 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
           icon: <BarChart />,
           plotComponent: (
             <GeneExpressionBarPlot
+              assembly={assembly}
               geneData={geneData}
               selected={selected}
               sortedFilteredData={sortedFilteredData}
@@ -104,6 +104,7 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
           icon: <CandlestickChart />,
           plotComponent: (
             <GeneExpressionViolinPlot
+              assembly={assembly}
               geneData={geneData}
               selected={selected}
               sortedFilteredData={sortedFilteredData}
@@ -115,7 +116,6 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
         },
       ]}
     />
-    </>
   );
 };
 

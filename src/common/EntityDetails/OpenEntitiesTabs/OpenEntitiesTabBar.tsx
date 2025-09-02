@@ -1,18 +1,23 @@
 import { Add } from "@mui/icons-material";
-import { Stack, Paper, Tooltip, Tab, CircularProgress, IconButton, Box } from "@mui/material";
-import { OpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
+import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
+import { OpenEntity, OpenEntitiesContext, AnyOpenEntity } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Assembly, EntityType, TabRoute } from "types/globalTypes";
+import { isValidAssembly } from "types/globalTypes";
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/MenuContext";
 import { OpenTabs } from "./OpenEntitiesTabs";
+import { isValidEntityType, isValidRouteForEntity } from "../entityTabsConfig";
 
-export const constructEntityURL = (entity: OpenEntity) =>
+/**
+ * @todo before going on, make sure that this file checks to make sure that the route is valid before adding it into state
+ */
+
+export const constructEntityURL = (entity: AnyOpenEntity) =>
   `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {
@@ -24,10 +29,21 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   const searchParams = useSearchParams();
 
   // Attributes of current entity
-  const urlAssembly = pathname.split("/")[1] as Assembly;
-  const urlEntityType = pathname.split("/")[2] as EntityType;
+  const urlAssembly = pathname.split("/")[1]
+  if (!isValidAssembly(urlAssembly)) {
+    throw new Error(`Unknown assembly: ${urlAssembly}`)
+  }
+  const urlEntityType = pathname.split("/")[2]
+  if (!isValidEntityType(urlAssembly, urlEntityType)) {
+    throw new Error(`Unknown entity type "${urlEntityType}" in assembly "${urlAssembly}"`)
+  }
+
   const urlEntityID = pathname.split("/")[3];
-  const urlTab = (pathname.split("/")[4] ?? "") as TabRoute;
+  const urlTab = (pathname.split("/")[4] ?? "")
+  if (!isValidRouteForEntity(urlAssembly, urlEntityType, urlTab)){
+    throw new Error(`Unknown tab route "${urlTab}" for entity type "${urlEntityType}" in assembly "${urlAssembly}"`)
+  }
+
   const currentEntityState = openEntities.find((el) =>
     urlEntityType === "region" && el.entityType === "region"
       ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlEntityID)) &&
@@ -43,7 +59,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     if (!isInitializedRef.current) {
       const openParam = searchParams.get("open");
       if (openParam) {
-        const openEntitiesFromUrl: OpenEntity[] = decompressOpenEntitiesFromURL(openParam);
+        const openEntitiesFromUrl: AnyOpenEntity[] = decompressOpenEntitiesFromURL(openParam);
         if (openEntitiesFromUrl.length > 0) {
           dispatch({ type: "setState", state: openEntitiesFromUrl });
         }
@@ -134,14 +150,14 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   // ------- <DraggableTab> Helpers -------
 
   const handleTabClick = useCallback(
-    (elToOpen: OpenEntity) => {
+    (elToOpen: AnyOpenEntity) => {
       navigateAndMark(constructEntityURL(elToOpen) + "?" + searchParams.toString());
     },
     [navigateAndMark, searchParams]
   );
 
   const handleCloseTab = useCallback(
-    (elToClose: OpenEntity) => {
+    (elToClose: AnyOpenEntity) => {
       if (openEntities.length > 1) {
         // only need to navigate if you're closing the tab that you're on
         const needToNavigate = elToClose.entityID === urlEntityID && elToClose.assembly === urlAssembly;

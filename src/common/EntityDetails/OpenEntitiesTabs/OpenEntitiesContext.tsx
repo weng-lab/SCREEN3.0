@@ -1,19 +1,28 @@
 "use client";
 
 import { createContext, Dispatch, useReducer } from "react";
-import { EntityType, TabRoute, Assembly } from "types/globalTypes";
+import { Assembly } from "types/globalTypes";
+import { AnyEntityType, EntityRoute, EntityType } from "../entityTabsConfig";
 
-export type OpenEntity = { assembly: Assembly; entityType: EntityType; entityID: string; tab: TabRoute };
+export type OpenEntity<A extends Assembly, E extends EntityType<A>> = {
+  assembly: A;
+  entityType: EntityType<A>;
+  entityID: string;
+  tab: EntityRoute<A, E>;
+};
 
-export type OpenEntityState = OpenEntity[];
+export type OpenEntityState = AnyOpenEntity[];
+
+export type AnyOpenEntity = OpenEntity<Assembly, EntityType<Assembly>>
 
 export type OpenEntityAction =
-  | { type: "addEntity"; entity: OpenEntity }
-  | { type: "removeEntity"; entity: OpenEntity }
-  | { type: "updateEntity"; entity: OpenEntity }
-  | { type: "reorder"; entity: OpenEntity; startIndex: number; endIndex: number }
+  | { type: "addEntity"; entity: AnyOpenEntity }
+  | { type: "removeEntity"; entity: AnyOpenEntity }
+  | { type: "updateEntity"; entity: AnyOpenEntity }
+  | { type: "reorder"; entity: AnyOpenEntity; startIndex: number; endIndex: number }
   | { type: "sort" }
   | { type: "setState"; state: OpenEntityState };
+
 
 const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAction) => {
   let newState: OpenEntityState;
@@ -48,9 +57,9 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
     }
     case "sort": {
       const assemblyOrder: Assembly[] = ["GRCh38", "mm10"];
-      const entityOrder: EntityType[] = ["region", "gene", "ccre", "variant"];
+      const entityOrder: AnyEntityType[] = ["region", "gene", "ccre", "variant"];
 
-      const sortFn = (a: OpenEntity, b: OpenEntity) => {
+      const sortFn = (a: AnyOpenEntity, b: AnyOpenEntity) => {
       const assemblyComparison = assemblyOrder.indexOf(a.assembly) - assemblyOrder.indexOf(b.assembly);
       if (assemblyComparison !== 0) return assemblyComparison;
 

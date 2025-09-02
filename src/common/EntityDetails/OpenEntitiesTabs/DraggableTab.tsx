@@ -1,7 +1,7 @@
 import { Draggable } from "@hello-pangea/dnd";
-import { Close, Man, PestControlRodent } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import { styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
-import { OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
+import { AnyOpenEntity, OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { useCallback, useContext, useMemo, useState } from "react";
 import HumanIcon from 'app/_utility/humanIcon';
@@ -9,12 +9,12 @@ import MouseIcon from 'app/_utility/mouseIcon';
 import { theme } from "app/theme";
 
 export type DraggableTabProps = TabProps & {
-  entity: OpenEntity;
+  entity: AnyOpenEntity;
   index: number;
   closable: boolean;
   isSelected: boolean;
-  handleTabClick: (el: OpenEntity) => void;
-  handleCloseTab: (el: OpenEntity) => void;
+  handleTabClick: (el: AnyOpenEntity) => void;
+  handleCloseTab: (el: AnyOpenEntity) => void;
 };
 
 export const DraggableTab = ({
@@ -93,7 +93,7 @@ export const DraggableTab = ({
   );
 };
 
-const formatEntityID = (entity: OpenEntity) => {
+const formatEntityID = (entity: AnyOpenEntity) => {
   if (entity.entityID.includes("%3A")) {
     const region = parseGenomicRangeString(entity.entityID);
     return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
@@ -124,8 +124,8 @@ const CloseTabButton = ({
   entity,
   handleCloseTab,
 }: {
-  entity: OpenEntity;
-  handleCloseTab: (el: OpenEntity) => void;
+  entity: AnyOpenEntity;
+  handleCloseTab: (el: AnyOpenEntity) => void;
 }) => {
   return (
     <IconWrapper

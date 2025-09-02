@@ -3,15 +3,15 @@
 import { Tabs, Tab, Menu, MenuItem, Box } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import React, { useEffect, useMemo, useState } from "react";
-import { ElementDetailsTab, GeneDetailsTab, EntityType, CcreDetailsTab, RegionDetailsTab, VariantDetailsTab, Assembly } from "types/globalTypes";
-import { geneDetailsTabs, ccreDetailsTabs, regionDetailsTabs, sharedTabs, moreTabs, variantDetailsTabs } from "./tabsConfig";
+import React, { useEffect, useState, useMemo } from "react";
+import { Assembly } from "types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { AnyEntityType, getTabsForEntity } from "./entityTabsConfig";
 
 export type ElementDetailsTabsProps = {
   assembly: Assembly
-  entityType: EntityType
+  entityType: AnyEntityType
   entityID: string
   orientation: "horizontal" | "vertical"
   verticalTabsWidth?: number
@@ -44,29 +44,13 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
     }
   }, [currentTab, value])
 
-  const tabs: ElementDetailsTab[] = useMemo(() => {
-    let elementSpecificTabs: VariantDetailsTab[] | GeneDetailsTab[] | CcreDetailsTab[] | RegionDetailsTab[];
-    switch (entityType) {
-      case ("gene"):
-        elementSpecificTabs = geneDetailsTabs
-        break
-      case ("variant"):
-        elementSpecificTabs = variantDetailsTabs
-        break
-      case ("ccre"):
-        elementSpecificTabs = ccreDetailsTabs
-        break
-      case ("region"):
-        elementSpecificTabs = regionDetailsTabs
-    }
-    return [
-      ...elementSpecificTabs,
-      ...sharedTabs,
-    ]
-  }, [entityType])
+  const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 
   const horizontalTabs = orientation === "horizontal"
   const verticalTabs = orientation === "vertical"
+
+  const iconTabs = tabs.filter(x => x.iconPath)
+  const moreTabs = tabs.filter(x => !x.iconPath)
 
   return (
     <Tabs
@@ -92,18 +76,18 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
 
       }}
     >
-      {tabs.map((tab, index) => (
+      {iconTabs.map((tab, index) => (
         <Tab
           label={tab.label}
-          value={tab.href}
+          value={tab.route}
           LinkComponent={Link}
-          href={`/${assembly}/${entityType}/${entityID}/${tab.href}` + '?' + searchParams.toString()}
-          key={tab.href}
+          href={`/${assembly}/${entityType}/${entityID}/${tab.route}` + '?' + searchParams.toString()}
+          key={tab.route}
           icon={<Image width={verticalTabs ? 50 : 40} height={verticalTabs ? 50 : 40} src={tab.iconPath} alt={tab.label + " icon"} />}
           sx={{ fontSize: "12px" }}
         />
       ))}
-      {entityType === "ccre" && (
+      {moreTabs.length && (
         <Box>
           <Tab
             label={"More"}
@@ -127,16 +111,9 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation, vertic
               <MenuItem
                 key={tab.label}
                 component={Link}
-                href={`/${assembly}/${entityType}/${entityID}/${tab.href}?${searchParams.toString()}`}
+                href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
                 onClick={handleClose}
               >
-                <Image
-                  width={30}
-                  height={30}
-                  src={tab.iconPath}
-                  alt={`${tab.label} icon`}
-                  style={{ marginRight: 8 }}
-                />
                 {tab.label}
               </MenuItem>
             ))}

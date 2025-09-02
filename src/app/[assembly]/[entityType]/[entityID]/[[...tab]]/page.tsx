@@ -2,15 +2,8 @@
 import { CircularProgress, Typography } from "@mui/material";
 import GenomeBrowserView from "common/gbview/genomebrowserview";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import {
-  EntityType,
-  isValidGeneTab,
-  isValidCcreTab,
-  isValidVariantTab,
-  isValidTab,
-  isValidRegionTab,
-  Assembly,
-} from "types/globalTypes";
+import { isValidAssembly } from "types/globalTypes";
+import { isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
@@ -26,19 +19,23 @@ import EQTLs from "common/components/EQTLTables";
 export default function DetailsPage({
   params,
 }: {
-  /**
-   * Should be able to safely type this as GenomicElementType instead of string
-   * since the layout wrapping this ensures the type is fulfilled
-   */
-  params: Promise<{ assembly: Assembly; entityType: EntityType; entityID: string; tab: string }>;
+  params: Promise<{ assembly: string; entityType: string; entityID: string; tab: string }>;
 }) {
   const { assembly, entityType, entityID, tab: tabString } = use(params);
+
+  if (!isValidAssembly(assembly)) {
+    throw new Error(`Unknown assembly: ${assembly}`);
+  }
+
+  if (!isValidEntityType(assembly, entityType)) {
+    throw new Error(`Unknown entity for ${assembly}: ${entityType}`);
+  }
   
   let tab = tabString;
   
   /**
    * Since [[...tab]] is an optional catch-all route, tabs is an array.
-   * tab is undefined when hitting /elementType/elementID (default tab's route).
+   * tab is undefined when hitting /entityType/entityID (default tab's route).
    * "" is defined as valid shared route in the type SharedRoute, so change undefined to ""
    */
   if (tab === undefined) {
@@ -46,11 +43,9 @@ export default function DetailsPage({
   } else {
     tab = tab[0];
   }
-  /**
-   * Configure valid tabs in globalTypes.ts
-   */
-  if (!isValidTab(tab)) {
-    throw new Error("Unknown tab: " + tab);
+
+  if (!isValidRouteForEntity(assembly, entityType, tab)) {
+    throw new Error(`Unknown tab ${tab} for entity type ${entityType}`);
   }
 
   const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
@@ -67,7 +62,11 @@ export default function DetailsPage({
     throw new Error(JSON.stringify(error));
   }
 
-  //Handle shared tabs
+  // Find component we need to render for this route
+  // const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
+  // Once each component is refactored to independently fetch it's own data we can simply do the following:
+  // return <ComponentToRender />
+
   if (tab === "browser") {
     return (
       <GenomeBrowserView
@@ -79,12 +78,13 @@ export default function DetailsPage({
     );
   }
 
+  /**
+   * For now we are keeping this big switch block to not have to restructure all of the files right now during this refactor. 
+   * Eventually we can vastly simplify this, and remove data fetching from this file and let the leaf components do their own fetching.
+   */
+
   switch (entityType) {
     case "variant": {
-      if (!isValidVariantTab(tab)) {
-        throw new Error("Unknown variant details tab: " + tab);
-      }
-
       const variantData = { data, loading, error } as useEntityMetadataReturn<"variant">;
 
       switch (tab) {
@@ -99,10 +99,6 @@ export default function DetailsPage({
     }
 
     case "gene": {
-      if (!isValidGeneTab(tab)) {
-        throw new Error("Unknown gene details tab: " + tab);
-      }
-
       const geneData = { data, loading, error } as useEntityMetadataReturn<"gene">;
 
       switch (tab) {
@@ -117,10 +113,6 @@ export default function DetailsPage({
     }
 
     case "ccre": {
-      if (!isValidCcreTab(tab)) {
-        throw new Error("Unknown iCRE details tab: " + tab);
-      }
-
       const CcreData = { data, loading, error } as useEntityMetadataReturn<"ccre">;
 
       switch (tab) {
@@ -136,10 +128,6 @@ export default function DetailsPage({
 
 
     case "region": {
-      if (!isValidRegionTab(tab)) {
-        throw new Error("Unknown region details tab: " + tab);
-      }
-
       const region = parseGenomicRangeString(entityID)
 
       switch (tab) {

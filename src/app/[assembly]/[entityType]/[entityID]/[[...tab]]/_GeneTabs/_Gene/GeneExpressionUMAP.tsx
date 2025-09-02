@@ -2,14 +2,12 @@ import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } fro
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { getCellCategoryColor, getCellCategoryDisplayname } from "common/utility";
 import { useMemo, useRef, useState } from "react";
-import { interpolateYlOrRd } from "d3-scale-chromatic";
-import { scaleLinear } from "d3-scale";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
 import { tissueColors } from "common/lib/colors"
 import { theme } from "app/theme";
 
 export type GeneExpressionUmapProps<
-  T,
+T,
   S extends boolean | undefined,
   Z extends boolean | undefined
 > = GeneExpressionProps & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
