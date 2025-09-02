@@ -58,7 +58,6 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   };
 
   return (
-    <>
     <TwoPaneLayout
       TableComponent={
         <GeneExpressionTable
@@ -117,7 +116,6 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
         },
       ]}
     />
-    </>
   );
 };
 

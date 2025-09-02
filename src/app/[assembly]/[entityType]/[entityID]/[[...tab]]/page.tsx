@@ -63,7 +63,7 @@ export default function DetailsPage({
   }
 
   // Find component we need to render for this route
-  // const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
+  const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
   // Once each component is refactored to independently fetch it's own data we can simply do the following:
   // return <ComponentToRender />
 
@@ -85,7 +85,7 @@ export default function DetailsPage({
 
   switch (entityType) {
     case "variant": {
-      const variantData = { data, loading, error } as useEntityMetadataReturn<typeof assembly, "variant">;
+      const variantData = { data, loading, error } as useEntityMetadataReturn<"variant">;
 
       switch (tab) {
         case "":
@@ -99,7 +99,7 @@ export default function DetailsPage({
     }
 
     case "gene": {
-      const geneData = { data, loading, error } as useEntityMetadataReturn<typeof assembly, "gene">;
+      const geneData = { data, loading, error } as useEntityMetadataReturn<"gene">;
 
       switch (tab) {
         case "":
@@ -113,7 +113,7 @@ export default function DetailsPage({
     }
 
     case "ccre": {
-      const CcreData = { data, loading, error } as useEntityMetadataReturn<typeof assembly, "ccre">;
+      const CcreData = { data, loading, error } as useEntityMetadataReturn<"ccre">;
 
       switch (tab) {
         case "":
