@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useEffect, useMemo } from "react";
-import { CircularProgress } from "@mui/material";
+import React, { useMemo } from "react";
 import { client } from "../../app/client"
 
 const GROUP_COLOR_MAP: Map<string, string> = new Map([

@@ -1,8 +1,6 @@
 "use client";
 import { Search } from "@mui/icons-material";
-import EditIcon from "@mui/icons-material/Edit";
-import HighlightIcon from "@mui/icons-material/Highlight";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
@@ -17,7 +15,7 @@ import {
   TrackType,
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import ControlButtons from "./controls";
@@ -25,7 +23,10 @@ import HighlightDialog from "./highlightDialog";
 import { randomColor } from "./utils";
 import { Exon } from "types/generated/graphql";
 import { useRouter } from "next/navigation";
-import { AnyEntityType, EntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
+import CCRETooltip from "./ccretooltip";
+import DomainDisplay from "./domainDisplay";
+import GBButtons from "./gbViewButtons";
 
 interface Transcript {
   id: string;
