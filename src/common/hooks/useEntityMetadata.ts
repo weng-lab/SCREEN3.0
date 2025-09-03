@@ -1,11 +1,12 @@
-import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 import { useGeneData, UseGeneDataReturn } from "./useGeneData";
 import { useSnpData, UseSnpDataReturn } from "./useSnpData";
 import { ApolloError } from "@apollo/client";
 import { parseGenomicRangeString } from "common/utility";
 import { useCcreData, UseCcreDataReturn } from "./useCcreData";
+import { AnyEntityType, EntityType } from "common/EntityDetails/entityTabsConfig";
 
-type useEntityMetadataParams<T extends EntityType> = {
+type useEntityMetadataParams<T extends AnyEntityType> = {
   assembly: Assembly,
   entityType: T,
   entityID: string
@@ -14,7 +15,11 @@ type useEntityMetadataParams<T extends EntityType> = {
 //faking a return type of the same form as the others to make it easy
 type UseGenomicRangeReturn = { data: {__typename?: "Region", coordinates: GenomicRange}; loading: boolean; error: ApolloError }
 
-export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
+
+/**
+ * This will need to be changed if this file persists and we add entities that are assembly specific
+ */
+export type useEntityMetadataReturn<T extends AnyEntityType> = T extends "gene"
   ? UseGeneDataReturn<{ name: string, assembly: Assembly }>
   : T extends "ccre"
   ? UseCcreDataReturn<{ accession: string, assembly: Assembly  }>
@@ -22,7 +27,8 @@ export type useEntityMetadataReturn<T extends EntityType> = T extends "gene"
   ? UseSnpDataReturn<{ rsID: string, assembly: Assembly  }>
   : UseGenomicRangeReturn;
 
-export const useEntityMetadata = <T extends EntityType>({ assembly, entityType, entityID }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
+  
+export const useEntityMetadata = <T extends AnyEntityType>({ assembly, entityType, entityID }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
   /**
    * elementType is being passed to these hooks to prevent data from being fetched unless
    * it actually should be fetched. Need to call all hooks to follow rules of hooks:

@@ -1,7 +1,8 @@
 import { ApolloError, useQuery } from "@apollo/client";
+import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import { gql } from "types/generated/gql";
 import { SnpQuery } from "types/generated/graphql";
-import { Assembly, EntityType, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 
 const SNP_Query = gql(`
   query Snp($snpids: [String], $coordinates: [GenomicRangeInput], $assembly: String!) {
@@ -17,8 +18,8 @@ const SNP_Query = gql(`
 `)
 
 type UseSnpDataParams = 
-  | { rsID: string | string[]; coordinates?: never; entityType?: EntityType; assembly: Assembly }
-  | { coordinates: GenomicRange | GenomicRange[]; rsID?: never; entityType?: EntityType; assembly: Assembly }
+  | { rsID: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly: Assembly }
+  | { coordinates: GenomicRange | GenomicRange[]; rsID?: never; entityType?: AnyEntityType; assembly: Assembly }
 
 export type UseSnpDataReturn<T extends UseSnpDataParams> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { rsID: string[] })

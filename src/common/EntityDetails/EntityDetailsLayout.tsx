@@ -1,12 +1,18 @@
 "use client";
 import { Box, Stack } from "@mui/material";
 import EntityDetailsTabs from "./EntityDetailsTabs";
-import { EntityDetailsHeader, EntityDetailsHeaderProps } from "./EntityDetailsHeader";
+import { EntityDetailsHeader } from "./EntityDetailsHeader";
 import RegionSearchHeader from "./RegionSearchHeader";
 import { parseGenomicRangeString } from "common/utility";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
+import { Assembly } from "types/globalTypes";
+import { AnyEntityType } from "./entityTabsConfig";
 
-export type EntityDetailsLayoutProps = EntityDetailsHeaderProps & { children: React.ReactNode };
+export type EntityDetailsLayoutProps = {
+  assembly: Assembly;
+  entityType: AnyEntityType;
+  entityID: string;
+} & { children: React.ReactNode };
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
   const verticalTabsWidth = 100

@@ -1,14 +1,14 @@
 import * as React from 'react'
-import { OpenEntity } from "./OpenEntitiesContext";
+import { AnyOpenEntity } from "./OpenEntitiesContext";
 import { DraggableTab } from "./DraggableTab";
 import { Droppable } from "@hello-pangea/dnd";
 import { TabList } from '@mui/lab';
 
 interface OpenTabsProps {
-  openEntities: OpenEntity[];
-  currentEntityState: OpenEntity;
-  handleCloseTab: (entity: OpenEntity) => void;
-  handleTabClick: (entity: OpenEntity) => void;
+  openEntities: AnyOpenEntity[];
+  currentEntityState: AnyOpenEntity;
+  handleCloseTab: (entity: AnyOpenEntity) => void;
+  handleTabClick: (entity: AnyOpenEntity) => void;
 }
 
 

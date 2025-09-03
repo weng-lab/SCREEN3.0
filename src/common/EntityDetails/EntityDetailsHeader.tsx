@@ -1,15 +1,16 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatPortal } from "common/utility";
-import { Assembly, EntityType } from "types/globalTypes";
+import { Assembly } from "types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
+import { AnyEntityType } from "./entityTabsConfig";
 
 export type EntityDetailsHeaderProps = {
   assembly: Assembly;
-  entityType: EntityType;
+  entityType: AnyEntityType;
   entityID: string;
 };
 
