@@ -240,7 +240,7 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
               fullWidth
               onClick={handleSetCurrentDomain}
             >
-              Use Current Domain
+              Use Current Region
             </Button>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
