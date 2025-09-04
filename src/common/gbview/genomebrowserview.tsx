@@ -1,9 +1,10 @@
 "use client";
-import { Search } from "@mui/icons-material";
+import {  Search } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
+  BigBedConfig,
   BigWigConfig,
   Browser,
   Chromosome,
@@ -27,6 +28,8 @@ import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import CCRETooltip from "./ccretooltip";
 import DomainDisplay from "./domainDisplay";
 import GBButtons from "./gbViewButtons";
+import { RegistryBiosample } from "app/_biosampleTables/types";
+import BiosampleDisplay from "./biosampleDisplay";
 
 interface Transcript {
   id: string;
@@ -36,6 +39,15 @@ interface Transcript {
   exons?: Exon[];
   color?: string;
 }
+
+const colors = {
+  ccre: "#D05F45",
+  dnase: "#06da93",
+  h3k4me3: "#ff0000",
+  h3k27ac: "#ffcd00",
+  ctcf: "#00b0d0",
+  atac: "#02c7b9",
+};
 
 function expandCoordinates(coordinates: GenomicRange) {
   let length = coordinates.end - coordinates.start;
@@ -61,6 +73,21 @@ export default function GenomeBrowserView({
   type: AnyEntityType;
   assembly: Assembly;
 }) {
+  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample | null>(null);
+
+  const biosample = useMemo<RegistryBiosample | null>(() => {
+    if (selectedBiosample) {
+      return selectedBiosample;
+    }else if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem(`${name}-selectedBiosample`);
+      if (stored) {
+        return (JSON.parse(stored));
+      }
+    } else {
+      return null;
+    }
+  }, [name, selectedBiosample]);
+
   const initialState: InitialBrowserState = {
     domain: expandCoordinates(coordinates),
     marginWidth: 150,
@@ -80,6 +107,14 @@ export default function GenomeBrowserView({
   const setDomain = browserStore((state) => state.setDomain);
 
   const router = useRouter();
+
+  const onBiosampleSelected = (biosample: RegistryBiosample | null) => {
+    setSelectedBiosample(biosample);
+  };
+
+  const handleBiosampleDeselected = () => {
+    setSelectedBiosample(undefined);
+  }
 
   const onCcreClick = useCallback(
     (item: Rect) => {
@@ -154,8 +189,38 @@ export default function GenomeBrowserView({
       },
     ];
 
-    return [...defaultTracks, ...tracks];
-  }, [assembly, type, name, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
+    let biosampleTracks: Track[] = [];
+    if (biosample) {
+      const onHover = (item: Rect) => {
+        addHighlight({
+          color: item.color || "blue",
+          domain: { start: item.start, end: item.end },
+          id: "tmp-ccre",
+        });
+      };
+
+      const onLeave = () => {
+        removeHighlight("tmp-ccre");
+      };
+
+      const onClick = (item: Rect) => {
+        onCcreClick(item);
+      };
+
+      const tooltip = (item: Rect) => <CCRETooltip assembly={assembly} name={item.name || ""} biosample={biosample} {...item} />;
+
+      biosampleTracks = generateBiosampleTracks(
+        biosample,
+        onHover,
+        onLeave,
+        onClick,
+        tooltip,
+        colors
+      );
+    }
+
+    return [...defaultTracks, ...tracks, ...biosampleTracks];
+  }, [assembly, type, name, biosample, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
   const trackStore = createTrackStore(initialTracks);
   const editTrack = trackStore((state) => state.editTrack);
@@ -228,7 +293,10 @@ export default function GenomeBrowserView({
               },
             }}
           />
-          <GBButtons browserStore={browserStore} assembly={assembly}/>
+          {biosample && (
+            <BiosampleDisplay biosample={biosample} name={name} onBiosampleDeslect={handleBiosampleDeselected}/>
+          )}
+          <GBButtons browserStore={browserStore} assembly={assembly} name={name} onBiosampleSelected={onBiosampleSelected}/>
         </Box>
         <DomainDisplay browserStore={browserStore} assembly={assembly} />
         <ControlButtons browserStore={browserStore} />
@@ -241,6 +309,105 @@ export default function GenomeBrowserView({
   );
 }
 
+function generateBiosampleTracks(
+  biosample: RegistryBiosample,
+  onHover: (item: Rect) => void,
+  onLeave: (item: Rect) => void,
+  onClick: (item: Rect) => void,
+  tooltip: (item: Rect) => React.ReactNode,
+  colors: {
+    ccre: string;
+    dnase: string;
+    h3k4me3: string;
+    h3k27ac: string;
+    ctcf: string;
+  }
+): Track[] {
+  const tracks: Track[] = [];
+
+  // Get available signal accessions (remove null values)
+  const signals = [
+    biosample.dnase_signal,
+    biosample.h3k4me3_signal,
+    biosample.h3k27ac_signal,
+    biosample.ctcf_signal,
+  ].filter((signal): signal is string => !!signal);
+
+  if (signals.length > 0) {
+    const bigBedUrl = `https://downloads.wenglab.org/Registry-V4/${signals.join(
+      "_"
+    )}.bigBed`;
+    const ccreTrack: BigBedConfig = {
+      id: `biosample-ccre-${biosample.name}`,
+      title: `cCREs in ${biosample.displayname}`,
+      titleSize: 12,
+      trackType: TrackType.BigBed,
+      displayMode: DisplayMode.Dense,
+      color: colors.ccre,
+      height: 50,
+      url: bigBedUrl,
+      onHover: onHover,
+      onLeave: onLeave,
+      onClick: onClick,
+      tooltip: tooltip
+    };
+    tracks.push(ccreTrack);
+  }
+
+  if (biosample.dnase_signal) {
+    tracks.push({
+      id: `biosample-dnase-${biosample.name}`,
+      title: `DNase-seq signal in ${biosample.displayname}`,
+      titleSize: 12,
+      trackType: TrackType.BigWig,
+      displayMode: DisplayMode.Full,
+      color: colors.dnase,
+      height: 100,
+      url: `https://www.encodeproject.org/files/${biosample.dnase_signal}/@@download/${biosample.dnase_signal}.bigWig`,
+    } as BigWigConfig);
+  }
+
+  if (biosample.h3k4me3_signal) {
+    tracks.push({
+      id: `biosample-h3k4me3-${biosample.name}`,
+      title: `H3K4me3 ChIP-seq signal in ${biosample.displayname}`,
+      titleSize: 12,
+      trackType: TrackType.BigWig,
+      displayMode: DisplayMode.Full,
+      color: colors.h3k4me3,
+      height: 100,
+      url: `https://www.encodeproject.org/files/${biosample.h3k4me3_signal}/@@download/${biosample.h3k4me3_signal}.bigWig`,
+    } as BigWigConfig);
+  }
+
+  if (biosample.h3k27ac_signal) {
+    tracks.push({
+      id: `biosample-h3k27ac-${biosample.name}`,
+      title: `H3K27ac ChIP-seq signal in ${biosample.displayname}`,
+      titleSize: 12,
+      trackType: TrackType.BigWig,
+      displayMode: DisplayMode.Full,
+      color: colors.h3k27ac,
+      height: 100,
+      url: `https://www.encodeproject.org/files/${biosample.h3k27ac_signal}/@@download/${biosample.h3k27ac_signal}.bigWig`,
+    } as BigWigConfig);
+  }
+
+  if (biosample.ctcf_signal) {
+    tracks.push({
+      id: `biosample-ctcf-${biosample.name}`,
+      title: `CTCF ChIP-seq signal in ${biosample.displayname}`,
+      titleSize: 12,
+      trackType: TrackType.BigWig,
+      displayMode: DisplayMode.Full,
+      color: colors.ctcf,
+      height: 100,
+      url: `https://www.encodeproject.org/files/${biosample.ctcf_signal}/@@download/${biosample.ctcf_signal}.bigWig`,
+    } as BigWigConfig);
+  }
+
+  return tracks;
+}
 
 const humanTracks: Track[] = [
   {

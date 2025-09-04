@@ -8,17 +8,26 @@ import { RegistryBiosample } from "app/_biosampleTables/types";
 import ConfigureGBModal from "common/components/ConfigureGBModal";
 import { Assembly } from "types/globalTypes";
 
-export default function GBButtons({ browserStore, assembly }: { browserStore: BrowserStoreInstance; assembly: string }) {
+export default function GBButtons({ browserStore, assembly, name, onBiosampleSelected }:
+    {
+        browserStore: BrowserStoreInstance;
+        assembly: string; name: string;
+        onBiosampleSelected: (biosample: RegistryBiosample | null) => void
+    }) {
     const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
     const [biosampleOpen, setBiosampleOpen] = useState(false);
-    const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample | null>(null);
 
     const handleSelectBiosampleClick = () => {
         setBiosampleOpen(!biosampleOpen);
     };
 
     const handleBiosampleSelected = (biosample: RegistryBiosample | null) => {
-        setSelectedBiosample(biosample);
+        if (biosample) {
+            sessionStorage.setItem(`${name}-selectedBiosample`, JSON.stringify(biosample));
+        } else {
+            sessionStorage.removeItem(`${name}-selectedBiosample`);
+        }
+        onBiosampleSelected(biosample);
     };
 
     return (
