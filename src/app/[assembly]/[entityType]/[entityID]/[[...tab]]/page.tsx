@@ -3,7 +3,7 @@ import { CircularProgress, Typography } from "@mui/material";
 import GenomeBrowserView from "common/gbview/genomebrowserview";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import { isValidAssembly } from "types/globalTypes";
-import { isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
+import { entityTabsConfig, isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
@@ -15,6 +15,7 @@ import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
 import IntersectingCcres from "common/components/IntersectingCcres";
 import EQTLs from "common/components/EQTLTables";
+import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 
 export default function DetailsPage({
   params,
@@ -62,10 +63,12 @@ export default function DetailsPage({
     throw new Error(JSON.stringify(error));
   }
 
+  const entity: AnyOpenEntity = {assembly, entityID, entityType, tab }
+
   // Find component we need to render for this route
-  // const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
+  const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
   // Once each component is refactored to independently fetch it's own data we can simply do the following:
-  // return <ComponentToRender />
+  // return <ComponentToRender entity={entity} />
 
   if (tab === "browser") {
     return (
@@ -117,7 +120,7 @@ export default function DetailsPage({
 
       switch (tab) {
         case "":
-          return <p>This should have biosample specific z-scores</p>;
+          return <ComponentToRender entity={entity} />;
         case "genes":
           return assembly==="GRCh38" ? <CcreLinkedGenes accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} /> : <>Linked Genes for Mouse cCREs</>;
         case "variants":

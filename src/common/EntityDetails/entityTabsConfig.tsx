@@ -10,6 +10,8 @@ import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_
 import IntersectingCcres from "common/components/IntersectingCcres";
 import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
+import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
+import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -43,6 +45,10 @@ export const isValidEntityType = <A extends Assembly>(assembly: A, entityType: s
   return (validEntityTypes[assembly] as readonly string[]).includes(entityType)
 }
 
+export type entityViewComponentProps = {
+  entity: AnyOpenEntity
+}
+
 type TabConfig<R extends string = string> = {
   route: R;
   label: string;
@@ -54,7 +60,7 @@ type TabConfig<R extends string = string> = {
    * The component to render for that tab view
    * @note NOT USED CURRENTLY
    */
-  component: (props: any) => ReactElement;
+  component: (props: entityViewComponentProps) => ReactElement;
 };
 
 /**
@@ -109,7 +115,8 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
     route: "",
     label: "Variant",
     iconPath: VariantIconPath,
-    component: VariantInfo,
+    // component: VariantInfo,
+    component: null,
   },
   {
     route: "ccres",
@@ -117,50 +124,52 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
     iconPath: CcreIconPath,
     component: () => <p>cCREs intersecting this variant page</p>,
   },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: EQTLs },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    // component: EQTLs,
+    component: null,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView,
+    component: null,
+  },
 ] as const;
 
 
-const humanGeneTabs = [
-  { route: "", label: "Gene", iconPath: GeneIconPath, component: GeneExpression },
-  { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: GeneLinkedIcres },
+const humanGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "transcript-expression" | "browser">[] = [
+  {
+    route: "",
+    label: "Gene",
+    iconPath: GeneIconPath,
+    // component: GeneExpression,
+    component: null,
+  },
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    // component: GeneLinkedIcres,
+    component: null,
+  },
   {
     route: "variants",
     label: "Variants",
     iconPath: VariantIconPath,
-    component: EQTLs,
-  },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
-] as const;
-
-const humanCcreTabs = [
-  {
-    route: "",
-    label: "cCRE",
-    iconPath: CcreIconPath,
-    component: () => <p>This should have biosample specific z-scores</p>,
-  },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: CcreLinkedGenes },
-  {
-    route: "variants",
-    label: "Variant",
-    iconPath: VariantIconPath,
-    component: CcreVariantsTab,
+    // component: EQTLs,
+    component: null,
   },
   {
-    route: "conservation",
-    label: "Conservation",
-    iconPath: ConservationIconPath,
-    component: () => <p>This should have conservation data</p>,
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView,
+    component: null,
   },
-  {
-    route: "functional-characterization",
-    label: "F unctional Characterization",
-    iconPath: FunctionalIconPath,
-    component: () => <p>This should have functional characterization data</p>,
-  },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
   {
     route: "transcript-expression",
     label: "Transcript Expression",
@@ -168,19 +177,83 @@ const humanCcreTabs = [
   },
 ] as const;
 
-const humanRegionTabs = [
-  { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: IntersectingCcres },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: IntersectingGenes },
+const humanCcreTabs: readonly TabConfig<
+  "" | "genes" | "variants" | "conservation" | "functional-characterization" | "browser"
+>[] = [
+  {
+    route: "",
+    label: "cCRE",
+    iconPath: CcreIconPath,
+    component: BiosampleActivity,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    //  component: CcreLinkedGenes ,
+    component: null,
+  },
   {
     route: "variants",
     label: "Variant",
     iconPath: VariantIconPath,
-    component: IntersectingSNPs,
+    // component: CcreVariantsTab,
+    component: null,
   },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "conservation",
+    label: "Conservation",
+    iconPath: ConservationIconPath,
+    // component: () => <p>This should have conservation data</p>,
+    component: null,
+  },
+  {
+    route: "functional-characterization",
+    label: "Functional Characterization",
+    iconPath: FunctionalIconPath,
+    component: () => <p>This should have functional characterization data</p>,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView,
+    component: null,
+  },
 ] as const;
 
-const mouseVariantTabs = [
+const humanRegionTabs: readonly TabConfig<"ccres" | "genes" | "variants" | "browser">[] = [
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    // component: IntersectingCcres
+    component: null,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    //  component: IntersectingGenes
+    component: null,
+  },
+  {
+    route: "variants",
+    label: "Variant",
+    iconPath: VariantIconPath,
+    // component: IntersectingSNPs,
+    component: null,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    //  component: GenomeBrowserView
+    component: null,
+  },
+] as const;
+
+const mouseVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[] = [
   {
     route: "",
     label: "Variant",
@@ -193,23 +266,42 @@ const mouseVariantTabs = [
     iconPath: CcreIconPath,
     component: () => <p>cCREs intersecting this variant page</p>,
   },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: EQTLs },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    //  component: EQTLs
+    component: null,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView
+    component: null
+  },
 ] as const;
 
-const mouseGeneTabs = [
-  { route: "", label: "Gene", iconPath: GeneIconPath, component: GeneExpression },
+const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "browser">[] = [
+  { route: "", label: "Gene", iconPath: GeneIconPath,
+    //  component: GeneExpression 
+    component: null
+    },
   { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: () => <p>Linked mouse cCREs</p> },
   {
     route: "variants",
     label: "Variants",
     iconPath: VariantIconPath,
-    component: EQTLs,
+    // component: EQTLs,
+    component: null
   },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, 
+    // component: GenomeBrowserView
+    component: null
+   },
 ] as const;
 
-const mouseCcreTabs = [
+const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser">[] = [
   {
     route: "",
     label: "cCRE",
@@ -228,19 +320,40 @@ const mouseCcreTabs = [
     iconPath: VariantIconPath,
     component: () => <p>Variants for mouse cCREs </p>,
   },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, 
+    // component: GenomeBrowserView
+    component: null
+   },
 ] as const;
 
-const mouseRegionTabs = [
-  { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: IntersectingCcres },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: IntersectingGenes },
+const mouseRegionTabs: readonly TabConfig<"variants" | "ccres" | "genes" | "browser">[] = [
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    //  component: IntersectingCcres
+    component: null,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    //  component: IntersectingGenes
+    component: null,
+  },
   {
     route: "variants",
     label: "Variant",
     iconPath: VariantIconPath,
     component: () => <p>This page should have intersecting mouse SNPs</p>,
   },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView
+    component: null,
+  },
 ] as const;
 
 export const entityTabsConfig: EntityTabsConfig = {

@@ -10,6 +10,18 @@ export interface GenomicRange {
 
 export type Assembly = "GRCh38" | "mm10"
 
+export type CcreClass =
+  | "PLS"
+  | "pELS"
+  | "dELS"
+  | "CA-H3K4me3"
+  | "CA-CTCF"
+  | "CA-TF"
+  | "CA"
+  | "TF"
+  | "InActive"
+  | "noclass";
+
 // Generate type guards
 export const isValidAssembly = (value: string): value is Assembly => 
   value === "GRCh38" || value === "mm10";
