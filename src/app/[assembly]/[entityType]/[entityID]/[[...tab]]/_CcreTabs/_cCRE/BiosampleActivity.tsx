@@ -6,10 +6,10 @@ import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import ClassProportionsBar from "./ClassProportionsBar";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { gql } from "types/generated";
-import { DataTable, DataTableColumn } from "@weng-lab/ui-components";
+import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import { CcreClass, GenomicRange } from "types/globalTypes";
 import { GROUP_COLOR_MAP } from "common/lib/colors";
-import { AnyOpenEntity, OpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistToTSS } from "common/utility";
 
@@ -25,158 +25,116 @@ export type cCRERow = {
   tf?: string;
 };
 
-type BiosampleActivityProps = {
-  entity: AnyOpenEntity;
-  distanceToTSS: number;
+/**
+ * used for internal setting of the z-score to "NA" or .toFixed(2) for file download
+ */
+export const z_score = (d: number) => (d === -11.0 ? "NA" : d.toFixed(2));
+/**
+ * used for rendering the value in the table cell as "--" instead of "NA"
+ */
+export const z_score_render = (d): string => (d === "NA" ? "--" : d);
+
+const zScoreFormatting: Partial<GridColDef> = {
+  valueGetter: (value) => z_score(value),
+  valueFormatter: z_score_render,
 };
 
-const tableCols = (typeC = false) => {
-  const cols = typeC
-    ? [
-        {
-          header: "Cell Type",
-          value: (row: cCRERow) => row.celltypename,
-        },
-        {
-          header: "ATAC Z-score",
-          value: (row: cCRERow) => z_score(row.atac),
-          render: (row: cCRERow) => z_score_render(row.atac),
-          sort: (a: cCRERow, b: cCRERow) => a.atac - b.atac,
-        },
-        {
-          header: "H3K4me3 Z-score",
-          value: (row: cCRERow) => z_score(row.h3k4me3),
-          render: (row: cCRERow) => z_score_render(row.h3k4me3),
-          sort: (a: cCRERow, b: cCRERow) => a.h3k4me3 - b.h3k4me3,
-        },
-        {
-          header: "H3K27ac Z-score",
-          value: (row: cCRERow) => z_score(row.h3k27ac),
-          render: (row: cCRERow) => z_score_render(row.h3k27ac),
-          sort: (a: cCRERow, b: cCRERow) => a.h3k27ac - b.h3k27ac,
-        },
-        {
-          header: "CTCF Z-score",
-          value: (row: cCRERow) => z_score(row.ctcf),
-          render: (row: cCRERow) => z_score_render(row.ctcf),
-          sort: (a: cCRERow, b: cCRERow) => a.ctcf - b.ctcf,
-        },
-        {
-          header: "TF",
-          value: (row: cCRERow) => (row.tf === undefined ? "--" : row.tf === "1" ? "Yes" : "No"),
-        },
-      ]
-    : [
-        {
-          header: "Cell Type",
-          value: (row: cCRERow) => row.celltypename,
-        },
-        {
-          header: "DNase Z-score",
-          value: (row: cCRERow) => z_score(row.dnase),
-          render: (row: cCRERow) => z_score_render(row.dnase),
-          sort: (a: cCRERow, b: cCRERow) => a.dnase - b.dnase,
-        },
-        {
-          header: "ATAC Z-score",
-          value: (row: cCRERow) => z_score(row.atac),
-          render: (row: cCRERow) => z_score_render(row.atac),
-          sort: (a: cCRERow, b: cCRERow) => a.atac - b.atac,
-        },
-        {
-          header: "H3K4me3 Z-score",
-          value: (row: cCRERow) => z_score(row.h3k4me3),
-          render: (row: cCRERow) => z_score_render(row.h3k4me3),
-          sort: (a: cCRERow, b: cCRERow) => a.h3k4me3 - b.h3k4me3,
-        },
-        {
-          header: "H3K27ac Z-score",
-          value: (row: cCRERow) => z_score(row.h3k27ac),
-          render: (row: cCRERow) => z_score_render(row.h3k27ac),
-          sort: (a: cCRERow, b: cCRERow) => a.h3k27ac - b.h3k27ac,
-        },
-        {
-          header: "CTCF Z-score",
-          value: (row: cCRERow) => z_score(row.ctcf),
-          render: (row: cCRERow) => z_score_render(row.ctcf),
-          sort: (a: cCRERow, b: cCRERow) => a.ctcf - b.ctcf,
-        },
-        {
-          header: "TF",
-          value: (row: cCRERow) => (row.tf === undefined ? "--" : row.tf === "1" ? "Yes" : "No"),
-        },
-        {
-          header: "Classification",
-          value: (row: cCRERow) =>
-            GROUP_COLOR_MAP.get(row.class) ? GROUP_COLOR_MAP.get(row.class).split(":")[0] : "DNase only",
-          render: (row: cCRERow) => {
-            const group = row.class;
-            const colormap = GROUP_COLOR_MAP.get(group);
-            const color = colormap ? (row.class === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
-            const classification = colormap ? colormap.split(":")[0] : "DNase only";
-            return (
-              <span style={{ color }}>
-                <strong>{classification}</strong>
-              </span>
-            );
-          },
-        },
-      ];
-  return cols;
+const classificationFormatting: Partial<GridColDef> = {
+  renderCell: (params: GridRenderCellParams) => {
+    const group = params.value;
+    // console.log(params)
+    const colormap = GROUP_COLOR_MAP.get(group);
+    const color = colormap ? (group === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
+    const classification = colormap ? colormap.split(":")[0] : "DNase only";
+    return (
+      <span style={{ color }}>
+        <strong>{classification}</strong>
+      </span>
+    );
+  },
 };
 
-const ctAgnosticColumns: () => DataTableColumn<{
-  __typename?: "CCRE";
-  accession: string;
-  group: string;
-  dnase?: number | null;
-  h3k4me3?: number | null;
-  h3k27ac?: number | null;
-  ctcf?: number | null;
-  atac?: number | null;
-}>[] = () => [
-  { header: "Cell Type", value: () => "cell type agnostic" },
+const ctAgnosticCols: GridColDef[] = [
   {
-    header: "DNase max-Z",
-    value: (row) => z_score(row.dnase),
-    render: (row) => z_score_render(row.dnase),
+    headerName: "Cell Type",
+    field: "celltypename",
   },
   {
-    header: "ATAC max-Z",
-    value: (row) => z_score(row.atac),
-    render: (row) => z_score_render(row.atac),
+    headerName: "DNase max-Z",
+    field: "dnase",
+    ...zScoreFormatting,
   },
   {
-    header: "H3K4me3 max-Z",
-    value: (row) => z_score(row.h3k4me3),
-    render: (row) => z_score_render(row.h3k4me3),
+    headerName: "ATAC max-Z",
+    field: "atac",
+    ...zScoreFormatting,
   },
   {
-    header: "H3K27ac max-Z",
-    value: (row) => z_score(row.h3k27ac),
-    render: (row) => z_score_render(row.h3k27ac),
+    headerName: "H3K4me3 max-Z",
+    field: "h3k4me3",
+    ...zScoreFormatting,
   },
   {
-    header: "CTCF max-Z",
-    value: (row) => z_score(row.ctcf),
-    render: (row) => z_score_render(row.ctcf),
+    headerName: "H3K27ac max-Z",
+    field: "h3k27ac",
+    ...zScoreFormatting,
   },
   {
-    header: "Classification",
-    value: (row) => (GROUP_COLOR_MAP.get(row.group) ? GROUP_COLOR_MAP.get(row.group).split(":")[0] : "DNase only"),
-    render: (row) => {
-      const group = row.group;
-      const colormap = GROUP_COLOR_MAP.get(group);
-      const color = colormap ? (row.group === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
-      const classification = colormap ? colormap.split(":")[0] : "DNase only";
-      return (
-        <span style={{ color }}>
-          <strong>{classification}</strong>
-        </span>
-      );
-    },
+    headerName: "CTCF max-Z",
+    field: "ctcf",
+    ...zScoreFormatting,
+  },
+  {
+    headerName: "Classification",
+    field: "group",
+    ...classificationFormatting,
   },
 ];
+
+const coreAndPartialCols: GridColDef[] = [
+  {
+    headerName: "Cell Type",
+    field: "celltypename",
+  },
+  {
+    headerName: "DNase Z-score",
+    field: "dnase",
+    ...zScoreFormatting,
+  },
+  {
+    headerName: "ATAC Z-score",
+    field: "atac",
+    ...zScoreFormatting,
+  },
+  {
+    headerName: "H3K4me3 Z-score",
+    field: "h3k4me3",
+    ...zScoreFormatting,
+  },
+  {
+    headerName: "H3K27ac Z-score",
+    field: "h3k27ac",
+    ...zScoreFormatting,
+  },
+  {
+    headerName: "CTCF Z-score",
+    field: "ctcf",
+    ...zScoreFormatting,
+  },
+  {
+    headerName: "TF",
+    field: "tf",
+    //Need to transform the internal value
+    valueGetter: (value) => (value === undefined ? "--" : value === "1" ? "Yes" : "No"),
+  },
+  {
+    headerName: "Classification",
+    field: "class",
+    ...classificationFormatting,
+  },
+];
+
+const ancillaryCols = coreAndPartialCols.filter((col) => col.field !== "dnase" && col.field !== "group");
 
 export const GET_CCRE_CT_TF = gql(`
   query cCRETF($accession: String!, $assembly: String!) {
@@ -250,15 +208,10 @@ export const NEARBY_GENES = gql(`
       }
     }
   }
-`)
-
-export const z_score = (d) => (d === -11.0 || d === "--" || d === undefined || d === 0 ? "NA" : d ? d.toFixed(2) : 0);
-export const z_score_render = (d) =>
-  d === -11.0 || d === "--" || d === undefined || d === "NA" || d === 0 ? "--" : d ? d.toFixed(2) : 0;
+`);
 
 //Cache is not working as expected when switching between open cCREs
 export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
-
   const { data: cCREdata, loading, error } = useCcreData({ accession: entity.entityID, assembly: entity.assembly });
 
   const coordinates: GenomicRange = {
@@ -289,24 +242,21 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     },
   });
 
-    //Fetch linked genes and genes within a 2M bp window around cCRE
+  //Fetch linked genes and genes within a 2M bp window around cCRE
   const {
     loading: loadingNearbyGenes,
     data: dataNearbyGenes,
     error: errorNearbyGenes,
-  } = useQuery(
-    NEARBY_GENES,
-    {
-      variables: {
-        assembly: entity.assembly.toLowerCase(),
-        geneSearchChrom: coordinates.chromosome,
-        geneSearchStart: coordinates.start - 1000000,
-        geneSearchEnd:  coordinates.end + 1000000,
-        geneVersion: entity.assembly === "GRCh38" ? 40 : 25,
-      },
-      skip: !cCREdata,
-    }
-  );
+  } = useQuery(NEARBY_GENES, {
+    variables: {
+      assembly: entity.assembly.toLowerCase(),
+      geneSearchChrom: coordinates.chromosome,
+      geneSearchStart: coordinates.start - 1000000,
+      geneSearchEnd: coordinates.end + 1000000,
+      geneVersion: entity.assembly === "GRCh38" ? 40 : 25,
+    },
+    skip: !cCREdata,
+  });
 
   const nearbyGenes = dataNearbyGenes?.nearbyGenes.map((gene) => {
     return {
@@ -315,9 +265,9 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     };
   });
 
-  const distanceToTSS = nearbyGenes ? nearbyGenes.sort((a, b) => a.distanceToTSS - b.distanceToTSS)[0].distanceToTSS : null;
-
-  console.log(distanceToTSS)
+  const distanceToTSS = nearbyGenes
+    ? nearbyGenes.sort((a, b) => a.distanceToTSS - b.distanceToTSS)[0].distanceToTSS
+    : null;
 
   let partialDataCollection: cCRERow[], coreCollection: cCRERow[], ancillaryCollection: cCRERow[];
   if (data_toptissues) {
@@ -505,14 +455,12 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     <Grid container spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
       <Grid size={12}>
         {data_toptissues && (
-          <DataTable
-            rows={[{ ...data_toptissues.cCREQuery[0] }]}
-            tableTitle="Cell type agnostic classification"
-            columns={ctAgnosticColumns()}
-            sortColumn={1}
-            itemsPerPage={1}
-            searchable
-            downloadFileName={`${entity.assembly} ${entity.entityID} - Cell type agnostic classification.tsv`}
+          <Table
+            label="Cell type agnostic classification"
+            rows={[{ ...data_toptissues.cCREQuery[0], celltypename: "Cell Type Agnostic" }]}
+            columns={ctAgnosticCols}
+            // not working as expected
+            // slotProps={{ toolbar: { csvOptions: { fileName: "test.csv" } } }}
           />
         )}
       </Grid>
@@ -531,13 +479,12 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                   tooltipTitle="Classification Proportions, Core Collection"
                   style={{ marginBottom: "12px" }}
                 />
-                <DataTable
-                  columns={tableCols()}
-                  tableTitle={"Core Collection"}
+                <Table
+                  label="Core Collection"
                   rows={coreCollection}
-                  sortColumn={1}
-                  searchable
-                  downloadFileName={`${entity.assembly} ${entity.entityID} - Core Collection.tsv`}
+                  columns={coreAndPartialCols}
+                  divHeight={{ height: "400px" }}
+                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
                 />
               </Stack>
             )}
@@ -562,13 +509,12 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                   onlyUseChromatinAccessibility
                   style={{ marginBottom: "12px" }}
                 />
-                <DataTable
-                  columns={tableCols()}
-                  sortColumn={1}
-                  tableTitle="Partial Data Collection"
+                <Table
+                  label="Partial Data Collection"
                   rows={partialDataCollection}
-                  searchable
-                  downloadFileName={`${entity.assembly} ${entity.entityID} - Partial Data Collection.tsv`}
+                  columns={coreAndPartialCols}
+                  divHeight={{ height: "400px" }}
+                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
                 />
               </Stack>
             )}
@@ -580,13 +526,12 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
       <Grid size={12}>
         {/* Type C */}
         {ancillaryCollection ? (
-          <DataTable
-            columns={tableCols(true)}
-            tableTitle="Ancillary Collection"
+          <Table
+            label="Ancillary Collection"
             rows={ancillaryCollection}
-            sortColumn={1}
-            searchable
-            downloadFileName={`${entity.assembly} ${entity.entityID} - Ancillary Collection.tsv`}
+            columns={ancillaryCols}
+            divHeight={{ height: "400px" }}
+            initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
           />
         ) : (
           <CircularProgress />

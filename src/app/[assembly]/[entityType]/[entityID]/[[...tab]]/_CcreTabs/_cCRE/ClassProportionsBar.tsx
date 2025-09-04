@@ -130,7 +130,7 @@ const ClassProportionsBar: React.FC<ClassProportionBarProps> = ({
 
   return (
     <div
-      style={{ position: "relative", zIndex: 1000, width, height, ...style }}
+      style={{ position: "relative", width, height, ...style }}
       ref={containerRef}
     >
       <svg width={width} height={height} style={{ display: "block" }}>
