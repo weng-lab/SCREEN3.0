@@ -23,7 +23,7 @@ import ControlButtons from "./controls";
 import HighlightDialog from "./highlightDialog";
 import { randomColor } from "./utils";
 import { Exon } from "types/generated/graphql";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import CCRETooltip from "./ccretooltip";
 import DomainDisplay from "./domainDisplay";
@@ -74,19 +74,21 @@ export default function GenomeBrowserView({
   assembly: Assembly;
 }) {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample | null>(null);
+  const pathName = usePathname();
+  const entityId = pathName.split("/")[3];
 
   const biosample = useMemo<RegistryBiosample | null>(() => {
     if (selectedBiosample) {
       return selectedBiosample;
     }else if (typeof window !== "undefined") {
-      const stored = sessionStorage.getItem(`${name}-selectedBiosample`);
+      const stored = sessionStorage.getItem(`${entityId}-selectedBiosample`);
       if (stored) {
         return (JSON.parse(stored));
       }
     } else {
       return null;
     }
-  }, [name, selectedBiosample]);
+  }, [entityId, selectedBiosample]);
 
   const initialState: InitialBrowserState = {
     domain: expandCoordinates(coordinates),
@@ -294,9 +296,9 @@ export default function GenomeBrowserView({
             }}
           />
           {biosample && (
-            <BiosampleDisplay biosample={biosample} name={name} onBiosampleDeslect={handleBiosampleDeselected}/>
+            <BiosampleDisplay biosample={biosample} name={entityId} onBiosampleDeslect={handleBiosampleDeselected}/>
           )}
-          <GBButtons browserStore={browserStore} assembly={assembly} name={name} onBiosampleSelected={onBiosampleSelected}/>
+          <GBButtons browserStore={browserStore} assembly={assembly} name={entityId} onBiosampleSelected={onBiosampleSelected}/>
         </Box>
         <DomainDisplay browserStore={browserStore} assembly={assembly} />
         <ControlButtons browserStore={browserStore} />
