@@ -98,6 +98,7 @@ const coreAndPartialCols: GridColDef[] = [
   {
     headerName: "Cell Type",
     field: "celltypename",
+    maxWidth: 400
   },
   {
     headerName: "Ontology",
