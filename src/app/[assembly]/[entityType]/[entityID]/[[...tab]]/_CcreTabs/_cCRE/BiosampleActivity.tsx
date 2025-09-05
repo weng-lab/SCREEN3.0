@@ -11,7 +11,7 @@ import { CcreClass, GenomicRange } from "types/globalTypes";
 import { GROUP_COLOR_MAP } from "common/lib/colors";
 import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { useCcreData } from "common/hooks/useCcreData";
-import { calcDistToTSS } from "common/utility";
+import { calcDistCcreToTSS, ccreOverlapsTSS } from "common/utility";
 
 export type cCRERow = {
   ct?: string;
@@ -36,8 +36,10 @@ const z_score_display_format = (d: string): string => (d === "NA" ? "--" : d);
 
 const zScoreFormatting: Partial<GridColDef> = {
   valueGetter: z_score_download_format,
-  valueFormatter: z_score_display_format,
-  sortComparator: (v1, v2) => (v1 === "NA") ? -1 : (v2 === "NA") ? 1 : v1 - v2
+  renderCell: (params: GridRenderCellParams) => {
+    return z_score_display_format(params.value);
+  },
+  sortComparator: (v1, v2) => (v1 === "NA" ? -1 : v2 === "NA" ? 1 : v1 - v2),
 };
 
 const classificationFormatting: Partial<GridColDef> = {
@@ -221,7 +223,11 @@ export const NEARBY_GENES = gql(`
 
 //Cache is not working as expected when switching between open cCREs
 export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
-  const { data: cCREdata, loading: loadingCcreData, error: errorCcreData } = useCcreData({ accession: entity.entityID, assembly: entity.assembly });
+  const {
+    data: cCREdata,
+    loading: loadingCcreData,
+    error: errorCcreData,
+  } = useCcreData({ accession: entity.entityID, assembly: entity.assembly });
 
   const coordinates: GenomicRange = {
     chromosome: cCREdata?.chrom,
@@ -278,13 +284,16 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
   const nearbyGenes = dataNearbyGenes?.nearbyGenes.map((gene) => {
     return {
       ...gene,
-      distanceToTSS: calcDistToTSS(coordinates, gene.transcripts, gene.strand as "+" | "-"),
+      distanceToTSS: calcDistCcreToTSS(coordinates, gene.transcripts, gene.strand as "+" | "-"),
+      overlapsTSS: ccreOverlapsTSS(coordinates, gene.transcripts, gene.strand as "+" | "-")
     };
   });
 
   const distanceToTSS = nearbyGenes
     ? nearbyGenes.sort((a, b) => a.distanceToTSS - b.distanceToTSS)[0].distanceToTSS
     : null;
+  
+  const overlapsTSS = nearbyGenes.map(x => x.overlapsTSS).includes(true)
 
   let partialDataCollection: cCRERow[], coreCollection: cCRERow[], ancillaryCollection: cCRERow[];
   if (data_toptissues) {
@@ -408,7 +417,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
       if (t.dnase != -11.0) {
         if (t.dnase >= 1.64) {
           if (t.h3k4me3 >= 1.64) {
-            if (distanceToTSS <= 200) {
+            if (distanceToTSS <= 200 || overlapsTSS) {
               ccreClass = "PLS"; //Promoter-like signatures (promoter) must fall within 200 bp of a TSS and have high chromatin accessibility and H3K4me3 signals.
             } else if (t.h3k27ac < 1.64 && distanceToTSS > 200) {
               ccreClass = "CA-H3K4me3"; //Chromatin accessibility + H3K4me3 (CA-H3K4me3) have high chromatin accessibility and H3K4me3 signals but low H3K27ac signals and do not fall within 200 bp of a TSS.
@@ -458,12 +467,18 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     ancillaryCollection = ccreCts.filter((c) => c.type === "ancillary");
   }
 
-  const loadingCorePartialAncillary = (distanceToTSS === null) || !coreCollection || !partialDataCollection || !ancillaryCollection
-  const errorCorePartialAncillary = !!(errorCcreData || error_toptissues || error_ccre_tf || errorNearbyGenes)
+  const loadingCorePartialAncillary =
+    distanceToTSS === null || !coreCollection || !partialDataCollection || !ancillaryCollection;
+  const errorCorePartialAncillary = !!(errorCcreData || error_toptissues || error_ccre_tf || errorNearbyGenes);
 
   const ctAgnosticRow = data_toptissues
     ? [{ ...data_toptissues.cCREQuery[0], celltypename: "Cell Type Agnostic" }]
     : undefined;
+
+  const disableCsvEscapeChar = { slotProps: { toolbar: { csvOptions: { escapeFormulas: false } } } };
+
+  console.log(nearbyGenes?.sort((a, b) => a.distanceToTSS - b.distanceToTSS))
+  console.log("Distance to TSS: " + String(distanceToTSS))
 
   return (
     <ParentSize>
@@ -477,6 +492,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
             //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
             divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
             error={!!error_toptissues}
+            {...disableCsvEscapeChar}
           />
           <Stack>
             <Typography variant="caption">Classification Proportions, Core Collection:</Typography>
@@ -501,6 +517,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
               initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+              {...disableCsvEscapeChar}
             />
           </Stack>
           <Stack>
@@ -527,6 +544,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
               initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+              {...disableCsvEscapeChar}
             />
           </Stack>
           <Table
@@ -537,6 +555,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
             error={errorCorePartialAncillary}
             divHeight={{ height: "400px" }}
             initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
+            {...disableCsvEscapeChar}
           />
         </Stack>
       )}
