@@ -20,8 +20,9 @@ const ConfigureGenomeBrowser = (props: {
   handleClose?: () => void;
   onBiosampleSelect?: (selected: RegistryBiosample | RegistryBiosample[] | null) => void;
   multiselect?: boolean;
+  selectedBiosamples?: RegistryBiosample[] | null;
 }) => {
-  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosample | RegistryBiosample[] | null>(null);
+  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosample | RegistryBiosample[] | null>(props.selectedBiosamples ?? null);
 
   const handleSetSelected = (selected: RegistryBiosample | RegistryBiosample[]) => {
     if (props.multiselect) {
@@ -60,35 +61,11 @@ const ConfigureGenomeBrowser = (props: {
           </IconButton>
         )}
       </Stack>
+      <DialogContentText mb={2} display={props.multiselect ? "block" : "none"} sx={{ px: 3 }}>
+          Note: Must chose 10 or fewer biosamples to view in the genome browser.
+      </DialogContentText>
       <DialogContent sx={{ pt: 0 }}>
-        <DialogContentText>Select biosample{props.multiselect && "s"}</DialogContentText>
-        {selectedBiosamples && (
-          <Stack direction="row" flexWrap="wrap" mt={2} mb={1} spacing={1}>
-            {Array.isArray(selectedBiosamples) ? (
-              selectedBiosamples.map((sample) => (
-                <Stack
-                  key={sample.name}
-                  direction="row"
-                  alignItems="center"
-                  sx={{ border: "1px solid", borderRadius: 1, px: 1 }}
-                >
-                  <Typography>{sample.displayname}</Typography>
-                  <IconButton size="small" onClick={() => handleRemove(sample.name)}>
-                    <Close fontSize="small" />
-                  </IconButton>
-                </Stack>
-              ))
-            ) : (
-              <Stack direction="row" alignItems="center">
-                <Typography>{`Selected Biosample: ${selectedBiosamples.displayname}`}</Typography>
-                <IconButton onClick={() => setSelectedBiosamples(null)}>
-                  <Close />
-                </IconButton>
-              </Stack>
-            )}
-          </Stack>
-        )}
-        <Stack direction={{ xs: "column", lg: "row" }} spacing={2}>
+        <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
           <BiosampleTables
             assembly={props.assembly}
             selected={
@@ -101,6 +78,35 @@ const ConfigureGenomeBrowser = (props: {
             allowMultiSelect={props.multiselect}
             showCheckboxes={props.multiselect}
           />
+          {selectedBiosamples && (
+            <div>
+              {Array.isArray(selectedBiosamples) ? (
+                <div>
+                  <Typography minWidth={"350px"} visibility={selectedBiosamples.length > 0 ? "visible" : "hidden"} mt={2}>Selected Biosamples:</Typography>
+                  {selectedBiosamples.map((biosample, i) => {
+                    return (
+                      <Stack minWidth={"350px"} mt={1} direction="row" alignItems={"center"} key={i}>
+                        <IconButton onClick={() => setSelectedBiosamples(selectedBiosamples.filter((x) => x.displayname !== biosample.displayname))}>
+                          <Close />
+                        </IconButton>
+                        <Typography>{biosample.displayname}</Typography>
+                      </Stack>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div>
+                  <Typography minWidth={"350px"} mt={2}>Selected Biosample:</Typography>
+                  <Stack direction="row" alignItems="center">
+                    <Typography>{`Selected Biosample: ${selectedBiosamples.displayname}`}</Typography>
+                    <IconButton onClick={() => setSelectedBiosamples(null)}>
+                      <Close />
+                    </IconButton>
+                  </Stack>
+                </div>
+              )}
+            </div>
+        )}
         </Stack>
       </DialogContent>
       <DialogActions sx={!props.handleClose && { position: "fixed", bottom: 15, right: 15, zIndex: 1 }}>

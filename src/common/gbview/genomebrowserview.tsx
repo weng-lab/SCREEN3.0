@@ -29,7 +29,6 @@ import CCRETooltip from "./ccretooltip";
 import DomainDisplay from "./domainDisplay";
 import GBButtons from "./gbViewButtons";
 import { RegistryBiosample } from "app/_biosampleTables/types";
-import BiosampleDisplay from "./biosampleDisplay";
 
 interface Transcript {
   id: string;
@@ -277,10 +276,7 @@ export default function GenomeBrowserView({
               },
             }}
           />
-          {selectedBiosamples && (
-            <BiosampleDisplay biosamples={selectedBiosamples}  onBiosampleDeselect={onBiosampleSelected}/>
-          )}
-          <GBButtons browserStore={browserStore} assembly={assembly} onBiosampleSelected={onBiosampleSelected}/>
+          <GBButtons browserStore={browserStore} assembly={assembly} onBiosampleSelected={onBiosampleSelected} selectedBiosamples={selectedBiosamples}/>
         </Box>
         <DomainDisplay browserStore={browserStore} assembly={assembly} />
         <ControlButtons browserStore={browserStore} />
