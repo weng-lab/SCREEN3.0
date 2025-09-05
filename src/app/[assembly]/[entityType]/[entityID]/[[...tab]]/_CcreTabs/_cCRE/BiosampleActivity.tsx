@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 import Grid from "@mui/material/Grid";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import ClassProportionsBar from "./ClassProportionsBar";
-import { CircularProgress, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, LinearProgress, Stack, Typography } from "@mui/material";
 import { gql } from "types/generated";
 import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import { CcreClass, GenomicRange } from "types/globalTypes";
@@ -28,15 +28,16 @@ export type cCRERow = {
 /**
  * used for internal setting of the z-score to "NA" or .toFixed(2) for file download
  */
-export const z_score = (d: number) => (d === -11.0 ? "NA" : d.toFixed(2));
+const z_score_download_format = (d: number) => (d === -11.0 ? "NA" : d.toFixed(2));
 /**
  * used for rendering the value in the table cell as "--" instead of "NA"
  */
-export const z_score_render = (d): string => (d === "NA" ? "--" : d);
+const z_score_display_format = (d: string): string => (d === "NA" ? "--" : d);
 
 const zScoreFormatting: Partial<GridColDef> = {
-  valueGetter: (value) => z_score(value),
-  valueFormatter: z_score_render,
+  valueGetter: z_score_download_format,
+  valueFormatter: z_score_display_format,
+  sortComparator: (v1, v2) => (v1 === "NA") ? -1 : (v2 === "NA") ? 1 : v1 - v2
 };
 
 const classificationFormatting: Partial<GridColDef> = {
@@ -95,6 +96,14 @@ const coreAndPartialCols: GridColDef[] = [
   {
     headerName: "Cell Type",
     field: "celltypename",
+  },
+  {
+    headerName: "Ontology",
+    field: "ontology",
+  },
+  {
+    headerName: "Sample Type",
+    field: "sampleType",
   },
   {
     headerName: "DNase Z-score",
@@ -212,7 +221,7 @@ export const NEARBY_GENES = gql(`
 
 //Cache is not working as expected when switching between open cCREs
 export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
-  const { data: cCREdata, loading, error } = useCcreData({ accession: entity.entityID, assembly: entity.assembly });
+  const { data: cCREdata, loading: loadingCcreData, error: errorCcreData } = useCcreData({ accession: entity.entityID, assembly: entity.assembly });
 
   const coordinates: GenomicRange = {
     chromosome: cCREdata?.chrom,
@@ -220,6 +229,9 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     end: cCREdata?.start + cCREdata?.len,
   };
 
+  /**
+   * Fetch biosample specific assay scores as well as max-Z for celltype agnostic classification
+   */
   const {
     data: data_toptissues,
     loading: loading_toptissues,
@@ -231,6 +243,9 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     },
   });
 
+  /**
+   * Fetch mapping between biosample and if cCRE is TF in that sample, displayed in table and used for classification
+   */
   const {
     data: data_ccre_tf,
     loading: loading_ccre_tf,
@@ -242,7 +257,9 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     },
   });
 
-  //Fetch linked genes and genes within a 2M bp window around cCRE
+  /**
+   * fetch genes within 2M bp region to find distance to nearest TSS, used for classification.
+   */
   const {
     loading: loadingNearbyGenes,
     data: dataNearbyGenes,
@@ -355,6 +372,8 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     const typedata = r.map((d) => {
       return {
         ct: d.name,
+        ontology: d.ontology,
+        sampleType: d.sampleType,
         tf:
           data_ccre_tf && data_ccre_tf.getcCRETFQuery.length > 0
             ? data_ccre_tf.getcCRETFQuery.find((a) => d.name === a.celltype)?.tf.toString()
@@ -439,67 +458,57 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     ancillaryCollection = ccreCts.filter((c) => c.type === "ancillary");
   }
 
-  return loading_toptissues || error_toptissues || distanceToTSS === null ? (
-    <Grid container spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
-      <Grid
-        size={{
-          xs: 12,
-          md: 12,
-          lg: 12,
-        }}
-      >
-        <CircularProgress />
-      </Grid>
-    </Grid>
-  ) : (
-    <Grid container spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
-      <Grid size={12}>
-        {data_toptissues && (
+  const loadingCorePartialAncillary = (distanceToTSS === null) || !coreCollection || !partialDataCollection || !ancillaryCollection
+  const errorCorePartialAncillary = !!(errorCcreData || error_toptissues || error_ccre_tf || errorNearbyGenes)
+
+  const ctAgnosticRow = data_toptissues
+    ? [{ ...data_toptissues.cCREQuery[0], celltypename: "Cell Type Agnostic" }]
+    : undefined;
+
+  return (
+    <ParentSize>
+      {({ width }) => (
+        <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
           <Table
             label="Cell type agnostic classification"
-            rows={[{ ...data_toptissues.cCREQuery[0], celltypename: "Cell Type Agnostic" }]}
+            rows={ctAgnosticRow}
             columns={ctAgnosticCols}
-            // not working as expected
-            // slotProps={{ toolbar: { csvOptions: { fileName: "test.csv" } } }}
+            loading={loading_toptissues}
+            //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+            divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
+            error={!!error_toptissues}
           />
-        )}
-      </Grid>
-      <Grid size={12}>
-        {/* Core Collection */}
-        {coreCollection ? (
-          <ParentSize>
-            {({ width }) => (
-              <Stack>
-                <Typography variant="caption">Classification Proportions, Core Collection:</Typography>
+          <Stack>
+            <Typography variant="caption">Classification Proportions, Core Collection:</Typography>
+            <Box sx={{ marginBottom: "12px" }}>
+              {loadingCorePartialAncillary || errorCorePartialAncillary ? (
+                <LinearProgress />
+              ) : (
                 <ClassProportionsBar
                   rows={coreCollection}
                   height={4}
                   width={width}
                   orientation="horizontal"
                   tooltipTitle="Classification Proportions, Core Collection"
-                  style={{ marginBottom: "12px" }}
                 />
-                <Table
-                  label="Core Collection"
-                  rows={coreCollection}
-                  columns={coreAndPartialCols}
-                  divHeight={{ height: "400px" }}
-                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-                />
-              </Stack>
-            )}
-          </ParentSize>
-        ) : (
-          <CircularProgress />
-        )}
-      </Grid>
-      <Grid size={12} id="grid-element">
-        {/* Type B & D */}
-        {partialDataCollection ? (
-          <ParentSize>
-            {({ width }) => (
-              <Stack>
-                <Typography variant="caption">Chromatin Accessibility, Partial Data Collection:</Typography>
+              )}
+            </Box>
+            <Table
+              label="Core Collection"
+              rows={coreCollection}
+              columns={coreAndPartialCols}
+              loading={loadingCorePartialAncillary}
+              error={errorCorePartialAncillary}
+              divHeight={{ height: "400px" }}
+              initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+            />
+          </Stack>
+          <Stack>
+            <Typography variant="caption">Chromatin Accessibility, Partial Data Collection:</Typography>
+            <Box sx={{ marginBottom: "12px" }}>
+              {loadingCorePartialAncillary || errorCorePartialAncillary ? (
+                <LinearProgress />
+              ) : (
                 <ClassProportionsBar
                   rows={partialDataCollection}
                   orientation="horizontal"
@@ -507,36 +516,30 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                   width={width}
                   tooltipTitle="Chromatin Accessibility, Partial Data Collection"
                   onlyUseChromatinAccessibility
-                  style={{ marginBottom: "12px" }}
                 />
-                <Table
-                  label="Partial Data Collection"
-                  rows={partialDataCollection}
-                  columns={coreAndPartialCols}
-                  divHeight={{ height: "400px" }}
-                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-                />
-              </Stack>
-            )}
-          </ParentSize>
-        ) : (
-          <CircularProgress />
-        )}
-      </Grid>
-      <Grid size={12}>
-        {/* Type C */}
-        {ancillaryCollection ? (
+              )}
+            </Box>
+            <Table
+              label="Partial Data Collection"
+              rows={partialDataCollection}
+              columns={coreAndPartialCols}
+              loading={loadingCorePartialAncillary}
+              error={errorCorePartialAncillary}
+              divHeight={{ height: "400px" }}
+              initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+            />
+          </Stack>
           <Table
             label="Ancillary Collection"
             rows={ancillaryCollection}
             columns={ancillaryCols}
+            loading={loadingCorePartialAncillary}
+            error={errorCorePartialAncillary}
             divHeight={{ height: "400px" }}
             initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
           />
-        ) : (
-          <CircularProgress />
-        )}
-      </Grid>
-    </Grid>
+        </Stack>
+      )}
+    </ParentSize>
   );
 };

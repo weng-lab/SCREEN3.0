@@ -58,7 +58,7 @@ type TabConfig<R extends string = string> = {
   iconPath?: string;
   /**
    * The component to render for that tab view
-   * @note NOT USED CURRENTLY
+   * @note NOT USED EVERYWHERE
    */
   component: (props: entityViewComponentProps) => ReactElement;
 };
