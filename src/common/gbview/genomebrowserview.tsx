@@ -23,7 +23,7 @@ import ControlButtons from "./controls";
 import HighlightDialog from "./highlightDialog";
 import { randomColor } from "./utils";
 import { Exon } from "types/generated/graphql";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import CCRETooltip from "./ccretooltip";
 import DomainDisplay from "./domainDisplay";
