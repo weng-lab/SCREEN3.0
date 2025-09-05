@@ -289,11 +289,9 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     };
   });
 
-  const distanceToTSS = nearbyGenes
-    ? nearbyGenes.sort((a, b) => a.distanceToTSS - b.distanceToTSS)[0].distanceToTSS
-    : null;
+  const distanceToTSS = nearbyGenes?.sort((a, b) => a.distanceToTSS - b.distanceToTSS)[0].distanceToTSS
   
-  const overlapsTSS = nearbyGenes.map(x => x.overlapsTSS).includes(true)
+  const overlapsTSS = nearbyGenes?.map(x => x.overlapsTSS).includes(true)
 
   let partialDataCollection: cCRERow[], coreCollection: cCRERow[], ancillaryCollection: cCRERow[];
   if (data_toptissues) {
@@ -468,7 +466,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
   }
 
   const loadingCorePartialAncillary =
-    distanceToTSS === null || !coreCollection || !partialDataCollection || !ancillaryCollection;
+    distanceToTSS === undefined || overlapsTSS === undefined || !coreCollection || !partialDataCollection || !ancillaryCollection;
   const errorCorePartialAncillary = !!(errorCcreData || error_toptissues || error_ccre_tf || errorNearbyGenes);
 
   const ctAgnosticRow = data_toptissues
@@ -479,6 +477,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
 
   console.log(nearbyGenes?.sort((a, b) => a.distanceToTSS - b.distanceToTSS))
   console.log("Distance to TSS: " + String(distanceToTSS))
+  console.log("Overlaps TSS: " + overlapsTSS)
 
   return (
     <ParentSize>
