@@ -1,10 +1,10 @@
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
 import { Typography, TypographyOwnProps, Link, LinkProps } from "@mui/material";
-import { AnyOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { Launch } from "@mui/icons-material";
-import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig } from "./EntityDetails/entityTabsConfig";
+import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig, isValidRouteForEntity } from "./EntityDetails/entityTabsConfig";
 
 export function getClassDisplayname(input: string) {
   switch (input) {
@@ -202,9 +202,9 @@ export const downloadSVG = (ref: React.MutableRefObject<SVGSVGElement>, filename
  *
  * @param region {chrom, start, end}
  * @param transcripts
- * @returns distance to nearest TSS from any point in inputted region.
+ * @returns distance to nearest TSS from the center of cCRE body.
  */
-export function calcDistToTSS(
+export function calcDistCcreToTSS(
   region: GenomicRange,
   transcripts: { id: string; coordinates: GenomicRange }[],
   strand: "+" | "-"
@@ -213,11 +213,25 @@ export function calcDistToTSS(
     calcDistRegionToPosition(
       region.start,
       region.end,
-      "closest",
+      "middle",
       strand === "+" ? transcript.coordinates.start : transcript.coordinates.end
     )
   );
   return Math.min(...distances);
+}
+
+
+export function ccreOverlapsTSS(
+  region: GenomicRange,
+  transcripts: { id: string; coordinates: GenomicRange }[],
+  strand: "+" | "-"
+): boolean {
+  const distances: number[] = transcripts.map((transcript) => {
+    const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end
+    return calcDistRegionToRegion(region, {start: tss, end: tss})
+  })
+  
+  return distances.includes(0);
 }
 
 /**
@@ -236,7 +250,7 @@ export function calcDistRegionToPosition(
 ): number {
   const distToStart = Math.abs(start - point);
   const distToEnd = Math.abs(end - point);
-  const distToMiddle = Math.abs((start + end) / 2 - point);
+  const distToMiddle = Math.abs(Math.floor((start + end) / 2) - point);
 
   if (start <= point && point <= end) {
     return 0;
@@ -286,14 +300,17 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): A
     .split(openEntityListDelimiter)
     .map((entry) => {
       const [encodedAssembly, encodedEntityType, entityID, encodedTab = ""] = entry.split(openEntityDelimiter);
-      return {
+      const decodedEntity: CandidateOpenEntity = {
+        assembly: assemblyDecoding[encodedAssembly],
         entityType: decodeEntityType(encodedEntityType),
         entityID,
         tab: decodeTabRoute(encodedTab),
-        assembly: assemblyDecoding[encodedAssembly],
       };
+      if (isValidOpenEntity(decodedEntity)){
+        return decodedEntity
+      } else return null
     })
-    .filter((x) => x.entityType && x.entityID); // filter out any invalid
+    .filter((x) => x !== null && x.entityID); // filter out any invalid
 }
 
 /**
