@@ -10,6 +10,7 @@ import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_
 import IntersectingCcres from "common/components/IntersectingCcres";
 import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
+import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -21,27 +22,93 @@ const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
 /**
  * To add a new tab to an existing entity:
  * 1) Add a new object with route, label, icon, and component to render to correct tab list
- * 
+ *
  * To add a new entity and with new tabs:
  * 1) Add entity to validEntityTypes
  * 2) Create list of tabs for the entity
- * 3) Create type for the routes of that entity
+ * 3) Create type for the routes of that entity, type NewRoutes = ExtractRoutes<typeof NewTabs>
+ * 4) Add type to definition of AnyTabRoute
  * 4) Add an entry to the TabList type that adds a new TabConfig<NewEntityRoutes>[]
  * 5) Add the entity and corresponding tabs to the entityTabsConfig object
- * 
+ * 6) Add the entityType to the "sort" action in OpenEntitiesContext
+ *
  */
 
 export const validEntityTypes = {
-  GRCh38: ["ccre", "gene", "variant", "region"],
-  mm10: ["ccre", "gene", "variant", "region"]
+  GRCh38: ["ccre", "gene", "variant", "region", "gwas"],
+  mm10: ["ccre", "gene", "variant", "region"],
 } as const;
 
-export type EntityType<A extends Assembly> = typeof validEntityTypes[A][number]
-export type AnyEntityType = EntityType<"GRCh38"> | EntityType<"mm10">
+export type EntityType<A extends Assembly> = (typeof validEntityTypes)[A][number];
+export type AnyEntityType = EntityType<"GRCh38"> | EntityType<"mm10">;
 
 export const isValidEntityType = <A extends Assembly>(assembly: A, entityType: string): entityType is EntityType<A> => {
-  return (validEntityTypes[assembly] as readonly string[]).includes(entityType)
-}
+  return (validEntityTypes[assembly] as readonly string[]).includes(entityType);
+};
+
+export type entityViewComponentProps = {
+  entity: AnyOpenEntity;
+};
+
+
+type ExtractRoutes<T extends readonly { route: string }[]> = T[number]["route"];
+
+// Individual route types for each entity
+type HumanVariantRoutes = ExtractRoutes<typeof humanVariantTabs>;
+type HumanGeneRoutes = ExtractRoutes<typeof humanGeneTabs>;
+type HumanCcreRoutes = ExtractRoutes<typeof humanCcreTabs>;
+type HumanRegionRoutes = ExtractRoutes<typeof humanRegionTabs>;
+type HumanGwasRoutes = ExtractRoutes<typeof humanGwasTabs>;
+
+type MouseVariantRoutes = ExtractRoutes<typeof mouseVariantTabs>;
+type MouseGeneRoutes = ExtractRoutes<typeof mouseGeneTabs>;
+type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
+type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>;
+
+export type AnyTabRoute =
+| HumanVariantRoutes
+| HumanGeneRoutes
+| HumanCcreRoutes
+| HumanRegionRoutes
+| HumanGwasRoutes
+| MouseVariantRoutes
+| MouseGeneRoutes
+| MouseCcreRoutes
+| MouseRegionRoutes;
+
+// Generic type to get routes for any assembly/entity combination
+export type EntityRoute<A extends Assembly, E extends EntityType<A>> = E extends keyof (typeof entityTabsConfig)[A]
+? ExtractRoutes<(typeof entityTabsConfig)[A][E]>
+: never;
+
+/**
+ * TabList type takes in assembly and EntityType and returns corresponding string literal union
+ * The prettier auto-formatting on this is pretty horrendous, appologies
+*/
+
+type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
+? E extends "ccre"
+? readonly TabConfig<HumanCcreRoutes>[]
+: E extends "gene"
+? readonly TabConfig<HumanGeneRoutes>[]
+: E extends "variant"
+? readonly TabConfig<HumanVariantRoutes>[]
+: E extends "gwas"
+? readonly TabConfig<HumanGwasRoutes>[]
+: readonly TabConfig<HumanRegionRoutes>[]
+: E extends "ccre"
+? readonly TabConfig<MouseCcreRoutes>[]
+: E extends "gene"
+? readonly TabConfig<MouseGeneRoutes>[]
+: E extends "variant"
+? readonly TabConfig<MouseVariantRoutes>[]
+: readonly TabConfig<MouseRegionRoutes>[];
+
+type EntityTabsConfig = {
+  readonly [A in Assembly]: {
+    readonly [E in EntityType<A>]: TabList<A, E>;
+  };
+};
 
 type TabConfig<R extends string = string> = {
   route: R;
@@ -52,64 +119,18 @@ type TabConfig<R extends string = string> = {
   iconPath?: string;
   /**
    * The component to render for that tab view
-   * @note NOT USED CURRENTLY
+   * @note NOT USED EVERYWHERE
    */
-  component: (props: any) => ReactElement;
+  component: (props: entityViewComponentProps) => ReactElement;
 };
-
-/**
- * TabList type takes in assembly and EntityType and returns corresponding string literal union
- * The prettier auto-formatting on this is pretty horrendous, appologies
- */
-type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
-  ? E extends "ccre"
-    ? readonly TabConfig<HumanCcreRoutes>[]
-    : E extends "gene"
-    ? readonly TabConfig<HumanGeneRoutes>[]
-    : E extends "variant"
-    ? readonly TabConfig<HumanVariantRoutes>[]
-    : readonly TabConfig<HumanRegionRoutes>[]
-  : E extends "ccre"
-  ? readonly TabConfig<MouseCcreRoutes>[]
-  : E extends "gene"
-  ? readonly TabConfig<MouseGeneRoutes>[]
-  : E extends "variant"
-  ? readonly TabConfig<MouseVariantRoutes>[]
-  : readonly TabConfig<MouseRegionRoutes>[];
-
-type EntityTabsConfig = {
-  readonly [A in Assembly]: {
-    readonly [E in EntityType<A>]: TabList<A, E>;
-  };
-};
-
-type ExtractRoutes<T extends readonly { route: string }[]> = T[number]['route'];
-
-// Individual route types for each entity
-type HumanVariantRoutes = ExtractRoutes<typeof humanVariantTabs>;
-type HumanGeneRoutes = ExtractRoutes<typeof humanGeneTabs>;
-type HumanCcreRoutes = ExtractRoutes<typeof humanCcreTabs>;
-type HumanRegionRoutes = ExtractRoutes<typeof humanRegionTabs>;
-
-type MouseVariantRoutes = ExtractRoutes<typeof mouseVariantTabs>;
-type MouseGeneRoutes = ExtractRoutes<typeof mouseGeneTabs>;
-type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
-type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>; 
-
-export type AnyTabRoute = HumanVariantRoutes | HumanGeneRoutes | HumanCcreRoutes | HumanRegionRoutes | MouseVariantRoutes | MouseGeneRoutes | MouseCcreRoutes | MouseRegionRoutes
-
-// Generic type to get routes for any assembly/entity combination
-export type EntityRoute<A extends Assembly, E extends EntityType<A>> = 
-  E extends keyof (typeof entityTabsConfig)[A] 
-    ? ExtractRoutes<(typeof entityTabsConfig)[A][E]>
-    : never;
 
 const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[] = [
   {
     route: "",
     label: "Variant",
     iconPath: VariantIconPath,
-    component: VariantInfo,
+    // component: VariantInfo,
+    component: null,
   },
   {
     route: "ccres",
@@ -117,50 +138,51 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
     iconPath: CcreIconPath,
     component: () => <p>cCREs intersecting this variant page</p>,
   },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: EQTLs },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    // component: EQTLs,
+    component: null,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView,
+    component: null,
+  },
 ] as const;
 
-
-const humanGeneTabs = [
-  { route: "", label: "Gene", iconPath: GeneIconPath, component: GeneExpression },
-  { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: GeneLinkedIcres },
+const humanGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "transcript-expression" | "browser">[] = [
+  {
+    route: "",
+    label: "Gene",
+    iconPath: GeneIconPath,
+    // component: GeneExpression,
+    component: null,
+  },
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    // component: GeneLinkedIcres,
+    component: null,
+  },
   {
     route: "variants",
     label: "Variants",
     iconPath: VariantIconPath,
-    component: EQTLs,
-  },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
-] as const;
-
-const humanCcreTabs = [
-  {
-    route: "",
-    label: "cCRE",
-    iconPath: CcreIconPath,
-    component: () => <p>This should have biosample specific z-scores</p>,
-  },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: CcreLinkedGenes },
-  {
-    route: "variants",
-    label: "Variant",
-    iconPath: VariantIconPath,
-    component: CcreVariantsTab,
+    // component: EQTLs,
+    component: null,
   },
   {
-    route: "conservation",
-    label: "Conservation",
-    iconPath: ConservationIconPath,
-    component: () => <p>This should have conservation data</p>,
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView,
+    component: null,
   },
-  {
-    route: "functional-characterization",
-    label: "F unctional Characterization",
-    iconPath: FunctionalIconPath,
-    component: () => <p>This should have functional characterization data</p>,
-  },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
   {
     route: "transcript-expression",
     label: "Transcript Expression",
@@ -168,19 +190,106 @@ const humanCcreTabs = [
   },
 ] as const;
 
-const humanRegionTabs = [
-  { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: IntersectingCcres },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: IntersectingGenes },
+const humanGwasTabs: readonly TabConfig<"biosample_enrichment" | "variants" | "ccres" | "genes" | "browser">[] = [
   {
     route: "variants",
     label: "Variant",
     iconPath: VariantIconPath,
-    component: IntersectingSNPs,
+    component: () => <p>GWAS variants</p>,
   },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "biosample_enrichment",
+    label: "Biosample Enrichment",
+    iconPath: VariantIconPath,
+    component: () => <></>, //VariantInfo,
+  },
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    component: () => <p>GWAS cCREs</p>,
+  },
+  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: () => <></> },
+  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: () => <></> },
 ] as const;
 
-const mouseVariantTabs = [
+const humanCcreTabs: readonly TabConfig<
+  "" | "genes" | "variants" | "conservation" | "functional-characterization" | "browser"
+>[] = [
+  {
+    route: "",
+    label: "cCRE",
+    iconPath: CcreIconPath,
+    component: () => <p>This should have biosample specific z-scores</p>,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    //  component: CcreLinkedGenes ,
+    component: null,
+  },
+  {
+    route: "variants",
+    label: "Variant",
+    iconPath: VariantIconPath,
+    // component: CcreVariantsTab,
+    component: null,
+  },
+  {
+    route: "conservation",
+    label: "Conservation",
+    iconPath: ConservationIconPath,
+    // component: () => <p>This should have conservation data</p>,
+    component: null,
+  },
+  {
+    route: "functional-characterization",
+    label: "Functional Characterization",
+    iconPath: FunctionalIconPath,
+    component: () => <p>This should have functional characterization data</p>,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView,
+    component: null,
+  },
+] as const;
+
+const humanRegionTabs: readonly TabConfig<"ccres" | "genes" | "variants" | "browser">[] = [
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    // component: IntersectingCcres
+    component: null,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    //  component: IntersectingGenes
+    component: null,
+  },
+  {
+    route: "variants",
+    label: "Variant",
+    iconPath: VariantIconPath,
+    // component: IntersectingSNPs,
+    component: null,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    //  component: GenomeBrowserView
+    component: null,
+  },
+] as const;
+
+const mouseVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[] = [
   {
     route: "",
     label: "Variant",
@@ -193,23 +302,48 @@ const mouseVariantTabs = [
     iconPath: CcreIconPath,
     component: () => <p>cCREs intersecting this variant page</p>,
   },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: EQTLs },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    //  component: EQTLs
+    component: null,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView
+    component: null,
+  },
 ] as const;
 
-const mouseGeneTabs = [
-  { route: "", label: "Gene", iconPath: GeneIconPath, component: GeneExpression },
+const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "browser">[] = [
+  {
+    route: "",
+    label: "Gene",
+    iconPath: GeneIconPath,
+    //  component: GeneExpression
+    component: null,
+  },
   { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: () => <p>Linked mouse cCREs</p> },
   {
     route: "variants",
     label: "Variants",
     iconPath: VariantIconPath,
-    component: EQTLs,
+    // component: EQTLs,
+    component: null,
   },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView
+    component: null,
+  },
 ] as const;
 
-const mouseCcreTabs = [
+const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser">[] = [
   {
     route: "",
     label: "cCRE",
@@ -228,19 +362,43 @@ const mouseCcreTabs = [
     iconPath: VariantIconPath,
     component: () => <p>Variants for mouse cCREs </p>,
   },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView
+    component: null,
+  },
 ] as const;
 
-const mouseRegionTabs = [
-  { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: IntersectingCcres },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: IntersectingGenes },
+const mouseRegionTabs: readonly TabConfig<"variants" | "ccres" | "genes" | "browser">[] = [
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    //  component: IntersectingCcres
+    component: null,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    //  component: IntersectingGenes
+    component: null,
+  },
   {
     route: "variants",
     label: "Variant",
     iconPath: VariantIconPath,
     component: () => <p>This page should have intersecting mouse SNPs</p>,
   },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GenomeBrowserView },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    // component: GenomeBrowserView
+    component: null,
+  },
 ] as const;
 
 export const entityTabsConfig: EntityTabsConfig = {
@@ -249,6 +407,7 @@ export const entityTabsConfig: EntityTabsConfig = {
     gene: humanGeneTabs,
     ccre: humanCcreTabs,
     region: humanRegionTabs,
+    gwas: humanGwasTabs
   },
   mm10: {
     variant: mouseVariantTabs,
@@ -258,15 +417,15 @@ export const entityTabsConfig: EntityTabsConfig = {
   },
 } as const;
 
-export const isValidRouteForEntity = <A extends Assembly, B>(
+export const isValidRouteForEntity = <A extends Assembly>(
   assembly: A,
   entityType: EntityType<A>,
   route: string
-): route is EntityRoute<A, typeof entityType> => {
-  return entityTabsConfig[assembly][entityType].some((x) => x.route === route);
+): route is A extends "GRCh38" ? EntityRoute<"GRCh38", EntityType<"GRCh38">> : EntityRoute<"mm10", EntityType<"mm10">> => {
+  return entityTabsConfig[assembly][entityType].some((x: TabConfig) => x.route === route);
 };
 
 // Helper to generate tab array for EntityDetailsTabs
-export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(assembly: A, entityType: E) => {
-  return entityTabsConfig[assembly][entityType]
+export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(assembly: A, entityType: E): readonly TabConfig[] => {
+  return entityTabsConfig[assembly][entityType];
 };

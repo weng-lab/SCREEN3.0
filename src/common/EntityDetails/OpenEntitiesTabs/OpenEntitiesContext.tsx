@@ -1,19 +1,35 @@
 "use client";
 
 import { createContext, Dispatch, useReducer } from "react";
-import { Assembly } from "types/globalTypes";
-import { AnyEntityType, EntityRoute, EntityType } from "../entityTabsConfig";
+import { Assembly, isValidAssembly } from "types/globalTypes";
+import { AnyEntityType, AnyTabRoute, EntityRoute, EntityType, isValidEntityType, isValidRouteForEntity } from "../entityTabsConfig";
 
-export type OpenEntity<A extends Assembly, E extends EntityType<A>> = {
+export type OpenEntity<A extends Assembly> = {
   assembly: A;
   entityType: EntityType<A>;
   entityID: string;
-  tab: EntityRoute<A, E>;
+  tab: EntityRoute<A, EntityType<A>>;
 };
 
-export type OpenEntityState = AnyOpenEntity[];
+/**
+ * Can't simply define this as OpenEntity<Assembly> since then `tab` has the type EntityRoute<Assembly, EntityType<Assembly>>,
+ * which resolves to only the routes of entities shared by all Assemblies
+ */
+export type AnyOpenEntity = OpenEntity<"GRCh38"> | OpenEntity<"mm10">
 
-export type AnyOpenEntity = OpenEntity<Assembly, EntityType<Assembly>>
+// Utility type to be used prior to ensuring that Assembly/EntityType/TabRoute combo is valid
+export type CandidateOpenEntity = {
+  assembly: string;
+  entityType: string;
+  entityID: string;
+  tab: string;
+}
+
+export const isValidOpenEntity = (e: CandidateOpenEntity): e is AnyOpenEntity => {
+  return isValidAssembly(e.assembly) && isValidEntityType(e.assembly, e.entityType) && isValidRouteForEntity(e.assembly, e.entityType, e.tab)
+}
+
+export type OpenEntityState = AnyOpenEntity[];
 
 export type OpenEntityAction =
   | { type: "addEntity"; entity: AnyOpenEntity }
@@ -57,7 +73,7 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
     }
     case "sort": {
       const assemblyOrder: Assembly[] = ["GRCh38", "mm10"];
-      const entityOrder: AnyEntityType[] = ["region", "gene", "ccre", "variant"];
+      const entityOrder: AnyEntityType[] = ["region", "gene", "ccre", "variant", "gwas"];
 
       const sortFn = (a: AnyOpenEntity, b: AnyOpenEntity) => {
       const assemblyComparison = assemblyOrder.indexOf(a.assembly) - assemblyOrder.indexOf(b.assembly);
