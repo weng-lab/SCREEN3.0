@@ -1,7 +1,7 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { gql } from "types/generated/gql";
 import { LinkedGenesQuery } from "../../types/generated/graphql";
-
+import { ComputationalGeneLinksQuery } from "../../types/generated/graphql";
 export type LinkedGeneInfo = {  
   p_val?: number | null;
   gene: string; 
@@ -21,11 +21,12 @@ export type LinkedGeneInfo = {
   slope?: number | null; 
   displayname?: string | null
 };
-/*
+
 export const ComputationalGeneLinks_Query = gql(`
-  query ComputationalGeneLinks($accession: [String]!){
-    ComputationalGeneLinksQuery(accession: $accession){
+  query ComputationalGeneLinks($accession: [String]!, $method: [String]){
+    ComputationalGeneLinksQuery(accession: $accession, method: $method){
       genename
+      accession
       geneid
       genetype
       method
@@ -36,7 +37,7 @@ export const ComputationalGeneLinks_Query = gql(`
     }
   }
 `)
-*/
+
 export const BED_INTERSECT= gql(`
     query bedIntersectCCRE ($inp: [cCRE]!, $assembly: String!, $maxOutputLength: Int) {
       intersection (
@@ -100,22 +101,24 @@ const GWAS_SNP_QUERY = gql(`
   
   export type useGWASSnpscCREsGenesParams = {
     study: string[]
+    method: string
   }
   
   export type useGWASSnpscCREsGenesReturn = {
     data: LinkedGenesQuery['linkedGenesQuery'] | undefined;
+    compudata: ComputationalGeneLinksQuery['ComputationalGeneLinksQuery'] | undefined;
     loading: boolean;
     error: ApolloError  | undefined;
   }
   
   
-  export const useGWASSnpscCREsGenesData = ({ study }: useGWASSnpscCREsGenesParams): useGWASSnpscCREsGenesReturn => {
+  export const useGWASSnpscCREsGenesData = ({ study, method }: useGWASSnpscCREsGenesParams): useGWASSnpscCREsGenesReturn => {
   
     const { data: gwasstudySNPs, loading: gwasstudySNPsLoading, error } = useQuery(
         GWAS_SNP_QUERY,
       {
         variables: {
-          study: ["Dastani_Z-22479202-Adiponectin_levels"]
+          study: study // ["Dastani_Z-22479202-Adiponectin_levels"]
         },
         fetchPolicy: "cache-and-network",
         nextFetchPolicy: "cache-first",
@@ -123,11 +126,11 @@ const GWAS_SNP_QUERY = gql(`
       },
     );
 
-    let snpsRegions = gwasstudySNPs && gwasstudySNPs.getSNPsforGWASStudies.map(g => {
+     let snpsRegions = gwasstudySNPs && gwasstudySNPs.getSNPsforGWASStudies.map(g => {
         return [g.chromosome.toString(), g.start.toString(), g.stop.toString(), g.snpid.toString(), g.rsquare.toString(), g.ldblocksnpid.toString(), g.ldblock.toString()]
       })
 
-    console.log("snpsRegions",snpsRegions)
+    
     const {
         data: cCREIntersections, loading: cCREIntersectionsLoading, error: cCREIntersectionsError
       } = useQuery(BED_INTERSECT, {
@@ -146,10 +149,10 @@ const GWAS_SNP_QUERY = gql(`
         return g[4]
       })
       
-      const uniqueAccessions= cCREIntersections && cCREIntersections.intersection.length > 0 ? [...new Set(studycCREs)] :[];
+      const uniqueAccessions= cCREIntersections && cCREIntersections.intersection.length > 0 ? [...new Set(studycCREs)] : [];
 
       //console.log("studyccresgenes", uniqueAccessions)
-      const { data: studyGenes, loading: studyGenesLoading, error: studyGenesError } = useQuery(
+    const { data: studyGenes, loading: studyGenesLoading, error: studyGenesError } = useQuery(
         LINKED_GENES,
       {
         variables: {
@@ -161,23 +164,27 @@ const GWAS_SNP_QUERY = gql(`
         skip: !uniqueAccessions || uniqueAccessions.length === 0
       },
     );
-
-   /* const { data: studyCompuLinkedGenes, loading: studyCompuLinkedGenesLoading, error: studyCompuLinkedGenesError } = useQuery(
+   //console.log("uniqueAccessions",uniqueAccessions)
+   const { data: studyCompuLinkedGenes, loading: studyCompuLinkedGenesLoading, error: studyCompuLinkedGenesError } = useQuery(
       ComputationalGeneLinks_Query,
     {
       variables: {
           //assembly: "grch38",
-          accession: uniqueAccessions
+          accession: uniqueAccessions,
+          method: [method]
       },
       fetchPolicy: "cache-and-network",
       nextFetchPolicy: "cache-first",
-      skip: !uniqueAccessions || uniqueAccessions.length === 0
+      skip: !uniqueAccessions?.length,
+      errorPolicy: "all", // helps debug
+
     },
-  );*/
+  );
          
     return {
       data: studyGenes ? studyGenes.linkedGenesQuery : undefined,
-      loading: gwasstudySNPsLoading || cCREIntersectionsLoading || studyGenesLoading,
-      error: error || cCREIntersectionsError || studyGenesError,
+      compudata: studyCompuLinkedGenes ? studyCompuLinkedGenes.ComputationalGeneLinksQuery : undefined,
+      loading: gwasstudySNPsLoading || cCREIntersectionsLoading || studyGenesLoading  || studyCompuLinkedGenesLoading ,
+      error: error || cCREIntersectionsError || studyGenesError || studyCompuLinkedGenesError ,
     }
   }

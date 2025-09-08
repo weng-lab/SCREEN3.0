@@ -2,8 +2,6 @@ import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatPortal } from "common/utility";
 import { Assembly, EntityType } from "types/globalTypes";
-
-//import Grid2 from "@mui/material/Grid2";
 import Grid from "@mui/material/Grid";
 import { LinkComponent } from "common/components/LinkComponent";
 
@@ -16,9 +14,10 @@ export type GwasStudyHeaderProps = {
 export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHeaderProps) => {
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
+  console.log("GWAS Entity", entityMetadata)
   const subtitle =
-    entityType === "gwas" && entityMetadata.__typename==="GWAS" ? (
-      entityMetadata.author 
+    entityType === "gwas" && entityMetadata?.__typename==="GwasStudies" ? (
+      entityMetadata?.author 
     )  : (
       ""
     );
@@ -33,19 +32,19 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
       container
     >
       <Grid size={12}>
-        <Stack>
+        {entityMetadata ? <Stack>
           <Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>
           <Typography variant="h4">
-            {entityType === "gwas" && entityMetadata.__typename==="GWAS"? entityMetadata.study_name : entityID}
+            {entityType === "gwas" && entityMetadata.__typename==="GwasStudies"? entityMetadata.studyname : entityID}
             
             
           </Typography>
           <Typography>{loading ? <Skeleton width={215} /> : <>{subtitle}
-             { entityType === "gwas" && entityMetadata.__typename==="GWAS" && <LinkComponent openInNewTab showExternalIcon href={`https://pubmed.ncbi.nlm.nih.gov/${entityMetadata.pubmedid}`}>
+             { entityType === "gwas" && entityMetadata.__typename==="GwasStudies" && <LinkComponent openInNewTab showExternalIcon href={`https://pubmed.ncbi.nlm.nih.gov/${entityMetadata.pubmedid}`}>
                       {"  ("}{entityMetadata.pubmedid} {")"}
                     </LinkComponent>}
           </>}</Typography>
-        </Stack>
+        </Stack>: <></>}
       </Grid>
     
     </Grid>

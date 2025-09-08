@@ -61,7 +61,7 @@ export type GWASEnrichment = {
         GWAS_ENRICHMENT_QUERY,
       {
         variables: {
-          study: "Dastani_Z-22479202-Adiponectin_levels"
+          study:  study //"Dastani_Z-22479202-Adiponectin_levels"
         },
         skip: !study 
       },

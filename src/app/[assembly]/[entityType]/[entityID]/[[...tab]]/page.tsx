@@ -64,7 +64,7 @@ export default function DetailsPage({
     return <CircularProgress />;
   }
 
-  if (data.__typename !== "SCREENSearchResult" && data.__typename !== "GWAS" && !data?.coordinates) {
+  if (data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" && !data?.coordinates) {
     return <Typography>Issue fetching data on {entityID}</Typography>;
   }
 
@@ -74,7 +74,7 @@ export default function DetailsPage({
 
   //Handle shared tabs
   if (tab === "browser") {
-    if(data.__typename === "GWAS"){
+    if(data.__typename === "GwasStudies"){
       return (<>
         GWAS Browser
       </>)
@@ -152,7 +152,7 @@ export default function DetailsPage({
       }
       switch (tab) {
         case "ccres":
-          return <CcreGWASStudySNPs study_name={entityID}/>;          
+          return <CcreGWASStudySNPs study_name={entityID} totalldblocks={ data.__typename !== "GwasStudies" ? 0 : data?.totalldblocks || 0}/>;          
         case "genes":
           return <GWASStudyGenes study_name={entityID}/>;
         case "variants":          

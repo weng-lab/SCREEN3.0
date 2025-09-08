@@ -9,10 +9,11 @@ import { Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 export type CcreGWASStudySNPsProps = {
   study_name: string;  
+  totalldblocks: number;
 };
 
 
-const CcreGWASStudySNPs = ({ study_name }: CcreGWASStudySNPsProps) => {
+const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps) => {
 
     const { data: dataGWASSNPscCREs, loading: loadingGWASSNPscCREs, error: errorGWASSNPscCREs } = useGWASSnpsIntersectingcCREsData({study: [study_name]})
     const ldblocks_columns: GridColDef<({total_ldblocks: number, ldblocks_overlapping_ccres: number, overlapping_ccres: number}[])[number]>[] = [
@@ -72,7 +73,7 @@ const CcreGWASStudySNPs = ({ study_name }: CcreGWASStudySNPsProps) => {
        
        
       ];
-      const  ldblocks_data = [{total_ldblocks: 24, ldblocks_overlapping_ccres: dataGWASSNPscCREs ? [... new Set([...dataGWASSNPscCREs.map(c => { return (+c.ldblock) })])].length : 0 , overlapping_ccres: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map(item => item.accession))].length : 0
+      const  ldblocks_data = [{total_ldblocks: totalldblocks, ldblocks_overlapping_ccres: dataGWASSNPscCREs ? [... new Set([...dataGWASSNPscCREs.map(c => { return (+c.ldblock) })])].length : 0 , overlapping_ccres: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map(item => item.accession))].length : 0
       }]
       return errorGWASSNPscCREs ? (
         <Typography>Error Fetching Intersecting cCREs against SNPs identified by a GWAS study</Typography>

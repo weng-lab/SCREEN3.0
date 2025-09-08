@@ -49,7 +49,7 @@ const GWAS_SNP_QUERY = gql(`
         GWAS_SNP_QUERY,
       {
         variables: {
-          study: ["Dastani_Z-22479202-Adiponectin_levels"]
+          study: study //["Dastani_Z-22479202-Adiponectin_levels"]
         },
         fetchPolicy: "cache-and-network",
         nextFetchPolicy: "cache-first",
@@ -61,7 +61,7 @@ const GWAS_SNP_QUERY = gql(`
         return [g.chromosome.toString(), g.start.toString(), g.stop.toString(), g.snpid.toString(), g.rsquare.toString(), g.ldblocksnpid.toString(), g.ldblock.toString()]
       })
 
-    console.log("snpsRegions",snpsRegions)
+    //console.log("snpsRegions",snpsRegions)
     const {
         data: cCREIntersections, loading: cCREIntersectionsLoading, error: cCREIntersectionsError
       } = useQuery(BED_INTERSECT, {
