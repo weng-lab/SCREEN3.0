@@ -7,6 +7,7 @@ import {
   DialogTitle,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { Close, CloseOutlined } from "@mui/icons-material";
@@ -16,63 +17,122 @@ import { RegistryBiosample } from "app/_biosampleTables/types";
 
 const ConfigureGenomeBrowser = (props: {
   assembly: "GRCh38" | "mm10";
-  /**
-   * Specifying this also moves the copy/DL/Open button group to bottom right, as it assumes it's being used in cCRE details
-   */
   handleClose?: () => void;
-  onBiosampleSelect?: (selected: RegistryBiosample | null) => void; // <-- Add this line
+  onBiosampleSelect?: (selected: RegistryBiosample | RegistryBiosample[] | null) => void;
+  multiselect?: boolean;
+  selectedBiosamples?: RegistryBiosample[] | null;
 }) => {
-  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosample>(null);
+  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosample | RegistryBiosample[] | null>(props.selectedBiosamples ?? null);
 
-  const handleSetSelected = (selected: RegistryBiosample) => {
-    setSelectedBiosamples(selected);
+  const handleSetSelected = (selected: RegistryBiosample | RegistryBiosample[]) => {
+    if (props.multiselect) {
+      setSelectedBiosamples(selected as RegistryBiosample[]);
+    } else {
+      setSelectedBiosamples(selected as RegistryBiosample);
+    }
   };
+
+  const handleRemove = (name: string) => {
+    if (!selectedBiosamples) return;
+    if (Array.isArray(selectedBiosamples)) {
+      setSelectedBiosamples(selectedBiosamples.filter((s) => s.name !== name));
+    } else {
+      setSelectedBiosamples(null);
+    }
+  };
+
   const handleSubmit = () => {
-    props.onBiosampleSelect?.(selectedBiosamples); // send to parent
-    props.handleClose?.(); // close dialog
+    props.onBiosampleSelect?.(selectedBiosamples);
+    props.handleClose?.();
   };
+
+  const isDisabled =
+    !selectedBiosamples ||
+    (Array.isArray(selectedBiosamples) &&
+      (selectedBiosamples.length === 0 || selectedBiosamples.length > 10));
 
   return (
     <>
       <Stack direction={"row"} justifyContent={"space-between"}>
-        <DialogTitle>Select a biosample to view biosample specific zscores </DialogTitle>
+        <DialogTitle>Select a biosample to view biosample specific z-scores</DialogTitle>
         {props.handleClose && (
           <IconButton size="large" onClick={props.handleClose} sx={{ mr: 1 }}>
             <CloseOutlined fontSize="inherit" />
           </IconButton>
         )}
       </Stack>
+      <DialogContentText mb={2} display={props.multiselect ? "block" : "none"} sx={{ px: 3 }}>
+          Note: Must chose 10 or fewer biosamples to view in the genome browser.
+      </DialogContentText>
       <DialogContent sx={{ pt: 0 }}>
-        <DialogContentText>Select biosample</DialogContentText>
-
-        {/* Selected biosample shown above the table */}
-        {selectedBiosamples && (
-          <Stack direction="row" alignItems="center" mt={2} mb={1}>
-            <Typography>{`Selected Biosample: ${selectedBiosamples.displayname}`}</Typography>
-            <IconButton onClick={() => handleSetSelected(null)}>
-              <Close />
-            </IconButton>
-          </Stack>
-        )}
-
-        <Stack direction={{ xs: "column", lg: "row" }} spacing={2}>
+        <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
           <BiosampleTables
             assembly={props.assembly}
-            selected={selectedBiosamples?.name}
+            selected={
+              Array.isArray(selectedBiosamples)
+                ? selectedBiosamples.map((s) => s.name)
+                : selectedBiosamples?.name
+            }
             onChange={handleSetSelected}
             slotProps={{ paperStack: { minWidth: { xs: "300px", lg: "500px" } } }}
+            allowMultiSelect={props.multiselect}
+            showCheckboxes={props.multiselect}
           />
+          {selectedBiosamples && (
+            <div>
+              {Array.isArray(selectedBiosamples) ? (
+                <div>
+                  <Typography minWidth={"350px"} visibility={selectedBiosamples.length > 0 ? "visible" : "hidden"} mt={2}>Selected Biosamples:</Typography>
+                  {selectedBiosamples.map((biosample, i) => {
+                    return (
+                      <Stack minWidth={"350px"} mt={1} direction="row" alignItems={"center"} key={i}>
+                        <IconButton onClick={() => setSelectedBiosamples(selectedBiosamples.filter((x) => x.displayname !== biosample.displayname))}>
+                          <Close />
+                        </IconButton>
+                        <Typography>{biosample.displayname}</Typography>
+                      </Stack>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div>
+                  <Typography minWidth={"350px"} mt={2}>Selected Biosample:</Typography>
+                  <Stack direction="row" alignItems="center">
+                    <Typography>{`Selected Biosample: ${selectedBiosamples.displayname}`}</Typography>
+                    <IconButton onClick={() => setSelectedBiosamples(null)}>
+                      <Close />
+                    </IconButton>
+                  </Stack>
+                </div>
+              )}
+            </div>
+        )}
         </Stack>
       </DialogContent>
       <DialogActions sx={!props.handleClose && { position: "fixed", bottom: 15, right: 15, zIndex: 1 }}>
-        <Button
-          sx={{ textTransform: "none" }}
-          variant="contained"
-          disabled={!selectedBiosamples}
-          onClick={handleSubmit}
+        <Tooltip
+          title={
+            Array.isArray(selectedBiosamples) && selectedBiosamples.length > 10
+              ? "You can only select up to 10 biosamples"
+              : !selectedBiosamples ||
+                (Array.isArray(selectedBiosamples) && selectedBiosamples.length === 0)
+                ? "Please select a biosample"
+                : ""
+          }
+          placement="top"
+          arrow
         >
-          Submit
-        </Button>
+          <span>
+            <Button
+              sx={{ textTransform: "none" }}
+              variant="contained"
+              disabled={isDisabled}
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+          </span>
+        </Tooltip>
       </DialogActions>
     </>
   );

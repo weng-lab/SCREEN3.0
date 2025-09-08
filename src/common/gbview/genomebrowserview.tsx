@@ -1,35 +1,34 @@
 "use client";
-import { Search } from "@mui/icons-material";
-import EditIcon from "@mui/icons-material/Edit";
-import HighlightIcon from "@mui/icons-material/Highlight";
-import { Box, Button, IconButton } from "@mui/material";
+import {  Search } from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
-  BigBedTrackProps,
-  BrowserActionType,
-  DefaultBigBed,
-  DefaultBigWig,
-  DefaultTranscript,
+  BigBedConfig,
+  BigWigConfig,
+  Browser,
+  Chromosome,
+  createBrowserStore,
+  createTrackStore,
   DisplayMode,
-  GenomeBrowser,
-  GQLCytobands,
-  TranscriptHumanVersion,
-  TranscriptTrackProps,
-  useBrowserState,
+  InitialBrowserState,
+  Track,
+  TrackType,
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
-import AddTracksModal, { BigWig } from "./addTracksModal";
 import ControlButtons from "./controls";
-import HighlightDialog, { GBHighlight } from "./highlightDialog";
-import { randomColor, trackColor } from "./utils";
-import BedTooltip from "./bedTooltip";
+import HighlightDialog from "./highlightDialog";
+import { randomColor } from "./utils";
 import { Exon } from "types/generated/graphql";
 import { useRouter } from "next/navigation";
-import { AnyEntityType, EntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
+import CCRETooltip from "./ccretooltip";
+import DomainDisplay from "./domainDisplay";
+import GBButtons from "./gbViewButtons";
+import { RegistryBiosample } from "app/_biosampleTables/types";
 
 interface Transcript {
   id: string;
@@ -40,6 +39,15 @@ interface Transcript {
   color?: string;
 }
 
+const colors = {
+  ccre: "#D05F45",
+  dnase: "#06da93",
+  h3k4me3: "#ff0000",
+  h3k27ac: "#ffcd00",
+  ctcf: "#00b0d0",
+  atac: "#02c7b9",
+};
+
 function expandCoordinates(coordinates: GenomicRange) {
   let length = coordinates.end - coordinates.start;
   if (length <= 100) {
@@ -47,7 +55,7 @@ function expandCoordinates(coordinates: GenomicRange) {
   }
   const padding = Math.floor(length * 0.25);
   return {
-    chromosome: coordinates.chromosome,
+    chromosome: coordinates.chromosome as Chromosome,
     start: coordinates.start - padding,
     end: coordinates.end + padding,
   };
@@ -57,140 +65,161 @@ export default function GenomeBrowserView({
   coordinates,
   name,
   type,
-  assembly
+  assembly,
 }: {
   coordinates: GenomicRange;
   name: string;
   type: AnyEntityType;
   assembly: Assembly;
 }) {
-  const [browserState, browserDispatch] = useBrowserState({
+  const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosample[] | null>(null);
+
+  const initialState: InitialBrowserState = {
     domain: expandCoordinates(coordinates),
-    width: 1500,
-    tracks: [],
-    highlights: [],
-  });
+    marginWidth: 150,
+    trackWidth: 1350,
+    multiplier: 3,
+    highlights: [
+      {
+        id: name || coordinates.chromosome + ":" + coordinates.start + "-" + coordinates.end,
+        domain: { chromosome: coordinates.chromosome, start: coordinates.start, end: coordinates.end },
+        color: randomColor(),
+      },
+    ],
+  };
+  const browserStore = createBrowserStore(initialState);
+  const addHighlight = browserStore((state) => state.addHighlight);
+  const removeHighlight = browserStore((state) => state.removeHighlight);
+  const setDomain = browserStore((state) => state.setDomain);
 
   const router = useRouter();
 
-  // Bed track mouse over, out, and click handlers
-  const icreMouseOver = useCallback(
-    (item: Rect) => {
-      const newHighlight = {
-        domain: { start: item.start + 150, end: item.end + 150 },
-        color: item.color || "red",
-        id: item.name,
-      };
-      browserDispatch({
-        type: BrowserActionType.ADD_HIGHLIGHT,
-        highlight: newHighlight,
-      });
-    },
-    [browserDispatch]
-  );
-  const icreMouseOut = useCallback(() => {
-    browserDispatch({ type: BrowserActionType.REMOVE_LAST_HIGHLIGHT });
-  }, [browserDispatch]);
-  const onIcreClick = useCallback((item: Rect) => {
-    const accession = item.name;
-    router.push(`${assembly}/ccre/${accession}`);
-  }, []);
-  const onGeneClick = useCallback((gene: Transcript) => {
-    const name = gene.name;
-    if (name.includes("ENSG")) {
-      return;
+  const onBiosampleSelected = (biosamples: RegistryBiosample[] | null) => {
+    if (biosamples && biosamples.length === 0) {
+      setselectedBiosamples(null);
+    } else {
+      setselectedBiosamples(biosamples);
     }
-    router.push(`${assembly}/gene/${name}`);
-  }, []);
+  };
 
-  // Initialize tracks and highlights
-  useEffect(() => {
-    const tracks = defaultTracks(
-      type === "gene" ? name : "",
-      icreMouseOver,
-      icreMouseOut,
-      onIcreClick,
-      BedTooltip,
-      onGeneClick
-    );
-    tracks.forEach((track) => {
-      browserDispatch({ type: BrowserActionType.ADD_TRACK, track });
-    });
-    browserDispatch({
-      type: BrowserActionType.ADD_HIGHLIGHT,
-      highlight: {
-        domain: {
-          chromosome: coordinates.chromosome,
-          start: coordinates.start,
-          end: coordinates.end,
+  const onCcreClick = useCallback(
+    (item: Rect) => {
+      const accession = item.name;
+      router.push(`/${assembly}/ccre/${accession}`);
+    },
+    [assembly, router]
+  );
+
+  const onGeneClick = useCallback(
+    (gene: Transcript) => {
+      const name = gene.name;
+      if (name.includes("ENSG")) {
+        return;
+      }
+      router.push(`/${assembly}/gene/${name}`);
+    },
+    [assembly, router]
+  );
+
+  const initialTracks: Track[] = useMemo(() => {
+    const tracks = assembly === "GRCh38" ? humanTracks : mouseTracks;
+    const defaultTracks: Track[] = [
+      {
+        id: "gene-track",
+        title: "GENCODE genes",
+        titleSize: 12,
+        height: 50,
+        color: "#AAAAAA",
+        trackType: TrackType.Transcript,
+        assembly: assembly,
+        version: assembly === "GRCh38" ? 40 : 25,
+        displayMode: DisplayMode.Squish,
+        geneName: type === "gene" ? name : "",
+        onHover: (item: Transcript) => {
+          addHighlight({
+            id: item.name + "-temp" || "dsadsfd",
+            domain: { start: item.coordinates.start, end: item.coordinates.end },
+            color: item.color || "blue",
+          });
         },
-        color: "blue",
-        id: name,
+        onLeave: (item: Transcript) => {
+          removeHighlight(item.name + "-temp" || "dsadsfd");
+        },
+        onClick: (item: Transcript) => {
+          onGeneClick(item);
+        },
       },
-    });
-  }, [coordinates, name, type, icreMouseOver, icreMouseOut, onIcreClick, browserDispatch]);
+      {
+        id: "ccre-track",
+        title: "All cCREs colored by group",
+        titleSize: 12,
+        height: 20,
+        color: "#D05F45",
+        trackType: TrackType.BigBed,
+        displayMode: DisplayMode.Dense,
+        url: `https://downloads.wenglab.org/${assembly}-cCREs.DCC.bigBed`,
+        onHover: (rect) => {
+          addHighlight({
+            id: rect.name + "-temp" || "ihqoviun",
+            domain: { start: rect.start, end: rect.end },
+            color: rect.color || "blue",
+          });
+        },
+        onLeave: (rect) => {
+          removeHighlight(rect.name + "-temp" || "ihqoviun");
+        },
+        onClick: (item: Rect) => {
+          onCcreClick(item);
+        },
+        tooltip: (rect: Rect) => <CCRETooltip assembly={assembly} name={rect.name || ""} {...rect} />,
+      },
+    ];
 
-  // Bulk ATAC Modal
-  const [showAddTracksModal, setShowAddTracksModal] = useState(false);
-  const [selectedTracks, setSelectedTracks] = useState<BigWig[]>([]);
+    let biosampleTracks: Track[] = [];
+    if (selectedBiosamples) {
+      const onHover = (item: Rect) => {
+        addHighlight({
+          color: item.color || "blue",
+          domain: { start: item.start, end: item.end },
+          id: "tmp-ccre",
+        });
+      };
 
-  useEffect(() => {
-    selectedTracks.forEach((track) => {
-      // check if the track is not already in the browser state
-      if (!browserState.tracks.some((t) => t.id === track.name + "_temp")) {
-        const trackToAdd = {
-          ...DefaultBigWig,
-          id: track.name + "_temp",
-          title: track.assay + " " + track.displayName,
-          url: track.url,
-          color: trackColor(track.lineage),
-          height: 100,
-          titleSize: 16,
-          displayMode: DisplayMode.FULL,
-        };
-        browserDispatch({ type: BrowserActionType.ADD_TRACK, track: trackToAdd });
-      }
-    });
+      const onLeave = () => {
+        removeHighlight("tmp-ccre");
+      };
 
-    // Remove tracks that are no longer selected
-    browserState.tracks.forEach((track) => {
-      if (track.id.includes("_temp") && !selectedTracks.some((t) => t.name + "_temp" === track.id)) {
-        browserDispatch({ type: BrowserActionType.DELETE_TRACK, id: track.id });
-      }
-    });
-  }, [browserState.tracks, selectedTracks, browserDispatch]);
+      const onClick = (item: Rect) => {
+        onCcreClick(item);
+      };
+
+      biosampleTracks = generateBiosampleTracks(
+        selectedBiosamples,
+        onHover,
+        onLeave,
+        onClick,
+        colors
+      );
+    }
+
+    return [...defaultTracks, ...biosampleTracks, ...tracks,];
+  }, [assembly, type, name, selectedBiosamples, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
+
+  const trackStore = createTrackStore(initialTracks);
+  const editTrack = trackStore((state) => state.editTrack);
 
   const handeSearchSubmit = (r: Result) => {
-    browserDispatch({
-      type: BrowserActionType.SET_LOADING,
-    });
     if (r.type === "Gene") {
-      browserDispatch({
-        type: BrowserActionType.UPDATE_PROPS,
-        id: "default-gene",
-        props: {
-          geneName: r.title,
-        },
+      editTrack("gene-track", {
+        geneName: r.title,
       });
     }
-    // Only remove if there is more than one highlight
-    if (browserState.highlights.length > 1) {
-      browserDispatch({
-        type: BrowserActionType.REMOVE_LAST_HIGHLIGHT,
-      });
-    }
-    browserDispatch({
-      type: BrowserActionType.ADD_HIGHLIGHT,
-      highlight: {
-        domain: r.domain,
-        color: randomColor(),
-        id: r.title,
-      },
+    addHighlight({
+      domain: r.domain,
+      color: randomColor(),
+      id: r.title,
     });
-    browserDispatch({
-      type: BrowserActionType.SET_DOMAIN,
-      domain: expandCoordinates(r.domain),
-    });
+    setDomain(expandCoordinates(r.domain));
   };
 
   const theme = useTheme();
@@ -247,137 +276,222 @@ export default function GenomeBrowserView({
               },
             }}
           />
-          <Box display="flex" gap={2}>
-            <Button
-              variant="contained"
-              startIcon={<HighlightIcon />}
-              size="small"
-              onClick={() => setHighlightDialogOpen(true)}
-            >
-              View Current Highlights
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<EditIcon />}
-              size="small"
-              sx={{
-                backgroundColor: theme.palette.primary.main,
-                color: "white",
-              }}
-              onClick={() => setShowAddTracksModal(true)}
-            >
-              Add signal tracks
-            </Button>
-          </Box>
+          <GBButtons browserStore={browserStore} assembly={assembly} onBiosampleSelected={onBiosampleSelected} selectedBiosamples={selectedBiosamples}/>
         </Box>
-        <AddTracksModal
-          open={showAddTracksModal}
-          setOpen={setShowAddTracksModal}
-          setSelectedTracks={setSelectedTracks}
-          selectedTracks={selectedTracks}
-        />
-        <Box
-          width={"100%"}
-          justifyContent={"space-between"}
-          flexDirection={"row"}
-          display={"flex"}
-          alignItems={"center"}
-        >
-          <h3 style={{ marginBottom: "0px", marginTop: "0px" }}>
-            {browserState.domain.chromosome}:{browserState.domain.start.toLocaleString()}-
-            {browserState.domain.end.toLocaleString()}
-          </h3>
-
-          <svg id="cytobands" width={"700px"} height={20}>
-            <GQLCytobands
-              assembly="hg38"
-              chromosome={browserState.domain.chromosome}
-              currentDomain={browserState.domain}
-            />
-          </svg>
-          <h3 style={{ marginBottom: "0px", marginTop: "0px" }}>hg38</h3>
-        </Box>
-        <ControlButtons browserState={browserState} browserDispatch={browserDispatch} />
+        <DomainDisplay browserStore={browserStore} assembly={assembly} />
+        <ControlButtons browserStore={browserStore} />
       </Grid>
       <Grid size={{ xs: 12, lg: 12 }}>
-        <GenomeBrowser width={"100%"} browserState={browserState} browserDispatch={browserDispatch} />
+        <Browser browserStore={browserStore} trackStore={trackStore} />
       </Grid>
-      <Box
-        sx={{
-          width: "100%",
-          height: 40,
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      ></Box>
-      <HighlightDialog
-        open={highlightDialogOpen}
-        setOpen={setHighlightDialogOpen}
-        highlights={browserState.highlights as GBHighlight[]}
-      />
+      <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
     </Grid>
   );
 }
 
-function defaultTracks(
-  geneName: string,
-  icreMouseOver: (item: Rect) => void,
-  icreMouseOut: () => void,
-  onIcreClick: (item: Rect) => void,
-  tooltipContent: React.FC<Rect>,
-  onGeneClick: (gene: Transcript) => void
-) {
-  const geneTrack = {
-    ...DefaultTranscript,
-    titleSize: 16,
-    id: "default-gene",
-    title: "GENCODE genes",
+function generateBiosampleTracks(
+  biosamples: RegistryBiosample[],
+  onHover: (item: Rect) => void,
+  onLeave: (item: Rect) => void,
+  onClick: (item: Rect) => void,
+  colors: {
+    ccre: string;
+    dnase: string;
+    h3k4me3: string;
+    h3k27ac: string;
+    ctcf: string;
+  }
+): Track[] {
+  const tracks: Track[] = [];
+
+  for (const biosample of biosamples) {
+    // Get available signal accessions (remove null values)
+    const signals = [
+      biosample.dnase_signal,
+      biosample.h3k4me3_signal,
+      biosample.h3k27ac_signal,
+      biosample.ctcf_signal,
+    ].filter((signal): signal is string => !!signal);
+
+    if (signals.length > 0) {
+      const bigBedUrl = `https://downloads.wenglab.org/Registry-V4/${signals.join(
+        "_"
+      )}.bigBed`;
+
+      const ccreTrack: BigBedConfig = {
+        id: `biosample-ccre-${biosample.name}`,
+        title: `cCREs in ${biosample.displayname}`,
+        titleSize: 12,
+        trackType: TrackType.BigBed,
+        displayMode: DisplayMode.Dense,
+        color: colors.ccre,
+        height: 20,
+        url: bigBedUrl,
+        onHover,
+        onLeave,
+        onClick,
+      };
+      tracks.push(ccreTrack);
+    }
+
+    if (biosample.dnase_signal) {
+      tracks.push({
+        id: `biosample-dnase-${biosample.name}`,
+        title: `DNase-seq signal in ${biosample.displayname}`,
+        titleSize: 12,
+        trackType: TrackType.BigWig,
+        displayMode: DisplayMode.Full,
+        color: colors.dnase,
+        height: 100,
+        url: `https://www.encodeproject.org/files/${biosample.dnase_signal}/@@download/${biosample.dnase_signal}.bigWig`,
+      } as BigWigConfig);
+    }
+
+    if (biosample.h3k4me3_signal) {
+      tracks.push({
+        id: `biosample-h3k4me3-${biosample.name}`,
+        title: `H3K4me3 ChIP-seq signal in ${biosample.displayname}`,
+        titleSize: 12,
+        trackType: TrackType.BigWig,
+        displayMode: DisplayMode.Full,
+        color: colors.h3k4me3,
+        height: 100,
+        url: `https://www.encodeproject.org/files/${biosample.h3k4me3_signal}/@@download/${biosample.h3k4me3_signal}.bigWig`,
+      } as BigWigConfig);
+    }
+
+    if (biosample.h3k27ac_signal) {
+      tracks.push({
+        id: `biosample-h3k27ac-${biosample.name}`,
+        title: `H3K27ac ChIP-seq signal in ${biosample.displayname}`,
+        titleSize: 12,
+        trackType: TrackType.BigWig,
+        displayMode: DisplayMode.Full,
+        color: colors.h3k27ac,
+        height: 100,
+        url: `https://www.encodeproject.org/files/${biosample.h3k27ac_signal}/@@download/${biosample.h3k27ac_signal}.bigWig`,
+      } as BigWigConfig);
+    }
+
+    if (biosample.ctcf_signal) {
+      tracks.push({
+        id: `biosample-ctcf-${biosample.name}`,
+        title: `CTCF ChIP-seq signal in ${biosample.displayname}`,
+        titleSize: 12,
+        trackType: TrackType.BigWig,
+        displayMode: DisplayMode.Full,
+        color: colors.ctcf,
+        height: 100,
+        url: `https://www.encodeproject.org/files/${biosample.ctcf_signal}/@@download/${biosample.ctcf_signal}.bigWig`,
+      } as BigWigConfig);
+    }
+  }
+
+  return tracks;
+}
+
+const humanTracks: Track[] = [
+  {
+    id: "default-dnase",
+    title: "Agregated DNase-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#06da93",
     height: 100,
-    color: "#AAAAAA",
-    version: TranscriptHumanVersion.V40,
-    assembly: "GRCh38",
-    queryType: "gene",
-    displayMode: DisplayMode.SQUISH,
-    geneName: geneName,
-    onTranscriptClick: onGeneClick,
-  } as TranscriptTrackProps;
-
-  const icreTrack = {
-    ...DefaultBigBed,
-    titleSize: 16,
-    id: "default-icre",
-    title: "All Immune cCREs",
-    displayMode: DisplayMode.DENSE,
-    color: "#9378bc",
-    rowHeight: 10,
-    height: 50,
-    onMouseOver: icreMouseOver,
-    onMouseOut: icreMouseOut,
-    onClick: onIcreClick,
-    tooltipContent: tooltipContent,
-    url: "http://downloads.wenglab.org/igscreen/iCREs.bigBed",
-  } as BigBedTrackProps;
-
-  const atacBigWig = {
-    ...DefaultBigWig,
-    title: "ATAC merged signal",
-    url: "https://downloads.wenglab.org/igscreen/ATAC_merged_signal.bigWig",
+    url: "https://downloads.wenglab.org/DNAse_All_ENCODE_MAR20_2024_merged.bw",
+  } as BigWigConfig,
+  {
+    id: "default-h3k4me3",
+    title: "Aggregated H3K4me3 ChIP-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#ff0000",
+    height: 100,
+    url: "https://downloads.wenglab.org/H3K4me3_All_ENCODE_MAR20_2024_merged.bw",
+  } as BigWigConfig,
+  {
+    id: "default-h3k27ac",
+    title: "Aggregated H3K27ac ChIP-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#ffcd00",
+    height: 100,
+    url: "https://downloads.wenglab.org/H3K27ac_All_ENCODE_MAR20_2024_merged.bw",
+  } as BigWigConfig,
+  {
+    id: "default-ctcf",
+    title: "Aggregated CTCF ChIP-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#00b0d0",
+    height: 100,
+    url: "https://downloads.wenglab.org/CTCF_All_ENCODE_MAR20_2024_merged.bw",
+  } as BigWigConfig,
+  {
+    id: "default-atac",
+    title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
     color: "#02c7b9",
     height: 100,
-    titleSize: 16,
-    displayMode: DisplayMode.FULL,
-    id: "atac-bigwig",
-  };
+    url: "https://downloads.wenglab.org/ATAC_All_ENCODE_MAR20_2024_merged.bw",
+  } as BigWigConfig,
+];
 
-  const dnaseBigWig = {
-    ...DefaultBigWig,
-    title: "DNase merged signal",
-    url: "https://downloads.wenglab.org/igscreen/DNase_merged_signal.bigWig",
-    color: "#06DA93",
+const mouseTracks: Track[] = [
+  {
+    id: "default-dnase",
+    title: "Aggregated DNase-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#06da93",
     height: 100,
-    titleSize: 16,
-    displayMode: DisplayMode.FULL,
-    id: "dnase-bigwig",
-  };
-  return [geneTrack, icreTrack, atacBigWig, dnaseBigWig];
-}
+    url: "https://downloads.wenglab.org/DNase_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+  } as BigWigConfig,
+  {
+    id: "default-h3k4me3",
+    title: "Aggregated H3K4me3 ChIP-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#ff0000",
+    height: 100,
+    url: "https://downloads.wenglab.org/H3K4me3_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+  } as BigWigConfig,
+  {
+    id: "default-h3k27ac",
+    title: "Aggregated H3K27ac ChIP-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#ffcd00",
+    height: 100,
+    url: "https://downloads.wenglab.org/H3K27ac_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+  } as BigWigConfig,
+  {
+    id: "default-ctcf",
+    title: "Aggregated CTCF ChIP-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#00b0d0",
+    height: 100,
+    url: "https://downloads.wenglab.org/CTCF_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+  } as BigWigConfig,
+  {
+    id: "default-atac",
+    title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
+    titleSize: 12,
+    trackType: TrackType.BigWig,
+    displayMode: DisplayMode.Full,
+    color: "#02c7b9",
+    height: 100,
+    url: "https://downloads.wenglab.org/ATAC_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
+  } as BigWigConfig,
+];

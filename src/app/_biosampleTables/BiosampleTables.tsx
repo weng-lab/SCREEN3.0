@@ -26,7 +26,7 @@ export const BiosampleTables = <
   showCheckboxes,
   showRNAseq = false as HasRNASeq,
   showDownloads,
-  slotProps
+  slotProps,
 }: BiosampleTablesProps<HasRNASeq, AllowMultiSelect>) => {
   const [sampleTypeFilter, setSampleTypeFilter] = useState<SampleTypeCheckboxes>({
     "Cell Line": true,
