@@ -427,6 +427,6 @@ export const isValidRouteForEntity = <A extends Assembly>(
 };
 
 // Helper to generate tab array for EntityDetailsTabs
-export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(assembly: A, entityType: E) => {
+export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(assembly: A, entityType: E): readonly TabConfig[] => {
   return entityTabsConfig[assembly][entityType];
 };
