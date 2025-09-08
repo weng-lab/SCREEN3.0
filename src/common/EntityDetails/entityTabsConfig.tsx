@@ -430,3 +430,12 @@ export const isValidRouteForEntity = <A extends Assembly>(
 export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(assembly: A, entityType: E): readonly TabConfig[] => {
   return entityTabsConfig[assembly][entityType];
 };
+
+// Helper to get component for given OpenEntity
+export const getComponentForEntity = (openEntity: AnyOpenEntity) => {
+  switch (openEntity.assembly) {
+    // Can't do entityTabsConfig[assembly][openEntity.entityType] since TS compiler can't assert that the entity type and assembly match which allows safe indexing
+    case ("GRCh38"): return entityTabsConfig.GRCh38[openEntity.entityType].find(x => x.route === openEntity.tab).component
+    case ("mm10"): return entityTabsConfig.mm10[openEntity.entityType].find(x => x.route === openEntity.tab).component
+  }
+}
