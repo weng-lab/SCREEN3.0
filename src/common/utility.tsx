@@ -1,10 +1,10 @@
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
 import { Typography, TypographyOwnProps, Link, LinkProps } from "@mui/material";
-import { AnyOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { Launch } from "@mui/icons-material";
-import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig } from "./EntityDetails/entityTabsConfig";
+import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig, isValidRouteForEntity } from "./EntityDetails/entityTabsConfig";
 
 export function getClassDisplayname(input: string) {
   switch (input) {
@@ -300,14 +300,17 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): A
     .split(openEntityListDelimiter)
     .map((entry) => {
       const [encodedAssembly, encodedEntityType, entityID, encodedTab = ""] = entry.split(openEntityDelimiter);
-      return {
+      const decodedEntity: CandidateOpenEntity = {
+        assembly: assemblyDecoding[encodedAssembly],
         entityType: decodeEntityType(encodedEntityType),
         entityID,
         tab: decodeTabRoute(encodedTab),
-        assembly: assemblyDecoding[encodedAssembly],
       };
+      if (isValidOpenEntity(decodedEntity)){
+        return decodedEntity
+      } else return null
     })
-    .filter((x) => x.entityType && x.entityID); // filter out any invalid
+    .filter((x) => x !== null && x.entityID); // filter out any invalid
 }
 
 /**

@@ -1,6 +1,6 @@
 import { Add } from "@mui/icons-material";
 import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
-import { OpenEntity, OpenEntitiesContext, AnyOpenEntity } from "./OpenEntitiesContext";
+import { OpenEntity, OpenEntitiesContext, AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -28,27 +28,24 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Attributes of current entity
-  const urlAssembly = pathname.split("/")[1]
-  if (!isValidAssembly(urlAssembly)) {
-    throw new Error(`Unknown assembly: ${urlAssembly}`)
-  }
-  const urlEntityType = pathname.split("/")[2]
-  if (!isValidEntityType(urlAssembly, urlEntityType)) {
-    throw new Error(`Unknown entity type "${urlEntityType}" in assembly "${urlAssembly}"`)
-  }
+  const urlOpenEntity: CandidateOpenEntity = useMemo(() => {
+    return {
+      assembly: pathname.split("/")[1],
+      entityType: pathname.split("/")[2],
+      entityID: pathname.split("/")[3],
+      tab: pathname.split("/")[4] ?? "",
+    };
+  }, [pathname]); 
 
-  const urlEntityID = pathname.split("/")[3];
-  const urlTab = (pathname.split("/")[4] ?? "")
-  if (!isValidRouteForEntity(urlAssembly, urlEntityType, urlTab)){
-    throw new Error(`Unknown tab route "${urlTab}" for entity type "${urlEntityType}" in assembly "${urlAssembly}"`)
+  if (!isValidOpenEntity(urlOpenEntity)){
+    throw new Error(`Incorrect entity configuration: ` + JSON.stringify(urlOpenEntity))
   }
 
   const currentEntityState = openEntities.find((el) =>
-    urlEntityType === "region" && el.entityType === "region"
-      ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlEntityID)) &&
-        el.assembly === urlAssembly
-      : el.entityID === urlEntityID
+    urlOpenEntity.entityType === "region" && el.entityType === "region"
+      ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlOpenEntity.entityID)) &&
+        el.assembly === urlOpenEntity.assembly
+      : el.entityID === urlOpenEntity.entityID
   );
 
   // ------- Initialize state from URL on initial load -------
@@ -86,10 +83,11 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   /**
    * Reset the routing flag when routing is complete
+   * @flag this is likely going to break behavior
    */
   useEffect(() => {
     isRoutingRef.current = false;
-  }, [urlEntityID]);
+  }, [urlOpenEntity.entityID]);
 
   /**
    * Sync URL with current internal state (skip if not initialized yet)
@@ -110,28 +108,20 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     if (!isRoutingRef.current && !currentEntityState) {
       dispatch({
         type: "addEntity",
-        entity: {
-          assembly: urlAssembly,
-          entityID: urlEntityID,
-          entityType: urlEntityType,
-          tab: urlTab,
-        },
+        entity: urlOpenEntity,
       });
     }
-  }, [currentEntityState, dispatch, urlAssembly, urlEntityID, urlEntityType, urlTab]);
+  }, [currentEntityState, dispatch, urlOpenEntity]);
 
   //sync the current view to the state
   useEffect(() => {
-    if (!isRoutingRef.current && currentEntityState && urlTab !== currentEntityState.tab) {
+    if (!isRoutingRef.current && currentEntityState && urlOpenEntity.tab !== currentEntityState.tab) {
       dispatch({
         type: "updateEntity",
-        entity: {
-          ...currentEntityState,
-          tab: urlTab,
-        },
+        entity: urlOpenEntity,
       });
     }
-  }, [urlTab, currentEntityState, dispatch]);
+  }, [urlOpenEntity, currentEntityState, dispatch]);
 
   /**
    * Called when Drag ends within <DragDropContext>. Dispatches reorder event
@@ -160,9 +150,12 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     (elToClose: AnyOpenEntity) => {
       if (openEntities.length > 1) {
         // only need to navigate if you're closing the tab that you're on
-        const needToNavigate = elToClose.entityID === urlEntityID && elToClose.assembly === urlAssembly;
+        const needToNavigate = elToClose.entityID === urlOpenEntity.entityID && elToClose.assembly === urlOpenEntity.assembly;
         if (needToNavigate) {
-          const toCloseIndex = openEntities.findIndex((openEl) => openEl.entityID === elToClose.entityID && elToClose.assembly === urlAssembly);
+          /**
+           * @todo can this be changed to simply openEntities.findIndex((openEl) => openEl === elToClose)? Is there reference equality?
+           */
+          const toCloseIndex = openEntities.findIndex((openEl) => openEl.entityID === elToClose.entityID && openEl.assembly && elToClose.assembly);
 
           //if elToClose is last tab, go to the tab on left. Else, go to the tab on the right
           const elToNavTo =
@@ -177,7 +170,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
         });
       }
     },
-    [openEntities, urlEntityID, urlAssembly, dispatch, navigateAndMark]
+    [openEntities, urlOpenEntity, dispatch, navigateAndMark]
   );
 
   //  ------- End <DraggableTab> Helpers -------
@@ -229,11 +222,11 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
    * Index of current route's element within internal state
    */
   const tabIndex = useMemo(() => {
-    const i = openEntities.findIndex((el) => el.entityID === urlEntityID && el.assembly === urlAssembly);
+    const i = openEntities.findIndex((el) => el.entityID === urlOpenEntity.entityID && el.assembly === urlOpenEntity.assembly);
     if (i === -1) {
       return 0; //Fix MUI invalid tab error. Return 0 on initial load when usePathname (thus urlEntityID) hasn't resolved
     } else return i;
-  }, [openEntities, urlAssembly, urlEntityID]);
+  }, [openEntities, urlOpenEntity]);
 
   const openTabsProps = {
     openEntities,

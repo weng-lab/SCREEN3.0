@@ -15,7 +15,7 @@ import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
 import IntersectingCcres from "common/components/IntersectingCcres";
 import EQTLs from "common/components/EQTLTables";
-import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 
 export default function DetailsPage({
   params,
@@ -49,6 +49,12 @@ export default function DetailsPage({
     throw new Error(`Unknown tab ${tab} for entity type ${entityType}`);
   }
 
+  const entity: CandidateOpenEntity = {assembly, entityID, entityType, tab }
+
+  if (!isValidOpenEntity){
+    throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity))
+  }
+
   const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
   if (loading) {
@@ -62,8 +68,6 @@ export default function DetailsPage({
   if (error) {
     throw new Error(JSON.stringify(error));
   }
-
-  const entity: AnyOpenEntity = {assembly, entityID, entityType, tab }
 
   // Find component we need to render for this route
   const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
