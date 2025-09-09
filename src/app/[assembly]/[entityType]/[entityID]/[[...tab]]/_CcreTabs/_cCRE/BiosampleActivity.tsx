@@ -292,7 +292,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const distanceToTSS = nearbyGenes?.sort((a, b) => a.distanceToTSS - b.distanceToTSS)[0].distanceToTSS
   
-  const overlapsTSS = nearbyGenes?.map(x => x.overlapsTSS).includes(true)
+  const overlapsTSS = nearbyGenes?.some(x => x.overlapsTSS)
 
   let partialDataCollection: cCRERow[], coreCollection: cCRERow[], ancillaryCollection: cCRERow[];
   if (data_toptissues) {

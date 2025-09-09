@@ -12,6 +12,7 @@ import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
+import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -47,7 +48,7 @@ export const isValidEntityType = <A extends Assembly>(assembly: A, entityType: s
   return (validEntityTypes[assembly] as readonly string[]).includes(entityType);
 };
 
-export type entityViewComponentProps = {
+export type EntityViewComponentProps = {
   entity: AnyOpenEntity;
 };
 
@@ -122,7 +123,7 @@ type TabConfig<R extends string = string> = {
    * The component to render for that tab view
    * @note NOT USED EVERYWHERE
    */
-  component: (props: entityViewComponentProps) => ReactElement;
+  component: (props: EntityViewComponentProps) => ReactElement;
 };
 
 const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[] = [
@@ -241,8 +242,7 @@ const humanCcreTabs: readonly TabConfig<
     route: "conservation",
     label: "Conservation",
     iconPath: ConservationIconPath,
-    // component: () => <p>This should have conservation data</p>,
-    component: null,
+    component: Conservation,
   },
   {
     route: "functional-characterization",

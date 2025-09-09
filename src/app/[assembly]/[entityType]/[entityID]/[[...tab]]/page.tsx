@@ -124,6 +124,7 @@ export default function DetailsPage({
 
       switch (tab) {
         case "":
+        case "conservation":
           return <ComponentToRender entity={entity} />;
         case "genes":
           return assembly==="GRCh38" ? <CcreLinkedGenes accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} /> : <>Linked Genes for Mouse cCREs</>;
