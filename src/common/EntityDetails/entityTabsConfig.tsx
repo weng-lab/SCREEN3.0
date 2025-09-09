@@ -344,12 +344,12 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "browser">[]
   },
 ] as const;
 
-const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser">[] = [
+const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser" | "conservation">[] = [
   {
     route: "",
     label: "cCRE",
     iconPath: CcreIconPath,
-    component: () => <p>This should have biosample specific z-scores</p>,
+    component: BiosampleActivity,
   },
   {
     route: "genes",
@@ -362,6 +362,12 @@ const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser">[]
     label: "Variant",
     iconPath: VariantIconPath,
     component: () => <p>Variants for mouse cCREs </p>,
+  },
+  {
+    route: "conservation",
+    label: "Conservation",
+    iconPath: ConservationIconPath,
+    component: Conservation,
   },
   {
     route: "browser",
