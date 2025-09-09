@@ -3,7 +3,7 @@ import { CircularProgress, Typography } from "@mui/material";
 import GenomeBrowserView from "common/gbview/genomebrowserview";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import { isValidAssembly } from "types/globalTypes";
-import { isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
+import { entityTabsConfig, getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
@@ -15,6 +15,7 @@ import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
 import IntersectingCcres from "common/components/IntersectingCcres";
 import EQTLs from "common/components/EQTLTables";
+import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 
 export default function DetailsPage({
   params,
@@ -48,6 +49,12 @@ export default function DetailsPage({
     throw new Error(`Unknown tab ${tab} for entity type ${entityType}`);
   }
 
+  const entity: CandidateOpenEntity = {assembly, entityID, entityType, tab }
+
+  if (!isValidOpenEntity(entity)){
+    throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity))
+  }
+
   const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
   if (loading) {
@@ -63,9 +70,9 @@ export default function DetailsPage({
   }
 
   // Find component we need to render for this route
-  // const ComponentToRender = entityTabsConfig[assembly][entityType].find(x => x.route === tab).component
+  const ComponentToRender = getComponentForEntity(entity)
   // Once each component is refactored to independently fetch it's own data we can simply do the following:
-  // return <ComponentToRender />
+  // return <ComponentToRender entity={entity} />
 
   if (tab === "browser") {
     return (
@@ -117,7 +124,8 @@ export default function DetailsPage({
 
       switch (tab) {
         case "":
-          return <p>This should have biosample specific z-scores</p>;
+        case "conservation":
+          return <ComponentToRender entity={entity} />;
         case "genes":
           return assembly==="GRCh38" ? <CcreLinkedGenes accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} /> : <>Linked Genes for Mouse cCREs</>;
         case "variants":
