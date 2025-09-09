@@ -109,27 +109,27 @@ const coreAndPartialCols: GridColDef[] = [
     field: "sampleType",
   },
   {
-    headerName: "DNase Z-score",
+    headerName: "DNase",
     field: "dnase",
     ...zScoreFormatting,
   },
   {
-    headerName: "ATAC Z-score",
+    headerName: "ATAC",
     field: "atac",
     ...zScoreFormatting,
   },
   {
-    headerName: "H3K4me3 Z-score",
+    headerName: "H3K4me3",
     field: "h3k4me3",
     ...zScoreFormatting,
   },
   {
-    headerName: "H3K27ac Z-score",
+    headerName: "H3K27ac",
     field: "h3k27ac",
     ...zScoreFormatting,
   },
   {
-    headerName: "CTCF Z-score",
+    headerName: "CTCF",
     field: "ctcf",
     ...zScoreFormatting,
   },
