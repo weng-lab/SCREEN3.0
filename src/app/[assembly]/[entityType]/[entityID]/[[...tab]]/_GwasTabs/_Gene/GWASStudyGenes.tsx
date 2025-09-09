@@ -519,7 +519,7 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
           rows={dataGWASSnpscCREsCompuGenes || []}
           columns={CompuLinkedGenes_columns}
           loading={loadingGWASSnpscCREsGenes}     
-          label={`Computational Predictions`}     
+          label={`Computational Predictions (${method?.replaceAll("_"," ")})`}     
           emptyTableFallback={"No Computational Predictions"}
           initialState={{
             sorting: {

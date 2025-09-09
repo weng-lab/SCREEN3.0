@@ -59,7 +59,7 @@ export default function DetailsPage({
 
   const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
-  console.log(data, loading, error)
+  
   if (loading) {
     return <CircularProgress />;
   }
