@@ -15,13 +15,10 @@ export type GwasStudyHeaderProps = {
 export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHeaderProps) => {
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
-  console.log("GWAS Entity", entityMetadata)
   const subtitle =
-    entityType === "gwas" && entityMetadata?.__typename==="GwasStudies" ? (
-      entityMetadata?.author 
-    )  : (
-      ""
-    );
+    entityType === "gwas" && entityMetadata?.__typename === "GwasStudies"
+      ? entityMetadata?.author.replaceAll("_", " ")
+      : "";
 
   return (
     <Grid
@@ -33,21 +30,37 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
       container
     >
       <Grid size={12}>
-        {entityMetadata ? <Stack>
-          <Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>
-          <Typography variant="h4">
-            {entityType === "gwas" && entityMetadata.__typename==="GwasStudies"? entityMetadata.studyname : entityID}
-            
-            
-          </Typography>
-          <Typography>{loading ? <Skeleton width={215} /> : <>{subtitle}
-             { entityType === "gwas" && entityMetadata.__typename==="GwasStudies" && <LinkComponent openInNewTab showExternalIcon href={`https://pubmed.ncbi.nlm.nih.gov/${entityMetadata.pubmedid}`}>
-                      {"  ("}{entityMetadata.pubmedid} {")"}
-                    </LinkComponent>}
-          </>}</Typography>
-        </Stack>: <></>}
+        {entityMetadata ? (
+          <Stack>
+            <Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>
+            <Typography variant="h4">
+              {entityType === "gwas" && entityMetadata.__typename === "GwasStudies"
+                ? entityMetadata.studyname
+                : entityID}
+            </Typography>
+            <Typography>
+              {loading ? (
+                <Skeleton width={215} />
+              ) : (
+                <>
+                  {subtitle + " "}
+                  {entityType === "gwas" && entityMetadata.__typename === "GwasStudies" && (
+                    <LinkComponent
+                      openInNewTab
+                      showExternalIcon
+                      href={`https://pubmed.ncbi.nlm.nih.gov/${entityMetadata.pubmedid}`}
+                    >
+                      ({entityMetadata.pubmedid.trim()})
+                    </LinkComponent>
+                  )}
+                </>
+              )}
+            </Typography>
+          </Stack>
+        ) : (
+          <></>
+        )}
       </Grid>
-    
     </Grid>
   );
 };
