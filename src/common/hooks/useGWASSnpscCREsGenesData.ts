@@ -105,7 +105,7 @@ const GWAS_SNP_QUERY = gql(`
   }
   
   export type useGWASSnpscCREsGenesReturn = {
-    data: LinkedGenesQuery['linkedGenesQuery'] | undefined;
+    data: LinkedGenesQuery['linkedGenes'] | undefined;
     compudata: ComputationalGeneLinksQuery['ComputationalGeneLinksQuery'] | undefined;
     loading: boolean;
     error: ApolloError  | undefined;
