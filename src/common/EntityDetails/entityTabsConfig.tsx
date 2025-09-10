@@ -11,6 +11,8 @@ import IntersectingCcres from "common/components/IntersectingCcres";
 import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
+import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
+import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -47,7 +49,7 @@ export const isValidEntityType = <A extends Assembly>(assembly: A, entityType: s
   return (validEntityTypes[assembly] as readonly string[]).includes(entityType);
 };
 
-export type entityViewComponentProps = {
+export type EntityViewComponentProps = {
   entity: AnyOpenEntity;
 };
 
@@ -122,7 +124,7 @@ type TabConfig<R extends string = string> = {
    * The component to render for that tab view
    * @note NOT USED EVERYWHERE
    */
-  component: (props: entityViewComponentProps) => ReactElement;
+  component: (props: EntityViewComponentProps) => ReactElement;
 };
 
 const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[] = [
@@ -221,7 +223,7 @@ const humanCcreTabs: readonly TabConfig<
     route: "",
     label: "cCRE",
     iconPath: CcreIconPath,
-    component: () => <p>This should have biosample specific z-scores</p>,
+    component: BiosampleActivity,
   },
   {
     route: "genes",
@@ -241,8 +243,7 @@ const humanCcreTabs: readonly TabConfig<
     route: "conservation",
     label: "Conservation",
     iconPath: ConservationIconPath,
-    // component: () => <p>This should have conservation data</p>,
-    component: null,
+    component: Conservation,
   },
   {
     route: "functional-characterization",
@@ -344,12 +345,12 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "browser">[]
   },
 ] as const;
 
-const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser">[] = [
+const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser" | "conservation">[] = [
   {
     route: "",
     label: "cCRE",
     iconPath: CcreIconPath,
-    component: () => <p>This should have biosample specific z-scores</p>,
+    component: BiosampleActivity,
   },
   {
     route: "genes",
@@ -362,6 +363,12 @@ const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser">[]
     label: "Variant",
     iconPath: VariantIconPath,
     component: () => <p>Variants for mouse cCREs </p>,
+  },
+  {
+    route: "conservation",
+    label: "Conservation",
+    iconPath: ConservationIconPath,
+    component: Conservation,
   },
   {
     route: "browser",
@@ -430,3 +437,12 @@ export const isValidRouteForEntity = <A extends Assembly>(
 export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(assembly: A, entityType: E): readonly TabConfig[] => {
   return entityTabsConfig[assembly][entityType];
 };
+
+// Helper to get component for given OpenEntity
+export const getComponentForEntity = (openEntity: AnyOpenEntity) => {
+  switch (openEntity.assembly) {
+    // Can't do entityTabsConfig[assembly][openEntity.entityType] since TS compiler can't assert that the entity type and assembly match which allows safe indexing
+    case ("GRCh38"): return entityTabsConfig.GRCh38[openEntity.entityType].find(x => x.route === openEntity.tab).component
+    case ("mm10"): return entityTabsConfig.mm10[openEntity.entityType].find(x => x.route === openEntity.tab).component
+  }
+}

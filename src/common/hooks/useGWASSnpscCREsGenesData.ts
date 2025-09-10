@@ -63,7 +63,7 @@ const GWAS_SNP_QUERY = gql(`
   }`)
 
   export const LINKED_GENES = gql(`
-    query linkedGenes(
+    query linkedGenesQuery(
       $assembly: String!
       $accessions: [String]!
       $methods: [String]

@@ -40,9 +40,10 @@ export type LinkedGeneInfo = {
 }
 
 const LINKED_GENES = gql(`
-  query nearbyAndLinkedGenes(
-    $accessions: [String!]!
-    $assembly: String!
+  query linkedGenes(
+    $assembly: String!  
+    $accessions: [String!]!    
+
   ) {
     linkedGenes: linkedGenesQuery(assembly: $assembly, accession: $accessions) {
       accession  
@@ -61,6 +62,7 @@ const LINKED_GENES = gql(`
       source
       slope
       score
+      tissue
       displayname
     }
   }

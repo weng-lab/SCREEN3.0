@@ -1,3 +1,7 @@
+/**
+ * @todo remove this file probably?
+ */
+
 export const studyLinks = {
   "Calderon..Pritchard 2019": "https://doi.org/10.1038/s41588-019-0505-9",
   "Corces..Chang 2016": "https://doi.org/10.1038/ng.3646",

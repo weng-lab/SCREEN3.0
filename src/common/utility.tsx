@@ -209,13 +209,14 @@ export const downloadSVG = (ref: React.MutableRefObject<SVGSVGElement>, filename
 export function calcDistCcreToTSS(
   region: GenomicRange,
   transcripts: { id: string; coordinates: GenomicRange }[],
-  strand: "+" | "-"
+  strand: "+" | "-",
+  anchor: "middle" | "closest"
 ): number {
   const distances: number[] = transcripts.map((transcript) =>
     calcDistRegionToPosition(
       region.start,
       region.end,
-      "middle",
+      anchor,
       strand === "+" ? transcript.coordinates.start : transcript.coordinates.end
     )
   );
