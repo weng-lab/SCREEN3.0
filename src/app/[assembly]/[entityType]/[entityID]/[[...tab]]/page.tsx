@@ -15,6 +15,10 @@ import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
 import IntersectingCcres from "common/components/IntersectingCcres";
 import EQTLs from "common/components/EQTLTables";
+import CcreGWASStudySNPs from "./_GwasTabs/_Ccre/CcreGWASStudySNPs";
+import { GWASStudyGenes } from "./_GwasTabs/_Gene/GWASStudyGenes";
+import { GWASStudySNPs } from "./_GwasTabs/_Variant/GWASStudySNPs";
+import BiosampleEnrichment from "./_GwasTabs/_BiosampleEnrichment/BiosampleEnrichment";
 
 export default function DetailsPage({
   params,
@@ -54,7 +58,7 @@ export default function DetailsPage({
     return <CircularProgress />;
   }
 
-  if (data.__typename !== "SCREENSearchResult" && !data?.coordinates) {
+  if (data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" &&  !data?.coordinates) {
     return <Typography>Issue fetching data on {entityID}</Typography>;
   }
 
@@ -68,14 +72,20 @@ export default function DetailsPage({
   // return <ComponentToRender />
 
   if (tab === "browser") {
-    return (
-      <GenomeBrowserView
-        coordinates={ data.__typename === "SCREENSearchResult" ?  {chromosome: data.chrom, start: data.start, end: data.start + data.len} : data.coordinates}
-        name={data.__typename === "Gene" ? data.name : data.__typename === "SCREENSearchResult" ? data.info.accession : data.__typename === "SNP" ? data.id : null}
-        type={entityType}
-        assembly={assembly}
-      />
-    );
+    if(data.__typename === "GwasStudies"){
+      return (<>
+        GWAS Browser
+      </>)
+    } else {
+      return (
+        <GenomeBrowserView
+          coordinates={ data.__typename === "SCREENSearchResult" ?  {chromosome: data.chrom, start: data.start, end: data.start + data.len} : data.coordinates}
+          name={data.__typename === "Gene" ? data.name : data.__typename === "SCREENSearchResult" ? data.info.accession : data.__typename === "SNP" ? data.id : null}
+          type={entityType}
+          assembly={assembly}
+        />
+      );
+   }
   }
 
   /**
@@ -126,6 +136,20 @@ export default function DetailsPage({
       break;
     }
 
+    case "gwas": {
+      const gwasData = { data, loading, error } as  useEntityMetadataReturn<"gwas">
+      switch (tab) {
+        case "ccres":
+          return <CcreGWASStudySNPs study_name={gwasData.data.study} totalldblocks={ data.__typename !== "GwasStudies" ? 0 : data?.totalldblocks || 0}/>;          
+        case "genes":
+          return <GWASStudyGenes study_name={gwasData.data.study}/>;
+        case "variants":          
+          return <GWASStudySNPs study_name={gwasData.data.study}/>;
+        case "biosample_enrichment":
+          return <BiosampleEnrichment study_name={gwasData.data.study}/>;   
+      }
+      break;
+    }
 
     case "region": {
       const region = parseGenomicRangeString(entityID)

@@ -99,7 +99,17 @@ const formatEntityID = (entity: AnyOpenEntity) => {
     return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
   } else if (entity.entityType === "gene") {
     return <i>{entity.entityID}</i>;
-  } else return entity.entityID;
+  } else {
+    if(entity.entityType === "gwas")
+    {
+      const g = entity.entityID.split("-")
+      const study_name = g[g.length-1].replaceAll("_"," ");
+      return study_name;
+    }
+    return entity.entityID;
+  }
+  
+  //else return entity.entityID;
 };
 
 // Create a styled close button that looks like an IconButton

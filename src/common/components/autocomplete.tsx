@@ -33,6 +33,9 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
       case "SNP":
         url = `/${props.assembly}/variant/${r.title}`;
         break;
+      case "Study":
+          url = `/GRCh38/gwas/${r.id}/biosample_enrichment`;
+         break;
     }
     router.push(url);
   };
@@ -42,7 +45,7 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
       assembly={props.assembly}
       ccreLimit={3}
       showiCREFlag={false}
-      queries={["Gene", "cCRE", "SNP", "Coordinate"]}
+      queries={["Gene", "cCRE", "SNP", "Coordinate","Study"]}
       onSearchSubmit={handleSearchSubmit}
       //This is needed to prevent the enter key press from triggering the onClick of the Menu IconButton
       onKeyDown={(e) => {
