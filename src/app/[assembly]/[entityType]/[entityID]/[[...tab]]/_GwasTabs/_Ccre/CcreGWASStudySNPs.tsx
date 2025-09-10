@@ -2,9 +2,9 @@ import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsInters
 import { useState } from "react";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
-import { Typography } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
-
+import InfoIcon from "@mui/icons-material/Info";
 export type CcreGWASStudySNPsProps = {
   study_name: string;
   totalldblocks: number;
@@ -129,6 +129,15 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
         label={`LD Blocks`}
         emptyTableFallback={"No Intersecting cCREs found against SNPs identified by GWAS study"}
         divHeight={{ height: "100%", minHeight: "50px", maxHeight: "600px" }}
+        labelTooltip={
+          <Tooltip
+            title={
+              "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)"
+            }
+          >
+            <InfoIcon fontSize="inherit" />
+          </Tooltip>
+        }
       />
       <Table
         showToolbar
@@ -143,6 +152,11 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
           },
         }}
         divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        labelTooltip={
+          <Tooltip title={"cCREs intersected against SNPs identified by selected GWAS study"}>
+            <InfoIcon fontSize="inherit" />
+          </Tooltip>
+        }
       />
     </>
   );

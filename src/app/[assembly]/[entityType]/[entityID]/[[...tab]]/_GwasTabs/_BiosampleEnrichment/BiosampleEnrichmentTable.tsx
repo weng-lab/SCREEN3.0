@@ -1,6 +1,6 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
 import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
-
+import InfoIcon from "@mui/icons-material/Info";
 import { Typography } from "@mui/material";
 
 import { Table } from "@weng-lab/ui-components";
@@ -176,6 +176,15 @@ const BiosampleEnrichmentTable = ({
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structur
         divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        labelTooltip={
+                  <Tooltip
+                    title={
+                      "Suggested Biosamples: Suggested biosamples to investigate based on cCRE enrichment as calculated by the Variant Enrichment and Sample Prioritization Analysis (VESPA) pipeline"
+                    }
+                  >
+                    <InfoIcon fontSize="inherit" />
+                  </Tooltip>
+                }
       />
     </>
   );

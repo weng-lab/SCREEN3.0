@@ -1,10 +1,11 @@
-
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
-import { Typography } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
+//import { QuestionMark, info } from "@mui/icons-material";
+import InfoIcon from "@mui/icons-material/Info";
 
 export type GWASStudySNPsProps = {
   study_name: string;
@@ -102,6 +103,11 @@ export const GWASStudySNPs = ({ study_name }: GWASStudySNPsProps) => {
           },
         }}
         divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        labelTooltip={
+          <Tooltip title={"SNPs identified by selected GWAS study"}>
+            <InfoIcon fontSize="inherit" />
+          </Tooltip>
+        }
       />
     </>
   );
