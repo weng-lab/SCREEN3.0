@@ -93,6 +93,8 @@ export function formatPortal(subpath: string): string {
       return "cCRE";
     case "region":
       return "Region";
+    case "gwas":
+        return "GWAS Study";
     default:
       return null;
   }

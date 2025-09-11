@@ -7,6 +7,7 @@ import { parseGenomicRangeString } from "common/utility";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "types/globalTypes";
 import { AnyEntityType } from "./entityTabsConfig";
+import { GwasStudyHeader } from "./GwasStudyHeader";
 
 export type EntityDetailsLayoutProps = {
   assembly: Assembly;
@@ -43,7 +44,7 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
         >
           {entityType === "region" ? (
             <RegionSearchHeader region={parseGenomicRangeString(entityID)} />
-          ) : (
+          ) :  entityType === "gwas" ? <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} /> :(
             <EntityDetailsHeader assembly={assembly} entityType={entityType} entityID={entityID} />
           )}
           {/* View tabs, shown only on mobile */}

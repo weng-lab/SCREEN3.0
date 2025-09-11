@@ -11,7 +11,7 @@ import useClosestgenes from "common/hooks/useClosestGenes";
 
 export default function CcreLinkedGenes({ accession, coordinates }: { accession: string; coordinates: GenomicRange }) {
   
-  const { data: linkedGenes, loading, error } = useLinkedGenes(accession);
+  const { data: linkedGenes, loading, error } = useLinkedGenes([accession]);
   const { data: closestGenes, loading: closestGeneLoading, error: closestGeneError} = useClosestgenes(accession, "GRCh38");
   
   if (loading || closestGeneLoading) {

@@ -5,6 +5,7 @@ import { ApolloError } from "@apollo/client";
 import { parseGenomicRangeString } from "common/utility";
 import { useCcreData, UseCcreDataReturn } from "./useCcreData";
 import { AnyEntityType, EntityType } from "common/EntityDetails/entityTabsConfig";
+import { useGWASStudyData, UseGWASStudyDataReturn } from "./useGWASStudyData";
 
 type useEntityMetadataParams<T extends AnyEntityType> = {
   assembly: Assembly,
@@ -25,7 +26,7 @@ export type useEntityMetadataReturn<T extends AnyEntityType> = T extends "gene"
   ? UseCcreDataReturn<{ accession: string, assembly: Assembly  }>
   : T extends "variant"
   ? UseSnpDataReturn<{ rsID: string, assembly: Assembly  }>
-  : UseGenomicRangeReturn;
+  : T extends "gwas" ? UseGWASStudyDataReturn<{ study: string[]  }> : UseGenomicRangeReturn;
 
   
 export const useEntityMetadata = <T extends AnyEntityType>({ assembly, entityType, entityID }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
@@ -37,6 +38,7 @@ export const useEntityMetadata = <T extends AnyEntityType>({ assembly, entityTyp
   const geneMetadata = useGeneData({name: entityID, entityType, assembly});
   const ccreMetadata = useCcreData({accession: entityID, entityType, assembly});
   const snpMetadata = useSnpData({rsID: entityID, entityType, assembly: "GRCh38"});
+  const gwasStudyMetadata = useGWASStudyData({study: [entityID], entityType})
   //example to use useSnpFrequencies, returns ref,alt alleles and population frequencies 
   //const SnpFrequencies= useSnpFrequencies(elementID);
   
@@ -54,5 +56,7 @@ export const useEntityMetadata = <T extends AnyEntityType>({ assembly, entityTyp
       } catch (error) {
         return {data: undefined, loading: false, error} as useEntityMetadataReturn<T>
       }
+    case "gwas": 
+      return gwasStudyMetadata as useEntityMetadataReturn<T>;
   }
 }
