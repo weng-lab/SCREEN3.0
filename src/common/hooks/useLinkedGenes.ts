@@ -1,12 +1,12 @@
 import { gql, useQuery } from "@apollo/client"
 
-function useLinkedGenes(accession: string) {
+function useLinkedGenes(accession: string[]) {
   const { loading, error, data } = useQuery(LINKED_GENES, {
     variables: {
-      accessions: [accession],
+      accessions: accession,
       assembly: "grch38"
     },
-    skip: !accession
+    skip: !accession || (accession?.length === 0)
   })
   
   return {data: data?.linkedGenes as LinkedGeneInfo[], loading, error}
@@ -41,8 +41,9 @@ export type LinkedGeneInfo = {
 
 const LINKED_GENES = gql(`
   query linkedGenes(
-    $accessions: [String!]!
-    $assembly: String!
+    $assembly: String!  
+    $accessions: [String!]!    
+
   ) {
     linkedGenes: linkedGenesQuery(assembly: $assembly, accession: $accessions) {
       accession  
@@ -61,6 +62,7 @@ const LINKED_GENES = gql(`
       source
       slope
       score
+      tissue
       displayname
     }
   }

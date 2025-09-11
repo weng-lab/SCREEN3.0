@@ -18,6 +18,7 @@ const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
 const GeneIconPath = "/assets/GeneIcon.svg";
 const VariantIconPath = "/assets/VariantIcon.svg";
+const BiosampleEnrichmentIconPath = "/assets/BiosampleEnrichmentIcon.svg";
 const ConservationIconPath = "/assets/ConservationIcon.svg";
 const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
 
@@ -194,17 +195,17 @@ const humanGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "transcript-
 
 const humanGwasTabs: readonly TabConfig<"biosample_enrichment" | "variants" | "ccres" | "genes" | "browser">[] = [
   {
+    route: "biosample_enrichment",
+    label: "Biosample Enrichment",
+    iconPath: BiosampleEnrichmentIconPath,
+    component: () => <></>, //VariantInfo,
+  },
+  {
     route: "variants",
     label: "Variant",
     iconPath: VariantIconPath,
     component: () => <p>GWAS variants</p>,
-  },
-  {
-    route: "biosample_enrichment",
-    label: "Biosample Enrichment",
-    iconPath: VariantIconPath,
-    component: () => <></>, //VariantInfo,
-  },
+  },  
   {
     route: "ccres",
     label: "cCREs",

@@ -1,6 +1,6 @@
 import { Draggable } from "@hello-pangea/dnd";
 import { Close } from "@mui/icons-material";
-import { styled, SxProps, Tab, TabProps, Theme } from "@mui/material";
+import { styled, SxProps, Tab, TabProps, Theme, Tooltip } from "@mui/material";
 import { AnyOpenEntity, OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { useCallback, useContext, useMemo, useState } from "react";
@@ -70,15 +70,16 @@ export const DraggableTab = ({
               borderTop: (theme) => `2px solid transparent`,
             }
           : {};
-
+        const label = formatEntityID(entity);        
         return (
+          entity.entityType === "gwas" && (label as string).length > 20 ? (<Tooltip title={label} arrow>
           <Tab
             value={index}
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
-            label={formatEntityID(entity)}
+            label={(label as string).slice(0, 20) + "..."}
             onClick={() => handleTabClick(entity)}
             iconPosition="end"
             icon={<Icon />}
@@ -87,6 +88,21 @@ export const DraggableTab = ({
             onMouseLeave={() => setIsHovered(false)}
             {...props}
           />
+          </Tooltip>): (<Tab
+            value={index}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
+            label={label}
+            onClick={() => handleTabClick(entity)}
+            iconPosition="end"
+            icon={<Icon />}
+            sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            {...props}
+          />)
         );
       }}
     </Draggable>
@@ -99,7 +115,18 @@ const formatEntityID = (entity: AnyOpenEntity) => {
     return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
   } else if (entity.entityType === "gene") {
     return <i>{entity.entityID}</i>;
-  } else return entity.entityID;
+  } else {
+    if(entity.entityType === "gwas")
+    {
+      const g = entity.entityID.split("-")
+      let study_name = g[g.length-1].replaceAll("_"," ");
+     
+      return study_name;
+    }
+    return entity.entityID;
+  }
+  
+  //else return entity.entityID;
 };
 
 // Create a styled close button that looks like an IconButton
