@@ -14,9 +14,7 @@ const CCRE_BIOSAMPLE_QUERY = gql(`
       }
       __typename
     }
-  }`)
-
-
+  }`);
 
 const GWAS_ENRICHMENT_QUERY = gql(`
   query getGWASCTEnrichmentQuery($study: String!) {
@@ -28,9 +26,8 @@ const GWAS_ENRICHMENT_QUERY = gql(`
     pvalue
     __typename
   }
-}`)
+}`);
 
-  
 export type GWASEnrichment = {
   celltype: string;
   accession: string;
@@ -41,65 +38,59 @@ export type GWASEnrichment = {
   displayname?: string;
 };
 
-  export type UseGWASEnrichmentParams = {
-    study: string,
-  }
-  
-  export type UseGWASEnrichmentReturn = {
-    data: GWASEnrichment[] | undefined;
-    loading: boolean;
-    error: ApolloError
-  }
-  const minFDRval: number = 1e-300
-  const FCaugmentation: number = 0.000001
-  
-  
-  export const useGWASEnrichmentData = ({ study }: UseGWASEnrichmentParams): UseGWASEnrichmentReturn => {
-  
-    
-    const { data: enrichmentData, loading: enrichmentLoading, error:  enrichmentError } = useQuery(
-        GWAS_ENRICHMENT_QUERY,
-      {
-        variables: {
-          study:  study //"Dastani_Z-22479202-Adiponectin_levels"
-        },
-        skip: !study 
-      },
-    );
-    const {
-      data: biosampleData,
-      loading: biosampleLoading,
-      error: biosampleError,
-    } = useQuery(CCRE_BIOSAMPLE_QUERY, {
-      variables: { assembly: "grch38" }
-      
-    });
-  
-    const loading = enrichmentLoading || biosampleLoading;
-    const error = enrichmentError || biosampleError;
-  
-    const isReady = !biosampleLoading && !enrichmentLoading && biosampleData && enrichmentData;
+export type UseGWASEnrichmentParams = {
+  study: string;
+};
 
-    const data: GWASEnrichment[] | undefined = isReady
-      ? enrichmentData.getGWASCtEnrichmentQuery.map((item) => {
-          const matchedBiosample = biosampleData.ccREBiosampleQuery.biosamples.find(
-            (b) => b.name === item.celltype
-          );
-          return {
-            ...item,
-            fc: Math.log2(item.fc + FCaugmentation),
-            pvalue: item.pvalue === 0 ? minFDRval : item.pvalue,
-            fdr: item.fdr === 0 ? minFDRval : item.fdr,
-            ontology: matchedBiosample?.ontology,
-            displayname: matchedBiosample?.displayname,
-          };
-        })
-      : undefined;
+export type UseGWASEnrichmentReturn = {
+  data: GWASEnrichment[] | undefined;
+  loading: boolean;
+  error: ApolloError;
+};
+const minFDRval: number = 1e-300;
+const FCaugmentation: number = 0.000001;
 
-    console.log(data,"data gwas enrichment")
-    return {
-      data,
-      loading,
-      error,
-    }
-  }
+export const useGWASEnrichmentData = ({ study }: UseGWASEnrichmentParams): UseGWASEnrichmentReturn => {
+  const {
+    data: enrichmentData,
+    loading: enrichmentLoading,
+    error: enrichmentError,
+  } = useQuery(GWAS_ENRICHMENT_QUERY, {
+    variables: {
+      study: study, //"Dastani_Z-22479202-Adiponectin_levels"
+    },
+    skip: !study,
+  });
+  const {
+    data: biosampleData,
+    loading: biosampleLoading,
+    error: biosampleError,
+  } = useQuery(CCRE_BIOSAMPLE_QUERY, {
+    variables: { assembly: "grch38" },
+  });
+
+  const loading = enrichmentLoading || biosampleLoading;
+  const error = enrichmentError || biosampleError;
+
+  const isReady = !biosampleLoading && !enrichmentLoading && biosampleData && enrichmentData;
+
+  const data: GWASEnrichment[] | undefined = isReady
+    ? enrichmentData.getGWASCtEnrichmentQuery.map((item) => {
+        const matchedBiosample = biosampleData.ccREBiosampleQuery.biosamples.find((b) => b.name === item.celltype);
+        return {
+          ...item,
+          fc: Math.log2(item.fc + FCaugmentation),
+          pvalue: item.pvalue === 0 ? minFDRval : item.pvalue,
+          fdr: item.fdr === 0 ? minFDRval : item.fdr,
+          ontology: matchedBiosample?.ontology,
+          displayname: matchedBiosample?.displayname,
+        };
+      })
+    : undefined;
+
+  return {
+    data,
+    loading,
+    error,
+  };
+};

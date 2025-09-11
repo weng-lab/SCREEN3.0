@@ -22,25 +22,24 @@ function formatCoord(str) {
 export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
   const [method, setMethod] = useState<string>("ABC_(DNase_only)");
   const {
-    
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
     error: errorGWASSNPscCREs,
-  } = useGWASSnpsIntersectingcCREsData({ study: [study_name] })
+  } = useGWASSnpsIntersectingcCREsData({ study: [study_name] });
   const {
-    
-    data:  dataGWASSnpscCREsGenes,
+    data: dataGWASSnpscCREsGenes,
     loading: loadingGWASSnpscCREsGenes,
     error: errorGWASSnpscCREsGenes,
-  } = useLinkedGenes(dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.accession))] : [])
-
+  } = useLinkedGenes(dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.accession))] : []);
 
   const {
-    
     data: dataGWASSnpscCREsCompuGenes,
     loading: loadingGWASSnpscCREsCompuGenes,
     error: errorGWASSnpscCREsCompuGenes,
-  } = useCompuLinkedGenes({accessions: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.accession))] : [], method})
+  } = useCompuLinkedGenes({
+    accessions: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.accession))] : [],
+    method,
+  });
 
   //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
   //setting the anchorEl to the button
@@ -48,7 +47,6 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
     getBoundingClientRect: () => DOMRect;
   } | null>(null);
 
-  
   const handleClickClose = () => {
     if (virtualAnchor) {
       setVirtualAnchor(null);
@@ -73,7 +71,7 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
   };
 
   const HiCLinked = dataGWASSnpscCREsGenes && dataGWASSnpscCREsGenes.filter((x) => x.assay === "Intact-HiC");
-  //console.log("HiCLinked",HiCLinked)
+
   const ChIAPETLinked =
     dataGWASSnpscCREsGenes &&
     dataGWASSnpscCREsGenes.filter((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET");
@@ -583,7 +581,7 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
         showToolbar
         rows={HiCLinked || []}
         columns={HiC_columns}
-        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs }
+        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs}
         label={`Intact Hi-C Loops`}
         emptyTableFallback={"No intact Hi-C loops overlaps cCREs identified by this GWAS study"}
         initialState={{
@@ -597,7 +595,7 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
         showToolbar
         rows={ChIAPETLinked || []}
         columns={ChIA_PET_columns}
-        loading={loadingGWASSnpscCREsGenes|| loadingGWASSNPscCREs }
+        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs}
         label={`ChIA-PET Interactions`}
         emptyTableFallback={"No ChIA-PET Interactions overlaps cCREs identified by this GWAS study"}
         initialState={{
@@ -611,7 +609,7 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
         showToolbar
         rows={crisprLinked || []}
         columns={CRISPR_columns}
-        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs }
+        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs}
         label={`CRISPRi-FlowFISH`}
         emptyTableFallback={"No cCREs identified by this GWAS study were targeted in CRISPRi-FlowFISH experiments"}
         initialState={{
@@ -625,7 +623,7 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
         showToolbar
         rows={eqtlLinked || []}
         columns={eqtl_columns}
-        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs }
+        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs}
         label={`eQTLs`}
         emptyTableFallback={
           "No cCREs identified by this GWAS study overlap a variant associated with significant changes in gene expression"
@@ -639,40 +637,41 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
       />
       {
         <>
-        <Table
-        showToolbar
-        rows={dataGWASSnpscCREsCompuGenes || []}
-        columns={CompuLinkedGenes_columns}
-        loading={loadingGWASSnpscCREsCompuGenes}
-        label={`Computational Predictions`}
-        emptyTableFallback={"No Computational Predictions"}
-        initialState={{
-          sorting: {
-            sortModel: [{ field: "score", sort: "desc" }],
-          },
-        }}
-        toolbarSlot={
-          <Tooltip title="Advanced Filters">
-            <Button variant="outlined" onClick={handleClick}>
-              Select Method
-            </Button>
-          </Tooltip>
-        }
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
-      />
-      <Box
-        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-          event.stopPropagation();
-        }}
-      >
-        <SelectCompuGenesMethod
-          method={method}
-          open={Boolean(virtualAnchor)}
-          setOpen={handleClickClose}
-          onMethodSelect={handleMethodSelected}
-        />
-      </Box>
-      </>}
+          <Table
+            showToolbar
+            rows={dataGWASSnpscCREsCompuGenes || []}
+            columns={CompuLinkedGenes_columns}
+            loading={loadingGWASSnpscCREsCompuGenes}
+            label={`Computational Predictions`}
+            emptyTableFallback={"No Computational Predictions"}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "score", sort: "desc" }],
+              },
+            }}
+            toolbarSlot={
+              <Tooltip title="Advanced Filters">
+                <Button variant="outlined" onClick={handleClick}>
+                  Select Method
+                </Button>
+              </Tooltip>
+            }
+            divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+          />
+          <Box
+            onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+              event.stopPropagation();
+            }}
+          >
+            <SelectCompuGenesMethod
+              method={method}
+              open={Boolean(virtualAnchor)}
+              setOpen={handleClickClose}
+              onMethodSelect={handleMethodSelected}
+            />
+          </Box>
+        </>
+      }
     </>
   );
 };
