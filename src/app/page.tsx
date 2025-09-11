@@ -234,7 +234,10 @@ export default function Home() {
                     alignSelf: "flex-end",
                   }}
                   LinkComponent={Link}
-                  href={`/${assembly}/${entity.entity.toLowerCase()}/${entity.name}`}
+                  href={ entity.entity === "GWAS" ? 
+                    `/GRCh38/gwas/Dastani_Z-22479202-Adiponectin_levels` :
+                    `/${assembly}/${entity.entity.toLowerCase()}/${entity.name}`
+                  }
                 >
                   <ArrowForwardIcon />
                 </IconButton>
@@ -324,6 +327,7 @@ export default function Home() {
                     borderRadius: 3,
                     padding: 1,
                   }}
+                  LinkComponent={Link}
                   href={data.link}
                 >
                   <DownloadIcon />
