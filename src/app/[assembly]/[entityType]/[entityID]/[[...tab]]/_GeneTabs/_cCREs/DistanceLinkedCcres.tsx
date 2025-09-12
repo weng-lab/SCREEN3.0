@@ -6,9 +6,13 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 
 export default function DistanceLinkedCcres({
-  geneData  
+  geneData,
+  distance,
+  method  
 }: {
   geneData: UseGeneDataReturn<{ name: string }>;  
+  distance: number;
+  method: "body" | "tss";
 }) {
   const { data: dataNearby, loading: loadingNearby, error: errorNearby } = useNearbycCREs(geneData?.data.id);
 
