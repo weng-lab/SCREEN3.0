@@ -232,6 +232,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
             </Button>
           </Tooltip>
         }
+        divHeight={{maxHeight: "600px"}}
       />
       <Box
         onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

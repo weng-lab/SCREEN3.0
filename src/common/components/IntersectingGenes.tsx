@@ -53,6 +53,7 @@ const IntersectionGenes = ({ region, assembly }: { region: GenomicRange, assembl
     loading={loadingGenes}     
     label={`Intersecting Genes`}      
     emptyTableFallback={"No intersecting Genes found in this region"}
+    divHeight={{maxHeight: "600px"}}
   />
   );
 };
