@@ -4,7 +4,6 @@ import { capitalizeFirstLetter } from "common/utility"
 import { Box } from "@mui/material"
 import { tissueColors } from "common/lib/colors"
 import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
-import { Assembly } from "types/globalTypes"
 
 export type GeneExpressionBarPlotProps =
   GeneExpressionProps &

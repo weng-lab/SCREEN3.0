@@ -31,8 +31,13 @@ export function getClassDisplayname(input: string) {
   }
 }
 
-export const capitalizeFirstLetter = (string) => {
+export const capitalizeFirstLetter = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export const truncateString = (input: string, maxLength: number) => {
+  if (input.length <= maxLength) return input;
+  return input.slice(0, maxLength - 3) + '...';
 }
 
 /**
