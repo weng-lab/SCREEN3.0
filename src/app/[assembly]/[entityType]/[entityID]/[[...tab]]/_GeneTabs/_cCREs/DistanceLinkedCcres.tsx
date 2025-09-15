@@ -125,7 +125,7 @@ export default function DistanceLinkedCcres({
             },
           }}
           emptyTableFallback={"No Nearby cCREs found"}
-          divHeight={{height: "300px"}}
+          divHeight={{height: "400px"}}
         />
       )}
     </Box>
