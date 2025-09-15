@@ -20,7 +20,7 @@ function formatCoord(str) {
   return `${chrom}:${start}-${end}`;
 }
 export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
-  const [method, setMethod] = useState<string>("ABC_(DNase_only)");
+  const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
   const {
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
@@ -82,7 +82,7 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
       field: "accession",
       renderHeader: () => (
         <strong>
-          <p>Accession</p>
+          <p>cCRE Accession</p>
         </strong>
       ),
       valueGetter: (_, row) => {
@@ -125,6 +125,34 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
       ),
     },
     {
+      field: "geneid",
+      renderHeader: () => (
+        <strong>
+          <p>Gene ID</p>
+        </strong>
+      ),
+      valueGetter: (_, row) => row.geneid,
+    },
+    {
+      field: "genetype",
+      renderHeader: () => (
+        <strong>
+          <p>Gene Type</p>
+        </strong>
+      ),
+      valueGetter: (_, row) =>  row.genetype === "lncRNA"
+      ? row.genetype
+      : row.genetype
+          .replaceAll("_", " ")
+          .split(" ")
+          .map(
+            (word) => word.charAt(0).toUpperCase() + word.slice(1)
+          )
+          .join(" "),
+    
+    },
+    //
+    {
       field: "method",
       renderHeader: () => (
         <strong>
@@ -149,7 +177,14 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
           <p>Biosample</p>
         </strong>
       ),
-      valueGetter: (_, row) => row.celltype.replaceAll("_", " "),
+      valueGetter: (_, row) =>  row.celltype
+        .replaceAll("_", " ")
+        .split(" ")
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+        )
+        .join(" "),
+     
     },
     {
       field: "score",
