@@ -4,6 +4,26 @@ import { gql } from "types/generated/gql";
 import { CCrescreenSearchQueryQuery } from "types/generated/graphql";
 import { Assembly, GenomicRange } from "types/globalTypes";
 
+type CcreWithIsicre = CCrescreenSearchQueryQuery["cCRESCREENSearch"][number] & {
+  isicre: boolean;
+};
+const CCRE_ICRE_QUERY = gql(`query cCREAutocompleteQuery(
+  $accession: [String!]
+  $assembly: String!
+  $includeiCREs: Boolean  
+) {
+  cCREAutocompleteQuery(
+    includeiCREs: $includeiCREs
+    assembly: $assembly    
+    accession: $accession
+  ) {    
+    accession
+    isiCRE
+    
+  }
+}`);
+
+
 const CCRE_QUERY = gql(`
   query cCRESCREENSearchQuery(
     $accessions: [String!]
@@ -58,8 +78,8 @@ type UseCcreDataParams =
 
 export type UseCcreDataReturn<T extends UseCcreDataParams> =
 T extends ({ coordinates: GenomicRange | GenomicRange[] } | { accession: string[] })
-? { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"] | undefined; loading: boolean; error: ApolloError }
-: { data: CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] | undefined; loading: boolean; error: ApolloError };
+? { data: (CCrescreenSearchQueryQuery["cCRESCREENSearch"][number] & { isicre?: boolean })[] | undefined; loading: boolean; error: ApolloError }
+: { data: (CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] & { isicre?: boolean }) | undefined; loading: boolean; error: ApolloError };
 
 export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly, nearbygeneslimit, cellType}: T): UseCcreDataReturn<T> => {
   
@@ -78,11 +98,30 @@ export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates
     )
   });
   
+  const {
+    data: ccredata,
+    loading: ccreloading,
+    error: ccreerror,
+  } = useQuery(CCRE_ICRE_QUERY, {
+    variables: { assembly: "grch38", includeiCREs: true, accession: data?.cCRESCREENSearch.map(d=>d.info.accession) },
+    skip: loading || !data || (data && data.cCRESCREENSearch.length === 0 ) || assembly!=="GRCh38",
+  });
+  const cCREDetails: { [key: string]: boolean } = {};
+  if (ccredata && ccredata.cCREAutocompleteQuery.length > 0) {
+    ccredata.cCREAutocompleteQuery.forEach((c) => {
+      cCREDetails[c.accession] = c.isiCRE;
+    });
+  }
+  console.log("ccredata",ccredata,ccreloading)
   return {
     /**
      * return either whole array or just first item depending on input
     */
-   data: (coordinates || typeof accession === "object") ? data?.cCRESCREENSearch : data?.cCRESCREENSearch[0],
+    data: (coordinates || typeof accession === "object")
+    ? data?.cCRESCREENSearch.map(item => ({ ...item, isicre: cCREDetails && cCREDetails[item.info.accession] })) as CcreWithIsicre[]
+    : data?.cCRESCREENSearch[0]
+      ? ({ ...data.cCRESCREENSearch[0], isicre: cCREDetails && cCREDetails[data.cCRESCREENSearch[0].info.accession]  } as CcreWithIsicre)
+      : undefined,
    loading,
    error,
   } as UseCcreDataReturn<T>
