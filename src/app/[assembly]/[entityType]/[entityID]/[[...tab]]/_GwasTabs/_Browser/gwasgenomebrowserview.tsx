@@ -181,6 +181,7 @@ export default function GWASGenomeBrowserView({
             titleSize: 12,
             height: 20,
             color: "#D05F45",
+            
             trackType: TrackType.BigBed,
             displayMode: DisplayMode.Dense,
             url: `https://downloads.wenglab.org/GRCh38-cCREs.DCC.bigBed`,
@@ -209,7 +210,7 @@ export default function GWASGenomeBrowserView({
         assembly: "GRCh38",
         version: 40,
         displayMode: DisplayMode.Squish,
-        geneName:  "",
+        //geneName:  "",
         onHover: (item: Transcript) => {
           addHighlight({
             id: item.name + "-temp" || "dsadsfd",
@@ -327,7 +328,7 @@ export default function GWASGenomeBrowserView({
         <ControlButtons browserStore={browserStore} />
       </Grid>
       <Grid size={{ xs: 12, lg: 12 }}>
-        <Browser browserStore={browserStore} trackStore={trackStore} />
+        <Browser  key={selectedLdBlock?.ldblock ?? "default"} browserStore={browserStore} trackStore={trackStore} />
       </Grid>
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
     </Grid>
