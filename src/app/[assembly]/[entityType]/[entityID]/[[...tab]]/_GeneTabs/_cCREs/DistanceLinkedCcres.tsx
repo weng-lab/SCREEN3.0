@@ -1,20 +1,53 @@
-import { Box, Skeleton, Tooltip } from "@mui/material";
+import { Box, IconButton, Skeleton, Tooltip } from "@mui/material";
 import useNearbycCREs from "common/hooks/useNearBycCREs";
 import { useCcreData } from "common/hooks/useCcreData";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
+import CalculateIcon from '@mui/icons-material/Calculate';
+import React, { useState } from "react";
+import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 
 export default function DistanceLinkedCcres({
   geneData,
-  distance,
-  method  
 }: {
-  geneData: UseGeneDataReturn<{ name: string }>;  
-  distance: number;
-  method: "body" | "tss";
+  geneData: UseGeneDataReturn<{ name: string }>;
 }) {
+  const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
+  const [distance, setDistance] = useState<number>(0);
+
   const { data: dataNearby, loading: loadingNearby, error: errorNearby } = useNearbycCREs(geneData?.data.id);
+  
+  const [virtualAnchor, setVirtualAnchor] = React.useState<{
+    getBoundingClientRect: () => DOMRect;
+  } | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (virtualAnchor) {
+      // If already open, close it
+      setVirtualAnchor(null);
+    } else {
+      // Open it, store the current position
+      const rect = event.currentTarget.getBoundingClientRect();
+      setVirtualAnchor({
+        getBoundingClientRect: () => rect,
+      });
+    }
+  };
+
+  const handleMethodChange = (method: "body" | "tss" | "3gene") => {
+    setCalcMethod(method);
+  }
+
+  const handleDistanceChange = (distance: number) => {
+    setDistance(distance);
+  }
+
+  const handleClickAway = () => {
+    if (virtualAnchor) {
+      setVirtualAnchor(null);
+    }
+  };
 
   const {
     data: dataCcreDetails,
@@ -113,7 +146,7 @@ export default function DistanceLinkedCcres({
   return (
     <Box width={"100%"}>
       {geneData.loading || loadingNearby || loadingCcreDetails ? (
-        <Skeleton variant="rounded" width={"100%"} height={300} />
+        <Skeleton variant="rounded" width={"100%"} height={400} />
       ) : (
         <Table
           rows={nearbyccres}
@@ -126,8 +159,28 @@ export default function DistanceLinkedCcres({
           }}
           emptyTableFallback={"No Nearby cCREs found"}
           divHeight={{height: "400px"}}
+            toolbarSlot={
+              <Tooltip title="Calculate Nearby cCREs by">
+                <IconButton
+                  size="small"
+                  onClick={handleClick}
+                >
+                  <CalculateIcon />
+                </IconButton>
+              </Tooltip>
+            }
         />
       )}
+      <CalculateNearbyCCREsPopper
+        open={Boolean(virtualAnchor)}
+        anchorEl={virtualAnchor}
+        handleClickAway={handleClickAway}
+        distance={distance}
+        geneName={geneData.data.name}
+        calcMethod={calcMethod}
+        handleDistanceChange={handleDistanceChange}
+        handleMethodChange={handleMethodChange}
+      />
     </Box>
   );
 }

@@ -12,7 +12,7 @@ const CCRE_ICRE_QUERY = gql(`query cCREAutocompleteQuery(
   ) {    
     accession
     isiCRE
-    
+
   }
 }`);
 export default function useNearbycCREs(geneid: string) {
