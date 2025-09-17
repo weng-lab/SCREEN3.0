@@ -1,17 +1,16 @@
 import { BarChart, CloseFullscreenRounded, TableChartRounded } from "@mui/icons-material"
 import { Stack, Box, Typography, Tabs, Tab, TabOwnProps, IconButton, TooltipClassKey, Tooltip } from "@mui/material"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
-/**
- * type argument is type of the row object passed to table
- */
+export type TwoPanePlotConfig = {
+  tabTitle: string;
+  icon?: TabOwnProps["icon"];
+  plotComponent: React.ReactNode;
+};
+
 export type TwoPaneLayoutProps = {
   TableComponent: React.ReactNode
-  plots: {
-    tabTitle: string,
-    icon?: TabOwnProps["icon"]
-    plotComponent: React.ReactNode
-  }[]
+  plots: TwoPanePlotConfig[]
 }
 
 const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
@@ -47,9 +46,9 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
     setTableOpen(!tableOpen)
   }
 
-  const plotTabs = plots.map(x => { return { tabTitle: x.tabTitle, icon: x.icon } })
-  const figures = plots.map(x => { return { title: x.tabTitle, component: x.plotComponent } })
-
+  const plotTabs = useMemo(() => plots.map((x) => ({ tabTitle: x.tabTitle, icon: x.icon })), [plots]);
+  const figures = useMemo(() => plots.map((x) => ({ title: x.tabTitle, component: x.plotComponent })), [plots]);
+  
   const TableIconButton = () => {
     return (
       <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
@@ -60,6 +59,15 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
       </Tooltip>
     )
   }
+
+  //  Handles unavailable index being selected due to hidden plot
+  useEffect(() => {
+    if (tab > plots.length - 1) {
+      setTab(plots.length - 1);
+    }
+  }, [plots, tab]);
+
+  const tabValue = tab > plots.length - 1 ? plots.length - 1 : tab
 
   return (
     <Stack spacing={2} direction={{ xs: "column", lg: "row" }} id="two-pane-layout">
@@ -89,7 +97,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
           {!tableOpen &&
             <TableIconButton />
           }
-          <Tabs value={tab} onChange={handleSetTab} id="plot_tabs">
+          <Tabs value={tabValue} onChange={handleSetTab} id="plot_tabs">
             {plotTabs.map((tab, i) =>
               // minHeight: 48px is initial value for tabs without icon. With icon it's 72 which is way too tall
               <Tab label={tab.tabTitle} key={i} icon={tab.icon} iconPosition="start" sx={{minHeight: '48px'}} />)
@@ -98,7 +106,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
         </Stack>
         {figures.map((Figure, i) =>
           <Box 
-            display={tab === i ? "block" : "none"} 
+            display={tabValue === i ? "block" : "none"} 
             key={i} id={"figure_container"}
             //use table height unless its not open, then set px height for umap so it doesnt slowly resize
             height={tableOpen ? tableHeight : Figure.title === "UMAP" ? "700px" : "100%"}

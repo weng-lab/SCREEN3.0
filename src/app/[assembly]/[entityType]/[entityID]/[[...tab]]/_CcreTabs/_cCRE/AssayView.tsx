@@ -1,7 +1,7 @@
 import { GridColDef } from "@weng-lab/ui-components";
 import { Assay, BiosampleRow } from "./BiosampleActivity";
-import { Dispatch, SetStateAction, useState } from "react";
-import TwoPaneLayout from "common/components/TwoPaneLayout";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayout";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
@@ -27,34 +27,44 @@ const AssayView = (props: AssayViewProps) => {
   const [selected, setSelected] = useState<BiosampleRow[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<BiosampleRow[]>([]);
 
-  const sharedAssayViewPlotProps: SharedAssayViewPlotProps = {
-    selected,
-    setSelected,
-    sortedFilteredData,
-    setSortedFilteredData,
-    ...props
-  };
+  const sharedAssayViewPlotProps: SharedAssayViewPlotProps = useMemo(
+    () => ({
+      selected,
+      setSelected,
+      sortedFilteredData,
+      setSortedFilteredData,
+      ...props,
+    }),
+    [props, selected, sortedFilteredData]
+  ); 
+
+  const plots: TwoPanePlotConfig[] = useMemo(() => {
+    const plots = [
+      {
+        tabTitle: "Bar Plot",
+        icon: <BarChart />,
+        plotComponent: <AssayBarPlot {...sharedAssayViewPlotProps} />,
+      },
+      {
+        tabTitle: "Violin Plot",
+        icon: <CandlestickChart />,
+        plotComponent: <AssayViolinPlot {...sharedAssayViewPlotProps} />,
+      },
+    ];
+    if (!(props.assay === "atac")) {
+      plots.push({
+        tabTitle: "UMAP",
+        icon: <ScatterPlot />,
+        plotComponent: <AssayUMAP {...sharedAssayViewPlotProps} />,
+      });
+    }
+    return plots
+  }, [props.assay, sharedAssayViewPlotProps]);
 
   return (
     <TwoPaneLayout
       TableComponent={<AssayTable {...sharedAssayViewPlotProps} />}
-      plots={[
-        {
-          tabTitle: "Bar Plot",
-          icon: <BarChart />,
-          plotComponent: <AssayBarPlot {...sharedAssayViewPlotProps} />,
-        },
-        {
-          tabTitle: "Violin Plot",
-          icon: <CandlestickChart />,
-          plotComponent: <AssayViolinPlot {...sharedAssayViewPlotProps} />,
-        },
-        props.assay !== "atac" && {
-          tabTitle: "UMAP",
-          icon: <ScatterPlot />,
-          plotComponent: <AssayUMAP {...sharedAssayViewPlotProps} />,
-        },
-      ]}
+      plots={plots}
     />
   );
 };
