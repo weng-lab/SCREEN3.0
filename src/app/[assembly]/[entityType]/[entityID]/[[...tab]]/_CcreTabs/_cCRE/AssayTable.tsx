@@ -2,11 +2,13 @@ import { SharedAssayViewPlotProps } from "./AssayView";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import {
+  GridColumnVisibilityModel,
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   Table,
   useGridApiRef,
 } from "@weng-lab/ui-components";
+import { Button } from "@mui/material";
 
 const assays: Assay[] = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"];
 
@@ -28,6 +30,14 @@ const arraysAreEqual = (arr1: BiosampleRow[], arr2: BiosampleRow[]): boolean => 
   return true;
 };
 
+const makeColumnVisibiltyModel = (assay: Assay): GridColumnVisibilityModel => {
+  const hiddenAssays = { tf: false };
+  assays.forEach((x) => {
+    if (x !== assay) Object.defineProperty(hiddenAssays, x, { value: false, enumerable: true });
+  });
+  return hiddenAssays;
+};
+
 const AssayTable = ({
   entity,
   rows,
@@ -38,13 +48,7 @@ const AssayTable = ({
   sortedFilteredData,
   setSortedFilteredData,
 }: SharedAssayViewPlotProps) => {
-  const hideAllOtherAssays = useMemo(() => {
-    const hiddenAssays = { tf: false };
-    assays.forEach((x) => {
-      if (x !== assay) Object.defineProperty(hiddenAssays, x, { value: false, enumerable: true });
-    });
-    return hiddenAssays;
-  }, [assay]);
+  const apiRef = useGridApiRef();
 
   const tableCols = useMemo(() => {
     const displaynameCol = columns.find((x) => x.field === "displayname");
@@ -57,17 +61,14 @@ const AssayTable = ({
   }, [columns]);
 
   const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
-    console.log(newRowSelectionModel)
     if (newRowSelectionModel.type === "include") {
       const newIds = Array.from(newRowSelectionModel.ids);
       const selectedRows = newIds.map((id) => rows.find((row) => row.name === id));
       setSelected(selectedRows);
-    } else { // type is "exclude" with no ids (select all)
-      setSelected(rows)
+    } else { // if type is exclude, it's always with 0 ids (aka select all)
+      setSelected(rows);
     }
   };
-
-  const apiRef = useGridApiRef();
 
   const handleSync = useCallback(() => {
     if (!apiRef.current) return;
@@ -77,17 +78,38 @@ const AssayTable = ({
       setSortedFilteredData(rows);
       // setSortedFilteredData((prev) => [...prev]);
     }
-  }, [apiRef, setSortedFilteredData, sortedFilteredData]); 
-
-  // okay so whenever this component updates parent state it gets a rerender which reruns handleSync?
+  }, [apiRef, setSortedFilteredData, sortedFilteredData]);
 
   const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
     return { type: "include", ids: new Set(selected.map((x) => x.name)) };
   }, [selected]);
 
+  useEffect(() => {
+    if (!apiRef.current) return;
+    apiRef.current.setColumnVisibilityModel(makeColumnVisibiltyModel(assay));
+    apiRef.current.sortColumn(assay, "desc");
+  }, [apiRef, assay]);
+
+  /**
+   * Resize cols on assay change. Need to use requestAnimationFrame to queue this update until after
+   * the column changes are completed. This calls the autosize method right before the next repaint.
+   * Calling it in above useEffect autosized before column updates were complete
+   */
+  useEffect(() => {
+    if (!apiRef.current) return;
+    const frame = requestAnimationFrame(() => {
+      apiRef.current?.autosizeColumns({
+        expand: true,
+        includeHeaders: true,
+        outliersFactor: 1.5,
+      });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [apiRef, assay]);
+
   return (
     <Table
-      key={assay} // force reset to initial state and hide all other assays
       label={`${entity.entityID} ${formatAssay(assay)} z-scores`}
       rows={rows}
       loading={!rows}
@@ -103,10 +125,10 @@ const AssayTable = ({
       onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
       divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
       initialState={{
-        columns: { columnVisibilityModel: hideAllOtherAssays },
+        columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: [{ field: assay, sort: "desc" }] },
       }}
-    />
+      />
   );
 };
 
