@@ -8,6 +8,8 @@ import { useMemo } from "react";
 import { gql } from "types/generated";
 import { useQuery } from "@apollo/client";
 import { Typography } from "@mui/material";
+import { scaleLinear } from '@visx/scale';
+import { interpolateYlOrRd } from 'd3-scale-chromatic';
 
 const BIOSAMPLE_UMAP = gql(`
   query BiosampleUmap($assembly: String!, $assay: String!) {
@@ -60,8 +62,19 @@ const AssayUMAP = ({
     },
   });
 
+  const minValue = rows ? Math.min(...rows.map(x => x[assay])) : null
+  const maxValue = rows ? Math.max(...rows.map(x => x[assay])) : null
+
+  const colorScale = useMemo(() => {
+    if (!minValue || !maxValue) return null
+    return scaleLinear({
+      domain: [Math.max(minValue, -1), maxValue],
+      range: [0, 1]
+    })
+  }, [maxValue, minValue])
+
   const scatterData: Point<BiosampleRow>[] = useMemo(() => {
-    if (!rows || !data_umap) return [];
+    if (!rows || !data_umap || !colorScale) return [];
 
     const isHighlighted = (x: BiosampleRow) => selected.some((y) => y.name === x.name);
 
@@ -77,12 +90,12 @@ const AssayUMAP = ({
           shape: "circle" as const,
           r: isHighlighted(x) ? 4 : 2,
           color:
-            isHighlighted(x) || selected.length === 0 ? tissueColors[x.ontology] ?? tissueColors.missing : "#CCCCCC",
+            isHighlighted(x) || selected.length === 0 ? interpolateYlOrRd(colorScale(x[assay])) : "#CCCCCC",
           metaData: x,
         };
       })
       .sort((a, b) => (isHighlighted(b.metaData) ? -1 : 0));
-  }, [rows, data_umap, selected]);
+  }, [rows, data_umap, selected, colorScale, assay]);
 
   /**
    * @todo potential bug. Assumes reference equality between rows returned in callback and in state
