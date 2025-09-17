@@ -1,5 +1,5 @@
 import { SharedAssayViewPlotProps } from "./AssayView";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import {
   gridFilteredSortedRowEntriesSelector,
@@ -69,13 +69,17 @@ const AssayTable = ({
 
   const apiRef = useGridApiRef();
 
-  const handleSync = () => {
-    if (!apiRef.current) return
+  const handleSync = useCallback(() => {
+    if (!apiRef.current) return;
     const rows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as BiosampleRow[];
     if (!arraysAreEqual(sortedFilteredData, rows)) {
+      //It's breaking when this is called
       setSortedFilteredData(rows);
+      // setSortedFilteredData((prev) => [...prev]);
     }
-  };
+  }, [apiRef, setSortedFilteredData, sortedFilteredData]); 
+
+  // okay so whenever this component updates parent state it gets a rerender which reruns handleSync?
 
   const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
     return { type: "include", ids: new Set(selected.map((x) => x.name)) };

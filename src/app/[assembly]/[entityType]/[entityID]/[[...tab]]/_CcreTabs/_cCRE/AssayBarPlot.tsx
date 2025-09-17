@@ -36,9 +36,13 @@ const AssayBarPlot = ({
       })
   }, [assay, selected, sortedFilteredData]);
 
+
+  /**
+   * @todo potential bug. Assumes reference equality between rows returned in callback and in state
+   */
     const handleBarClick = (bar: BarData<BiosampleRow>) => {
       if (selected.includes(bar.metadata)) {
-        setSelected(selected.filter((x) => x !== bar.metadata));
+        setSelected(selected.filter((x) => x.name !== bar.metadata.name));
       } else setSelected([...selected, bar.metadata]);
     };
 

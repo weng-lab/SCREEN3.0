@@ -148,7 +148,7 @@ const coreAndPartialCols: GridColDef[] = [
     maxWidth: 400,
   },
   {
-    headerName: "Ontology",
+    headerName: "Organ/Tissue",
     field: "ontology",
   },
   {
@@ -423,7 +423,20 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
 
   return (
     <>
-      <Tabs value={tab} onChange={handleChange} aria-label="basic tabs example">
+      <Tabs
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
+        value={tab}
+        onChange={handleChange}
+        sx={{
+          "& .MuiTabs-scrollButtons.Mui-disabled": {
+            opacity: 0.3,
+          },
+          // borderBottom: 1,
+          // borderColor: "divider"
+        }}
+      >
         <Tab value="tables" label="Combined Assay View" />
         <Tab value="dnase" label="DNase" />
         <Tab value="atac" label="ATAC" />
