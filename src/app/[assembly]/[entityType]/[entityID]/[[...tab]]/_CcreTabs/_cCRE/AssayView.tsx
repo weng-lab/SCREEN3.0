@@ -2,11 +2,12 @@ import { GridColDef } from "@weng-lab/ui-components";
 import { Assay, BiosampleRow } from "./BiosampleActivity";
 import { Dispatch, SetStateAction, useState } from "react";
 import TwoPaneLayout from "common/components/TwoPaneLayout";
-import { BarChart, CandlestickChart } from "@mui/icons-material";
+import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import AssayViolinPlot from "./AssayViolinPlot";
+import AssayUMAP from "./AssayUMAP";
 
 export type AssayViewProps = {
   rows: BiosampleRow[];
@@ -46,8 +47,13 @@ const AssayView = (props: AssayViewProps) => {
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
-          plotComponent: <AssayViolinPlot {...sharedAssayViewPlotProps} />
-        }
+          plotComponent: <AssayViolinPlot {...sharedAssayViewPlotProps} />,
+        },
+        props.assay !== "atac" && {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: <AssayUMAP {...sharedAssayViewPlotProps} />,
+        },
       ]}
     />
   );

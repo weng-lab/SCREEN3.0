@@ -10,7 +10,7 @@ import { CcreClass, GenomicRange } from "types/globalTypes";
 import { GROUP_COLOR_MAP } from "common/lib/colors";
 import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { useCcreData } from "common/hooks/useCcreData";
-import { calcDistCcreToTSS, ccreOverlapsTSS } from "common/utility";
+import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
 
 export type BiosampleRow = {
@@ -146,14 +146,17 @@ const coreAndPartialCols: GridColDef[] = [
     headerName: "Cell Type",
     field: "displayname",
     maxWidth: 400,
+    valueFormatter: capitalizeFirstLetter
   },
   {
     headerName: "Organ/Tissue",
     field: "ontology",
+    valueFormatter: capitalizeFirstLetter
   },
   {
     headerName: "Sample Type",
     field: "sampleType",
+    valueFormatter: capitalizeFirstLetter
   },
   {
     headerName: "DNase",
@@ -204,8 +207,8 @@ export const GET_CCRE_CT_TF = gql(`
   }
 `);
 
-export const TOP_TISSUES = gql(`
-  query topTissues($accession: [String!], $assembly: String!) {
+export const BIOSAMPLE_Zs = gql(`
+  query biosampleZScores($accession: [String!], $assembly: String!) {
     ccREBiosampleQuery(assembly: $assembly) {
       biosamples {
         id: name  # Add a unique identifier for each biosample
@@ -220,6 +223,11 @@ export const TOP_TISSUES = gql(`
         ontology
       }
     }
+  }
+`);
+
+export const CT_AGNOSTIC = gql(`
+  query CtAgnostic($accession: [String!], $assembly: String!) {
     cCREQuery(assembly: $assembly, accession: $accession) {
       id: accession  # Add a unique identifier for the cCRE
       accession
@@ -304,12 +312,25 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
 
   /**
    * Fetch biosample specific assay scores as well as max-Z for celltype agnostic classification
+   * So, right here I can fetch the biosample's umap coordinates. Feels wrong to fetch here since it's not needed and slows down everything
+   * BUT, would eliminate a separate fetch. These rows would contain the coordinates for the selected assay, which is then passed down.
    */
   const {
-    data: data_toptissues,
-    loading: loading_toptissues,
-    error: error_toptissues,
-  } = useQuery(TOP_TISSUES, {
+    data: data_Ct_Agnostic,
+    loading: loading_Ct_Agnostic,
+    error: error_Ct_Agnostic,
+  } = useQuery(CT_AGNOSTIC, {
+    variables: {
+      assembly: entity.assembly.toLowerCase(),
+      accession: entity.entityID,
+    },
+  });
+
+    const {
+    data: data_biosampleZs,
+    loading: loading_biosampleZs,
+    error: error_biosampleZs,
+  } = useQuery(BIOSAMPLE_Zs, {
     variables: {
       assembly: entity.assembly.toLowerCase(),
       accession: entity.entityID,
@@ -361,8 +382,8 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
   const overlapsTSS = nearbyGenes?.some((x) => x.overlapsTSS);
 
   const biosampleRows: BiosampleRow[] = useMemo(() => {
-    if (!data_toptissues || !data_ccre_tf) return null;
-    return data_toptissues?.ccREBiosampleQuery.biosamples.map((sample) => {
+    if (!data_biosampleZs || !data_ccre_tf) return null;
+    return data_biosampleZs?.ccREBiosampleQuery.biosamples.map((sample) => {
 
       const dnase = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "dnase")?.score || -11
       const atac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "atac")?.score || -11
@@ -388,7 +409,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
         ...scores
       };
     });
-  }, [data_ccre_tf, data_toptissues, distanceToTSS, overlapsTSS]);
+  }, [data_ccre_tf, data_biosampleZs, distanceToTSS, overlapsTSS]);
 
   const coreCollection: BiosampleRow[] = useMemo(() => {
     return biosampleRows?.filter((row) => row.collection === "core");
@@ -413,10 +434,10 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
     !coreCollection ||
     !partialDataCollection ||
     !ancillaryCollection;
-  const errorCorePartialAncillary = !!(errorCcreData || error_toptissues || error_ccre_tf || errorNearbyGenes);
+  const errorCorePartialAncillary = !!(errorCcreData || error_biosampleZs || error_ccre_tf || errorNearbyGenes);
 
-  const ctAgnosticRow = data_toptissues
-    ? [{ ...data_toptissues.cCREQuery[0], displayname: "Cell Type Agnostic" }]
+  const ctAgnosticRow = data_Ct_Agnostic
+    ? [{ ...data_Ct_Agnostic.cCREQuery[0], displayname: "Cell Type Agnostic" }]
     : undefined;
 
   const disableCsvEscapeChar = { slotProps: { toolbar: { csvOptions: { escapeFormulas: false } } } };
@@ -452,10 +473,10 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                 label="Cell type agnostic classification"
                 rows={ctAgnosticRow}
                 columns={ctAgnosticCols}
-                loading={loading_toptissues}
+                loading={loading_Ct_Agnostic}
                 //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
                 divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
-                error={!!error_toptissues}
+                error={!!error_Ct_Agnostic}
                 {...disableCsvEscapeChar}
               />
               <Stack>

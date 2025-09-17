@@ -18,33 +18,26 @@ const AssayBarPlot = ({
 }: SharedAssayViewPlotProps) => {
   const plotData: BarData<BiosampleRow>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
-    return sortedFilteredData
-      .map((row) => {
-        const anySelected = selected.length > 0;
-        const isSelected = selected.some((x) => x.name === row.name);
-        return {
-          value: row[assay],
-          id: row.name,
-          category: capitalizeFirstLetter(row.ontology),
-          label: truncateString(capitalizeFirstLetter(row.displayname), 25),
-          color:
-            (anySelected && isSelected) || !anySelected
-              ? tissueColors[row.ontology] ?? tissueColors.missing
-              : "#CCCCCC",
-          metadata: row,
-        };
-      })
+    return sortedFilteredData.map((row) => {
+      const anySelected = selected.length > 0;
+      const isSelected = selected.some((x) => x.name === row.name);
+      return {
+        value: row[assay],
+        id: row.name,
+        category: capitalizeFirstLetter(row.ontology),
+        label: truncateString(capitalizeFirstLetter(row.displayname), 25),
+        color:
+          (anySelected && isSelected) || !anySelected ? tissueColors[row.ontology] ?? tissueColors.missing : "#CCCCCC",
+        metadata: row,
+      };
+    });
   }, [assay, selected, sortedFilteredData]);
 
-
-  /**
-   * @todo potential bug. Assumes reference equality between rows returned in callback and in state
-   */
-    const handleBarClick = (bar: BarData<BiosampleRow>) => {
-      if (selected.includes(bar.metadata)) {
-        setSelected(selected.filter((x) => x.name !== bar.metadata.name));
-      } else setSelected([...selected, bar.metadata]);
-    };
+  const handleBarClick = (bar: BarData<BiosampleRow>) => {
+    if (selected.includes(bar.metadata)) {
+      setSelected(selected.filter((x) => x.name !== bar.metadata.name));
+    } else setSelected([...selected, bar.metadata]);
+  };
 
   return (
     <Box
