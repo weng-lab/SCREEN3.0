@@ -10,6 +10,7 @@ import {
     RadioGroup,
     Slider,
     Stack,
+    Typography,
 } from "@mui/material";
 
 interface CalculateNearbyCCREsPopperProps {
@@ -44,6 +45,7 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
             <ClickAwayListener onClickAway={handleClickAway}>
                 <Paper elevation={8} sx={{ minWidth: 200 }}>
                     <Box sx={{ p: 2 }}>
+                        <Typography sx={{mb: 2}}>Calculate Nearby cCREs by:</Typography>
                         <Stack direction={"row"} spacing={2}>
                             <FormControl>
                                 <RadioGroup
@@ -72,11 +74,7 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
                                     <FormControlLabel
                                         value="3Gene"
                                         control={<Radio />}
-                                        label={
-                                            <>
-                                                Closest 3 Genes
-                                            </>
-                                        }
+                                        label="Closest 3 Genes"
                                     />
                                 </RadioGroup>
                             </FormControl>

@@ -14,7 +14,7 @@ export default function DistanceLinkedCcres({
   geneData: UseGeneDataReturn<{ name: string }>;
 }) {
   const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
-  const [distance, setDistance] = useState<number>(0);
+  const [distance, setDistance] = useState<number>(10000);
 
   const { data: dataNearby, loading: loadingNearby, error: errorNearby } = useNearbycCREs(geneData?.data.id);
   
