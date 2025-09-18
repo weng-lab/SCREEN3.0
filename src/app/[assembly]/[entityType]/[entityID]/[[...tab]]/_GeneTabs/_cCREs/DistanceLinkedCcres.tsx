@@ -39,6 +39,7 @@ export default function DistanceLinkedCcres({
   const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
   const [distance, setDistance] = useState<number>(10000);
 
+  //coordiantes used to determine nearby ccres if method is not 3 closest genes
   const regions: Coordinate[] = useMemo(() => {
     if (!geneData) return
 
@@ -257,6 +258,7 @@ export default function DistanceLinkedCcres({
   );
 }
 
+//function to merge transcription start sites into least amount of region arrays based on overlapping coordiantes
 function getRegions(transcripts: Transcript[], distance: number): Coordinate[] {
   if (!transcripts.length) return [];
 
