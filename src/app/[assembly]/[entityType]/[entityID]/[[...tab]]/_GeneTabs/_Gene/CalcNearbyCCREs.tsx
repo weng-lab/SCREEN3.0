@@ -72,7 +72,7 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
                                         }
                                     />
                                     <FormControlLabel
-                                        value="3Gene"
+                                        value="3gene"
                                         control={<Radio />}
                                         label="Closest 3 Genes"
                                     />

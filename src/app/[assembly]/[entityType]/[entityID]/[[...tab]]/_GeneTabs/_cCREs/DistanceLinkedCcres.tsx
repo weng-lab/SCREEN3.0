@@ -5,19 +5,56 @@ import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import CalculateIcon from '@mui/icons-material/Calculate';
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
+import { usePathname } from "next/navigation";
+import { Assembly } from "types/globalTypes";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+
+type Transcript = {
+  id: string;
+  name: string;
+  strand: string;
+  coordinates: {
+    chromosome: string;
+    start: number;
+    end: number;
+  };
+};
+
+export type Coordinate = {
+  chromosome: string;
+  start: number;
+  end: number;
+}
 
 export default function DistanceLinkedCcres({
   geneData,
 }: {
   geneData: UseGeneDataReturn<{ name: string }>;
 }) {
+  const pathname = usePathname()
+  const assembly = pathname.split("/")[1]
+
   const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
   const [distance, setDistance] = useState<number>(10000);
 
-  const { data: dataNearby, loading: loadingNearby, error: errorNearby } = useNearbycCREs(geneData?.data.id);
-  
+  const regions: Coordinate[] = useMemo(() => {
+    if (!geneData) return
+
+    if (calcMethod === "tss") {
+      console.log(distance)
+      return getRegions(geneData.data.transcripts, distance)
+    } else if (calcMethod === "body") {
+      const { __typename, ...coords } = geneData.data.coordinates
+      return [coords]
+    } else {
+      return []
+    }
+  }, [geneData, distance, calcMethod])
+
+  const { data: dataNearby, loading: loadingNearby } = useNearbycCREs(geneData?.data.id, calcMethod, regions, assembly as Assembly);
+
   const [virtualAnchor, setVirtualAnchor] = React.useState<{
     getBoundingClientRect: () => DOMRect;
   } | null>(null);
@@ -53,7 +90,7 @@ export default function DistanceLinkedCcres({
     data: dataCcreDetails,
     loading: loadingCcreDetails,
     error: errorCcreDetails,
-  } = useCcreData({ accession: dataNearby?.map((d) => d.ccre), assembly: "GRCh38"});
+  } = useCcreData({ accession: dataNearby?.map((d) => d.ccre), assembly: "GRCh38" });
 
   const nearbyccres = dataNearby
     ?.map((d) => {
@@ -158,17 +195,41 @@ export default function DistanceLinkedCcres({
             },
           }}
           emptyTableFallback={"No Nearby cCREs found"}
-          divHeight={{height: "400px"}}
-            toolbarSlot={
-              <Tooltip title="Calculate Nearby cCREs by">
-                <IconButton
-                  size="small"
-                  onClick={handleClick}
-                >
-                  <CalculateIcon />
-                </IconButton>
-              </Tooltip>
-            }
+          divHeight={{ height: "400px" }}
+          toolbarSlot={
+            <Tooltip title="Calculate Nearby cCREs by">
+              <IconButton
+                size="small"
+                onClick={handleClick}
+              >
+                <CalculateIcon />
+              </IconButton>
+            </Tooltip>
+          }
+            labelTooltip={
+              <Tooltip
+                title={
+                  <>
+                    Nearby cCREs calculated by{" "}
+                    {calcMethod === "3gene" ? (
+                      "closest 3 genes"
+                    ) : calcMethod === "tss" ? (
+                      <>
+                        within {distance} base pairs of <i>{geneData.data.name}</i>
+                      </>
+                    ) : (
+                      <>
+                        <i>{geneData.data.name}</i> gene body
+                      </>
+                    )}
+                    <br/>
+                    <b>Refer to the right-hand side of the table to change calculation method</b>
+                  </>
+                }
+              >
+              <InfoOutlinedIcon fontSize="small"/>
+            </Tooltip>
+          }
         />
       )}
       <CalculateNearbyCCREsPopper
@@ -183,4 +244,50 @@ export default function DistanceLinkedCcres({
       />
     </Box>
   );
+}
+
+function getRegions(transcripts: Transcript[], distance: number): Coordinate[] {
+  if (!transcripts.length) return [];
+
+  const coords = transcripts.map(t => t.coordinates).sort((a, b) => a.start - b.start);
+
+  //find overlapping transcript regions
+  const merged: { chromosome: string; start: number; end: number }[] = [];
+  let current = { ...coords[0] };
+
+  for (let i = 1; i < coords.length; i++) {
+    const next = coords[i];
+    if (next.start <= current.end && next.chromosome === current.chromosome) {
+      current.end = Math.max(current.end, next.end);
+    } else {
+      merged.push({ ...current });
+      current = { ...next };
+    }
+  }
+  merged.push(current);
+
+  //add/subtract distance
+  const extended = merged.map(r => ({
+    chromosome: r.chromosome,
+    start: Math.max(0, r.start - distance),
+    end: r.end + distance,
+  }));
+
+  //find overlaping regions (in case extending created new overlaps)
+  const finalMerged: { chromosome: string; start: number; end: number }[] = [];
+  extended.sort((a, b) => a.start - b.start);
+
+  let curr = { ...extended[0] };
+  for (let i = 1; i < extended.length; i++) {
+    const next = extended[i];
+    if (next.start <= curr.end && next.chromosome === curr.chromosome) {
+      curr.end = Math.max(curr.end, next.end);
+    } else {
+      finalMerged.push({ ...curr });
+      curr = { ...next };
+    }
+  }
+  finalMerged.push(curr);
+
+  return finalMerged;
 }
