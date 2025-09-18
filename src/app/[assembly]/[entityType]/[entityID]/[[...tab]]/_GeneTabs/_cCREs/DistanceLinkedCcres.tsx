@@ -1,4 +1,4 @@
-import { Box, IconButton, Skeleton, Tooltip } from "@mui/material";
+import { Box, Button, IconButton, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
 import useNearbycCREs from "common/hooks/useNearBycCREs";
 import { useCcreData } from "common/hooks/useCcreData";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
@@ -9,7 +9,7 @@ import React, { useMemo, useState } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { usePathname } from "next/navigation";
 import { Assembly } from "types/globalTypes";
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { InfoOutlineRounded } from "@mui/icons-material";
 
 type Transcript = {
   id: string;
@@ -170,6 +170,11 @@ export default function DistanceLinkedCcres({
     {
       field: "distance",
       headerName: "Distance",
+      renderHeader: () => (
+        <>
+          Distance from&nbsp;<i>{geneData.data.name}</i>
+        </>
+      ),
       type: "number",
       valueFormatter: (value?: string) => {
         if (value == null) {
@@ -194,41 +199,47 @@ export default function DistanceLinkedCcres({
               sortModel: [{ field: "distance", sort: "asc" }],
             },
           }}
-          emptyTableFallback={"No Nearby cCREs found"}
+            emptyTableFallback={
+              <Stack direction={"row"} border={"1px solid #e0e0e0"} borderRadius={1} p={2} alignItems={"center"} justifyContent={"space-between"}>
+                <Stack direction={"row"} spacing={1}>
+                  <InfoOutlineRounded />
+                  <Typography>No Nearby cCREs Found</Typography>
+                </Stack>
+                <Tooltip title="Calculate Nearby cCREs by">
+                  <Button
+                    onClick={handleClick}
+                    variant="outlined"
+                    endIcon={<CalculateIcon />}
+                  >
+                    Change Method
+                  </Button>
+                </Tooltip>
+              </Stack>
+            }
           divHeight={{ height: "400px" }}
           toolbarSlot={
             <Tooltip title="Calculate Nearby cCREs by">
-              <IconButton
-                size="small"
+              <Button
                 onClick={handleClick}
+                variant="outlined"
+                endIcon={<CalculateIcon/>}
               >
-                <CalculateIcon />
-              </IconButton>
+                Change Method
+              </Button>
             </Tooltip>
           }
             labelTooltip={
-              <Tooltip
-                title={
-                  <>
-                    Nearby cCREs calculated by{" "}
-                    {calcMethod === "3gene" ? (
-                      "closest 3 genes"
-                    ) : calcMethod === "tss" ? (
-                      <>
-                        within {distance} base pairs of <i>{geneData.data.name}</i>
-                      </>
-                    ) : (
-                      <>
-                        <i>{geneData.data.name}</i> gene body
-                      </>
-                    )}
-                    <br/>
-                    <b>Refer to the right-hand side of the table to change calculation method</b>
-                  </>
-                }
-              >
-              <InfoOutlinedIcon fontSize="small"/>
-            </Tooltip>
+              <>
+                {calcMethod === "tss" && (
+                  <Typography variant="subtitle2">(Within {distance} bp of TSS of <i>{geneData.data.name}</i>)</Typography>
+                )}
+                {calcMethod === "3gene" && (
+                  <Typography variant="subtitle2">(<i>{geneData.data.name}</i> is 1 of 3 closest genes to cCRE)</Typography>
+                )}
+                {calcMethod === "body" && (
+                  <Typography variant="subtitle2">(Within <i>{geneData.data.name}</i> gene body)</Typography>
+                )}
+              </>
           }
         />
       )}
