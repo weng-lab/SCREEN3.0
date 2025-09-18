@@ -1,5 +1,5 @@
 "use client";
-import {  Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import { Box, Button, IconButton } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import EditIcon from "@mui/icons-material/Edit";
@@ -10,11 +10,12 @@ import {
   Browser,
   Chromosome,
   createBrowserStore,
+  createDataStore,
   createTrackStore,
   DisplayMode,
-  InitialBrowserState,
   Track,
-  TrackType
+  TrackType,
+  useCustomData,
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -33,7 +34,7 @@ import GBButtons from "common/gbview/gbViewButtons";
 import { RegistryBiosample } from "app/_biosampleTables/types";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import SelectLdBlock from "./SelectLdBlock";
-import { LDTrackConfig } from "@weng-lab/genomebrowser/dist/components/tracks/ldtrack/types";
+import { gql, useQuery } from "@apollo/client";
 
 interface Transcript {
   id: string;
@@ -66,24 +67,38 @@ function expandCoordinates(coordinates: GenomicRange) {
   };
 }
 
-export default function GWASGenomeBrowserView({
-    study_name,     
-}: {  
-  study_name: string;
-  
-}) {
+const browserStore = createBrowserStore({
+  domain: { chromosome: "chr1", start: 52000, end: 53000 },
+  marginWidth: 150,
+  trackWidth: 1350,
+  multiplier: 3,
+});
+const trackStore = createTrackStore([]);
+const dataStore = createDataStore();
+
+export default function GWASGenomeBrowserView({ study_name }: { study_name: string }) {
   //const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosample[] | null>(null);
- const {
+
+  const {
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
-  } = useGWASSnpsData({ study: [study_name] }); 
+  } = useGWASSnpsData({ study: [study_name] });
+  useCustomData(
+    "ld-track",
+    {
+      data: dataGWASSnps,
+      loading: loadingGWASSnps,
+      error: errorGWASSnps,
+    },
+    dataStore
+  );
 
   const ldblockStats = useMemo(() => {
     if (!dataGWASSnps) return [];
-  
+
     const map = new Map<number, { ldblock: number; chromosome: string; start: number; end: number }>();
-  
+
     for (const { ldblock, chromosome, start, stop } of dataGWASSnps) {
       if (!map.has(ldblock)) {
         map.set(ldblock, { ldblock, chromosome, start, end: stop });
@@ -93,33 +108,27 @@ export default function GWASGenomeBrowserView({
         entry.end = Math.max(entry.end, stop);
       }
     }
-  
+
     return Array.from(map.values());
   }, [dataGWASSnps]);
-  
-  const [selectedLdBlock, setselectedLdBlock] = useState< { ldblock: number, chromosome: string, start: number, end: number } | null>(null);
-  
+
+  const [selectedLdBlock, setselectedLdBlock] = useState<{
+    ldblock: number;
+    chromosome: string;
+    start: number;
+    end: number;
+  } | null>(null);
+
   useEffect(() => {
     if (ldblockStats.length > 0 && !selectedLdBlock) {
       setselectedLdBlock(ldblockStats[0]);
     }
   }, [ldblockStats, selectedLdBlock]);
-  
-  let coordinates = selectedLdBlock ? {  chromosome: selectedLdBlock.chromosome, start: selectedLdBlock.start , end: selectedLdBlock.end }  : { chromosome: "chr1", start: 52000, end: 53000}
-  const initialState: InitialBrowserState = {
-    domain: expandCoordinates(coordinates),
-    marginWidth: 150,
-    trackWidth: 1350,
-    multiplier: 3,
-    highlights: [
-      {
-        id: study_name || coordinates.chromosome + ":" + coordinates.start + "-" + coordinates.end,
-        domain: { chromosome: coordinates.chromosome, start: coordinates.start, end: coordinates.end },
-        color: randomColor(),
-      },
-    ],
-  };
-  const browserStore = createBrowserStore(initialState);
+
+  let coordinates = selectedLdBlock
+    ? { chromosome: selectedLdBlock.chromosome, start: selectedLdBlock.start, end: selectedLdBlock.end }
+    : { chromosome: "chr1", start: 52000, end: 53000 };
+
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
@@ -128,20 +137,17 @@ export default function GWASGenomeBrowserView({
 
   const [ldblockOpen, setLdBlockOpen] = useState(false);
 
-  const onLdBlockSelected = (ldblock:{ ldblock: number, chromosome: string, start: number, end: number }) => {
-      
+  const onLdBlockSelected = (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => {
     setselectedLdBlock(ldblock);
-      
-    };
+  };
 
   const handleSelectLDblockClick = () => {
     setLdBlockOpen(!ldblockOpen);
   };
 
-  const handleLdBlockSelected = (ldblock: { ldblock: number, chromosome: string, start: number, end: number }) => {
-      onLdBlockSelected(ldblock);
+  const handleLdBlockSelected = (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => {
+    onLdBlockSelected(ldblock);
   };
-
 
   const onCcreClick = useCallback(
     (item: Rect) => {
@@ -159,48 +165,46 @@ export default function GWASGenomeBrowserView({
       }
       router.push(`/GRCh38/gene/${name}`);
     },
-    [ router]
+    [router]
   );
 
   const initialTracks: Track[] = useMemo(() => {
-    
     const defaultTracks: Track[] = [
-       {
-        id: "1234",
+      {
+        id: "ld-track",
         title: "LD",
         trackType: TrackType.LDTrack,
         displayMode: DisplayMode.Full,
         height: 50,
         titleSize: 12,
         color: "#ff0000",
-        study: [study_name], // uses the study to fetch snps
-      } ,  
+      },
       {
-            id: "ccre-track",
-            title: "All cCREs colored by group",
-            titleSize: 12,
-            height: 20,
-            color: "#D05F45",
-            
-            trackType: TrackType.BigBed,
-            displayMode: DisplayMode.Dense,
-            url: `https://downloads.wenglab.org/GRCh38-cCREs.DCC.bigBed`,
-            onHover: (rect) => {
-              addHighlight({
-                id: rect.name + "-temp" || "ihqoviun",
-                domain: { start: rect.start, end: rect.end },
-                color: rect.color || "blue",
-              });
-            },
-            onLeave: (rect) => {
-              removeHighlight(rect.name + "-temp" || "ihqoviun");
-            },
-            onClick: (item: Rect) => {
-              onCcreClick(item);
-            },
-            tooltip: (rect: Rect) => <CCRETooltip assembly={"GRCh38"} name={rect.name || ""} {...rect} />,
-          },
-        {
+        id: "ccre-track",
+        title: "All cCREs colored by group",
+        titleSize: 12,
+        height: 20,
+        color: "#D05F45",
+
+        trackType: TrackType.BigBed,
+        displayMode: DisplayMode.Dense,
+        url: `https://downloads.wenglab.org/GRCh38-cCREs.DCC.bigBed`,
+        onHover: (rect) => {
+          addHighlight({
+            id: rect.name + "-temp" || "ihqoviun",
+            domain: { start: rect.start, end: rect.end },
+            color: rect.color || "blue",
+          });
+        },
+        onLeave: (rect) => {
+          removeHighlight(rect.name + "-temp" || "ihqoviun");
+        },
+        onClick: (item: Rect) => {
+          onCcreClick(item);
+        },
+        tooltip: (rect: Rect) => <CCRETooltip assembly={"GRCh38"} name={rect.name || ""} {...rect} />,
+      },
+      {
         id: "gene-track",
         title: "GENCODE genes",
         titleSize: 12,
@@ -225,14 +229,30 @@ export default function GWASGenomeBrowserView({
           onGeneClick(item);
         },
       },
-      
     ];
-    
 
     return [...defaultTracks];
-  }, [  addHighlight, removeHighlight, onGeneClick, onCcreClick]);
+  }, [addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
-  const trackStore = createTrackStore(initialTracks);
+  const setTracks = trackStore((state) => state.setTracks);
+
+  // Initialize tracks once on mount
+  useEffect(() => {
+    setTracks(initialTracks);
+  }, [initialTracks, setTracks]);
+
+  // Update domain when selectedLdBlock changes
+  useEffect(() => {
+    if (selectedLdBlock) {
+      const newCoordinates = {
+        chromosome: selectedLdBlock.chromosome,
+        start: selectedLdBlock.start,
+        end: selectedLdBlock.end,
+      };
+      setDomain(expandCoordinates(newCoordinates));
+    }
+  }, [selectedLdBlock, setDomain]);
+
   const editTrack = trackStore((state) => state.editTrack);
 
   const handeSearchSubmit = (r: Result) => {
@@ -304,34 +324,62 @@ export default function GWASGenomeBrowserView({
             }}
           />
           {
-           <Box display="flex" gap={2}>
-                       
-                       <Button
-                           variant="contained"
-                           startIcon={<EditIcon />}
-                           size="small"
-                           onClick={() => handleSelectLDblockClick()}
-                       >
-                           Select Ld Block
-                       </Button>
-                       <SelectLdBlock                           
-                           open={ldblockOpen}
-                           setOpen={handleSelectLDblockClick}
-                           onLdBlockSelect={handleLdBlockSelected}
-                           ldblockList={ldblockStats}
-                           ldblock={selectedLdBlock ?? null}
-                       />
-                   </Box>
+            <Box display="flex" gap={2}>
+              <Button
+                variant="contained"
+                startIcon={<EditIcon />}
+                size="small"
+                onClick={() => handleSelectLDblockClick()}
+              >
+                Select Ld Block
+              </Button>
+              <SelectLdBlock
+                open={ldblockOpen}
+                setOpen={handleSelectLDblockClick}
+                onLdBlockSelect={handleLdBlockSelected}
+                ldblockList={ldblockStats}
+                ldblock={selectedLdBlock ?? null}
+              />
+            </Box>
           }
         </Box>
         <DomainDisplay browserStore={browserStore} assembly={"GRCh38"} />
         <ControlButtons browserStore={browserStore} />
       </Grid>
       <Grid size={{ xs: 12, lg: 12 }}>
-        <Browser  key={selectedLdBlock?.ldblock ?? "default"} browserStore={browserStore} trackStore={trackStore} />
+        <Browser
+          key={selectedLdBlock?.ldblock ?? "default"}
+          browserStore={browserStore}
+          trackStore={trackStore}
+          externalDataStore={dataStore}
+        />
       </Grid>
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
     </Grid>
   );
 }
 
+export const GWAS_SNP_QUERY = gql`
+  query getSNPsforgivengwasStudy($study: [String!]!) {
+    getSNPsforGWASStudies(study: $study) {
+      snpid
+      ldblock
+      rsquare
+      chromosome
+      stop
+      start
+      ldblocksnpid
+      __typename
+    }
+  }
+`;
+
+function useLDData(study_name: string) {
+  const { data, loading, error } = useQuery(GWAS_SNP_QUERY, {
+    variables: {
+      study: [study_name],
+    },
+  });
+
+  return { data: data?.getSNPsforGWASStudies, loading, error };
+}
