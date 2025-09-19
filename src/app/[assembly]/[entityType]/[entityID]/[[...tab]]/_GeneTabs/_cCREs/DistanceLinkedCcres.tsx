@@ -188,62 +188,59 @@ export default function DistanceLinkedCcres({
 
   return (
     <Box width={"100%"}>
-      {geneData.loading || loadingNearby || loadingCcreDetails ? (
-        <Skeleton variant="rounded" width={"100%"} height={400} />
-      ) : (
-        <Table
-          rows={nearbyccres}
-          columns={cols}
-          label={"Nearby cCREs"}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: "distance", sort: "asc" }],
-            },
-          }}
-            emptyTableFallback={
-              <Stack direction={"row"} border={"1px solid #e0e0e0"} borderRadius={1} p={2} alignItems={"center"} justifyContent={"space-between"}>
-                <Stack direction={"row"} spacing={1}>
-                  <InfoOutlineRounded />
-                  <Typography>No Nearby cCREs Found</Typography>
-                </Stack>
-                <Tooltip title="Calculate Nearby cCREs by">
-                  <Button
-                    onClick={handleClick}
-                    variant="outlined"
-                    endIcon={<CalculateIcon />}
-                  >
-                    Change Method
-                  </Button>
-                </Tooltip>
-              </Stack>
-            }
-          divHeight={{ height: "400px" }}
-          toolbarSlot={
+      <Table
+        rows={nearbyccres}
+        columns={cols}
+        label={"Nearby cCREs"}
+        loading={geneData.loading || loadingNearby || loadingCcreDetails}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "distance", sort: "asc" }],
+          },
+        }}
+        emptyTableFallback={
+          <Stack direction={"row"} border={"1px solid #e0e0e0"} borderRadius={1} p={2} alignItems={"center"} justifyContent={"space-between"}>
+            <Stack direction={"row"} spacing={1}>
+              <InfoOutlineRounded />
+              <Typography>No Nearby cCREs Found</Typography>
+            </Stack>
             <Tooltip title="Calculate Nearby cCREs by">
               <Button
                 onClick={handleClick}
                 variant="outlined"
-                endIcon={<CalculateIcon/>}
+                endIcon={<CalculateIcon />}
               >
                 Change Method
               </Button>
             </Tooltip>
-          }
-            labelTooltip={
-              <>
-                {calcMethod === "tss" && (
-                  <Typography variant="subtitle2">(Within {distance} bp of TSS of <i>{geneData.data.name}</i>)</Typography>
-                )}
-                {calcMethod === "3gene" && (
-                  <Typography variant="subtitle2">(<i>{geneData.data.name}</i> is 1 of 3 closest genes to cCRE)</Typography>
-                )}
-                {calcMethod === "body" && (
-                  <Typography variant="subtitle2">(Within <i>{geneData.data.name}</i> gene body)</Typography>
-                )}
-              </>
-          }
-        />
-      )}
+          </Stack>
+        }
+        divHeight={{ height: "400px" }}
+        toolbarSlot={
+          <Tooltip title="Calculate Nearby cCREs by">
+            <Button
+              onClick={handleClick}
+              variant="outlined"
+              endIcon={<CalculateIcon />}
+            >
+              Change Method
+            </Button>
+          </Tooltip>
+        }
+        labelTooltip={
+          <>
+            {calcMethod === "tss" && (
+              <Typography component="span" variant="subtitle2">(Within {distance} bp of TSS of <i>{geneData.data.name}</i>)</Typography>
+            )}
+            {calcMethod === "3gene" && (
+              <Typography component="span" variant="subtitle2">(<i>{geneData.data.name}</i> is 1 of 3 closest genes to cCRE)</Typography>
+            )}
+            {calcMethod === "body" && (
+              <Typography component="span" variant="subtitle2">(Within <i>{geneData.data.name}</i> gene body)</Typography>
+            )}
+          </>
+        }
+      />
       <CalculateNearbyCCREsPopper
         open={Boolean(virtualAnchor)}
         anchorEl={virtualAnchor}
