@@ -69,7 +69,6 @@ export default function DistanceLinkedCcres({
   const {
     data: dataCcreDetails,
     loading: loadingCcreDetails,
-    error: errorCcreDetails,
   } = useCcreData({ accession: dataNearby?.map((d) => d.ccre), assembly: "GRCh38" });
 
   const nearbyccres = dataNearby
@@ -194,7 +193,7 @@ export default function DistanceLinkedCcres({
             </Tooltip>
           </Stack>
         }
-        divHeight={{ height: "400px" }}
+        divHeight={{ maxHeight: "400px" }}
         toolbarSlot={
           <Tooltip title="Calculate Nearby cCREs by">
             <Button
