@@ -1,6 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
-import { Coordinate } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/DistanceLinkedCcres";
+import { Transcript } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/DistanceLinkedCcres";
+import { useMemo } from "react";
 import { Assembly } from "types/globalTypes";
+import { UseGeneDataReturn } from "./useGeneData";
 
 const CCRE_ICRE_QUERY = gql(`query cCREAutocompleteQuery(
   $accession: [String!]
@@ -18,7 +20,23 @@ const CCRE_ICRE_QUERY = gql(`query cCREAutocompleteQuery(
   }
 }`);
 
-export default function useNearbycCREs(geneid: string, method: string, regions: Coordinate[], assembly: Assembly) {
+export default function useNearbycCREs(geneData: UseGeneDataReturn<{ name: string }>, method: string, assembly: Assembly, distance: number) {
+
+  //coordiantes used to determine nearby ccres if method is not 3 closest genes
+    const regions: Coordinate[] = useMemo(() => {
+      if (!geneData) return
+  
+      if (method === "tss") {
+        console.log(geneData.data.transcripts)
+        console.log(getRegions(geneData.data.transcripts, distance))
+        return getRegions(geneData.data.transcripts, distance)
+      } else if (method === "body") {
+        const { __typename, ...coords } = geneData.data.coordinates
+        return [coords]
+      } else {
+        return []
+      }
+    }, [geneData, distance, method])
 
   const { data: regionCcreData, loading: regionCcreLoading } = useQuery(CCRE_RANGE_QUERY, {
     variables: {
@@ -29,8 +47,8 @@ export default function useNearbycCREs(geneid: string, method: string, regions: 
   });
 
   const { data: nearbyGeneData, loading: nearbyGeneLoading, error } = useQuery(NEAR_BY_CCRES_QUERY, {
-    variables: { geneid: [geneid.split(".")[0]] },
-    skip: !geneid || method !== "3gene"
+    variables: { geneid: [geneData.data.id.split(".")[0]] },
+    skip: !geneData || method !== "3gene"
   });
 
   const accessions = method === "3gene"
@@ -89,6 +107,25 @@ export type NearBycCREs = {
   chromosome?: string;
   ccre?: string;
 };
+
+type Coordinate = {
+  chromosome: string;
+  start: number;
+  end: number;
+}
+
+function getRegions(transcripts: Transcript[], distance: number): Coordinate[] {
+  if (transcripts.length === 0) return [];
+
+  return transcripts.map(t => {
+    const tss = t.strand === "+" ? t.coordinates.start : t.coordinates.end;
+    return {
+      chromosome: t.coordinates.chromosome,
+      start: Math.max(0, tss - distance), // prevent negative start
+      end: tss + distance
+    };
+  });
+}
 
 const NEAR_BY_CCRES_QUERY = gql(`
 query getclosestGenetocCRE($geneid: [String],$ccre: [String]) {

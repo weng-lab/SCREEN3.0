@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 import { Assembly } from "types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 
-type Transcript = {
+export type Transcript = {
   id: string;
   name: string;
   strand: string;
@@ -21,12 +21,6 @@ type Transcript = {
     end: number;
   };
 };
-
-export type Coordinate = {
-  chromosome: string;
-  start: number;
-  end: number;
-}
 
 export default function DistanceLinkedCcres({
   geneData,
@@ -39,22 +33,7 @@ export default function DistanceLinkedCcres({
   const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
   const [distance, setDistance] = useState<number>(10000);
 
-  //coordiantes used to determine nearby ccres if method is not 3 closest genes
-  const regions: Coordinate[] = useMemo(() => {
-    if (!geneData) return
-
-    if (calcMethod === "tss") {
-      console.log(distance)
-      return getRegions(geneData.data.transcripts, distance)
-    } else if (calcMethod === "body") {
-      const { __typename, ...coords } = geneData.data.coordinates
-      return [coords]
-    } else {
-      return []
-    }
-  }, [geneData, distance, calcMethod])
-
-  const { data: dataNearby, loading: loadingNearby } = useNearbycCREs(geneData?.data.id, calcMethod, regions, assembly as Assembly);
+  const { data: dataNearby, loading: loadingNearby } = useNearbycCREs(geneData, calcMethod, assembly as Assembly, distance);
 
   const [virtualAnchor, setVirtualAnchor] = React.useState<{
     getBoundingClientRect: () => DOMRect;
@@ -253,51 +232,4 @@ export default function DistanceLinkedCcres({
       />
     </Box>
   );
-}
-
-//function to merge transcription start sites into least amount of region arrays based on overlapping coordiantes
-function getRegions(transcripts: Transcript[], distance: number): Coordinate[] {
-  if (!transcripts.length) return [];
-
-  const coords = transcripts.map(t => t.coordinates).sort((a, b) => a.start - b.start);
-
-  //find overlapping transcript regions
-  const merged: { chromosome: string; start: number; end: number }[] = [];
-  let current = { ...coords[0] };
-
-  for (let i = 1; i < coords.length; i++) {
-    const next = coords[i];
-    if (next.start <= current.end && next.chromosome === current.chromosome) {
-      current.end = Math.max(current.end, next.end);
-    } else {
-      merged.push({ ...current });
-      current = { ...next };
-    }
-  }
-  merged.push(current);
-
-  //add/subtract distance
-  const extended = merged.map(r => ({
-    chromosome: r.chromosome,
-    start: Math.max(0, r.start - distance),
-    end: r.end + distance,
-  }));
-
-  //find overlaping regions (in case extending created new overlaps)
-  const finalMerged: { chromosome: string; start: number; end: number }[] = [];
-  extended.sort((a, b) => a.start - b.start);
-
-  let curr = { ...extended[0] };
-  for (let i = 1; i < extended.length; i++) {
-    const next = extended[i];
-    if (next.start <= curr.end && next.chromosome === curr.chromosome) {
-      curr.end = Math.max(curr.end, next.end);
-    } else {
-      finalMerged.push({ ...curr });
-      curr = { ...next };
-    }
-  }
-  finalMerged.push(curr);
-
-  return finalMerged;
 }
