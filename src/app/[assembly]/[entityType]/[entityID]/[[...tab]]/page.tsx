@@ -31,6 +31,7 @@ import {
 } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import GWASGenomeBrowserView from "./_GwasTabs/_Browser/gwasgenomebrowserview";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
+import VariantLinkedCcres from "./_SnpTabs/_cCREs/VariantLinkedCcres";
 
 export default function DetailsPage({
   params,
@@ -125,7 +126,14 @@ export default function DetailsPage({
         case "":
           return assembly === "GRCh38" ? <VariantInfo snpid={variantData.data.id} /> : <></>;
         case "ccres":
-          return <p>cCREs intersecting this variant page</p>;
+          return (
+            <VariantLinkedCcres
+              variantData={{
+                ...variantData,
+                data: [variantData.data],
+              }}
+            />
+          );
         case "genes":
           return <EQTLs data={variantData.data} entityType="variant" assembly={assembly} />;
       }

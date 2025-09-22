@@ -27,8 +27,6 @@ export default function useNearbycCREs(geneData: UseGeneDataReturn<{ name: strin
       if (!geneData) return
   
       if (method === "tss") {
-        console.log(geneData.data.transcripts)
-        console.log(getRegions(geneData.data.transcripts, distance))
         return getRegions(geneData.data.transcripts, distance)
       } else if (method === "body") {
         const { __typename, ...coords } = geneData.data.coordinates

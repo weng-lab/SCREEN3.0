@@ -80,7 +80,7 @@ export default function DistanceLinkedCcres({
         start: f?.start,
         end: f?.start + f?.len,
         group: f?.pct,
-        distance: Math.abs(f?.start - geneData?.data.coordinates.start) || 0,
+        distance: Math.abs(f?.start - d.start) || 0,
       };
     })
 
