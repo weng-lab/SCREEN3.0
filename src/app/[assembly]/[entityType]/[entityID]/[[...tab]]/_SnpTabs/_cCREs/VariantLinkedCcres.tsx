@@ -50,7 +50,7 @@ const VariantLinkedCcres = ({
                 start: d?.start,
                 end: d?.start + d?.len,
                 group: d?.pct,
-                distance: Math.abs(d?.start - d.start) || 0,
+                distance: Math.abs(d?.start - coordinates.start) || 0,
             };
         })
 
