@@ -139,7 +139,7 @@ const VariantLinkedCcres = ({
             <Table
                 rows={nearbyccres}
                 columns={cols}
-                label={`Nearby cCREs Within ${distance}bp of ${variantData.data[0]?.id}`}
+                label={`Nearby cCREs`}
                 loading={variantData.loading || loadingCcres}
                 initialState={{
                     sorting: {
@@ -164,6 +164,9 @@ const VariantLinkedCcres = ({
                         distance={distance}
                         handleDistanceChange={handleDistanceChange}
                     />
+                }
+                labelTooltip={
+                    <Typography component="span" variant="subtitle2">(Within {distance}bp of {variantData.data[0]?.id})</Typography>
                 }
             />
         </Box>
