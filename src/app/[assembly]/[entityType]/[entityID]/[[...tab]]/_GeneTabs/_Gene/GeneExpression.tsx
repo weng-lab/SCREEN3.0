@@ -5,7 +5,7 @@ import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
 import { BarData } from "@weng-lab/visualization";
 import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
-import { BarChart, CandlestickChart } from "@mui/icons-material";
+import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Distribution, ViolinPoint } from "@weng-lab/visualization";
@@ -85,20 +85,6 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
             />
           ),
         },
-        // Add back once query returns umap coordiantes
-        // {
-        //   tabTitle: "UMAP",
-        //   icon: <ScatterPlot />,
-        //   plotComponent: (
-        //     <GeneExpressionUMAP
-        //       geneData={geneData}
-        //       selected={selected}
-        //       sortedFilteredData={sortedFilteredData}
-        //       geneExpressionData={geneExpressionData}
-        //       onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
-        //     />
-        //   ),
-        // },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
@@ -114,6 +100,22 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
             />
           ),
         },
+        // Add back once query returns umap coordiantes
+         {
+           tabTitle: "UMAP",
+           icon: <ScatterPlot />,
+           plotComponent: (
+             <GeneExpressionUMAP
+               assembly={assembly}
+               geneData={geneData}
+               selected={selected}
+               sortedFilteredData={sortedFilteredData}
+               geneExpressionData={geneExpressionData}
+               onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
+             />
+           ),
+         },
+        
       ]}
     />
   );

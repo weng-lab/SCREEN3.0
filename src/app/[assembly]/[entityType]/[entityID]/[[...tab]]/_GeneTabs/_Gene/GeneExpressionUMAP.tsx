@@ -5,7 +5,9 @@ import { useMemo, useRef, useState } from "react";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
 import { tissueColors } from "common/lib/colors"
 import { theme } from "app/theme";
-
+import { scaleLinear } from "@visx/scale";
+import { interpolateYlOrRd } from "d3-scale-chromatic";
+import { shape } from "@mui/system";
 export type GeneExpressionUmapProps<
 T,
   S extends boolean | undefined,
@@ -18,13 +20,13 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   geneExpressionData,
   ...rest
 }: GeneExpressionUmapProps<T, S, Z>) => {
-  const [colorScheme, setColorScheme] = useState<"expression" | "lineage">("expression");
+  const [colorScheme, setColorScheme] = useState<"expression" | "tissue">("expression");
   const [showLegend, setShowLegend] = useState<boolean>(true);
 
   const { data, loading, error } = geneExpressionData;
 
   const handleColorSchemeChange = (event: SelectChangeEvent) => {
-    setColorScheme(event.target.value as "expression" | "lineage");
+    setColorScheme(event.target.value as "expression" | "tissue");
   };
   const graphContainerRef = useRef(null);
 
@@ -35,10 +37,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
     },
   };
 
-  function logTransform(val: number) {
-    return Math.log10(val + 1);
-  }
-
+  
   //find the max logTPM for the domain fo the gradient
   // const maxValue = useMemo(() => {
   //   if (!data || data.length === 0) return 0;
@@ -48,6 +47,31 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   //generate the domain for the gradient based on the max number
   const generateDomain = (max: number, steps: number) => {
     return Array.from({ length: steps }, (_, i) => (i / (steps - 1)) * max);
+  };
+  function logTransform(val: number) {
+    return Math.log10(val + 1);
+  }
+   //find the max logTPM for the domain fo the gradient
+   const maxValue = useMemo(() => {
+    if (!data || data.length === 0) return 0;
+    return Math.max(...data.map((x) => logTransform(x.gene_quantification_files[0].quantifications[0].tpm)));
+  }, [data]);
+
+  const colorScale = useMemo(
+    () =>
+      scaleLinear({
+        domain: generateDomain(maxValue, 9), // 9 evenly spaced domain stops (9 colors)
+        range: Array.from({ length: 9 }, (_, i) => i / 8), // Normalize range for interpolation
+        clamp: true,
+      }),
+    [maxValue]
+  );
+
+
+  
+  const generateGradient = (maxValue: number) => {
+    const stops = generateDomain(maxValue, 9).map(value => interpolateYlOrRd(colorScale(value)));
+    return `#808080, ${stops.join(", ")}`;
   };
 
   /**
@@ -74,26 +98,34 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
 
     return data
       .map((x) => {
-        // const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.value)));
+        const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.gene_quantification_files[0].quantifications[0].tpm)));        
+
+        const getColor = () => {
+          if (isHighlighted(x) || selected.length === 0) {
+            if (colorScheme === "expression") {
+              return gradientColor;
+            } else return tissueColors[x.tissue];
+          } else return "#CCCCCC";
+        };
 
         return {
-          x: 1,
-          y: 2,
+          x: x.umap_1,
+          y: x.umap_2,
           r: isHighlighted(x) ? 6 : 4,
-          color:
-            isHighlighted(x) || selected.length === 0
-              ? tissueColors[x.tissue] ?? tissueColors.missing
-              : "#CCCCCC",
+          color:  getColor(),
           metaData: x,
+          shape: "circle" as ("circle" | "triangle")
         };
       })
-      .sort((a, b) => (isHighlighted(b.metaData) ? -1 : 0));
-  }, [data, selected]);
+      //.sort((a, b) => (isHighlighted(b.metaData) ? -1 : 0));
+  }, [data, colorScheme, selected]);
+
+  //console.log("scatterData",scatterData, maxValue)
 
   const legendEntries = useMemo(() => {
     if (!scatterData) return [];
 
-    if (colorScheme === "lineage") {
+    if (colorScheme === "tissue") {
       // Count occurrences of each unique cellType
       const cellTypeCounts = scatterData.reduce((acc, point) => {
         const cellType = point.metaData.tissue;
@@ -103,15 +135,34 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
 
       return Array.from(cellTypeCounts.entries())
         .map(([cellType, count]) => ({
-          label: getCellCategoryDisplayname(cellType),
-          color: getCellCategoryColor(cellType),
+          label: (cellType),
+          color: tissueColors[cellType] ,
           value: count,
         }))
         .sort((a, b) => b.value - a.value);
     }
   }, [scatterData, colorScheme]);
+  console.log("ScatterData", scatterData)
 
   const TooltipBody = (point: Point<PointMetadata>) => {
+
+    console.log("point", point)
+    const avgTPM = (() => {
+      const files = point.metaData.gene_quantification_files || [];
+      const tpms: number[] = [];
+    
+      files.forEach(file => {
+        if (file.quantifications && file.quantifications.length > 0) {
+          const firstTPM = file.quantifications[0].tpm;
+          if (firstTPM !== undefined && firstTPM !== null) {
+            tpms.push(firstTPM);
+          }
+        }
+      });
+    
+      if (tpms.length === 0) return null; // or 0 if you prefer
+      return tpms.reduce((a, b) => a + b, 0) / tpms.length;
+    })();
     return (
       <>
         <Typography>
@@ -124,7 +175,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           <b>Tissue:</b> {point.metaData.tissue}
         </Typography>
         <Typography>
-          <b>TPM:</b> {point.metaData.gene_quantification_files[0].quantifications[0].tpm.toFixed(2)}
+          <b>TPM:</b> {colorScheme === "expression" ? logTransform(avgTPM).toFixed(2) : avgTPM.toFixed(2)}
         </Typography>
       </>
     );
@@ -143,7 +194,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           MenuProps={{ disableScrollLock: true }}
         >
           <MenuItem value={"expression"}>Expression</MenuItem>
-          <MenuItem value={"lineage"}>Lineage</MenuItem>
+          <MenuItem value={"tissue"}>Tissue</MenuItem>
         </Select>
       </FormControl>
     );
@@ -151,7 +202,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
 
   return (
     <>
-      {/* <ColorBySelect /> */}
+       <ColorBySelect /> 
       <Box
         padding={1}
         //hacky height, have to subtract the pixel value of the Colorby select and the margin to line it up with the table
@@ -168,9 +219,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         mb={2}
         zIndex={0}
       >
-        <Typography variant="body2" align="right">
-          {"\u25EF unstimulated, \u25B3 stimulated "}
-        </Typography>
+       
         <ScatterPlot
           {...rest}
           controlsHighlight={theme.palette.primary.light}
@@ -178,7 +227,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           selectable
           loading={loading}
           miniMap={map}
-          groupPointsAnchor="tissue"
+          groupPointsAnchor="accession"
           tooltipBody={(point) => <TooltipBody {...point} />}
         />
         <Button
@@ -197,7 +246,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           </Typography>
           {colorScheme === "expression" ? (
             <>
-              {/* <Typography>Log₁₀(TPM + 1)</Typography>
+              <Typography>Log₁₀(TPM + 1)</Typography>
               <Box sx={{ display: "flex", alignItems: "center", width: "200px" }}>
                 <Typography sx={{ mr: 1 }}>0</Typography>
                 <Box
@@ -209,7 +258,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
                   }}
                 />
                 <Typography sx={{ ml: 1 }}>{maxValue.toFixed(2)}</Typography>
-              </Box> */}
+              </Box> 
             </>
           ) : (
             /**
@@ -233,7 +282,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
                           .split(" ")
                           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                           .join(" ")}`}
-                        {colorScheme === "lineage" ? `: ${cellType.value}` : ""}
+                        {colorScheme === "tissue" ? `: ${cellType.value}` : ""}
                       </Typography>
                     </Box>
                   ))}
