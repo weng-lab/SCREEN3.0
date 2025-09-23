@@ -17,6 +17,7 @@ export type BiosampleRow = {
   name?: string;
   displayname: string;
   sampleType?: string;
+  lifeStage?: string;
   ontology?: string;
   class?: CcreClass;
   collection: "core" | "partial" | "ancillary"
@@ -87,6 +88,7 @@ const zScoreFormatting: Partial<GridColDef> = {
     return z_score_display_format(params.value);
   },
   sortComparator: (v1, v2) => (v1 === "NA" ? -1 : v2 === "NA" ? 1 : v1 - v2),
+  type: "number"
 };
 
 const classificationFormatting: Partial<GridColDef> = {
@@ -159,6 +161,10 @@ const coreAndPartialCols: GridColDef[] = [
     valueFormatter: capitalizeFirstLetter
   },
   {
+    headerName: "Life Stage",
+    field: "lifeStage"
+  },
+  {
     headerName: "DNase",
     field: "dnase",
     ...zScoreFormatting,
@@ -214,6 +220,7 @@ export const BIOSAMPLE_Zs = gql(`
         id: name  # Add a unique identifier for each biosample
         sampleType
         displayname
+        lifeStage
         cCREZScores(accession: $accession) @nonreactive {  # Mark this field as non-reactive to prevent unnecessary re-renders
           score
           assay
@@ -404,6 +411,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
         ontology: sample.ontology,
         sampleType: sample.sampleType,
         displayname: sample.displayname,
+        lifeStage: sample.lifeStage,
         class: classification,
         collection,
         ...scores
@@ -501,7 +509,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                   loading={loadingCorePartialAncillary}
                   error={errorCorePartialAncillary}
                   divHeight={{ height: "400px" }}
-                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] }, columns: {columnVisibilityModel: {"lifeStage": false}} }}
                   {...disableCsvEscapeChar}
                 />
               </Stack>

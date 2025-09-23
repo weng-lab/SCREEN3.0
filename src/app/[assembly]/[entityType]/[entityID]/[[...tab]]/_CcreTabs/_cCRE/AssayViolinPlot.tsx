@@ -5,6 +5,7 @@ import { capitalizeFirstLetter, truncateString } from "common/utility";
 import { tissueColors } from "common/lib/colors";
 import { BiosampleRow, formatAssay } from "./BiosampleActivity";
 import { useMemo } from "react";
+import { metadata } from "app/layout";
 
 const AssayViolinPlot = ({
   entity,
@@ -18,9 +19,9 @@ const AssayViolinPlot = ({
 }: SharedAssayViewPlotProps) => {
 
   const violinData: Distribution<BiosampleRow>[] = useMemo(() => {
-    if (!sortedFilteredData) return [];
+    if (!rows) return [];
 
-    const tissueGroups = sortedFilteredData.reduce((acc, item) => {
+    const tissueGroups = rows.reduce((acc, item) => {
       const key = item.ontology;
       if (!acc[key]) acc[key] = [];
       acc[key].push(item);
@@ -28,36 +29,26 @@ const AssayViolinPlot = ({
     }, {} as Record<string, BiosampleRow[]>);
 
     return Object.entries(tissueGroups).map(([tissue, group]) => {
-      const values = group.map((d) => d[assay]);
       const label = capitalizeFirstLetter(tissue);
+
+      const isHighlighted = (x: BiosampleRow) => selected.some((y) => y.name === x.name);
+
+      const noneSelected = selected.length === 0;
+      const allInViolinSelected = group.every((d) => selected.some((s) => s.name === d.name));
+
       const violinColor =
-        selected.length === 0 ||
-        group.every((d) =>
-          selected.some((s) => s.name === d.name)
-        )
-          ? tissueColors[tissue] ?? tissueColors.missing
-          : "#CCCCCC";
+        noneSelected || allInViolinSelected ? tissueColors[tissue] ?? tissueColors.missing : "#CCCCCC";
 
-      const data: ViolinPoint<BiosampleRow>[] = values.map((value, i) => {
-        const metadata = group[i];
-        const isSelected =
-          selected.length === 0 ||
-          selected.some(
-            (s) => s.name === metadata.name
-          )
-            ? true
-            : false;
-        const pointColor = isSelected ? tissueColors[tissue] ?? tissueColors.missing : "#CCCCCC";
-        const pointRadius = isSelected ? 4 : 2;
+      const data: ViolinPoint<BiosampleRow>[] = group.map((sample, i) => {
+        const pointColor = noneSelected || isHighlighted(sample) ? tissueColors[tissue] ?? tissueColors.missing : "#CCCCCC";
+        const pointRadius = isHighlighted(sample) ? 4 : 2;
 
-        return values.length < 3
-          ? { value, radius: pointRadius, tissue: tissue, metadata, color: pointColor }
-          : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue: tissue, metadata, color: pointColor };
-      });
+        return { value: sample[assay], radius: pointRadius, tissue: tissue, metadata: sample, color: pointColor }
+      }).sort((a, b) => (isHighlighted(b.metadata) ? -1 : 0)) ;
 
       return { label, data, violinColor };
     });
-  }, [assay, selected, sortedFilteredData]);
+  }, [assay, selected, rows]);
 
   const onViolinClicked = (distribution: Distribution<BiosampleRow>) => {
     const rowsForDistribution = distribution.data.map((point) => point.metadata);

@@ -1,15 +1,33 @@
-import { Box } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import { BarData, BarPlot, Point, ScatterPlot } from "@weng-lab/visualization";
 import { SharedAssayViewPlotProps } from "./AssayView";
 import { capitalizeFirstLetter, truncateString } from "common/utility";
 import { tissueColors } from "common/lib/colors";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
-import { useMemo } from "react";
+import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
 import { gql } from "types/generated";
 import { useQuery } from "@apollo/client";
-import { Typography } from "@mui/material";
-import { scaleLinear } from '@visx/scale';
-import { interpolateYlOrRd } from 'd3-scale-chromatic';
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
+import { scaleLinear } from "@visx/scale";
+import {
+  interpolateOranges,
+  interpolateOrRd,
+  interpolateRdGy,
+  interpolateRdYlBu,
+  interpolateReds,
+} from "d3-scale-chromatic";
+import { assayColors } from "app/_biosampleTables/helpers";
+import { metadata } from "app/layout";
+import {
+  Legend,
+  LegendLinear,
+  LegendQuantile,
+  LegendOrdinal,
+  LegendSize,
+  LegendThreshold,
+  LegendItem,
+  LegendLabel,
+} from "@visx/legend";
 
 const BIOSAMPLE_UMAP = gql(`
   query BiosampleUmap($assembly: String!, $assay: String!) {
@@ -22,7 +40,7 @@ const BIOSAMPLE_UMAP = gql(`
   }
 `);
 
-const TooltipBody = ({metaData, assay}: {metaData: BiosampleRow, assay: Assay}) => {
+const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: Assay }) => {
   return (
     <>
       <Typography>
@@ -35,7 +53,7 @@ const TooltipBody = ({metaData, assay}: {metaData: BiosampleRow, assay: Assay}) 
         <b>Sample Type:</b> {metaData.sampleType}
       </Typography>
       <Typography>
-        <b>{formatAssay(assay) }:</b> {metaData[assay]}
+        <b>{formatAssay(assay)}:</b> {metaData[assay]}
       </Typography>
     </>
   );
@@ -51,6 +69,12 @@ const AssayUMAP = ({
   sortedFilteredData,
   setSortedFilteredData,
 }: SharedAssayViewPlotProps) => {
+  const [colorScheme, setColorScheme] = useState<"score" | "organ/tissue" | "sampleType">("score");
+
+  const handleColorChange = (e: SelectChangeEvent<"score" | "organ/tissue" | "sampleType">) => {
+    setColorScheme(e.target.value);
+  };
+
   const {
     data: data_umap,
     loading: loading_umap,
@@ -62,16 +86,27 @@ const AssayUMAP = ({
     },
   });
 
-  const minValue = rows ? Math.min(...rows.map(x => x[assay])) : null
-  const maxValue = rows ? Math.max(...rows.map(x => x[assay])) : null
-
   const colorScale = useMemo(() => {
-    if (!minValue || !maxValue) return null
     return scaleLinear({
-      domain: [Math.max(minValue, -1), maxValue],
-      range: [0, 1]
-    })
-  }, [maxValue, minValue])
+      domain: [1.639, 1.64, 4],
+      range: ["#DDD", interpolateOrRd(0.33), interpolateOrRd(1)],
+      clamp: true,
+    });
+  }, []);
+
+  const getPointColor = useCallback(
+    (metadata: BiosampleRow) => {
+      switch (colorScheme) {
+        case "score":
+          return colorScale(metadata[assay]);
+        case "organ/tissue":
+          return tissueColors[metadata.ontology] ?? tissueColors.missing;
+        case "sampleType":
+          return tissueColors[metadata.sampleType] ?? tissueColors.missing;
+      }
+    },
+    [assay, colorScale, colorScheme]
+  );
 
   const scatterData: Point<BiosampleRow>[] = useMemo(() => {
     if (!rows || !data_umap || !colorScale) return [];
@@ -89,13 +124,13 @@ const AssayUMAP = ({
           y: coords[1] ?? 0,
           shape: "circle" as const,
           r: isHighlighted(x) ? 4 : 2,
-          color:
-            isHighlighted(x) || selected.length === 0 ? interpolateYlOrRd(colorScale(x[assay])) : "#CCCCCC",
+          color: isHighlighted(x) || selected.length === 0 ? getPointColor(x) : "#CCCCCC",
           metaData: x,
         };
       })
+      .sort((a, b) => a.metaData[assay] - b.metaData[assay])
       .sort((a, b) => (isHighlighted(b.metaData) ? -1 : 0));
-  }, [rows, data_umap, selected, colorScale, assay]);
+  }, [rows, data_umap, colorScale, selected, getPointColor, assay]);
 
   /**
    * @todo potential bug. Assumes reference equality between rows returned in callback and in state
@@ -106,29 +141,87 @@ const AssayUMAP = ({
     } else setSelected([...selected, point.metaData]);
   };
 
+  const Legend = useCallback(() => {
+    switch (colorScheme) {
+      case "score":
+        return (
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <LegendItem margin="0 5px">
+              <svg width={10} height={10}>
+                <rect fill={colorScale(-2)} width={10} height={10} />
+              </svg>
+              <Typography variant="caption" align="left" margin="0 0 0 4px">
+                {"< 1.64"}
+              </Typography>
+            </LegendItem>
+            <LegendItem margin="0 5px">
+              <svg width={10} height={10}>
+                <rect fill={colorScale(1.64)} width={10} height={10} />
+              </svg>
+              <Typography variant="caption" margin="0 0 0 4px">
+                {"1.64"}
+              </Typography>
+            </LegendItem>
+            <LegendItem margin="0 5px">
+              <svg width={10} height={10}>
+                <rect fill={colorScale(3)} width={10} height={10} />
+              </svg>
+              <Typography variant="caption" margin="0 0 0 4px">
+                {"3"}
+              </Typography>
+            </LegendItem>
+            <LegendItem margin="0 5px">
+              <svg width={10} height={10}>
+                <rect fill={colorScale(4)} width={10} height={10} />
+              </svg>
+              <Typography variant="caption" margin="0 0 0 4px">
+                {"≥ 4"}
+              </Typography>
+            </LegendItem>
+          </div>
+        );
+      case "organ/tissue":
+        return;
+      case "sampleType":
+        return;
+    }
+  }, [colorScale, colorScheme]);
+
   return (
-    <Box
+    <Stack
       width={"100%"}
       height={"100%"}
-      overflow={"auto"}
       padding={1}
       sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
     >
-      <ScatterPlot
-        pointData={scatterData}
-        onPointClicked={handlePointClick}
-        selectable
-        loading={loading_umap}
-        miniMap={{
-          position: {
-            right: 50,
-            bottom: 50,
-          },
-        }}
-        groupPointsAnchor="ontology"
-        tooltipBody={(point) => <TooltipBody metaData={point.metaData} assay={assay} />}
-      />
-    </Box>
+      <Stack direction={"row"}>
+        <FormControl>
+          <InputLabel id="demo-simple-select-label">Color By</InputLabel>
+          <Select value={colorScheme} label="Color By" onChange={handleColorChange}>
+            <MenuItem value={"score"}>{formatAssay(assay)} Z Score</MenuItem>
+            <MenuItem value={"organ/tissue"}>Organ/Tissue</MenuItem>
+            <MenuItem value={"sampleType"}>Sample Type</MenuItem>
+          </Select>
+        </FormControl>
+        <Legend />
+      </Stack>
+      <Box sx={{ flexGrow: 1 }}>
+        <ScatterPlot
+          pointData={scatterData}
+          onPointClicked={handlePointClick}
+          selectable
+          loading={loading_umap}
+          miniMap={{
+            position: {
+              right: 50,
+              bottom: 50,
+            },
+          }}
+          groupPointsAnchor={colorScheme === "sampleType" ? "sampleType" : "ontology"}
+          tooltipBody={(point) => <TooltipBody metaData={point.metaData} assay={assay} />}
+        />
+      </Box>
+    </Stack>
   );
 };
 
