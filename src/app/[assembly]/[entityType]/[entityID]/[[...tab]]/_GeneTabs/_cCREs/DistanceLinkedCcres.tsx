@@ -75,6 +75,7 @@ export default function DistanceLinkedCcres({
   const nearbyccres = dataNearby
     ?.map((d) => {
       let f = dataCcreDetails?.find((c) => c.info.accession === d.ccre);
+      const nearestTranscript = calcDistCcreToTSS({ chromosome: f?.chrom, start: f?.start, end: f?.start + f?.len }, geneData.data.transcripts, geneData.data.strand as "+" | "-", "closest")
       return {
         ...d,
         chromosome: f?.chrom,
@@ -82,8 +83,10 @@ export default function DistanceLinkedCcres({
         end: f?.start + f?.len,
         group: f?.pct,
         distance: calcMethod === "tss" ?
-          calcDistCcreToTSS({chromosome: f?.chrom, start: f?.start, end: f?.start + f?.len}, geneData.data.transcripts, geneData.data.strand as "+" | "-", "closest")
+          nearestTranscript.distance
           : Math.abs(f?.start - d.start) || 0,
+        direction: nearestTranscript.direction,
+        tss: nearestTranscript.transcriptId
       };
     })
 
@@ -149,12 +152,20 @@ export default function DistanceLinkedCcres({
         return value.toLocaleString();
       },
     },
+    ...(calcMethod === "tss"
+      ? [
+        {
+          field: "tss",
+          headerName: "Nearest TSS",
+        }
+      ]
+      : []),
     {
       field: "distance",
       headerName: "Distance",
       renderHeader: () => (
         <>
-          Distance from&nbsp;<i>{calcMethod === "tss" ? `TSS` :geneData.data.name}</i>
+          Distance from&nbsp;<i>{calcMethod === "tss" ? `TSS` : geneData.data.name}</i>
         </>
       ),
       type: "number",
@@ -165,6 +176,14 @@ export default function DistanceLinkedCcres({
         return value.toLocaleString();
       },
     },
+    ...(calcMethod === "tss"
+      ? [
+        {
+          field: "direction",
+          headerName: "Direction",
+        }
+      ]
+      : []),
   ];
 
   return (
