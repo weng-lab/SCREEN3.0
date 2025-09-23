@@ -10,6 +10,7 @@ import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { usePathname } from "next/navigation";
 import { Assembly } from "types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
+import { calcDistCcreToTSS } from "common/utility";
 
 export type Transcript = {
   id: string;
@@ -80,7 +81,9 @@ export default function DistanceLinkedCcres({
         start: f?.start,
         end: f?.start + f?.len,
         group: f?.pct,
-        distance: Math.abs(f?.start - d.start) || 0,
+        distance: calcMethod === "tss" ?
+          calcDistCcreToTSS({chromosome: f?.chrom, start: f?.start, end: f?.start + f?.len}, geneData.data.transcripts, geneData.data.strand as "+" | "-", "closest")
+          : Math.abs(f?.start - d.start) || 0,
       };
     })
 
@@ -151,7 +154,7 @@ export default function DistanceLinkedCcres({
       headerName: "Distance",
       renderHeader: () => (
         <>
-          Distance from&nbsp;<i>{geneData.data.name}</i>
+          Distance from&nbsp;<i>{calcMethod === "tss" ? `TSS` :geneData.data.name}</i>
         </>
       ),
       type: "number",
