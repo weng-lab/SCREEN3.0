@@ -197,7 +197,7 @@ const AssayUMAP = ({
       <Stack direction={"row"}>
         <FormControl>
           <InputLabel id="demo-simple-select-label">Color By</InputLabel>
-          <Select value={colorScheme} label="Color By" onChange={handleColorChange}>
+          <Select value={colorScheme} label="Color By" onChange={handleColorChange} size="small">
             <MenuItem value={"score"}>{formatAssay(assay)} Z Score</MenuItem>
             <MenuItem value={"organ/tissue"}>Organ/Tissue</MenuItem>
             <MenuItem value={"sampleType"}>Sample Type</MenuItem>
