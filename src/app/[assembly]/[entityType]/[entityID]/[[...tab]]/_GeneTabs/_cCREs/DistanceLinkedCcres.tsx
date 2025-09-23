@@ -169,21 +169,14 @@ export default function DistanceLinkedCcres({
         </>
       ),
       type: "number",
-      valueFormatter: (value?: string) => {
-        if (value == null) {
+      renderCell: (params) => {
+        if (params.value == null) {
           return "";
         }
-        return value.toLocaleString();
+        const direction = calcMethod === "tss" && params.value !== 0 ? params.row.direction === "Upstream" ? "+" : "-" : ""
+        return <span>{direction}{params.value.toLocaleString()}</span>
       },
     },
-    ...(calcMethod === "tss"
-      ? [
-        {
-          field: "direction",
-          headerName: "Direction",
-        }
-      ]
-      : []),
   ];
 
   return (
