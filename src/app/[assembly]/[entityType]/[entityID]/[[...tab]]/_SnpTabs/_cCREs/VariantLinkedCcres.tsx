@@ -7,6 +7,7 @@ import { UseSnpDataReturn } from "common/hooks/useSnpData";
 import { useMemo, useState } from "react";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { DistanceSlider } from "./DistanceSlider";
+import { calcDistRegionToRegion } from "common/utility";
 
 const VariantLinkedCcres = ({
     variantData,
@@ -26,7 +27,6 @@ const VariantLinkedCcres = ({
         if (!variantData.data[0]?.coordinates) return undefined;
 
         const { chromosome, start, end } = variantData.data[0].coordinates;
-
         return {
             chromosome,
             start: start - distance,
@@ -50,7 +50,7 @@ const VariantLinkedCcres = ({
                 start: d?.start,
                 end: d?.start + d?.len,
                 group: d?.pct,
-                distance: Math.abs(d?.start - coordinates.start) || 0,
+                distance: calcDistRegionToRegion({start: d?.start, end: d?.start + d?.len} ,{start: variantData.data[0].coordinates.start, end: variantData.data[0].coordinates.end}),
             };
         })
 
