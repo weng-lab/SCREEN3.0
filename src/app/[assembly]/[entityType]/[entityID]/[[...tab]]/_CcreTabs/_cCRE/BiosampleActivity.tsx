@@ -285,7 +285,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
   const nearbyGenes = dataNearbyGenes?.nearbyGenes.map((gene) => {
     return {
       ...gene,
-      distanceToTSS: calcDistCcreToTSS(coordinates, gene.transcripts, gene.strand as "+" | "-", "middle"),
+      distanceToTSS: calcDistCcreToTSS(coordinates, gene.transcripts, gene.strand as "+" | "-", "middle").distance,
       overlapsTSS: ccreOverlapsTSS(coordinates, gene.transcripts, gene.strand as "+" | "-")
     };
   });

@@ -4,7 +4,7 @@ import VariantInfo from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpT
 import EQTLs from "common/components/EQTLTables";
 import GenomeBrowserView from "common/gbview/genomebrowserview";
 import GeneExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
-import GeneLinkedIcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/GeneLinkedIcres";
+import GeneLinkedIcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/GeneLinkedCcres";
 import CcreLinkedGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Variants/CcreVariantsTab";
 import IntersectingCcres from "common/components/IntersectingCcres";

@@ -27,7 +27,7 @@ export default function LinkedElements<T extends LinkedGeneInfo | LinkedICREInfo
             },
           }}
           {...table}
-          divHeight={{height: "300px"}}
+          divHeight={{height: "400px"}}
         />
       ))}
     </Stack>
