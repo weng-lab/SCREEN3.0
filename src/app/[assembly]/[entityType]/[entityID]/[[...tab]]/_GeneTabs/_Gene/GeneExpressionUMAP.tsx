@@ -67,6 +67,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   //   return `#808080, ${stops.join(", ")}`;
   // };
 
+
   const scatterData: Point<PointMetadata>[] = useMemo(() => {
     if (!data) return [];
 

@@ -1,5 +1,4 @@
 import React from "react";
-import { cCRERow } from "./BiosampleActivity";
 import { BarStack, BarStackHorizontal } from "@visx/shape";
 import { scaleBand, scaleLinear } from "@visx/scale";
 import { useTooltip, defaultStyles, useTooltipInPortal } from "@visx/tooltip";
@@ -14,9 +13,10 @@ import {
 import { TooltipInPortalProps } from "@visx/tooltip/lib/hooks/useTooltipInPortal";
 import { GROUP_COLOR_MAP } from "common/lib/colors";
 import { CcreClass } from "types/globalTypes";
+import { BiosampleRow } from "./BiosampleActivity";
 
 export type ClassProportionBarProps = {
-  rows: cCRERow[];
+  rows: BiosampleRow[];
   width: number;
   height: number;
   orientation: "vertical" | "horizontal";

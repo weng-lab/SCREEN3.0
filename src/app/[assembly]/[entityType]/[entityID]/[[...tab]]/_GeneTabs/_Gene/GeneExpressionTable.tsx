@@ -341,6 +341,7 @@ const GeneExpressionTable = ({
     }
   };
 
+
   useEffect(() => {
     const isCustomSorted = viewBy === "byTissueTPM";
     if (isCustomSorted && apiRef?.current) {
@@ -363,11 +364,13 @@ const GeneExpressionTable = ({
             sortModel: [{ field: "tpm", sort: "desc" }],
           },
         }}
+        // -- Selection Props --
         checkboxSelection
         getRowId={(row) => row.gene_quantification_files[0].accession} //needed to match up data with the ids returned by onRowSelectionModelChange
         onRowSelectionModelChange={handleRowSelectionModelChange}
         rowSelectionModel={{ type: 'include', ids: new Set(selected.map((x) => x.gene_quantification_files[0].accession)) }}
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
+        // -- End Selection Props --
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
         divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
         toolbarSlot={
