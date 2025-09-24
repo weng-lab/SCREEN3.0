@@ -15,6 +15,16 @@ const GENE_Query = gql(`
         end
         start
       }
+        transcripts {
+      coordinates {
+        chromosome
+        end
+        start
+      }
+      id
+      name
+      strand
+    }
     }
   }
 `)

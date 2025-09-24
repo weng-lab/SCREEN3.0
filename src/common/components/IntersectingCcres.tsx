@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image"
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { useCcreData } from "common/hooks/useCcreData";
@@ -67,9 +68,12 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
       ),
       valueGetter: (_, row) => row.info.accession,
       renderCell: (params) => (
+        
         <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
           <i>{params.value}</i>
         </LinkComponent>
+        
+                  
       ),
     },
     {
@@ -186,8 +190,37 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
       ),
 
     },
+    {
+      field: "isicre",
+      renderHeader: () => (
+        <strong>
+          <p>iCRE</p>
+        </strong>
+      ),
+      valueGetter: (_, row) => row.isicre,
+      renderCell: (params) => {
+        return params.row.isicre ? (
+          <LinkComponent
+            href={`https://igscreen.vercel.app/icre/${params.row.info.accession}`}
+            openInNewTab
+          >
+            <Image
+              src="/igSCREEN_icon.png"
+              alt="igSCREEN Helix"
+              height={14}
+              width={14}
+              style={{ verticalAlign: "text-bottom" }} // try "sub" if you want it lower
+            />
+          </LinkComponent>
+        ) : (
+          <></>
+        );
+      }
+    },
+   
   ];
 
+  //console.log("dataCcres",dataCcres)
   return errorCcres ? (
     <Typography>Error Fetching Ccres</Typography>
   ) : (
@@ -232,6 +265,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
             </Button>
           </Tooltip>
         }
+        divHeight={{maxHeight: "600px"}}
       />
       <Box
         onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

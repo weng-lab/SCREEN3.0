@@ -3,11 +3,16 @@ import { CircularProgress, Typography } from "@mui/material";
 import GenomeBrowserView from "common/gbview/genomebrowserview";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import { isValidAssembly } from "types/globalTypes";
-import { entityTabsConfig, getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/EntityDetails/entityTabsConfig";
+import {
+  entityTabsConfig,
+  getComponentForEntity,
+  isValidEntityType,
+  isValidRouteForEntity,
+} from "common/EntityDetails/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
-import GeneLinkedIcres from "./_GeneTabs/_cCREs/GeneLinkedIcres";
+import GeneLinkedIcres from "./_GeneTabs/_cCREs/GeneLinkedCcres";
 import VariantInfo from "./_SnpTabs/_Variant/Variant";
 import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
@@ -19,7 +24,14 @@ import CcreGWASStudySNPs from "./_GwasTabs/_Ccre/CcreGWASStudySNPs";
 import { GWASStudyGenes } from "./_GwasTabs/_Gene/GWASStudyGenes";
 import { GWASStudySNPs } from "./_GwasTabs/_Variant/GWASStudySNPs";
 import BiosampleEnrichment from "./_GwasTabs/_BiosampleEnrichment/BiosampleEnrichment";
-import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import {
+  AnyOpenEntity,
+  CandidateOpenEntity,
+  isValidOpenEntity,
+} from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import GWASGenomeBrowserView from "./_GwasTabs/_Browser/gwasgenomebrowserview";
+import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
+import VariantLinkedCcres from "./_SnpTabs/_cCREs/VariantLinkedCcres";
 
 export default function DetailsPage({
   params,
@@ -35,9 +47,9 @@ export default function DetailsPage({
   if (!isValidEntityType(assembly, entityType)) {
     throw new Error(`Unknown entity for ${assembly}: ${entityType}`);
   }
-  
+
   let tab = tabString;
-  
+
   /**
    * Since [[...tab]] is an optional catch-all route, tabs is an array.
    * tab is undefined when hitting /entityType/entityID (default tab's route).
@@ -53,10 +65,10 @@ export default function DetailsPage({
     throw new Error(`Unknown tab ${tab} for entity type ${entityType}`);
   }
 
-  const entity: CandidateOpenEntity = {assembly, entityID, entityType, tab }
+  const entity: CandidateOpenEntity = { assembly, entityID, entityType, tab };
 
-  if (!isValidOpenEntity(entity)){
-    throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity))
+  if (!isValidOpenEntity(entity)) {
+    throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity));
   }
 
   const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
@@ -65,7 +77,7 @@ export default function DetailsPage({
     return <CircularProgress />;
   }
 
-  if (data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" &&  !data?.coordinates) {
+  if (data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" && !data?.coordinates) {
     return <Typography>Issue fetching data on {entityID}</Typography>;
   }
 
@@ -74,29 +86,35 @@ export default function DetailsPage({
   }
 
   // Find component we need to render for this route
-  const ComponentToRender = getComponentForEntity(entity)
+  const ComponentToRender = getComponentForEntity(entity);
   // Once each component is refactored to independently fetch it's own data we can simply do the following:
   // return <ComponentToRender entity={entity} />
 
-  if (tab === "browser") {
-    if(data.__typename === "GwasStudies"){
-      return (<>
-        GWAS Browser
-      </>)
-    } else {
-      return (
-        <GenomeBrowserView
-          coordinates={ data.__typename === "SCREENSearchResult" ?  {chromosome: data.chrom, start: data.start, end: data.start + data.len} : data.coordinates}
-          name={data.__typename === "Gene" ? data.name : data.__typename === "SCREENSearchResult" ? data.info.accession : data.__typename === "SNP" ? data.id : null}
-          type={entityType}
-          assembly={assembly}
-        />
-      );
-   }
+  if (tab === "browser" && data.__typename !== "GwasStudies") {
+    return (
+      <GenomeBrowserView
+        coordinates={
+          data.__typename === "SCREENSearchResult"
+            ? { chromosome: data.chrom, start: data.start, end: data.start + data.len }
+            : data.coordinates
+        }
+        name={
+          data.__typename === "Gene"
+            ? data.name
+            : data.__typename === "SCREENSearchResult"
+            ? data.info.accession
+            : data.__typename === "SNP"
+            ? data.id
+            : null
+        }
+        type={entityType}
+        assembly={assembly}
+      />
+    );
   }
 
   /**
-   * For now we are keeping this big switch block to not have to restructure all of the files right now during this refactor. 
+   * For now we are keeping this big switch block to not have to restructure all of the files right now during this refactor.
    * Eventually we can vastly simplify this, and remove data fetching from this file and let the leaf components do their own fetching.
    */
 
@@ -106,9 +124,16 @@ export default function DetailsPage({
 
       switch (tab) {
         case "":
-          return  assembly==="GRCh38" ? <VariantInfo snpid={variantData.data.id} /> : <></>;
+          return assembly === "GRCh38" ? <VariantInfo snpid={variantData.data.id} /> : <></>;
         case "ccres":
-          return <p>cCREs intersecting this variant page</p>;
+          return (
+            <VariantLinkedCcres
+              variantData={{
+                ...variantData,
+                data: [variantData.data],
+              }}
+            />
+          );
         case "genes":
           return <EQTLs data={variantData.data} entityType="variant" assembly={assembly} />;
       }
@@ -122,9 +147,9 @@ export default function DetailsPage({
         case "":
           return <GeneExpression geneData={geneData} assembly={assembly} />;
         case "ccres":
-          return assembly==="GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
+          return assembly === "GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
         case "variants":
-          return <EQTLs data={geneData.data} entityType="gene" assembly={assembly}/>;
+          return <EQTLs data={geneData.data} entityType="gene" assembly={assembly} />;
       }
       break;
     }
@@ -137,39 +162,66 @@ export default function DetailsPage({
         case "conservation":
           return <ComponentToRender entity={entity} />;
         case "genes":
-          return assembly==="GRCh38" ? <CcreLinkedGenes accession={CcreData.data.info.accession} coordinates={{chromosome: CcreData.data.chrom, start: CcreData.data.start, end: CcreData.data.start + CcreData.data.len}} /> : <>Linked Genes for Mouse cCREs</>;
+          return assembly === "GRCh38" ? (
+            <CcreLinkedGenes
+              accession={CcreData.data.info.accession}
+              coordinates={{
+                chromosome: CcreData.data.chrom,
+                start: CcreData.data.start,
+                end: CcreData.data.start + CcreData.data.len,
+              }}
+            />
+          ) : (
+            <>Linked Genes for Mouse cCREs</>
+          );
         case "variants":
-          return assembly==="GRCh38" ? <CcreVariantsTab CcreData={CcreData} assembly={assembly}/>: <p> Variants for mouse cCREs </p>;
+          return assembly === "GRCh38" ? (
+            <CcreVariantsTab CcreData={CcreData} assembly={assembly} />
+          ) : (
+            <p> Variants for mouse cCREs </p>
+          );
       }
       break;
     }
 
     case "gwas": {
-      const gwasData = { data, loading, error } as  useEntityMetadataReturn<"gwas">
+      const gwasData = { data, loading, error } as useEntityMetadataReturn<"gwas">;
+
       switch (tab) {
         case "ccres":
-          return <CcreGWASStudySNPs study_name={gwasData.data.study} totalldblocks={ data.__typename !== "GwasStudies" ? 0 : data?.totalldblocks || 0}/>;          
+          return (
+            <CcreGWASStudySNPs
+              study_name={gwasData.data.study}
+              totalldblocks={data.__typename !== "GwasStudies" ? 0 : data?.totalldblocks || 0}
+            />
+          );
         case "genes":
-          return <GWASStudyGenes study_name={gwasData.data.study}/>;
-        case "variants":          
-          return <GWASStudySNPs study_name={gwasData.data.study}/>;
+          return <GWASStudyGenes study_name={gwasData.data.study} />;
+        case "variants":
+          return <GWASStudySNPs study_name={gwasData.data.study} />;
         case "biosample_enrichment":
-          return <BiosampleEnrichment study_name={gwasData.data.study}/>;   
+          return <BiosampleEnrichment study_name={gwasData.data.study} />;
+        case "browser":
+          return <GWASGenomeBrowserView study_name={gwasData.data.study} />;
       }
       break;
     }
 
     case "region": {
-      const region = parseGenomicRangeString(entityID)
+      const region = parseGenomicRangeString(entityID);
 
       switch (tab) {
         case "ccres":
-          return <IntersectingCcres assembly={assembly} region={region} />;          
+          return <IntersectingCcres assembly={assembly} region={region} />;
         case "genes":
           return <IntersectingGenes assembly={assembly} region={region} />;
         case "variants":
           //TODO: Add Mouse SNPs
-          return assembly === "mm10" ? <p>This page should have intersecting mouse SNPs</p> :  <IntersectingSNPs region={region} />;
+          return assembly === "mm10" ? (
+            <p>This page should have intersecting mouse SNPs</p>
+          ) : (
+            <IntersectingSNPs region={region} />
+          );
       }
     }
   }

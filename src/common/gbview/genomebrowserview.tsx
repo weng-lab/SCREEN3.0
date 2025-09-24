@@ -249,7 +249,7 @@ export default function GenomeBrowserView({
             size="small"
             assembly={assembly as Assembly}
             onSearchSubmit={handeSearchSubmit}
-            queries={["Gene", "SNP", "iCRE", "Coordinate"]}
+            queries={["Gene", "SNP", "cCRE", "Coordinate"]}
             geneLimit={3}
             sx={{ width: "400px" }}
             slots={{

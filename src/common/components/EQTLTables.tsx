@@ -248,7 +248,7 @@ export default function EQTLs<T extends AnyEntityType>({
             },
           }}
           emptyTableFallback={"No GTEX whole-blood eQTLs found"}
-          divHeight={{height: "300px"}}
+          divHeight={{height: "400px"}}
         />
       </Box>
       <Box sx={{ flex: "1 1 auto" }}>
@@ -262,7 +262,7 @@ export default function EQTLs<T extends AnyEntityType>({
             },
           }}
           emptyTableFallback={"No OneK1K eQTLs found"}
-          divHeight={{height: "300px"}}
+          divHeight={{height: "400px"}}
         />
       </Box>
     </Stack>

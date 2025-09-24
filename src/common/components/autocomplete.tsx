@@ -34,7 +34,7 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
         url = `/${props.assembly}/variant/${r.title}`;
         break;
       case "Study":
-          url = `/GRCh38/gwas/${r.id}/biosample_enrichment`;
+          url = `/GRCh38/gwas/${r.id}`;
          break;
     }
     router.push(url);

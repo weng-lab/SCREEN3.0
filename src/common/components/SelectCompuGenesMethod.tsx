@@ -1,6 +1,7 @@
 
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-import { Dialog, DialogTitle, DialogContent, RadioGroup, FormControlLabel, Radio, IconButton, DialogActions, Button, Stack } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, RadioGroup, FormControlLabel, Radio, IconButton, DialogActions, Button, Stack, Tooltip } from "@mui/material";
 import { Close, CloseOutlined } from "@mui/icons-material";
 import { useState } from "react";
 
@@ -11,6 +12,15 @@ interface Props {
   onMethodSelect: (method: string) => void;
 
 }
+
+const methodDescriptions = {
+  "ABC_(DNase_only)": "Activity-By-Contact model using DNase data only",
+  "ABC_(full)": "Activity-By-Contact model using DNase, histone marks, and other signals",
+  "EPIraction": "Predicts enhancer–promoter interactions using regression on chromatin features",
+  "GraphRegLR": "Graph attention network trained on 2 Mb genomic bins",
+  "rE2G_(DNase_only)": "Regulatory Element to Gene mapping using DNase data only",
+  "rE2G_(extended)": "Extended Regulatory Element to Gene mapping using multiple features"
+};
 
 const SelectCompuGenesMethod: React.FC<Props> = ({ method, open, setOpen, onMethodSelect }) => {
     const [selectedmethod, setSelectedMethod] = useState<string>(method);
@@ -44,8 +54,23 @@ const SelectCompuGenesMethod: React.FC<Props> = ({ method, open, setOpen, onMeth
             <FormControlLabel
               key={m}
               value={m}
+              
               control={<Radio />}
-              label={m}
+      label={
+        <Stack direction="row" alignItems="center" spacing={0.5}>
+          <span>
+            {m.replaceAll("_"," ")}
+           
+          </span>
+          <Tooltip
+            title={methodDescriptions[m]}
+          >
+            <IconButton size="small">
+              <InfoOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      }
             />
           ))}
         </RadioGroup>
