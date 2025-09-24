@@ -1,13 +1,14 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
-import { getCellCategoryColor, getCellCategoryDisplayname } from "common/utility";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Tooltip, Typography } from "@mui/material";
 import { useMemo, useRef, useState } from "react";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
 import { tissueColors } from "common/lib/colors"
 import { theme } from "app/theme";
 import { scaleLinear } from "@visx/scale";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
-import { shape } from "@mui/system";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Stack } from "@mui/system";
+
 export type GeneExpressionUmapProps<
 T,
   S extends boolean | undefined,
@@ -115,13 +116,9 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           r: isHighlighted(x) ? 6 : 4,
           color:  getColor(),
           metaData: x,
-          shape: "circle" as ("circle" | "triangle")
         };
       })
-      //.sort((a, b) => (isHighlighted(b.metaData) ? -1 : 0));
-  }, [data, colorScheme, selected]);
-
-  //console.log("scatterData",scatterData, maxValue)
+  }, [data, selected, colorScale, colorScheme]);
 
   const legendEntries = useMemo(() => {
     if (!scatterData) return [];
@@ -193,6 +190,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           label="Color By"
           onChange={handleColorSchemeChange}
           MenuProps={{ disableScrollLock: true }}
+          size="small"
         >
           <MenuItem value={"expression"}>Expression</MenuItem>
           <MenuItem value={"tissue"}>Tissue</MenuItem>
@@ -203,7 +201,6 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
 
   return (
     <>
-       <ColorBySelect /> 
       <Box
         padding={1}
         //hacky height, have to subtract the pixel value of the Colorby select and the margin to line it up with the table
@@ -220,7 +217,16 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         mb={2}
         zIndex={0}
       >
-       
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <ColorBySelect />
+          <Tooltip title="ksdhb">
+            <Stack direction="row" spacing={0.5} alignItems="center" mr={1}>
+              <Typography color="action">Legend</Typography>
+              <InfoOutlinedIcon fontSize="small" color="action"/>
+            </Stack>
+          </Tooltip>
+        </Stack>
+
         <ScatterPlot
           {...rest}
           controlsHighlight={theme.palette.primary.light}
