@@ -83,6 +83,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       error={!!error}
       columns={cols}
       rows={ortholog}
+      emptyTableFallback={"No Orthologous cCREs found"}
     />
   );
 }

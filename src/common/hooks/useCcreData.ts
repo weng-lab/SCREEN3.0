@@ -112,7 +112,6 @@ export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates
       cCREDetails[c.accession] = c.isiCRE;
     });
   }
-  console.log("ccredata",ccredata,ccreloading)
   return {
     /**
      * return either whole array or just first item depending on input

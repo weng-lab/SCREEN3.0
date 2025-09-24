@@ -20,6 +20,11 @@ const nextConfig = {
         destination: '/:assembly/region/:region/ccres',
         permanent: false
       },
+       {
+        source: '/:assembly/gwas/:study',
+        destination: '/:assembly/gwas/:study/biosample_enrichment',
+        permanent: false
+      },
       //redirect /:entityType was redirect static files, like the images in public
       //Now excludes routes that look like files from the redirect
       // {

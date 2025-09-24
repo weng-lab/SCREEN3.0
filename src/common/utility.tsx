@@ -31,8 +31,13 @@ export function getClassDisplayname(input: string) {
   }
 }
 
-export const capitalizeFirstLetter = (string) => {
+export const capitalizeFirstLetter = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export const truncateString = (input: string, maxLength: number) => {
+  if (input.length <= maxLength) return input;
+  return input.slice(0, maxLength - 3) + '...';
 }
 
 /**
@@ -204,25 +209,36 @@ export const downloadSVG = (ref: React.MutableRefObject<SVGSVGElement>, filename
  *
  * @param region {chrom, start, end}
  * @param transcripts
- * @returns distance to nearest TSS from the center of cCRE body.
+ * @returns distance to nearest TSS from the center of cCRE body, transcriptID and upstream/downstream of TSS
  */
 export function calcDistCcreToTSS(
   region: GenomicRange,
   transcripts: { id: string; coordinates: GenomicRange }[],
   strand: "+" | "-",
   anchor: "middle" | "closest"
-): number {
-  const distances: number[] = transcripts.map((transcript) =>
-    calcDistRegionToPosition(
-      region.start,
-      region.end,
-      anchor,
-      strand === "+" ? transcript.coordinates.start : transcript.coordinates.end
-    )
-  );
-  return Math.min(...distances);
-}
+): { transcriptId: string; distance: number; direction: "Upstream" | "Downstream" } {
+  const results = transcripts.map((transcript) => {
+    const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end;
+    const distance = calcDistRegionToPosition(region.start, region.end, anchor, tss);
 
+    let direction: "Upstream" | "Downstream";
+    if (strand === "+") {
+      direction = region.end < tss ? "Upstream" : "Downstream";
+    } else {
+      direction = region.start > tss ? "Upstream" : "Downstream";
+    }
+
+    return {
+      transcriptId: transcript.id,
+      distance,
+      direction,
+    };
+  });
+
+  return results.reduce((closest, curr) =>
+    curr.distance < closest.distance ? curr : closest
+  );
+}
 
 export function ccreOverlapsTSS(
   region: GenomicRange,

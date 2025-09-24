@@ -45,10 +45,16 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   };
 
   const handleViolinClick = (violin: Distribution<PointMetadata>) => {
-    const metadataArray = violin.data.map((point) => point.metadata);
-    if (selected.length === metadataArray.length && selected[0].tissue === metadataArray[0].tissue) {
-      setSelected([]);
-    } else setSelected(metadataArray);
+    const rowsForDistribution = violin.data.map((point) => point.metadata);
+    
+    const allInDistributionSelected = rowsForDistribution.every(row => selected.some(x => x.accession === row.accession))
+
+    if (allInDistributionSelected) {
+      setSelected((prev) => prev.filter((row) => !rowsForDistribution.some((x) => x.accession === row.accession)));
+    } else {
+      const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.accession === row.accession));
+      setSelected((prev) => [...prev, ...toSelect]);
+    }
   };
 
   const handleViolinPointClick = (point: ViolinPoint<PointMetadata>) => {
