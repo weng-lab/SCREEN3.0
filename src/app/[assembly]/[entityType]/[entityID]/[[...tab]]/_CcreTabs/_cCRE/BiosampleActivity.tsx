@@ -36,24 +36,24 @@ const classifyCcre = (
 ) => {
   let ccreClass: CcreClass;
   if (scores.dnase != -11.0) {
-    if (scores.dnase >= 1.64) {
-      if (scores.h3k4me3 >= 1.64) {
+    if (scores.dnase > 1.64) {
+      if (scores.h3k4me3 > 1.64) {
         if (distanceToTSS <= 200 || overlapsTSS) {
           ccreClass = "PLS"; //Promoter-like signatures (promoter) must fall within 200 bp of a TSS and have high chromatin accessibility and H3K4me3 signals.
-        } else if (scores.h3k27ac < 1.64 && distanceToTSS > 200) {
+        } else if (scores.h3k27ac <= 1.64 && distanceToTSS > 200) {
           ccreClass = "CA-H3K4me3"; //Chromatin accessibility + H3K4me3 (CA-H3K4me3) have high chromatin accessibility and H3K4me3 signals but low H3K27ac signals and do not fall within 200 bp of a TSS.
-        } else if (distanceToTSS <= 2000 && scores.h3k27ac >= 1.64) {
+        } else if (distanceToTSS <= 2000 && scores.h3k27ac > 1.64) {
           ccreClass = "pELS"; //Enhancer-like signatures (enhancer) have high chromatin accessibility and H3K27ac signals. Enhancers are further divided into TSS-proximal or distal with a 2 kb distance cutoff.
-        } else if (distanceToTSS > 2000 && scores.h3k27ac >= 1.64) {
+        } else if (distanceToTSS > 2000 && scores.h3k27ac > 1.64) {
           ccreClass = "dELS"; //Enhancer-like signatures (enhancer) have high chromatin accessibility and H3K27ac signals. Enhancers are further divided into TSS-proximal or distal with a 2 kb distance cutoff.
         }
-      } else if (scores.h3k27ac >= 1.64) {
+      } else if (scores.h3k27ac > 1.64) {
         if (distanceToTSS <= 2000) {
           ccreClass = "pELS"; //Enhancer-like signatures (enhancer) have high chromatin accessibility and H3K27ac signals. Enhancers are further divided into TSS-proximal or distal with a 2 kb distance cutoff.
         } else if (distanceToTSS > 2000) {
           ccreClass = "dELS"; //Enhancer-like signatures (enhancer) have high chromatin accessibility and H3K27ac signals. Enhancers are further divided into TSS-proximal or distal with a 2 kb distance cutoff.
         }
-      } else if (scores.ctcf >= 1.64) {
+      } else if (scores.ctcf > 1.64) {
         ccreClass = "CA-CTCF"; //Chromatin accessibility + CTCF (CA-CTCF) have high chromatin accessibility and CTCF signals but low H3K4me3 and H3K27ac signals.
       } else if (scores.tf === "1") {
         ccreClass = "CA-TF"; //Chromatin accessibility + transcription factor (CA-TF) have high chromatin accessibility, low H3K4me3, H3K27ac, and CTCF signals and are bound by a transcription factor.
@@ -509,7 +509,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                   loading={loadingCorePartialAncillary}
                   error={errorCorePartialAncillary}
                   divHeight={{ height: "400px" }}
-                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] }, columns: {columnVisibilityModel: {"lifeStage": false}} }}
+                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
                   {...disableCsvEscapeChar}
                 />
               </Stack>

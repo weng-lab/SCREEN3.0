@@ -47,7 +47,7 @@ const AssayViolinPlot = ({
       }).sort((a, b) => (isHighlighted(b.metadata) ? -1 : 0)) ;
 
       return { label, data, violinColor };
-    });
+    }).sort((a, b) => a.label.localeCompare(b.label)) ;
   }, [assay, selected, rows]);
 
   const onViolinClicked = (distribution: Distribution<BiosampleRow>) => {

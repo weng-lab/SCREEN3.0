@@ -31,11 +31,11 @@ const arraysAreEqual = (arr1: BiosampleRow[], arr2: BiosampleRow[]): boolean => 
 };
 
 const makeColumnVisibiltyModel = (assay: Assay): GridColumnVisibilityModel => {
-  const hiddenAssays = { tf: false };
+  const hidden = { ontology: false, sampleType: false, lifeStage: false, tf: false };
   assays.forEach((x) => {
-    if (x !== assay) Object.defineProperty(hiddenAssays, x, { value: false, enumerable: true });
+    if (x !== assay) Object.defineProperty(hidden, x, { value: false, enumerable: true });
   });
-  return hiddenAssays;
+  return hidden;
 };
 
 const AssayTable = ({
@@ -50,15 +50,15 @@ const AssayTable = ({
 }: SharedAssayViewPlotProps) => {
   const apiRef = useGridApiRef();
 
-  const tableCols = useMemo(() => {
-    const displaynameCol = columns.find((x) => x.field === "displayname");
-    const assayCols = columns.filter((x) => assays.includes(x.field as Assay));
-    const tfCol = columns.find((x) => x.field === "tf");
-    const restCols = columns.filter(
-      (x) => x.field !== "displayname" && x.field !== "tf" && !assays.includes(x.field as Assay)
-    );
-    return [displaynameCol, ...assayCols, tfCol, ...restCols];
-  }, [columns]);
+  // const tableCols = useMemo(() => {
+  //   const displaynameCol = columns.find((x) => x.field === "displayname");
+  //   const assayCols = columns.filter((x) => assays.includes(x.field as Assay));
+  //   const tfCol = columns.find((x) => x.field === "tf");
+  //   const restCols = columns.filter(
+  //     (x) => x.field !== "displayname" && x.field !== "tf" && !assays.includes(x.field as Assay)
+  //   );
+  //   return [displaynameCol, ...assayCols, tfCol, ...restCols];
+  // }, [columns]);
 
   const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
     if (newRowSelectionModel.type === "include") {
@@ -113,7 +113,7 @@ const AssayTable = ({
       label={`${entity.entityID} ${formatAssay(assay)} z-scores`}
       rows={rows}
       loading={!rows}
-      columns={tableCols}
+      columns={columns}
       apiRef={apiRef}
       // -- Selection Props --
       checkboxSelection
