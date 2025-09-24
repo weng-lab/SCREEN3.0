@@ -19,13 +19,8 @@ import {
 } from "@mui/material";
 import { LinearScaleConfig, scaleLinear } from "@visx/scale";
 import {
-  interpolateOrRd,
-  interpolateRdBu,
   interpolateRdYlBu,
 } from "d3-scale-chromatic";
-import {
-  LegendItem,
-} from "@visx/legend";
 
 const BIOSAMPLE_UMAP = gql(`
   query BiosampleUmap($assembly: String!, $assay: String!) {
@@ -150,34 +145,11 @@ const AssayUMAP = ({
       .sort((a, b) => (isHighlighted(b.metaData) ? -1 : 0));
   }, [rows, data_umap, colorScale, selected, getPointColor, assay]);
 
-  /**
-   * @todo potential bug. Assumes reference equality between rows returned in callback and in state
-   */
   const handlePointClick = (point: Point<BiosampleRow>) => {
     if (selected.includes(point.metaData)) {
       setSelected(selected.filter((x) => x.name !== point.metaData.name));
     } else setSelected([...selected, point.metaData]);
   };
-
-  const scoreLegendValues: { label: string; value: number }[] = useMemo(() => {
-    switch (scoreColorMode) {
-      case "active":
-        return [
-          { label: "≤ 1.64", value: 1.64 },
-          { label: "1.65", value: 1.65 },
-          { label: "3", value: 3 },
-          { label: "≥ 4", value: 4 },
-        ];
-      case "all":
-        return [
-          { label: "≤ -4", value: -4 },
-          { label: "-1.65", value: -1.65 },
-          { label: "0", value: 0 },
-          { label: "1.65", value: 1.65 },
-          { label: "≥ 4", value: 4 },
-        ];
-    }
-  }, [scoreColorMode]);
 
   const legendGradientValues: string[] = useMemo(() => {
     switch (scoreColorMode) {
@@ -192,18 +164,6 @@ const AssayUMAP = ({
     switch (colorScheme) {
       case "score":
         return (
-          // <div style={{ display: "flex", flexDirection: "row" }}>
-          //   {scoreLegendValues.map((x, i) => (
-          //     <LegendItem margin="0 5px" key={i}>
-          //       <svg width={10} height={10}>
-          //         <rect fill={colorScale(x.value)} width={10} height={10} />
-          //       </svg>
-          //       <Typography variant="caption" align="left" margin="0 0 0 4px">
-          //         {x.label}
-          //       </Typography>
-          //     </LegendItem>
-          //   ))}
-          // </div>
           <Box sx={{ display: "flex", alignItems: "center", width: "200px" }}>
             <Typography sx={{ mr: 1 }}>{scoreColorMode === "active" ? "1.65" : "-4"}</Typography>
             <Box
@@ -223,7 +183,7 @@ const AssayUMAP = ({
       case "sampleType":
         return;
     }
-  }, [colorScale, colorScheme, scoreLegendValues]);
+  }, [colorScale, colorScheme]);
 
   return (
     <Stack
