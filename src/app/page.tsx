@@ -29,16 +29,17 @@ export default function Home() {
     { entity: "Variant", name: "rs9466027", region: "chr6:21,298,226-21,298,227" },
     { entity: "Region", name: "chr12:53380176-53416446", region: "chr12:53380176-53416446" },
     { entity: "GWAS", name: "Adiponectin Levels", region: "Dastani Z" },
-    { entity: "Biosample", name: "Brain", region: "chr6:21,298,226-21,298,227" },
+    { entity: "Gene", name: "APOE", region: "chr19:44,905,754-44,909,393" },
+    // { entity: "Biosample", name: "Brain", region: "chr6:21,298,226-21,298,227" },
   ];
 
   const popularSearchesMM10 = [
     { entity: "Gene", name: "Sox4", region: "chr13:28,948,919-28,953,713" },
     { entity: "cCRE", name: "EM10E0000207", region: "chr1:26,047,867-26,048,149" },
     { entity: "Region", name: "chr12:53380176-53416446", region: "chr12:53380176-53416446" },
-    { entity: "Gene", name: "Apoe", region: "chr7:19,696,109-19,699,188" },
-    { entity: "cCRE", name: "EM10E0000229", region: "chr1:32,965,032-32,965,317" },
-    { entity: "Biosample", name: "Brain", region: "chr13:28,948,919-28,953,713" },
+    // { entity: "Gene", name: "Apoe", region: "chr7:19,696,109-19,699,188" },
+    // { entity: "cCRE", name: "EM10E0000229", region: "chr1:32,965,032-32,965,317" },
+    // { entity: "Biosample", name: "Brain", region: "chr13:28,948,919-28,953,713" },
   ];
 
   const popularSearches = assembly === "GRCh38" ? popularSearchesGRCh38 : popularSearchesMM10;
@@ -186,7 +187,8 @@ export default function Home() {
             maxWidth: '600px',
           }}
         >
-          Browse these example searches to get started with SCREEN. You can search for genes, cCREs, variants, or specific loci.
+          Browse these example searches to get started with SCREEN. You can search for genes, cCREs, variants, a specific loci, or a study from the GWAS catalog. 
+          Change the assembly above to see different examples.
         </Typography>
         <Grid container spacing={5} justifyContent="flex-start" marginTop={6} width={"100%"}>
           {popularSearches.map((entity, index) => (
