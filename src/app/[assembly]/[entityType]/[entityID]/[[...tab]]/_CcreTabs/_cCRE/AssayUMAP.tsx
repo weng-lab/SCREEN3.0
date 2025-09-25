@@ -202,7 +202,6 @@ const AssayUMAP = ({
               bottom: 50,
             },
           }}
-          groupPointsAnchor={colorScheme === "sampleType" ? "sampleType" : "ontology"}
           tooltipBody={(point) => <TooltipBody metaData={point.metaData} assay={assay} />}
         />
       </Box>
