@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { PointMetadata } from "./GeneExpression";
 import { Point } from "@weng-lab/visualization";
 import { defaultStyles, useTooltip, useTooltipInPortal } from "@visx/tooltip";
 import { TooltipInPortalProps } from "@visx/tooltip/lib/hooks/useTooltipInPortal";
@@ -9,26 +8,31 @@ import { localPoint } from "@visx/event";
 import { tissueColors } from "common/lib/colors"
 import { interpolateYlOrRd } from "d3-scale-chromatic";
 import { ScaleLinear } from "d3-scale";
-import { generateDomain } from "./GeneExpressionUMAP";
+import { generateDomain } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpressionUMAP";
+import { PointMetadata } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
+import { BiosampleRow } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 
 type Data = {
     label: string;
     color: string;
 };
 
-type GeneExpressionUMAPLegendProps = {
-    colorScheme: "expression" | "tissue";
-    scatterData: Point<PointMetadata>[]
+type UMAPLegendProps<T extends BiosampleRow | PointMetadata> = {
+    colorScheme: "expression" | "score" | "organ/tissue" | "sampleType";
+    scatterData: Point<T>[]
     maxValue: number;
-    colorScale: ScaleLinear<number, number, never>
+    colorScale: ScaleLinear<number, number, never> | ScaleLinear<string, string, never>
+    scoreColorMode?: "active" | "all"
 };
 
-export default function GeneExpressionUMAPLegend({
+export default function UMAPLegend<T extends BiosampleRow | PointMetadata>({
     colorScheme,
     scatterData,
     maxValue,
-    colorScale
-}: GeneExpressionUMAPLegendProps) {
+    colorScale,
+    scoreColorMode
+}: UMAPLegendProps<T>) {
+
     const { containerRef, TooltipInPortal } = useTooltipInPortal(
         {
             scroll: true,
@@ -64,28 +68,56 @@ export default function GeneExpressionUMAPLegend({
     const legendEntries = useMemo(() => {
         if (!scatterData) return [];
 
-        if (colorScheme === "tissue") {
-            // Count occurrences of each unique cellType
-            const cellTypeCounts = scatterData.reduce((acc, point) => {
-                const cellType = point.metaData.tissue;
-                acc.set(cellType, (acc.get(cellType) || 0) + 1);
-                return acc;
-            }, new Map<string, number>());
+        if (colorScheme === "organ/tissue" || colorScheme === "sampleType") {
+            const cellTypeCounts = new Map<string, number>();
+
+            scatterData.forEach((point) => {
+                const meta = point.metaData as any;
+
+                const cellType =
+                    meta.tissue ??
+                    (colorScheme === "organ/tissue" ? meta.ontology : meta.sampleType) ??
+                    "missing";
+
+                cellTypeCounts.set(cellType, (cellTypeCounts.get(cellType) || 0) + 1);
+            });
 
             return Array.from(cellTypeCounts.entries())
                 .map(([cellType, count]) => ({
-                    label: (cellType),
+                    label: cellType,
                     color: tissueColors[cellType],
                     value: count,
                 }))
                 .sort((a, b) => b.value - a.value);
         }
+
+        return [];
     }, [scatterData, colorScheme]);
 
+
     const generateGradient = (maxValue: number) => {
-        const stops = generateDomain(maxValue, 9).map(value => interpolateYlOrRd(colorScale(value)));
+        const stops = generateDomain(maxValue, 9).map((value) => {
+            const scaled = colorScale(value);
+            return typeof scaled === "number"
+                ? interpolateYlOrRd(scaled)
+                : scaled; // fallback if it’s already a color string
+        });
+
         return `#808080, ${stops.join(", ")}`;
     };
+
+    const assayLegendGradientValues: string[] = useMemo(() => {
+        switch (scoreColorMode) {
+            case "active":
+                return [colorScale(1.65), colorScale(4)].map(String);
+            case "all":
+                return [colorScale(-4), colorScale(0), colorScale(4)].map(String);
+            default:
+                return [];
+        }
+    }, [colorScale, scoreColorMode]);
+
+    const cols = 6;
 
     return (
         <>
@@ -105,6 +137,20 @@ export default function GeneExpressionUMAPLegend({
                         <Typography sx={{ ml: 1 }}>{maxValue.toFixed(2)}</Typography>
                     </Box>
                 </Stack>
+            ) : colorScheme === "score" ? (
+                <Box sx={{ display: "flex", alignItems: "center", width: "200px" }}>
+                    <Typography sx={{ mr: 1 }}>{scoreColorMode === "active" ? "1.65" : "-4"}</Typography>
+                    <Box
+                        sx={{
+                            height: "12px",
+                            flexGrow: 1,
+                            background: `linear-gradient(to right, ${assayLegendGradientValues.join(', ')})`,
+                            outline: "1px solid",
+                            outlineColor: "divider",
+                        }}
+                    />
+                    <Typography sx={{ ml: 1 }}>{4}</Typography>
+                </Box>
             ) : (
                 <Stack
                     direction="row"
@@ -143,17 +189,17 @@ export default function GeneExpressionUMAPLegend({
                         sx={{
                             display: "flex",
                             justifyContent:
-                                legendEntries?.length / 4 >= 3 ? "space-between" : "flex-start",
-                            gap: legendEntries?.length / 4 >= 4 ? 0 : 10,
+                                legendEntries?.length / cols >= 3 ? "space-between" : "flex-start",
+                            gap: legendEntries?.length / cols >= 4 ? 0 : 10,
                             p: 1,
                         }}
                     >
                         {Array.from(
-                            { length: Math.ceil(legendEntries?.length / 4) },
+                            { length: Math.ceil(legendEntries?.length / cols) },
                             (_, colIndex) => (
                                 <Box key={colIndex} sx={{ mr: 2 }}>
                                     {legendEntries
-                                        .slice(colIndex * 4, colIndex * 4 + 4)
+                                        .slice(colIndex * cols, colIndex * cols + cols)
                                         .map((cellType, index) => (
                                             <Box
                                                 key={index}
@@ -179,10 +225,7 @@ export default function GeneExpressionUMAPLegend({
                                                             (word) =>
                                                                 word.charAt(0).toUpperCase() + word.slice(1)
                                                         )
-                                                        .join(" ")}
-                                                    {colorScheme === "tissue"
-                                                        ? `: ${cellType.value}`
-                                                        : ""}
+                                                        .join(" ")}: {cellType.value}
                                                 </Typography>
                                             </Box>
                                         ))}

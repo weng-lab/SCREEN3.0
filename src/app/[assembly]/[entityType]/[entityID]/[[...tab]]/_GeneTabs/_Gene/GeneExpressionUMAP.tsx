@@ -7,7 +7,7 @@ import { theme } from "app/theme";
 import { scaleLinear } from "@visx/scale";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
 import { Stack } from "@mui/system";
-import GeneExpressionUMAPLegend from "./GeneExpressionUMAPLegend";
+import UMAPLegend from "../../../../../../../common/components/UMAPLegend";
 
 //generate the domain for the gradient based on the max number
    export const generateDomain = (max: number, steps: number) => {
@@ -27,12 +27,12 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   ...rest
 }: GeneExpressionUmapProps<T, S, Z>) => {
 
-  const [colorScheme, setColorScheme] = useState<"expression" | "tissue">("expression");
+  const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue">("expression");
 
   const { data, loading } = geneExpressionData;
 
   const handleColorSchemeChange = (event: SelectChangeEvent) => {
-    setColorScheme(event.target.value as "expression" | "tissue");
+    setColorScheme(event.target.value as "expression" | "organ/tissue");
   };
 
   const map = {
@@ -138,7 +138,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           size="small"
         >
           <MenuItem value={"expression"}>Expression</MenuItem>
-          <MenuItem value={"tissue"}>Tissue</MenuItem>
+          <MenuItem value={"organ/tissue"}>Tissue</MenuItem>
         </Select>
       </FormControl>
     );
@@ -154,7 +154,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
       >
         <Stack direction="row" justifyContent="space-between" alignItems="center" >
           <ColorBySelect />
-          <GeneExpressionUMAPLegend
+          <UMAPLegend
             colorScheme={colorScheme}
             scatterData={scatterData}
             maxValue={maxValue}

@@ -21,6 +21,7 @@ import { LinearScaleConfig, scaleLinear } from "@visx/scale";
 import {
   interpolateRdYlBu,
 } from "d3-scale-chromatic";
+import UMAPLegend from "../../../../../../../common/components/UMAPLegend";
 
 const BIOSAMPLE_UMAP = gql(`
   query BiosampleUmap($assembly: String!, $assay: String!) {
@@ -151,40 +152,6 @@ const AssayUMAP = ({
     } else setSelected([...selected, point.metaData]);
   };
 
-  const legendGradientValues: string[] = useMemo(() => {
-    switch (scoreColorMode) {
-      case "active":
-        return [colorScale(1.65), colorScale(4)];
-      case "all":
-        return [colorScale(-4), colorScale(0), colorScale(4)];
-    }
-  }, [colorScale, scoreColorMode]);
-
-  const Legend = useCallback(() => {
-    switch (colorScheme) {
-      case "score":
-        return (
-          <Box sx={{ display: "flex", alignItems: "center", width: "200px" }}>
-            <Typography sx={{ mr: 1 }}>{scoreColorMode === "active" ? "1.65" : "-4"}</Typography>
-            <Box
-              sx={{
-                height: "12px",
-                flexGrow: 1,
-                background: `linear-gradient(to right, ${legendGradientValues.join(', ')})`,
-                outline: "1px solid",
-                outlineColor: "divider",
-              }}
-            />
-            <Typography sx={{ ml: 1 }}>{4}</Typography>
-          </Box>
-        );
-      case "organ/tissue":
-        return;
-      case "sampleType":
-        return;
-    }
-  }, [colorScheme, legendGradientValues, scoreColorMode]);
-
   return (
     <Stack
       width={"100%"}
@@ -192,28 +159,36 @@ const AssayUMAP = ({
       padding={1}
       sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
     >
-      <Stack direction={"row"} spacing={1}>
-        <FormControl>
-          <InputLabel id="demo-simple-select-label">Color By</InputLabel>
-          <Select value={colorScheme} label="Color By" onChange={handleColorSchemeChange} size="small">
-            <MenuItem value={"score"}>Z Score</MenuItem>
-            <MenuItem value={"organ/tissue"}>Organ/Tissue</MenuItem>
-            <MenuItem value={"sampleType"}>Sample Type</MenuItem>
-          </Select>
-        </FormControl>
-        {colorScheme === "score" && (
+      <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+        <Stack direction={"row"} spacing={1}>
           <FormControl>
-            <RadioGroup
-              value={scoreColorMode}
-              onChange={handleScoreColorModeChange}
-              row
-            >
-              <FormControlLabel value="active" control={<Radio />} label="Active Only" />
-              <FormControlLabel value="all" control={<Radio />} label="All" />
-            </RadioGroup>
+            <InputLabel id="demo-simple-select-label">Color By</InputLabel>
+            <Select value={colorScheme} label="Color By" onChange={handleColorSchemeChange} size="small">
+              <MenuItem value={"score"}>Z Score</MenuItem>
+              <MenuItem value={"organ/tissue"}>Organ/Tissue</MenuItem>
+              <MenuItem value={"sampleType"}>Sample Type</MenuItem>
+            </Select>
           </FormControl>
-        )}
-        <Legend />
+          {colorScheme === "score" && (
+            <FormControl>
+              <RadioGroup
+                value={scoreColorMode}
+                onChange={handleScoreColorModeChange}
+                row
+              >
+                <FormControlLabel value="active" control={<Radio />} label="Active Only" />
+                <FormControlLabel value="all" control={<Radio />} label="All" />
+              </RadioGroup>
+            </FormControl>
+          )}
+        </Stack>
+        <UMAPLegend
+          colorScheme={colorScheme}
+          scatterData={scatterData}
+          maxValue={4}
+          colorScale={colorScale}
+          scoreColorMode={scoreColorMode}
+        />
       </Stack>
       <Box sx={{ flexGrow: 1 }}>
         <ScatterPlot
