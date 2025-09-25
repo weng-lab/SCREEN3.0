@@ -1,21 +1,26 @@
 import { Add } from "@mui/icons-material";
 import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
-import { OpenEntity, OpenEntitiesContext, AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./OpenEntitiesContext";
+import { OpenEntitiesContext, AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { isValidAssembly } from "types/globalTypes";
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/MenuContext";
 import { OpenTabs } from "./OpenEntitiesTabs";
-import { isValidEntityType, isValidRouteForEntity } from "../entityTabsConfig";
 
-/**
- * @todo before going on, make sure that this file checks to make sure that the route is valid before adding it into state
- */
+const isSameEntity = (urlOpenEntity: AnyOpenEntity, openEntity: AnyOpenEntity) => {
+  if (!(openEntity.assembly === urlOpenEntity.assembly)) return false;
+  if (urlOpenEntity.entityType === "region" && openEntity.entityType === "region") {
+    // need to check the parsed genomic region to handle url encoding of ':' and '%3A'
+    return (
+      JSON.stringify(parseGenomicRangeString(openEntity.entityID)) ===
+      JSON.stringify(parseGenomicRangeString(urlOpenEntity.entityID))
+    );
+  } else return urlOpenEntity.entityID === openEntity.entityID;
+};
 
 export const constructEntityURL = (entity: AnyOpenEntity) =>
   `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
@@ -41,12 +46,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     throw new Error(`Incorrect entity configuration: ` + JSON.stringify(urlOpenEntity))
   }
 
-  const currentEntityState = openEntities.find((el) =>
-    urlOpenEntity.entityType === "region" && el.entityType === "region"
-      ? JSON.stringify(parseGenomicRangeString(el.entityID)) === JSON.stringify(parseGenomicRangeString(urlOpenEntity.entityID)) &&
-        el.assembly === urlOpenEntity.assembly
-      : el.entityID === urlOpenEntity.entityID
-  );
+  const currentEntityState = openEntities.find((el) => isSameEntity(urlOpenEntity, el));
 
   // ------- Initialize state from URL on initial load -------
 
@@ -222,7 +222,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
    * Index of current route's element within internal state
    */
   const tabIndex = useMemo(() => {
-    const i = openEntities.findIndex((el) => el.entityID === urlOpenEntity.entityID && el.assembly === urlOpenEntity.assembly);
+    const i = openEntities.findIndex((el) => isSameEntity(urlOpenEntity, el));
     if (i === -1) {
       return 0; //Fix MUI invalid tab error. Return 0 on initial load when usePathname (thus urlEntityID) hasn't resolved
     } else return i;
