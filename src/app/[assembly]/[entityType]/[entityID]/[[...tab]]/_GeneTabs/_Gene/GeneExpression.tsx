@@ -27,8 +27,13 @@ export type GeneExpressionProps = {
 const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
+  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
 
   const geneExpressionData = useGeneExpression({ id: geneData?.data.id, assembly: assembly });
+
+  const handleScaleChange = (newScale: "linearTPM" | "logTPM") => {
+    setScale(newScale);
+  }
 
   const handlePointsSelected = (pointsInfo: PointMetadata[]) => {
     setSelected([...selected, ...pointsInfo]);
@@ -74,6 +79,8 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
           setSortedFilteredData={setSortedFilteredData}
           geneExpressionData={geneExpressionData}
           assembly={assembly}
+          scale={scale}
+          onScaleChange={handleScaleChange}
         />
       }
       plots={[
@@ -88,6 +95,7 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
               sortedFilteredData={sortedFilteredData}
               geneExpressionData={geneExpressionData}
               onBarClicked={handleBarClick}
+              scale={scale}
             />
           ),
         },

@@ -20,6 +20,8 @@ export type GeneExpressionTableProps = GeneExpressionProps &
     onSelectionChange: (selected: PointMetadata[]) => void;
     setSortedFilteredData: Dispatch<SetStateAction<PointMetadata[]>>;
     assembly: Assembly;
+    scale: "linearTPM" | "logTPM";
+    onScaleChange: (newScale: "linearTPM" | "logTPM") => void
   };
 
 const GeneExpressionTable = ({
@@ -29,10 +31,11 @@ const GeneExpressionTable = ({
   geneExpressionData,
   setSortedFilteredData,
   sortedFilteredData,
-  assembly
+  assembly,
+  scale,
+  onScaleChange,
 }: GeneExpressionTableProps) => {
   const { data, loading, error } = geneExpressionData;
-  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
   const [replicates, setReplicates] = useState<"mean" | "all">("mean")
   const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM")
   const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">(assembly === "GRCh38" ? "total RNA-seq" : "all")
@@ -76,7 +79,7 @@ const GeneExpressionTable = ({
     newScale: string | null,
   ) => {
     if ((newScale !== null) && ((newScale === "linearTPM") || (newScale === "logTPM"))) {
-      setScale(newScale)
+      onScaleChange(newScale)
     }
   };
 
@@ -100,7 +103,7 @@ const GeneExpressionTable = ({
 
   const handleReset = () => {
     setReplicates("mean");
-    setScale("linearTPM");
+    onScaleChange("linearTPM");
     setViewBy("byExperimentTPM");
     setRNAType("total RNA-seq");
   }
