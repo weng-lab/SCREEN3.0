@@ -111,6 +111,7 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
               geneExpressionData={geneExpressionData}
               onViolinClicked={handleViolinClick}
               onPointClicked={handleViolinPointClick}
+              scale={scale}
             />
           ),
         },
