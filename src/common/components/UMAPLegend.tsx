@@ -60,7 +60,7 @@ export default function UMAPLegend<T extends BiosampleRow | PointMetadata>({
         const coords = localPoint(event, event);
         showTooltip({
             tooltipLeft: coords.x,
-            tooltipTop: coords.y,
+            tooltipTop: coords.y - 200,
             tooltipData: datum,
         });
     };
