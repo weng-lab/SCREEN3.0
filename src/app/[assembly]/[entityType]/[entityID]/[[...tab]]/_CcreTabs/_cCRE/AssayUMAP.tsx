@@ -158,7 +158,7 @@ const AssayUMAP = ({
       case "all":
         return [colorScale(-4), colorScale(0), colorScale(4)];
     }
-  }, [scoreColorMode]);
+  }, [colorScale, scoreColorMode]);
 
   const Legend = useCallback(() => {
     switch (colorScheme) {
@@ -183,7 +183,7 @@ const AssayUMAP = ({
       case "sampleType":
         return;
     }
-  }, [colorScale, colorScheme]);
+  }, [colorScheme, legendGradientValues, scoreColorMode]);
 
   return (
     <Stack
