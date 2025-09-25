@@ -41,7 +41,7 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
                 <Stack spacing={2} mb={4} justifyContent="center" alignItems="center">
                     <Stack justifyContent="center" alignItems="center">
                         <Typography variant="subtitle1" color="white" textAlign="center">
-                            I&apos;m searching for cCRE&apos;s in:
+                            Search in:
                         </Typography>
                         <RadioGroup
                             value={assembly}
@@ -124,9 +124,14 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
                     />
                     <FormHelperText sx={{ ml: 0, color: "white" }}>
                         Try{" "}
-                        &quot;<i>{assembly === "GRCh38" ? "SOX4" : "Sox4"}</i>&quot;,
-                        &quot;<i>{assembly === "GRCh38" ? "rs9466027" : "EM10E0000207"}</i>&quot;,
-                        or &quot;chr12:53380176-53416446&quot;
+                        &quot;<i>{assembly === "GRCh38" ? "SOX4" : "Sox4"}</i>&quot;,{" "}
+                        &quot;<i>{assembly === "GRCh38" ? "EH38E3314260" : "EM10E0000207"}</i>&quot;
+                        {assembly === "GRCh38" && (
+                            <>
+                                , &quot;<i>rs9466027</i>&quot;
+                            </>
+                        )}
+                        , or &quot;chr12:53380176-53416446&quot;
                     </FormHelperText>
                 </FormControl>
             </Box>

@@ -4,7 +4,8 @@ import { SharedAssayViewPlotProps } from "./AssayView";
 import { capitalizeFirstLetter, truncateString } from "common/utility";
 import { tissueColors } from "common/lib/colors";
 import { BiosampleRow, formatAssay } from "./BiosampleActivity";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { Typography } from "@mui/material";
 
 const AssayBarPlot = ({
   entity,
@@ -39,6 +40,27 @@ const AssayBarPlot = ({
     } else setSelected([...selected, bar.metadata]);
   };
 
+  const PlotTooltip = (bar: BarData<BiosampleRow>) => {
+    return (
+      <Box maxWidth={350}>
+        <Typography variant="body2">
+          <b>Sample:</b> {capitalizeFirstLetter(bar.metadata.displayname)}
+        </Typography>
+        <Typography variant="body2">
+          <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.ontology)}
+        </Typography>
+        <Typography variant="body2">
+          <b>Classification:</b>{" "}
+          {capitalizeFirstLetter(bar.metadata.class)}
+        </Typography>
+        <Typography variant="body2">
+          <b>Z-Score</b>{" "}
+          {bar.value.toFixed(2)}
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box
       width={"100%"}
@@ -52,6 +74,7 @@ const AssayBarPlot = ({
         topAxisLabel={`${entity.entityID} ${formatAssay(assay)} z-scores`}
         cutoffNegativeValues
         onBarClicked={handleBarClick}
+        TooltipContents={PlotTooltip}
       />
     </Box>
   );
