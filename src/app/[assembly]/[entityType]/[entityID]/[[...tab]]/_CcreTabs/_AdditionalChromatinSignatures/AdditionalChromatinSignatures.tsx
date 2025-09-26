@@ -8,6 +8,7 @@ import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "types/globalTypes";
 import { gql } from "types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
+import { useChromHMMData } from "common/hooks/useChromHmmData";
 
 const ENTEx_QUERY = gql(`
 query ENTEXQuery($accession: String!){
@@ -57,8 +58,49 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
     skip: !coordinates
   });
 
+  const { tracks, processedTableData, loading, error } = useChromHMMData(coordinates);
+
+  console.log(processedTableData)
+
   return (
     <Stack spacing={2}>
+      <Table
+        label={`ChromHMM States`}
+        columns={[
+          {
+            headerName: "Tissue",
+            field: "tissue"
+          },
+          {
+            headerName: "Biosample",
+            field: "biosample"
+          },
+          {
+            headerName: "States",
+            field: "name",
+            renderCell: (params) => <b style={{ color: params.row.color }}>{params.value}</b>
+          },
+          {
+            headerName: "Chromosome",
+            field: "chr"
+          },
+          {
+            headerName: "Start",
+            field: "start",
+            type: "number"
+          },
+          {
+            headerName: "End",
+            field: "end",
+            type: "number"
+          },
+        ]}
+        rows={processedTableData}
+        loading={loading}
+        error={!!error}
+        divHeight={{height: "600px"}}
+        initialState={{ sorting: { sortModel: [{ field: "tissue", sort: "asc" }] } }}
+      />
       <Table
         label={`ENTEx`}
         columns={[
