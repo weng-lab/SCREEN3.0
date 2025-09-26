@@ -2,7 +2,7 @@
 import React from "react"
 import { useQuery } from "@apollo/client"
 import { Table } from "@weng-lab/ui-components"
-import { Link, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
 import { gql } from "types/generated/gql"
 import { LinkComponent } from "common/components/LinkComponent"
 import { EntityViewComponentProps } from "common/EntityDetails/entityTabsConfig"
@@ -234,7 +234,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
   return (
     <Stack spacing={2}>
       <Table
-        label={`Mouse transgenic enhancer assays`}
+        label={`Mouse Transgenic Enhancer Assays`}
         columns={[
           {
             headerName: "Chromosome",
@@ -253,13 +253,13 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
             field: "element_id",
             renderCell: (params) => {
               return (
-                <Link
+                <LinkComponent
                   href={`https://enhancer.lbl.gov/vista/element?vistaId=${params.value}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
+                  showExternalIcon
+                  openInNewTab
                 >
                   {params.value}
-                </Link>
+                </LinkComponent>
               );
             },
           },
@@ -280,7 +280,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
       {entity.assembly === "GRCh38" && (
         <>
           <Table
-            label={`MPRA (region centric)`}
+            label={`MPRA (Region Centric)`}
             columns={[
               {
                 headerName: "Chromosome",
@@ -306,6 +306,18 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
               {
                 headerName: "Experiment",
                 field: "experiment",
+                renderCell: (params) => {
+                  return (
+                    <LinkComponent
+                      href={`https://www.encodeproject.org/experiments/${params.value}`}
+                      showExternalIcon
+                      openInNewTab
+                    >
+                      {params.value}
+                    </LinkComponent>
+                  );
+                },
+                
               },
               {
                 headerName: "Cell Type",
@@ -484,7 +496,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
             }}
           />
           <Table
-            label={`CRISPR perturbation data`}
+            label={`CRISPR Perturbation Data`}
             columns={[
               {
                 headerName: "Experiment",
