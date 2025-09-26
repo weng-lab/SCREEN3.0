@@ -1,3 +1,4 @@
+"use client"
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 /**
