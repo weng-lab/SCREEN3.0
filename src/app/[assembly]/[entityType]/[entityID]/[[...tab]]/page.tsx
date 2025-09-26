@@ -160,6 +160,7 @@ export default function DetailsPage({
       switch (tab) {
         case "":
         case "conservation":
+        case "functional-characterization":
           return <ComponentToRender entity={entity} />;
         case "genes":
           return assembly === "GRCh38" ? (
