@@ -1,16 +1,18 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { capitalizeFirstLetter } from "common/utility"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { tissueColors } from "common/lib/colors"
 import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
 
 export type GeneExpressionBarPlotProps =
   GeneExpressionProps &
   SharedGeneExpressionPlotProps &
-  Partial<BarPlotProps<PointMetadata>>
+  Partial<BarPlotProps<PointMetadata>> & {
+    scale: "linearTPM" | "logTPM";
+  }
 
-const GeneExpressionBarPlot = ({ geneData, selected, assembly, sortedFilteredData, ...rest }: GeneExpressionBarPlotProps) => {
+const GeneExpressionBarPlot = ({ scale, geneData, selected, assembly, sortedFilteredData, ...rest }: GeneExpressionBarPlotProps) => {
 
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
     const maxLength = 20;
@@ -43,12 +45,49 @@ const GeneExpressionBarPlot = ({ geneData, selected, assembly, sortedFilteredDat
     )
   }, [sortedFilteredData, selected])
 
+  const PlotTooltip = useCallback(
+    (bar: BarData<PointMetadata>) => {
+      return (
+        <Box maxWidth={350}>
+          <Typography variant="body2">
+            <b>Sample:</b> {capitalizeFirstLetter(bar.metadata.biosample)}
+          </Typography>
+          <Typography variant="body2">
+            <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.tissue)}
+          </Typography>
+          <Typography variant="body2">
+            <b>Biosample Type:</b>{" "}
+            {capitalizeFirstLetter(bar.metadata.biosample_type)}
+          </Typography>
+          {scale === "linearTPM" ? (
+            <Typography variant="body2">
+              <b>TPM:</b> {bar.value.toFixed(2)}
+            </Typography>
+          ) : (
+            <Typography variant="body2">
+              <b>
+                Log<sub>10</sub>(TPM + 1):
+              </b>{" "}
+              {bar.value.toFixed(2)}
+            </Typography>
+          )}
+        </Box>
+      );
+    },
+    [scale]
+  );
+
   return (
     <Box width={"100%"} height={"100%"} overflow={"auto"} padding={1} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative" }}>
       <BarPlot
         {...rest}
         data={plotData}
-        topAxisLabel={`${geneData?.data.name} Expression - TPM`}
+        topAxisLabel={
+          scale === "linearTPM"
+            ? `${geneData?.data.name} Expression - TPM`
+            : `${geneData?.data.name} Expression - Log\u2081\u2080(TPM + 1)`
+        }
+        TooltipContents={PlotTooltip}
       />
     </Box>
   )

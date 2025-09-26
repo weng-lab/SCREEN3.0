@@ -6,10 +6,12 @@ import { tissueColors } from "common/lib/colors"
 
 export type GeneExpressionViolinPlotProps = GeneExpressionProps &
   SharedGeneExpressionPlotProps &
-  Partial<ViolinPlotProps<PointMetadata>>;
+  Partial<ViolinPlotProps<PointMetadata>> & {
+    scale: "linearTPM" | "logTPM";
+  };
 
-const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest }: GeneExpressionViolinPlotProps) => {
-  
+const GeneExpressionBarPlot = ({ scale, geneData, selected, sortedFilteredData, ...rest }: GeneExpressionViolinPlotProps) => {
+
   const violinData: Distribution<PointMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
 
@@ -21,17 +23,17 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
     }, {} as Record<string, PointMetadata[]>);
 
     return Object.entries(grouped).map(([tissue, group]) => {
-      const values = group.map((d) => d.gene_quantification_files[0].quantifications[0].tpm );
+      const values = group.map((d) => d.gene_quantification_files[0].quantifications[0].tpm);
       const label = tissue;
       const violinColor =
         selected.length === 0 || group.every((d) => selected.some((s) => s.gene_quantification_files[0].accession === d.gene_quantification_files[0].accession))
-          ? tissueColors[tissue] ?? tissueColors.missing 
+          ? tissueColors[tissue] ?? tissueColors.missing
           : "#CCCCCC"
 
       const data: ViolinPoint<PointMetadata>[] = values.map((value, i) => {
         const metadata = group[i];
         const isSelected = selected.length === 0 || selected.some((s) => s.gene_quantification_files[0].accession === metadata.gene_quantification_files[0].accession) ? true : false;
-        const pointColor = isSelected ? tissueColors[tissue] ?? tissueColors.missing  : "#CCCCCC";
+        const pointColor = isSelected ? tissueColors[tissue] ?? tissueColors.missing : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 
         return values.length < 3
@@ -54,7 +56,11 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
       <ViolinPlot
         {...rest}
         distributions={violinData}
-        axisLabel={`${geneData?.data.name} Expression - TPM`}
+        axisLabel={
+          scale === "linearTPM"
+            ? `${geneData?.data.name} Expression - TPM`
+            : `${geneData?.data.name} Expression - Log\u2081\u2080(TPM + 1)`
+        }
         loading={geneData.loading}
         labelOrientation="leftDiagonal"
         violinProps={{
@@ -63,29 +69,25 @@ const GeneExpressionBarPlot = ({ geneData, selected, sortedFilteredData, ...rest
           jitter: 10,
         }}
         pointTooltipBody={(point) => {
+          const rawTPM = point.metadata?.gene_quantification_files[0].quantifications[0].tpm ?? 0;
+          const displayTPM =
+            scale === "linearTPM" ? rawTPM : Math.log10(rawTPM + 1);
+
           return (
             <Box maxWidth={300}>
-              {point.outlier && (
-                <div>
-                  <strong>Outlier</strong>
-                </div>
-              )}
+              {point.outlier && <div><strong>Outlier</strong></div>}
+              <div><strong>Accession:</strong> {point.metadata?.accession}</div>
+              <div><strong>Biosample:</strong> {point.metadata?.biosample}</div>
+              <div><strong>Tissue:</strong> {point.metadata?.tissue}</div>
               <div>
-                <strong>Accession:</strong> {point.metadata?.accession}
-              </div>
-              <div>
-                <strong>Biosample:</strong> {point.metadata?.biosample}
-              </div>
-              <div>
-                <strong>Tissue:</strong> {point.metadata?.tissue}
-              </div>
-              <div>
-                <strong>TPM:</strong> {point.metadata?.gene_quantification_files[0].quantifications[0].tpm.toFixed(2)}
+                <strong>{scale === "linearTPM" ? "TPM" : "Log₁₀(TPM + 1)"}:</strong>{" "}
+                {displayTPM.toFixed(2)}
               </div>
             </Box>
           );
         }}
       />
+
     </Box>
   );
 };

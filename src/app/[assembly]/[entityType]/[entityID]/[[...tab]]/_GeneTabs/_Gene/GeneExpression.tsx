@@ -5,7 +5,7 @@ import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
 import { BarData } from "@weng-lab/visualization";
 import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
-import { BarChart, CandlestickChart } from "@mui/icons-material";
+import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Distribution, ViolinPoint } from "@weng-lab/visualization";
@@ -27,8 +27,13 @@ export type GeneExpressionProps = {
 const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
+  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
 
   const geneExpressionData = useGeneExpression({ id: geneData?.data.id, assembly: assembly });
+
+  const handleScaleChange = (newScale: "linearTPM" | "logTPM") => {
+    setScale(newScale);
+  }
 
   const handlePointsSelected = (pointsInfo: PointMetadata[]) => {
     setSelected([...selected, ...pointsInfo]);
@@ -74,6 +79,8 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
           setSortedFilteredData={setSortedFilteredData}
           geneExpressionData={geneExpressionData}
           assembly={assembly}
+          scale={scale}
+          onScaleChange={handleScaleChange}
         />
       }
       plots={[
@@ -88,23 +95,10 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
               sortedFilteredData={sortedFilteredData}
               geneExpressionData={geneExpressionData}
               onBarClicked={handleBarClick}
+              scale={scale}
             />
           ),
         },
-        // Add back once query returns umap coordiantes
-        // {
-        //   tabTitle: "UMAP",
-        //   icon: <ScatterPlot />,
-        //   plotComponent: (
-        //     <GeneExpressionUMAP
-        //       geneData={geneData}
-        //       selected={selected}
-        //       sortedFilteredData={sortedFilteredData}
-        //       geneExpressionData={geneExpressionData}
-        //       onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
-        //     />
-        //   ),
-        // },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
@@ -117,9 +111,26 @@ const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
               geneExpressionData={geneExpressionData}
               onViolinClicked={handleViolinClick}
               onPointClicked={handleViolinPointClick}
+              scale={scale}
             />
           ),
         },
+        // Add back once query returns umap coordiantes
+         {
+           tabTitle: "UMAP",
+           icon: <ScatterPlot />,
+           plotComponent: (
+             <GeneExpressionUMAP
+               assembly={assembly}
+               geneData={geneData}
+               selected={selected}
+               sortedFilteredData={sortedFilteredData}
+               geneExpressionData={geneExpressionData}
+               onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
+             />
+           ),
+         },
+        
       ]}
     />
   );
