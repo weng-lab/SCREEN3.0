@@ -345,7 +345,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
                   <LinkComponent
                     href={`https://www.encodeproject.org/experiments/${params.row.experiment}`}
                     showExternalIcon
-                    underline="always"
+                    openInNewTab
                   >
                     {params.row.experiment}
                   </LinkComponent>
@@ -420,7 +420,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
                   <LinkComponent
                     href={`https://www.encodeproject.org/experiments/${params.row.experiment}`}
                     showExternalIcon
-                    underline="always"
+                    openInNewTab
                   >
                     {params.row.experiment}
                   </LinkComponent>
@@ -493,7 +493,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
                   <LinkComponent
                     href={`https://www.encodeproject.org/experiments/${params.row.experiment}`}
                     showExternalIcon
-                    underline="always"
+                    openInNewTab
                   >
                     {params.row.experiment}
                   </LinkComponent>
