@@ -13,6 +13,7 @@ import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
+import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionaCharacterization/FunctionalCharacterization";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -249,7 +250,7 @@ const humanCcreTabs: readonly TabConfig<
     route: "functional-characterization",
     label: "Functional Characterization",
     iconPath: FunctionalIconPath,
-    component: () => <p>This should have functional characterization data</p>,
+    component: FunctionalCharacterization,
   },
   {
     route: "browser",
