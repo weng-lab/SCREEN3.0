@@ -32,6 +32,7 @@ import {
 import GWASGenomeBrowserView from "./_GwasTabs/_Browser/gwasgenomebrowserview";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import VariantLinkedCcres from "./_SnpTabs/_cCREs/VariantLinkedCcres";
+import TranscriptExpression from "./_GeneTabs/_Transcript/TranscriptExpression";
 
 export default function DetailsPage({
   params,
@@ -150,6 +151,8 @@ export default function DetailsPage({
           return assembly === "GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
         case "variants":
           return <EQTLs data={geneData.data} entityType="gene" assembly={assembly} />;
+        case "transcript-expression":
+          return <TranscriptExpression geneData={geneData}/>
       }
       break;
     }

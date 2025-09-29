@@ -24,7 +24,6 @@ const GeneExpressionBarPlot = ({ scale, geneData, selected, assembly, sortedFilt
     return `${tpm.toFixed(2)}, ${name} (${accession}${biorep ? ', rep. ' + biorep : ''})`;
   }
 
-  // Add functionality for replicates and log
   const plotData: BarData<PointMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return []
     return (
