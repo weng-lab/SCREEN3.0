@@ -1,12 +1,13 @@
-import { BarChart } from "@mui/icons-material";
-import { BarData } from "@weng-lab/visualization";
+import { BarChart, CandlestickChart } from "@mui/icons-material";
+import { BarData, Distribution, ViolinPoint } from "@weng-lab/visualization";
 import { GenomicRegion } from "app/_utility/types";
 import TwoPaneLayout from "common/components/TwoPaneLayout";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
+import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
 
 export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 
@@ -15,6 +16,7 @@ export type SharedTranscriptExpressionPlotProps = {
     transcriptExpressionData: UseTranscriptExpressionReturn;
     sortedFilteredData: TranscriptMetadata[];
     selectedPeak: string;
+    handlePeakChange?: (newPeak: string) => void;
 };
 
 export type TranscriptExpressionProps = {
@@ -23,9 +25,20 @@ export type TranscriptExpressionProps = {
 
 const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
     const [selected, setSelected] = useState<TranscriptMetadata[]>([]);
+    const [peak, setPeak] = useState<string>("");
     const [sortedFilteredData, setSortedFilteredData] = useState<TranscriptMetadata[]>([]);
 
     const transcriptExpressionData = useTranscriptExpression({ gene: geneData?.data.name });
+
+    useEffect(() => {
+        if (transcriptExpressionData && peak === "") {
+            setPeak(transcriptExpressionData.data?.[0]?.peakId ?? "");
+        }
+    }, [peak, transcriptExpressionData]);
+
+    const handlePeakChange = (newPeak: string) => {
+        setPeak(newPeak);
+    };
 
     const handleSelectionChange = (selected: TranscriptMetadata[]) => {
         setSelected(selected);
@@ -37,7 +50,24 @@ const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
         } else setSelected([...selected, bar.metadata]);
     };
 
-    const firstPeakId = transcriptExpressionData.data?.[0]?.peakId ?? "";
+    const handleViolinClick = (violin: Distribution<TranscriptMetadata>) => {
+        const rowsForDistribution = violin.data.map((point) => point.metadata);
+
+        const allInDistributionSelected = rowsForDistribution.every(row => selected.some(x => x.expAccession === row.expAccession))
+
+        if (allInDistributionSelected) {
+            setSelected((prev) => prev.filter((row) => !rowsForDistribution.some((x) => x.expAccession === row.expAccession)));
+        } else {
+            const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.expAccession === row.expAccession));
+            setSelected((prev) => [...prev, ...toSelect]);
+        }
+    };
+
+    const handleViolinPointClick = (point: ViolinPoint<TranscriptMetadata>) => {
+        if (selected.includes(point.metadata)) {
+            setSelected(selected.filter((x) => x !== point.metadata));
+        } else setSelected([...selected, point.metadata]);
+    };
 
     return (
         <TwoPaneLayout
@@ -49,7 +79,8 @@ const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
                     sortedFilteredData={sortedFilteredData}
                     setSortedFilteredData={setSortedFilteredData}
                     transcriptExpressionData={transcriptExpressionData}
-                    selectedPeak={firstPeakId}
+                    selectedPeak={peak}
+                    handlePeakChange={handlePeakChange}
                 />
             }
             plots={[
@@ -58,11 +89,27 @@ const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
                     icon: <BarChart />,
                     plotComponent: (
                         <TranscriptExpressionBarPlot
+                            geneData={geneData}
                             transcriptExpressionData={transcriptExpressionData}
                             selected={selected}
                             sortedFilteredData={sortedFilteredData}
                             onBarClicked={handleBarClick}
-                            selectedPeak={firstPeakId}
+                            selectedPeak={peak}
+                        />
+                    ),
+                },
+                {
+                    tabTitle: "Violin Plot",
+                    icon: <CandlestickChart />,
+                    plotComponent: (
+                        <TranscriptExpressionViolinPlot
+                            geneData={geneData}
+                            selected={selected}
+                            sortedFilteredData={sortedFilteredData}
+                            transcriptExpressionData={transcriptExpressionData}
+                            onViolinClicked={handleViolinClick}
+                            onPointClicked={handleViolinPointClick}
+                            selectedPeak={peak}
                         />
                     ),
                 },

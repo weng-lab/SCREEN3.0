@@ -25,29 +25,23 @@ const TranscriptExpressionTable = ({
   transcriptExpressionData,
   setSortedFilteredData,
   sortedFilteredData,
+  handlePeakChange,
   selectedPeak
 }: TranscriptExpressionTableProps) => {
   const { data, loading, error } = transcriptExpressionData;
-  const [peak, setPeak] = useState<string>(selectedPeak ?? "");
-
-    useEffect(() => {
-        if (selectedPeak) {
-            setPeak(selectedPeak);
-        }
-    }, [selectedPeak]);
 
   const onPeakChange = (newPeak: string) => {
-    setPeak(newPeak);
+    handlePeakChange(newPeak);
   };
 
   // based on control buttons in parent, transform this data to match the expected format
   const transformedData: TranscriptMetadata[] = useMemo(() => {
     if (!data?.length) return [];
 
-    const filteredData = data.filter(d => d.peakId === peak)
+    const filteredData = data.filter(d => d.peakId === selectedPeak)
 
     return filteredData;
-  }, [data, peak]);
+  }, [data, selectedPeak]);
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
   // const StopPropagationWrapper = (params) => (
@@ -180,7 +174,7 @@ const TranscriptExpressionTable = ({
         divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
         toolbarSlot={
           <Select
-            value={peak}
+            value={selectedPeak}
             onChange={(e) => onPeakChange(e.target.value)}
             size="small"
             sx={{ mr: 1, maxWidth: 200 }}

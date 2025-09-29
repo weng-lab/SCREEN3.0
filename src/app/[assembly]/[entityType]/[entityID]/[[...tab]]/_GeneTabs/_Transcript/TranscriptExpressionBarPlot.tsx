@@ -1,4 +1,4 @@
-import { TranscriptMetadata, SharedTranscriptExpressionPlotProps } from "./TranscriptExpression"
+import { TranscriptMetadata, SharedTranscriptExpressionPlotProps, TranscriptExpressionProps } from "./TranscriptExpression"
 import { useMemo } from "react"
 import { capitalizeFirstLetter, capitalizeWords } from "common/utility"
 import { Box, Typography } from "@mui/material"
@@ -7,10 +7,11 @@ import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
 import { UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression"
 
 export type TranscriptExpressionBarPlotProps =
+    TranscriptExpressionProps &
   SharedTranscriptExpressionPlotProps &
   Partial<BarPlotProps<TranscriptMetadata>>
 
-const TranscriptExpressionBarPlot = ({ transcriptExpressionData, selected, selectedPeak, sortedFilteredData, ...rest }: TranscriptExpressionBarPlotProps) => {
+const TranscriptExpressionBarPlot = ({ geneData, transcriptExpressionData, selected, selectedPeak, sortedFilteredData, ...rest }: TranscriptExpressionBarPlotProps) => {
 
     const makeLabel = (data) => {
         const biosample = capitalizeFirstLetter(data.biosampleSummary.replaceAll("_", " "))
@@ -53,7 +54,7 @@ const TranscriptExpressionBarPlot = ({ transcriptExpressionData, selected, selec
       <BarPlot
         {...rest}
         data={plotData}
-        topAxisLabel={"Transcript Expression at"}
+        topAxisLabel={`Transcript Expression at ${selectedPeak} of ${geneData.data.name} (RPM)`}
         TooltipContents={PlotTooltip}
       />
     </Box>
