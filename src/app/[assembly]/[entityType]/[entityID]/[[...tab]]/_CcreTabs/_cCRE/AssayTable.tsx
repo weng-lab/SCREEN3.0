@@ -123,7 +123,7 @@ const AssayTable = ({
       keepNonExistentRowsSelected
       // -- End Selection Props --
       onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
-      divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+      divHeight={{ height: "100%", minHeight: "580px" }}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: [{ field: assay, sort: "desc" }] },

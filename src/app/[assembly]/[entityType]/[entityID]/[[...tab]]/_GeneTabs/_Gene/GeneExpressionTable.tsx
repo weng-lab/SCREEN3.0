@@ -375,7 +375,7 @@ const GeneExpressionTable = ({
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         // -- End Selection Props --
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        divHeight={{ height: "100%", minHeight: "580px" }}
         toolbarSlot={
           <Tooltip title="Advanced Filters">
             <IconButton

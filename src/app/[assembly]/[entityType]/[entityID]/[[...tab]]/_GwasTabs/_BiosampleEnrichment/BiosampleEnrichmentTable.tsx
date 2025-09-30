@@ -175,7 +175,7 @@ const BiosampleEnrichmentTable = ({
         rowSelectionModel={{ type: "include", ids: new Set(selected.map((x) => x.accession)) }}
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structur
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        divHeight={{ height: "100%", minHeight: "580px"}}
         labelTooltip={
                   <Tooltip
                     title={
