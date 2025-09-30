@@ -174,7 +174,7 @@ export default function GWASGenomeBrowserView({ study_name }: { study_name: stri
         id: "ld-track",
         title: "LD",
         trackType: TrackType.LDTrack,
-        displayMode: DisplayMode.Full,
+        displayMode: DisplayMode.LDBlock,
         height: 50,
         titleSize: 12,
         color: "#ff0000",
