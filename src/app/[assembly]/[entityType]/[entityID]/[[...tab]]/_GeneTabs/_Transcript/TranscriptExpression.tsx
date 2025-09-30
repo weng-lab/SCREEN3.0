@@ -1,10 +1,9 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import { BarData, Distribution, ViolinPoint } from "@weng-lab/visualization";
-import { GenomicRegion } from "app/_utility/types";
 import TwoPaneLayout from "common/components/TwoPaneLayout";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
