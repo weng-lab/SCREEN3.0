@@ -15,6 +15,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 type Documents = {
     "\n  query orthologTab($assembly: String!, $accession: [String!]) {\n    orthologQuery(accession: $accession, assembly: $assembly) {\n      assembly\n      accession\n      ortholog {\n        stop\n        start\n        chromosome\n        accession\n      }\n    }\n  }\n": typeof types.OrthologTabDocument,
+    "\nquery functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {\n  functionalCharacterizationQuery(assembly: $assembly, coordinates: $coordinates) {\n    tissues\n    element_id\n    assay_result\n    chromosome\n    stop\n    start\n  }\n}\n": typeof types.FunctionalCharacterizationQueryDocument,
+    "\nquery MPRA_FCC($coordinates: [GenomicRangeInput!]) {\n  mpraFccQuery(coordinates: $coordinates) {\n    celltype\n    chromosome\n    stop\n    start\n    assay_type\n    element_location\n    series\n    strand\n    log2fc\n    experiment    \n    barcode_location\n  }\n}\n": typeof types.Mpra_FccDocument,
+    "\n  query crisprFccQuery($accession: [String]!) {\n    crisprFccQuery(accession: $accession) {\n      rdhs\n      log2fc\n      fdr      \n      pvalue\n      experiment\n    }\n  }\n": typeof types.CrisprFccQueryDocument,
+    "\nquery capraFccSoloQuery($accession: [String]!) {\n  capraFccSoloQuery(accession: $accession) {\n    rdhs\n    log2fc\n    fdr\n    dna_rep1\n    rna_rep1\n    rna_rep2\n    rna_rep3\n    pvalue\n    experiment\n  }\n}\n": typeof types.CapraFccSoloQueryDocument,
+    "\nquery capraFccDoubleQuery($accession: [String]!) {\n  capraFccDoubleQuery(accession: $accession) {\n    rdhs_p1\n    rdhs_p2\n    log2fc\n    fdr\n    dna_rep1\n    rna_rep1\n    rna_rep2\n    rna_rep3\n    pvalue\n    experiment\n  }\n}\n": typeof types.CapraFccDoubleQueryDocument,
+    "\nquery rdhs($rDHS: [String!],$assembly: String!) {\n  cCREQuery(assembly: $assembly, rDHS: $rDHS) {\n    accession\n  }\n}\n": typeof types.RdhsDocument,
     "\n  query BiosampleUmap($assembly: String!, $assay: String!) {\n    ccREBiosampleQuery(assay: [$assay], assembly: $assembly) {\n      biosamples {\n        name\n        umap_coordinates(assay: $assay)\n      }\n    }\n  }\n": typeof types.BiosampleUmapDocument,
     "\n  query cCRETF($accession: String!, $assembly: String!) {\n    getcCRETFQuery(accession: $accession, assembly: $assembly) {\n      celltype\n      tf\n    }\n  }\n": typeof types.CCretfDocument,
     "\n  query biosampleZScores($accession: [String!], $assembly: String!) {\n    ccREBiosampleQuery(assembly: $assembly) {\n      biosamples {\n        id: name  # Add a unique identifier for each biosample\n        sampleType\n        displayname\n        lifeStage\n        cCREZScores(accession: $accession) @nonreactive {  # Mark this field as non-reactive to prevent unnecessary re-renders\n          score\n          assay\n          experiment_accession\n        }\n        name\n        ontology\n      }\n    }\n  }\n": typeof types.BiosampleZScoresDocument,
@@ -55,6 +61,12 @@ type Documents = {
 };
 const documents: Documents = {
     "\n  query orthologTab($assembly: String!, $accession: [String!]) {\n    orthologQuery(accession: $accession, assembly: $assembly) {\n      assembly\n      accession\n      ortholog {\n        stop\n        start\n        chromosome\n        accession\n      }\n    }\n  }\n": types.OrthologTabDocument,
+    "\nquery functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {\n  functionalCharacterizationQuery(assembly: $assembly, coordinates: $coordinates) {\n    tissues\n    element_id\n    assay_result\n    chromosome\n    stop\n    start\n  }\n}\n": types.FunctionalCharacterizationQueryDocument,
+    "\nquery MPRA_FCC($coordinates: [GenomicRangeInput!]) {\n  mpraFccQuery(coordinates: $coordinates) {\n    celltype\n    chromosome\n    stop\n    start\n    assay_type\n    element_location\n    series\n    strand\n    log2fc\n    experiment    \n    barcode_location\n  }\n}\n": types.Mpra_FccDocument,
+    "\n  query crisprFccQuery($accession: [String]!) {\n    crisprFccQuery(accession: $accession) {\n      rdhs\n      log2fc\n      fdr      \n      pvalue\n      experiment\n    }\n  }\n": types.CrisprFccQueryDocument,
+    "\nquery capraFccSoloQuery($accession: [String]!) {\n  capraFccSoloQuery(accession: $accession) {\n    rdhs\n    log2fc\n    fdr\n    dna_rep1\n    rna_rep1\n    rna_rep2\n    rna_rep3\n    pvalue\n    experiment\n  }\n}\n": types.CapraFccSoloQueryDocument,
+    "\nquery capraFccDoubleQuery($accession: [String]!) {\n  capraFccDoubleQuery(accession: $accession) {\n    rdhs_p1\n    rdhs_p2\n    log2fc\n    fdr\n    dna_rep1\n    rna_rep1\n    rna_rep2\n    rna_rep3\n    pvalue\n    experiment\n  }\n}\n": types.CapraFccDoubleQueryDocument,
+    "\nquery rdhs($rDHS: [String!],$assembly: String!) {\n  cCREQuery(assembly: $assembly, rDHS: $rDHS) {\n    accession\n  }\n}\n": types.RdhsDocument,
     "\n  query BiosampleUmap($assembly: String!, $assay: String!) {\n    ccREBiosampleQuery(assay: [$assay], assembly: $assembly) {\n      biosamples {\n        name\n        umap_coordinates(assay: $assay)\n      }\n    }\n  }\n": types.BiosampleUmapDocument,
     "\n  query cCRETF($accession: String!, $assembly: String!) {\n    getcCRETFQuery(accession: $accession, assembly: $assembly) {\n      celltype\n      tf\n    }\n  }\n": types.CCretfDocument,
     "\n  query biosampleZScores($accession: [String!], $assembly: String!) {\n    ccREBiosampleQuery(assembly: $assembly) {\n      biosamples {\n        id: name  # Add a unique identifier for each biosample\n        sampleType\n        displayname\n        lifeStage\n        cCREZScores(accession: $accession) @nonreactive {  # Mark this field as non-reactive to prevent unnecessary re-renders\n          score\n          assay\n          experiment_accession\n        }\n        name\n        ontology\n      }\n    }\n  }\n": types.BiosampleZScoresDocument,
@@ -112,6 +124,30 @@ export function gql(source: string): unknown;
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  query orthologTab($assembly: String!, $accession: [String!]) {\n    orthologQuery(accession: $accession, assembly: $assembly) {\n      assembly\n      accession\n      ortholog {\n        stop\n        start\n        chromosome\n        accession\n      }\n    }\n  }\n"): (typeof documents)["\n  query orthologTab($assembly: String!, $accession: [String!]) {\n    orthologQuery(accession: $accession, assembly: $assembly) {\n      assembly\n      accession\n      ortholog {\n        stop\n        start\n        chromosome\n        accession\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {\n  functionalCharacterizationQuery(assembly: $assembly, coordinates: $coordinates) {\n    tissues\n    element_id\n    assay_result\n    chromosome\n    stop\n    start\n  }\n}\n"): (typeof documents)["\nquery functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {\n  functionalCharacterizationQuery(assembly: $assembly, coordinates: $coordinates) {\n    tissues\n    element_id\n    assay_result\n    chromosome\n    stop\n    start\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery MPRA_FCC($coordinates: [GenomicRangeInput!]) {\n  mpraFccQuery(coordinates: $coordinates) {\n    celltype\n    chromosome\n    stop\n    start\n    assay_type\n    element_location\n    series\n    strand\n    log2fc\n    experiment    \n    barcode_location\n  }\n}\n"): (typeof documents)["\nquery MPRA_FCC($coordinates: [GenomicRangeInput!]) {\n  mpraFccQuery(coordinates: $coordinates) {\n    celltype\n    chromosome\n    stop\n    start\n    assay_type\n    element_location\n    series\n    strand\n    log2fc\n    experiment    \n    barcode_location\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query crisprFccQuery($accession: [String]!) {\n    crisprFccQuery(accession: $accession) {\n      rdhs\n      log2fc\n      fdr      \n      pvalue\n      experiment\n    }\n  }\n"): (typeof documents)["\n  query crisprFccQuery($accession: [String]!) {\n    crisprFccQuery(accession: $accession) {\n      rdhs\n      log2fc\n      fdr      \n      pvalue\n      experiment\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery capraFccSoloQuery($accession: [String]!) {\n  capraFccSoloQuery(accession: $accession) {\n    rdhs\n    log2fc\n    fdr\n    dna_rep1\n    rna_rep1\n    rna_rep2\n    rna_rep3\n    pvalue\n    experiment\n  }\n}\n"): (typeof documents)["\nquery capraFccSoloQuery($accession: [String]!) {\n  capraFccSoloQuery(accession: $accession) {\n    rdhs\n    log2fc\n    fdr\n    dna_rep1\n    rna_rep1\n    rna_rep2\n    rna_rep3\n    pvalue\n    experiment\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery capraFccDoubleQuery($accession: [String]!) {\n  capraFccDoubleQuery(accession: $accession) {\n    rdhs_p1\n    rdhs_p2\n    log2fc\n    fdr\n    dna_rep1\n    rna_rep1\n    rna_rep2\n    rna_rep3\n    pvalue\n    experiment\n  }\n}\n"): (typeof documents)["\nquery capraFccDoubleQuery($accession: [String]!) {\n  capraFccDoubleQuery(accession: $accession) {\n    rdhs_p1\n    rdhs_p2\n    log2fc\n    fdr\n    dna_rep1\n    rna_rep1\n    rna_rep2\n    rna_rep3\n    pvalue\n    experiment\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery rdhs($rDHS: [String!],$assembly: String!) {\n  cCREQuery(assembly: $assembly, rDHS: $rDHS) {\n    accession\n  }\n}\n"): (typeof documents)["\nquery rdhs($rDHS: [String!],$assembly: String!) {\n  cCREQuery(assembly: $assembly, rDHS: $rDHS) {\n    accession\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
