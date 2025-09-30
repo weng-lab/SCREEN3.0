@@ -3,12 +3,13 @@ import { useQuery } from "@apollo/client";
 import React from "react";
 import { DataTable, Table } from "@weng-lab/ui-components";
 import Grid from "@mui/material/Grid";
-import { CircularProgress, Stack } from "@mui/material";
+import { Box, CircularProgress, LinearProgress, Stack, Typography } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "types/globalTypes";
 import { gql } from "types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useChromHMMData } from "common/hooks/useChromHmmData";
+import ClassProportionsBar from "../_cCRE/ClassProportionsBar";
 
 const ENTEx_QUERY = gql(`
 query ENTEXQuery($accession: String!){
@@ -60,47 +61,65 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
 
   const { tracks, processedTableData, loading, error } = useChromHMMData(coordinates);
 
-  console.log(processedTableData)
+  console.log(tracks)
 
   return (
     <Stack spacing={2}>
+      <Stack>
+        
+      {/* <Typography variant="caption">Classification Proportions, Core Collection:</Typography>
+      <Box sx={{ marginBottom: "12px" }}>
+        {loading ? (
+          <LinearProgress />
+        ) : (
+          // <ClassProportionsBar
+          // rows={coreCollection}
+          // height={4}
+          // width={width}
+          // orientation="horizontal"
+          // tooltipTitle="Classification Proportions, Core Collection"
+          // />
+          <></>
+        )}
+      </Box> */}
       <Table
         label={`ChromHMM States`}
         columns={[
           {
             headerName: "Tissue",
-            field: "tissue"
+            field: "tissue",
           },
           {
             headerName: "Biosample",
-            field: "biosample"
+            field: "biosample",
           },
           {
             headerName: "States",
             field: "name",
-            renderCell: (params) => <b style={{ color: params.row.color }}>{params.value}</b>
+            renderCell: (params) => <b style={{ color: params.row.color }}>{params.value}</b>,
           },
           {
             headerName: "Chromosome",
-            field: "chr"
+            field: "chr",
           },
           {
             headerName: "Start",
             field: "start",
-            type: "number"
+            type: "number",
           },
           {
             headerName: "End",
             field: "end",
-            type: "number"
+            type: "number",
           },
         ]}
         rows={processedTableData}
         loading={loading}
         error={!!error}
-        divHeight={{height: "600px"}}
+        divHeight={{ height: "600px" }}
         initialState={{ sorting: { sortModel: [{ field: "tissue", sort: "asc" }] } }}
-      />
+        />
+      </Stack>
       <Table
         label={`ENTEx`}
         columns={[
@@ -109,9 +128,9 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
             field: "tissue",
             valueFormatter: (value: string) =>
               value
-                .split("_")
-                .map((s) => s[0].toUpperCase() + s.slice(1))
-                .join(" "),
+            .split("_")
+            .map((s) => s[0].toUpperCase() + s.slice(1))
+            .join(" "),
           },
           {
             headerName: "Assay",

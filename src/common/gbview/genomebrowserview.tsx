@@ -28,7 +28,7 @@ import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import CCRETooltip from "./ccretooltip";
 import DomainDisplay from "./domainDisplay";
 import GBButtons from "./gbViewButtons";
-import { RegistryBiosample } from "app/_biosampleTables/types";
+import { RegistryBiosample } from "common/components/BiosampleTables/types";
 
 interface Transcript {
   id: string;

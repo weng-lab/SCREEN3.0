@@ -21,8 +21,8 @@ import MobileMenu from "./MobileMenu";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { LinkComponent } from "./LinkComponent";
 import { useMenuControl } from "common/MenuContext";
-import HumanIcon from 'app/_utility/humanIcon';
-import MouseIcon from 'app/_utility/mouseIcon';
+import HumanIcon from 'common/_utility/humanIcon';
+import MouseIcon from 'common/_utility/mouseIcon';
 import { usePathname } from "next/navigation"
 
 export type PageInfo = {

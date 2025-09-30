@@ -73,7 +73,7 @@ export const stateDetails = {
 };
 
 export function useChromHMMData(coordinates: GenomicRange) {
-  const [tracks, setTracks] = useState(null);
+  const [tracks, setTracks] = useState<Record<string, ChromTrack[]>>(null);
   const [chromhmmtrackswithtissue, setChromhmmtrackswithtissue] =
     useState(null);
   const [loading, setLoading] = useState(true);

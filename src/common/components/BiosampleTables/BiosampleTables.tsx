@@ -8,7 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useQuery } from "@apollo/client"
 import { filterBiosamples } from "./helpers"
 import { BIOSAMPLE_QUERY, RNA_SEQ_QUERY } from "./queries"
-import { AssayWheel } from "./AssayWheel"
+import { AssayWheel } from "../AssayWheel"
 import { DownloadButton } from "./DownloadButton"
 import { FilterCheckboxGroup } from "./FilterCheckboxGroup"
 import { AggregateDownloadButton } from "./AggregateDownload"

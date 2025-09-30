@@ -6,7 +6,7 @@ import { CancelRounded } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import InfoIcon from "@mui/icons-material/Info";
 import { useCcreData } from "common/hooks/useCcreData";
-import { RegistryBiosample } from "app/_biosampleTables/types";
+import { RegistryBiosample } from "common/components/BiosampleTables/types";
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import ConfigureGBModal from "common/components/ConfigureGBModal";
 export type CcreGWASStudySNPsProps = {

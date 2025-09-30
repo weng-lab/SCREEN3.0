@@ -31,7 +31,7 @@ import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import CCRETooltip from "common/gbview/ccretooltip";
 import DomainDisplay from "common/gbview/domainDisplay";
 import GBButtons from "common/gbview/gbViewButtons";
-import { RegistryBiosample } from "app/_biosampleTables/types";
+import { RegistryBiosample } from "common/components/BiosampleTables/types";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import SelectLdBlock from "./SelectLdBlock";
 import { gql, useQuery } from "@apollo/client";
