@@ -25,7 +25,7 @@ import Config from "../../config.json"
 import { BiosampleUMAP, PointMetaData } from "./types"
 import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/lib/colors"
 import { UMAP_QUERY } from "./queries"
-import BiosampleTables from "../_biosampleTables/BiosampleTables"
+import BiosampleTables from "../../common/components/BiosampleTables/BiosampleTables"
 import { client } from "../client"
 
 type Selected = {

@@ -4,7 +4,7 @@ import { useState } from "react";
 import HighlightDialog from "./highlightDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import HighlightIcon from "@mui/icons-material/Highlight";
-import { RegistryBiosample } from "app/_biosampleTables/types";
+import { RegistryBiosample } from "common/components/BiosampleTables/types";
 import ConfigureGBModal from "common/components/ConfigureGBModal";
 import { Assembly } from "types/globalTypes";
 

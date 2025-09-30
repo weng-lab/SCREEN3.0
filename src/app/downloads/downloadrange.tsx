@@ -2,9 +2,9 @@ import { SetStateAction, useState } from "react"
 import Grid from "@mui/material/Grid"
 import { Box, Button, Checkbox, CircularProgress, CircularProgressProps, FormControl, FormControlLabel, FormLabel, IconButton, Radio, RadioGroup, Stack, TextField, Typography } from "@mui/material"
 import { Close, Download } from "@mui/icons-material"
-import BiosampleTables from "../_biosampleTables/BiosampleTables"
-import { RegistryBiosample } from "../_biosampleTables/types"
-import { downloadBED, parseGenomicRegion } from "app/_utility/searchHelpers"
+import BiosampleTables from "../../common/components/BiosampleTables/BiosampleTables"
+import { RegistryBiosample } from "../../common/components/BiosampleTables/types"
+import { downloadBED, parseGenomicRegion } from "common/_utility/searchHelpers"
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number },

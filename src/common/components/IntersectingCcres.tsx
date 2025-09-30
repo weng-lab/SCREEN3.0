@@ -7,7 +7,7 @@ import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useState } from "react";
 import ConfigureGBModal from "./ConfigureGBModal";
-import { RegistryBiosample } from "app/_biosampleTables/types";
+import { RegistryBiosample } from "common/components/BiosampleTables/types";
 import { CancelRounded } from "@mui/icons-material";
 const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembly: string }) => {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample | null>(null);

@@ -14,6 +14,7 @@ import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionaCharacterization/FunctionalCharacterization";
+import { AdditionalChromatinSignatures } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_AdditionalChromatinSignatures/AdditionalChromatinSignatures";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -218,7 +219,7 @@ const humanGwasTabs: readonly TabConfig<"biosample_enrichment" | "variants" | "c
 ] as const;
 
 const humanCcreTabs: readonly TabConfig<
-  "" | "genes" | "variants" | "conservation" | "functional-characterization" | "browser"
+  "" | "genes" | "variants" | "conservation" | "functional-characterization" | "browser" | "additional-chromatin-signatures"
 >[] = [
   {
     route: "",
@@ -259,6 +260,11 @@ const humanCcreTabs: readonly TabConfig<
     // component: GenomeBrowserView,
     component: null,
   },
+  {
+    route: "additional-chromatin-signatures",
+    label: "Additional Chromatin Singatures",
+    component: AdditionalChromatinSignatures
+  }
 ] as const;
 
 const humanRegionTabs: readonly TabConfig<"ccres" | "genes" | "variants" | "browser">[] = [
@@ -346,7 +352,7 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "browser">[]
   },
 ] as const;
 
-const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser" | "conservation">[] = [
+const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser" | "conservation" | "functional-characterization">[] = [
   {
     route: "",
     label: "cCRE",
@@ -370,6 +376,12 @@ const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser" | 
     label: "Conservation",
     iconPath: ConservationIconPath,
     component: Conservation,
+  },
+  {
+    route: "functional-characterization",
+    label: "Functional Characterization",
+    iconPath: FunctionalIconPath,
+    component: FunctionalCharacterization,
   },
   {
     route: "browser",

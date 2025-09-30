@@ -243,10 +243,12 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           {
             headerName: "Start",
             field: "start",
+            type: "number",
           },
           {
             headerName: "Stop",
             field: "stop",
+            type: "number",
           },
           {
             headerName: "Element Id",
@@ -289,10 +291,12 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
               {
                 headerName: "Start",
                 field: "start",
+                type: "number",
               },
               {
                 headerName: "Stop",
                 field: "stop",
+                type: "number",
               },
               {
                 headerName: "Strand",
@@ -301,6 +305,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
               {
                 headerName: "Log₂(Fold Change)",
                 field: "log2fc",
+                type: "number",
                 renderCell: (params) => params.value?.toFixed(2),
               },
               {
@@ -317,7 +322,6 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
                     </LinkComponent>
                   );
                 },
-                
               },
               {
                 headerName: "Cell Type",
@@ -376,32 +380,39 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
               {
                 headerName: "DNA Rep1",
                 field: "dna_rep1",
+                type: "number",
               },
               {
                 headerName: "RNA Rep1",
                 field: "rna_rep1",
+                type: "number",
               },
               {
                 headerName: "RNA Rep2",
                 field: "rna_rep2",
+                type: "number",
               },
               {
                 headerName: "RNA Rep3",
                 field: "rna_rep3",
+                type: "number",
               },
               {
                 headerName: "Log₂(Fold Change)",
                 field: "log2fc",
+                type: "number",
                 renderCell: (params) => params.row.log2fc?.toFixed(2),
               },
               {
                 headerName: "P-value",
                 field: "pvalue",
+                type: "number",
                 renderCell: (params) => (!params.row.pvalue ? "n/a" : params.row.pvalue.toFixed(2)),
               },
               {
                 headerName: "FDR",
                 field: "fdr",
+                type: "number",
                 renderCell: (params) => (!params.row.fdr ? "n/a" : params.row.fdr.toFixed(2)),
               },
             ]}
@@ -451,32 +462,39 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
               {
                 headerName: "DNA Rep1",
                 field: "dna_rep1",
+                type: "number",
               },
               {
                 headerName: "RNA Rep1",
                 field: "rna_rep1",
+                type: "number",
               },
               {
                 headerName: "RNA Rep2",
                 field: "rna_rep2",
+                type: "number",
               },
               {
                 headerName: "RNA Rep3",
                 field: "rna_rep3",
+                type: "number",
               },
               {
                 headerName: "Log₂(Fold Change)",
                 field: "log2fc",
+                type: "number",
                 renderCell: (params) => params.row.log2fc?.toFixed(2),
               },
               {
                 headerName: "P-value",
                 field: "pvalue",
+                type: "number",
                 renderCell: (params) => (!params.row.pvalue ? "n/a" : params.row.pvalue.toFixed(2)),
               },
               {
                 headerName: "FDR",
                 field: "fdr",
+                type: "number",
                 renderCell: (params) => (!params.row.fdr ? "n/a" : params.row.fdr.toFixed(2)),
               },
             ]}
@@ -529,16 +547,19 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
               {
                 headerName: "Log₂(Fold Change)",
                 field: "log2fc",
+                type: "number",
                 renderCell: (params) => params.row.log2fc?.toFixed(2),
               },
               {
                 headerName: "P-value",
                 field: "pvalue",
+                type: "number",
                 renderCell: (params) => (!params.row.pvalue ? "n/a" : params.row.pvalue.toFixed(2)),
               },
               {
                 headerName: "FDR",
                 field: "fdr",
+                type: "number",
                 renderCell: (params) => (!params.row.fdr ? "n/a" : params.row.fdr.toFixed(2)),
               },
             ]}

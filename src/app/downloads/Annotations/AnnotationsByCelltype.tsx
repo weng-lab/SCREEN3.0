@@ -1,5 +1,5 @@
 import React from "react";
-import BiosampleTables from "../../_biosampleTables/BiosampleTables";
+import BiosampleTables from "../../../common/components/BiosampleTables/BiosampleTables";
 import DownloadContentLayout from "./DownloadContentLayout";
 import { Assembly } from "./Annotations";
 
