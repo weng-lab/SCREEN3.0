@@ -7,6 +7,7 @@ import {
   BigBedConfig,
   BigWigConfig,
   Browser,
+  BulkBedConfig,
   Chromosome,
   createBrowserStore,
   createTrackStore,
@@ -29,6 +30,8 @@ import CCRETooltip from "./ccretooltip";
 import DomainDisplay from "./domainDisplay";
 import GBButtons from "./gbViewButtons";
 import { RegistryBiosample } from "common/components/BiosampleTables/types";
+import { useChromHMMData } from "common/hooks/useChromHmmData";
+import { tissueColors } from "common/lib/colors";
 
 interface Transcript {
   id: string;
@@ -48,15 +51,36 @@ const colors = {
   atac: "#02c7b9",
 };
 
-function expandCoordinates(coordinates: GenomicRange) {
+const SearchToScreenTypes: Record<Result["type"], AnyEntityType> = {
+  "Coordinate": "region",
+  "Gene": "gene",
+  "SNP": "variant",
+  "Study": "gwas",
+  "cCRE": "ccre",
+  "iCRE": "ccre"
+}
+
+const expansionPercentages: Record<AnyEntityType, number> = {
+  ccre: 20,
+  gene: 0.2,
+  variant: 5.0,
+  region: 0.25,
+  gwas: 0.2 
+};
+
+function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType) {
   let length = coordinates.end - coordinates.start;
+  
   if (length <= 100) {
     length = 100;
   }
-  const padding = Math.floor(length * 0.25);
+
+  const expansionPercentage = expansionPercentages[type];
+  const padding = Math.floor(length * expansionPercentage);
+
   return {
     chromosome: coordinates.chromosome as Chromosome,
-    start: coordinates.start - padding,
+    start: Math.max(0, coordinates.start - padding),
     end: coordinates.end + padding,
   };
 }
@@ -74,8 +98,10 @@ export default function GenomeBrowserView({
 }) {
   const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosample[] | null>(null);
 
+  const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates);
+
   const initialState: InitialBrowserState = {
-    domain: expandCoordinates(coordinates),
+    domain: expandCoordinates(coordinates, type),
     marginWidth: 150,
     trackWidth: 1350,
     multiplier: 3,
@@ -87,13 +113,15 @@ export default function GenomeBrowserView({
       },
     ],
   };
+
+  
   const browserStore = createBrowserStore(initialState);
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
-
+  
   const router = useRouter();
-
+  
   const onBiosampleSelected = (biosamples: RegistryBiosample[] | null) => {
     if (biosamples && biosamples.length === 0) {
       setselectedBiosamples(null);
@@ -101,7 +129,7 @@ export default function GenomeBrowserView({
       setselectedBiosamples(biosamples);
     }
   };
-
+  
   const onCcreClick = useCallback(
     (item: Rect) => {
       const accession = item.name;
@@ -109,7 +137,7 @@ export default function GenomeBrowserView({
     },
     [assembly, router]
   );
-
+  
   const onGeneClick = useCallback(
     (gene: Transcript) => {
       const name = gene.name;
@@ -120,6 +148,42 @@ export default function GenomeBrowserView({
     },
     [assembly, router]
   );
+  
+  const bulkChromHmmTracks = useMemo(() => {
+    if (!chromHmmTracks) return [];
+    const tempTracks: Track[] = [];
+    for (const tissue of Object.keys(chromHmmTracks)) {
+      const samples = chromHmmTracks[tissue];
+      const bulkbed: BulkBedConfig = {
+        id: `${tissue}-bulkbed`,
+        titleSize: 12,
+        color: tissueColors[tissue] ?? tissueColors.missing,
+        trackType: TrackType.BulkBed,
+        displayMode: DisplayMode.Full,
+        datasets: samples.map((sample, index) => {
+          return {
+            name: sample.sample + (index + 1).toString(),
+            url: sample.url,
+          };
+        }),
+        title: tissue,
+        height: 15 * samples.length,
+        tooltip: (rect) => Tooltip(rect, tissue),
+        onHover: (rect) => {
+          addHighlight({
+            color: rect.color,
+            domain: { start: rect.start, end: rect.end },
+            id: "tmp-bulkbed",
+          });
+        },
+        onLeave: () => {
+          removeHighlight("tmp-bulkbed");
+        },
+      };
+      tempTracks.push(bulkbed);
+    }
+    return tempTracks;
+  }, [addHighlight, removeHighlight, chromHmmTracks]);
 
   const initialTracks: Track[] = useMemo(() => {
     const tracks = assembly === "GRCh38" ? humanTracks : mouseTracks;
@@ -202,8 +266,10 @@ export default function GenomeBrowserView({
       );
     }
 
-    return [...defaultTracks, ...biosampleTracks, ...tracks,];
-  }, [assembly, type, name, selectedBiosamples, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
+    if (type === "ccre") return [...defaultTracks, ...biosampleTracks, ...bulkChromHmmTracks, ...tracks]
+
+    return [...defaultTracks, ...biosampleTracks, ...tracks];
+  }, [assembly, type, name, selectedBiosamples, bulkChromHmmTracks, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
   const trackStore = createTrackStore(initialTracks);
   const editTrack = trackStore((state) => state.editTrack);
@@ -219,7 +285,8 @@ export default function GenomeBrowserView({
       color: randomColor(),
       id: r.title,
     });
-    setDomain(expandCoordinates(r.domain));
+
+    setDomain(expandCoordinates(r.domain, SearchToScreenTypes[r.type]));
   };
 
   const theme = useTheme();
@@ -288,6 +355,83 @@ export default function GenomeBrowserView({
     </Grid>
   );
 }
+
+function Tooltip(rect: Rect, tissue: string) {
+  return (
+    <g>
+      <rect
+        width={240}
+        height={70}
+        fill="white"
+        stroke="none"
+        filter="drop-shadow(2px 2px 2px rgba(0,0,0,0.2))"
+      />
+      <rect
+        width={15}
+        height={15}
+        fill={stateDetails[rect.name].color}
+        x={10}
+        y={10}
+      />
+      <text x={35} y={22} fontSize={12} fontWeight="bold">
+        {stateDetails[rect.name].description}({stateDetails[rect.name].stateno})
+      </text>
+      <text x={10} y={40} fontSize={12}>
+        {rect.name}
+      </text>
+      <text x={10} y={58} fontSize={12}>
+        {tissue}
+      </text>
+    </g>
+  );
+}
+
+export const stateDetails = {
+  ["TssFlnk"]: { description: "Flanking TSS", stateno: "E1", color: "#FF4500" },
+  ["TssFlnkD"]: {
+    description: "Flanking TSS downstream",
+    stateno: "E2",
+    color: "#FF4500",
+  },
+  ["TssFlnkU"]: {
+    description: "Flanking TSS upstream",
+    stateno: "E3",
+    color: "#FF4500",
+  },
+  ["Tss"]: { description: "Active TSS", stateno: "E4", color: "#FF0000" },
+  ["Enh1"]: { description: "Enhancer", stateno: "E5", color: "#FFDF00" },
+  ["Enh2"]: { description: "Enhancer", stateno: "E6", color: "#FFDF00" },
+  ["EnhG1"]: {
+    description: "Enhancer in gene",
+    stateno: "E7",
+    color: "#AADF07",
+  },
+  ["EnhG2"]: {
+    description: "Enhancer in gene",
+    stateno: "E8",
+    color: "#AADF07",
+  },
+  ["TxWk"]: {
+    description: "Weak transcription",
+    stateno: "E9",
+    color: "#3F9A50",
+  },
+  ["Biv"]: { description: "Bivalent", stateno: "E10", color: "#CD5C5C" },
+  ["ReprPC"]: {
+    description: "Repressed by Polycomb",
+    stateno: "E11",
+    color: "#8937DF",
+  },
+  ["Quies"]: { description: "Quiescent", stateno: "E12", color: "#DCDCDC" },
+  ["Het"]: { description: "Heterochromatin", stateno: "E13", color: "#4B0082" },
+  ["ZNF/Rpts"]: {
+    description: "ZNF genes repreats",
+    stateno: "E14",
+    color: "#68cdaa",
+  },
+  ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
+};
+
 
 function generateBiosampleTracks(
   biosamples: RegistryBiosample[],
