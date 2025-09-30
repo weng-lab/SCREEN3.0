@@ -98,7 +98,7 @@ export default function GenomeBrowserView({
 }) {
   const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosample[] | null>(null);
 
-  const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates);
+  // const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates);
 
   const initialState: InitialBrowserState = {
     domain: expandCoordinates(coordinates, type),
@@ -149,41 +149,41 @@ export default function GenomeBrowserView({
     [assembly, router]
   );
   
-  const bulkChromHmmTracks = useMemo(() => {
-    if (!chromHmmTracks) return [];
-    const tempTracks: Track[] = [];
-    for (const tissue of Object.keys(chromHmmTracks)) {
-      const samples = chromHmmTracks[tissue];
-      const bulkbed: BulkBedConfig = {
-        id: `${tissue}-bulkbed`,
-        titleSize: 12,
-        color: tissueColors[tissue] ?? tissueColors.missing,
-        trackType: TrackType.BulkBed,
-        displayMode: DisplayMode.Full,
-        datasets: samples.map((sample, index) => {
-          return {
-            name: sample.sample + (index + 1).toString(),
-            url: sample.url,
-          };
-        }),
-        title: tissue,
-        height: 15 * samples.length,
-        tooltip: (rect) => Tooltip(rect, tissue),
-        onHover: (rect) => {
-          addHighlight({
-            color: rect.color,
-            domain: { start: rect.start, end: rect.end },
-            id: "tmp-bulkbed",
-          });
-        },
-        onLeave: () => {
-          removeHighlight("tmp-bulkbed");
-        },
-      };
-      tempTracks.push(bulkbed);
-    }
-    return tempTracks;
-  }, [addHighlight, removeHighlight, chromHmmTracks]);
+  // const bulkChromHmmTracks = useMemo(() => {
+  //   if (!chromHmmTracks) return [];
+  //   const tempTracks: Track[] = [];
+  //   for (const tissue of Object.keys(chromHmmTracks)) {
+  //     const samples = chromHmmTracks[tissue];
+  //     const bulkbed: BulkBedConfig = {
+  //       id: `${tissue}-bulkbed`,
+  //       titleSize: 12,
+  //       color: tissueColors[tissue] ?? tissueColors.missing,
+  //       trackType: TrackType.BulkBed,
+  //       displayMode: DisplayMode.Full,
+  //       datasets: samples.map((sample, index) => {
+  //         return {
+  //           name: sample.sample + (index + 1).toString(),
+  //           url: sample.url,
+  //         };
+  //       }),
+  //       title: tissue,
+  //       height: 15 * samples.length,
+  //       tooltip: (rect) => Tooltip(rect, tissue),
+  //       onHover: (rect) => {
+  //         addHighlight({
+  //           color: rect.color,
+  //           domain: { start: rect.start, end: rect.end },
+  //           id: "tmp-bulkbed",
+  //         });
+  //       },
+  //       onLeave: () => {
+  //         removeHighlight("tmp-bulkbed");
+  //       },
+  //     };
+  //     tempTracks.push(bulkbed);
+  //   }
+  //   return tempTracks;
+  // }, [addHighlight, removeHighlight, chromHmmTracks]);
 
   const initialTracks: Track[] = useMemo(() => {
     const tracks = assembly === "GRCh38" ? humanTracks : mouseTracks;
@@ -266,10 +266,8 @@ export default function GenomeBrowserView({
       );
     }
 
-    if (type === "ccre") return [...defaultTracks, ...biosampleTracks, ...bulkChromHmmTracks, ...tracks]
-
     return [...defaultTracks, ...biosampleTracks, ...tracks];
-  }, [assembly, type, name, selectedBiosamples, bulkChromHmmTracks, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
+  }, [assembly, type, name, selectedBiosamples, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
   const trackStore = createTrackStore(initialTracks);
   const editTrack = trackStore((state) => state.editTrack);
