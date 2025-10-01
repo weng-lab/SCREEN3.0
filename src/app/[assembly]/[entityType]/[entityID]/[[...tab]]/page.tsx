@@ -164,6 +164,7 @@ export default function DetailsPage({
         case "":
         case "conservation":
         case "functional-characterization":
+        case "additional-chromatin-signatures":
           return <ComponentToRender entity={entity} />;
         case "genes":
           return assembly === "GRCh38" ? (

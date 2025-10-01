@@ -12,6 +12,7 @@ import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitie
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
+import { AssayWheel } from "common/components/AssayWheel";
 
 export type BiosampleRow = {
   name?: string;
@@ -22,10 +23,15 @@ export type BiosampleRow = {
   class?: CcreClass;
   collection: "core" | "partial" | "ancillary"
   dnase?: number;
+  dnaseAccession?: string
   atac?: number;
+  atacAccession?: string
   h3k4me3?: number;
+  h3k4me3Accession?: string;
   h3k27ac?: number;
+  h3k27acAccession?: string;
   ctcf?: number;
+  ctcfAccession?: string;
   tf?: string;
 };
 
@@ -200,7 +206,24 @@ const coreAndPartialCols: GridColDef[] = [
     field: "class",
     ...classificationFormatting,
   },
+  {
+    headerName: "Assays",
+    field: " ",
+    type: "number",
+    valueGetter: (_, row) => Object.values(assayInfo(row)).filter(x => x).length,
+    renderCell: (params) => <AssayWheel row={assayInfo((params.row as BiosampleRow))} />
+  }
 ];
+
+const assayInfo = (row: BiosampleRow) => {
+  return {
+    dnase: row.dnaseAccession,
+    atac: row.atacAccession,
+    h3k4me3: row.h3k4me3Accession,
+    h3k27ac: row.h3k27acAccession,
+    ctcf: row.ctcfAccession,
+  };
+}
 
 const ancillaryCols = coreAndPartialCols.filter((col) => col.field !== "dnase" && col.field !== "group");
 
@@ -388,18 +411,26 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const overlapsTSS = nearbyGenes?.some((x) => x.overlapsTSS);
 
+  //need to extract the experiment from this
   const biosampleRows: BiosampleRow[] = useMemo(() => {
     if (!data_biosampleZs || !data_ccre_tf) return null;
     return data_biosampleZs?.ccREBiosampleQuery.biosamples.map((sample) => {
 
       const dnase = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "dnase")?.score || -11
+      const dnaseAccession = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "dnase")?.experiment_accession
       const atac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "atac")?.score || -11
+      const atacAccession = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "atac")?.experiment_accession
+
       const h3k4me3 = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k4me3")?.score || -11
+      const h3k4me3Accession = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k4me3")?.experiment_accession
+
       const h3k27ac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k27ac")?.score || -11
+      const h3k27acAccession = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k27ac")?.experiment_accession
       const ctcf = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "ctcf")?.score || -11
+      const ctcfAccession = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "ctcf")?.experiment_accession
       const tf = data_ccre_tf.getcCRETFQuery.find((x) => sample.name === x.celltype)?.tf.toString()
 
-      const scores = {dnase, atac, h3k4me3, h3k27ac, ctcf, tf}
+      const scores = {dnase, dnaseAccession, atac, atacAccession, h3k4me3, h3k4me3Accession, h3k27ac, h3k27acAccession, ctcf, ctcfAccession, tf}
 
       const classification = classifyCcre(scores, distanceToTSS, overlapsTSS)
 

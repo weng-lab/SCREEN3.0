@@ -1,3 +1,4 @@
+"use client"
 import React from "react"
 import { Box, Divider, Link, Stack, Typography } from "@mui/material"
 import Grid from "@mui/material/Grid"
