@@ -6,7 +6,7 @@ import {
     GridColDef,
     Table
 } from "@weng-lab/ui-components";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility"
@@ -24,83 +24,72 @@ const TranscriptExpressionTable = ({
     transcriptExpressionData,
     setSortedFilteredData,
     sortedFilteredData,
-    handlePeakChange,
-    selectedPeak
+    selectedPeak,
+    viewBy,
+    scale,
 }: TranscriptExpressionTableProps) => {
-    const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value")
     const { data, loading, error } = transcriptExpressionData;
 
-    const onPeakChange = (newPeak: string) => {
-        handlePeakChange(newPeak);
-    };
-
-    const handleViewChange = (newView: "value" | "tissue" | "tissueMax") => {
-        setViewBy(newView);
-    }
-
-    // based on control buttons, transform this data to match the expected format
     const transformedData: TranscriptMetadata[] = useMemo(() => {
-        if (!data?.length) return [];
+        if (!transcriptExpressionData?.data?.length) return [];
 
-        let filteredData = data.filter(d => d.peakId === selectedPeak)
+        let filteredData = transcriptExpressionData.data.filter(d => d.peakId === selectedPeak);
 
-        // Sort based on viewBy
+        // Apply scaling to each item’s value
+        filteredData = filteredData.map((item) => ({
+            ...item,
+            value: scale === "log"
+                ? Math.log10((item.value ?? 0) + 1)
+                : item.value ?? 0,
+        }));
+
         switch (viewBy) {
             case "value": {
-                filteredData.sort((a, b) =>
-                    (b.value ?? 0) -
-                    (a.value ?? 0)
-                );
+                filteredData.sort((a, b) => b.value - a.value);
                 break;
             }
 
             case "tissue": {
-                const getTPM = (d: TranscriptMetadata) =>
-                    d.value ?? 0;
                 const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
 
-                const maxValuesByTissue: Record<string, number> = filteredData.reduce((acc, item) => {
+                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
                     const tissue = getTissue(item);
-                    const tpm = getTPM(item);
-                    acc[tissue] = Math.max(acc[tissue] || -Infinity, tpm);
+                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
                     return acc;
-                }, {} as Record<string, number>);
+                }, {});
 
                 filteredData.sort((a, b) => {
                     const tissueA = getTissue(a);
                     const tissueB = getTissue(b);
                     const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
                     if (maxDiff !== 0) return maxDiff;
-                    return getTPM(b) - getTPM(a);
+                    return b.value - a.value;
                 });
                 break;
             }
 
             case "tissueMax": {
-                const getTPM = (d: TranscriptMetadata) =>
-                    d.value ?? 0;
                 const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
 
-                const maxValuesByTissue: Record<string, number> = filteredData.reduce((acc, item) => {
+                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
                     const tissue = getTissue(item);
-                    const tpm = getTPM(item);
-                    acc[tissue] = Math.max(acc[tissue] || -Infinity, tpm);
+                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
                     return acc;
-                }, {} as Record<string, number>);
+                }, {});
 
                 filteredData = filteredData.filter((item) => {
-                    const tpm = getTPM(item);
                     const tissue = getTissue(item);
-                    return tpm === maxValuesByTissue[tissue];
+                    return item.value === maxValuesByTissue[tissue];
                 });
 
-                filteredData.sort((a, b) => getTPM(b) - getTPM(a));
+                filteredData.sort((a, b) => b.value - a.value);
                 break;
             }
         }
 
-        return filteredData;
-    }, [data, selectedPeak, viewBy]);
+        return [...filteredData];
+    }, [transcriptExpressionData, scale, selectedPeak, viewBy]);
+
 
     //This is used to prevent sorting from happening when clicking on the header checkbox
     // const StopPropagationWrapper = (params) => (
@@ -223,27 +212,7 @@ const TranscriptExpressionTable = ({
         <>
             <Table
                 apiRef={apiRef}
-                label={
-                    <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                        <Typography>Expression at</Typography>
-                        <Select
-                            value={selectedPeak}
-                            onChange={(e) => onPeakChange(e.target.value)}
-                            size="small"
-                            variant="standard"
-                            renderValue={(value) =>
-                                transcriptExpressionData?.peaks.find((p) => p.peakID === value)?.peakID || ""
-                            }
-                        >
-                            {transcriptExpressionData?.peaks.map((peak) => (
-                                <MenuItem key={peak.peakID} value={peak.peakID}>
-                                    {`${peak.peakID} (${peak.peakType})`}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </Stack>
-                }
-                downloadFileName="transcript_expression"
+                label={"TSS Expression at " + selectedPeak}
                 density="standard"
                 rows={transformedData}
                 columns={columns}
@@ -263,23 +232,6 @@ const TranscriptExpressionTable = ({
                 // -- End Selection Props --
                 onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
                 divHeight={{ height: "100%", minHeight: "580px" }}
-                toolbarSlot={
-                    <FormControl size="small">
-                        <InputLabel id="view-by-label">View By</InputLabel>
-                        <Select
-                            labelId="view-by-label"
-                            value={viewBy}
-                            onChange={(e) => handleViewChange(e.target.value)}
-                            label="View By"
-                            size="small"
-                            sx={{ height: 32 }}
-                        >
-                            <MenuItem value="value">Value</MenuItem>
-                            <MenuItem value="tissue">Tissue</MenuItem>
-                            <MenuItem value="tissueMax">Tissue Max</MenuItem>
-                        </Select>
-                    </FormControl>
-                }
             />
         </>
     );

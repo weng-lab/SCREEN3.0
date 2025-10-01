@@ -3,7 +3,7 @@ import { BarData, Distribution, ViolinPoint } from "@weng-lab/visualization";
 import TwoPaneLayout from "common/components/TwoPaneLayout";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
@@ -15,7 +15,11 @@ export type SharedTranscriptExpressionPlotProps = {
     transcriptExpressionData: UseTranscriptExpressionReturn;
     sortedFilteredData: TranscriptMetadata[];
     selectedPeak: string;
+    viewBy?: "value" | "tissue" | "tissueMax";
+    scale?: "linear" | "log"
     handlePeakChange?: (newPeak: string) => void;
+    handleViewChange?: (newView: "value" | "tissue" | "tissueMax") => void;
+    handleScaleChange?: (newScale: "linear" | "log") => void;
 };
 
 export type TranscriptExpressionProps = {
@@ -25,6 +29,8 @@ export type TranscriptExpressionProps = {
 const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
     const [selected, setSelected] = useState<TranscriptMetadata[]>([]);
     const [peak, setPeak] = useState<string>("");
+    const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value")
+    const [scale, setScale] = useState<"linear" | "log">("linear")
     const [sortedFilteredData, setSortedFilteredData] = useState<TranscriptMetadata[]>([]);
 
     const transcriptExpressionData = useTranscriptExpression({ gene: geneData?.data.name });
@@ -37,6 +43,15 @@ const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
 
     const handlePeakChange = (newPeak: string) => {
         setPeak(newPeak);
+    };
+
+    const handleViewChange = (newView: "value" | "tissue" | "tissueMax") => {
+        console.log("view changed to ", newView)
+        setViewBy(newView);
+    };
+
+    const handleScaleChange = (newScale: "linear" | "log") => {
+        setScale(newScale);
     };
 
     const handleSelectionChange = (selected: TranscriptMetadata[]) => {
@@ -79,7 +94,8 @@ const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
                     setSortedFilteredData={setSortedFilteredData}
                     transcriptExpressionData={transcriptExpressionData}
                     selectedPeak={peak}
-                    handlePeakChange={handlePeakChange}
+                    viewBy={viewBy}
+                    scale={scale}
                 />
             }
             plots={[
@@ -94,6 +110,11 @@ const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
                             sortedFilteredData={sortedFilteredData}
                             onBarClicked={handleBarClick}
                             selectedPeak={peak}
+                            handlePeakChange={handlePeakChange}
+                            handleViewChange={handleViewChange}
+                            viewBy={viewBy}
+                            scale={scale}
+                            handleScaleChange={handleScaleChange}
                         />
                     ),
                 },
@@ -109,6 +130,11 @@ const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
                             onViolinClicked={handleViolinClick}
                             onPointClicked={handleViolinPointClick}
                             selectedPeak={peak}
+                            handlePeakChange={handlePeakChange}
+                            handleViewChange={handleViewChange}
+                            viewBy={viewBy}
+                            scale={scale}
+                            handleScaleChange={handleScaleChange}
                         />
                     ),
                 },

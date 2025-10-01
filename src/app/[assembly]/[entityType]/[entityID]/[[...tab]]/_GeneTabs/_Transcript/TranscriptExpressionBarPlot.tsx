@@ -4,13 +4,26 @@ import { capitalizeFirstLetter, capitalizeWords } from "common/utility"
 import { Box, Typography } from "@mui/material"
 import { tissueColors } from "common/lib/colors"
 import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
+import TranscriptPlotControls from "./TranscriptPlotControls"
 
 export type TranscriptExpressionBarPlotProps =
     TranscriptExpressionProps &
     SharedTranscriptExpressionPlotProps &
     Partial<BarPlotProps<TranscriptMetadata>>
 
-const TranscriptExpressionBarPlot = ({ geneData, transcriptExpressionData, selected, selectedPeak, sortedFilteredData, ...rest }: TranscriptExpressionBarPlotProps) => {
+const TranscriptExpressionBarPlot = ({
+    handleViewChange,
+    handlePeakChange,
+    handleScaleChange,
+    scale,
+    viewBy,
+    geneData,
+    transcriptExpressionData,
+    selected,
+    selectedPeak,
+    sortedFilteredData,
+    ...rest
+}: TranscriptExpressionBarPlotProps) => {
 
     const makeLabel = (data) => {
         const biosample = capitalizeFirstLetter(data.biosampleSummary.replaceAll("_", " "))
@@ -50,6 +63,15 @@ const TranscriptExpressionBarPlot = ({ geneData, transcriptExpressionData, selec
 
     return (
         <Box width={"100%"} height={"100%"} overflow={"auto"} padding={1} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative" }}>
+            <TranscriptPlotControls
+                handleViewChange={handleViewChange}
+                handlePeakChange={handlePeakChange}
+                handleScaleChange={handleScaleChange}
+                scale={scale}
+                viewBy={viewBy}
+                transcriptExpressionData={transcriptExpressionData}
+                selectedPeak={selectedPeak}
+            />
             <BarPlot
                 {...rest}
                 data={plotData}

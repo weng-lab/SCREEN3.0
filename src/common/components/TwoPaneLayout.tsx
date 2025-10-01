@@ -71,8 +71,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
 
   return (
     <Stack spacing={2} direction={{ xs: "column", lg: "row" }} id="two-pane-layout">
-      {tableOpen &&
-        <Box flexGrow={0} width={{ xs: '100%', lg: tableOpen ? '35%' : 'initial' }} id="table-container">
+        <Box flexGrow={0} width={{ xs: '100%', lg: tableOpen ? '35%' : 'initial' }} id="table-container" display={tableOpen ? "initial" : "none"}>
           <Stack direction={"row"} alignItems={"center"} gap={1} mb={2}>
             <TableIconButton />
             <Typography variant="h5" sx={{ flexGrow: 1 }}>
@@ -91,7 +90,6 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
             {TableComponent}
           </div>
         </Box>
-      }
       <Box flex="1 1 0" minWidth={0} id="tabs_figure_container">
         <Stack direction={"row"} alignItems={"center"} mb={2} gap={2}>
           {!tableOpen &&

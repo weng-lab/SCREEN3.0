@@ -3,12 +3,25 @@ import { useMemo } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
 import { tissueColors } from "common/lib/colors"
+import TranscriptPlotControls from "./TranscriptPlotControls";
 
 export type TranscriptExpressionViolinPlotProps = TranscriptExpressionProps &
     SharedTranscriptExpressionPlotProps &
     Partial<ViolinPlotProps<TranscriptMetadata>>
 
-const TranscriptExpressionBarPlot = ({ geneData, selectedPeak, transcriptExpressionData, selected, sortedFilteredData, ...rest }: TranscriptExpressionViolinPlotProps) => {
+const TranscriptExpressionBarPlot = ({ 
+    handleViewChange, 
+    handlePeakChange, 
+    handleScaleChange, 
+    scale, 
+    viewBy,
+    geneData, 
+    selectedPeak, 
+    transcriptExpressionData, 
+    selected, 
+    sortedFilteredData, 
+    ...rest 
+}: TranscriptExpressionViolinPlotProps) => {
 
     const violinData: Distribution<TranscriptMetadata>[] = useMemo(() => {
         if (!sortedFilteredData) return [];
@@ -51,6 +64,15 @@ const TranscriptExpressionBarPlot = ({ geneData, selectedPeak, transcriptExpress
             padding={1}
             sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
         >
+            <TranscriptPlotControls
+                handleViewChange={handleViewChange}
+                handlePeakChange={handlePeakChange}
+                handleScaleChange={handleScaleChange}
+                scale={scale}
+                viewBy={viewBy}
+                transcriptExpressionData={transcriptExpressionData}
+                selectedPeak={selectedPeak}
+            />
             <ViolinPlot
                 {...rest}
                 distributions={violinData}
