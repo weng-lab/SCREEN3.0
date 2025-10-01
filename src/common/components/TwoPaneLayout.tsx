@@ -1,5 +1,5 @@
-import { BarChart, CloseFullscreenRounded, TableChartRounded } from "@mui/icons-material"
-import { Stack, Box, Typography, Tabs, Tab, TabOwnProps, IconButton, TooltipClassKey, Tooltip } from "@mui/material"
+import { CloseFullscreenRounded, TableChartRounded } from "@mui/icons-material"
+import { Stack, Box, Typography, Tabs, Tab, TabOwnProps, IconButton, Tooltip } from "@mui/material"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 export type TwoPanePlotConfig = {

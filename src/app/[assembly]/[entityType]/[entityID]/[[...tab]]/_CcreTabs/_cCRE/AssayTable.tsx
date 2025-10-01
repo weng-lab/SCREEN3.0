@@ -1,5 +1,5 @@
 import { SharedAssayViewPlotProps } from "./AssayView";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import {
   GridColumnVisibilityModel,
@@ -8,7 +8,6 @@ import {
   Table,
   useGridApiRef,
 } from "@weng-lab/ui-components";
-import { Button } from "@mui/material";
 
 const assays: Assay[] = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"];
 
