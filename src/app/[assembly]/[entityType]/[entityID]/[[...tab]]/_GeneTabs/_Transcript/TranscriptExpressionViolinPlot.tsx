@@ -1,5 +1,5 @@
 import { TranscriptExpressionProps, TranscriptMetadata, SharedTranscriptExpressionPlotProps } from "./TranscriptExpression";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
 import { tissueColors } from "common/lib/colors"
@@ -10,9 +10,9 @@ export type TranscriptExpressionViolinPlotProps = TranscriptExpressionProps &
     Partial<ViolinPlotProps<TranscriptMetadata>>
 
 const TranscriptExpressionBarPlot = ({
-    handleViewChange,
-    handlePeakChange,
-    handleScaleChange,
+    setViewBy,
+    setPeak,
+    setScale,
     setSelected,
     scale,
     viewBy,
@@ -23,6 +23,7 @@ const TranscriptExpressionBarPlot = ({
     rows,
     ...rest
 }: TranscriptExpressionViolinPlotProps) => {
+    const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max")
 
     const violinData: Distribution<TranscriptMetadata>[] = useMemo(() => {
         if (!rows) return [];
@@ -34,28 +35,52 @@ const TranscriptExpressionBarPlot = ({
             return acc;
         }, {} as Record<string, TranscriptMetadata[]>);
 
-        return Object.entries(grouped).map(([tissue, group]) => {
+        let distributions = Object.entries(grouped).map(([tissue, group]) => {
             const values = group.map((d) => d.value);
             const label = tissue;
             const violinColor =
                 selected.length === 0 || group.every((d) => selected.some((s) => s.expAccession === d.expAccession))
                     ? tissueColors[tissue] ?? tissueColors.missing
-                    : "#CCCCCC"
+                    : "#CCCCCC";
 
             const data: ViolinPoint<TranscriptMetadata>[] = values.map((value, i) => {
                 const metadata = group[i];
-                const isSelected = selected.length === 0 || selected.some((s) => s.expAccession === metadata.expAccession) ? true : false;
+                const isSelected =
+                    selected.length === 0 || selected.some((s) => s.expAccession === metadata.expAccession);
                 const pointColor = isSelected ? tissueColors[tissue] ?? tissueColors.missing : "#CCCCCC";
                 const pointRadius = isSelected ? 4 : 2;
 
                 return values.length < 3
-                    ? { value, radius: pointRadius, tissue: tissue, metadata, color: pointColor }
-                    : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue: tissue, metadata, color: pointColor };
+                    ? { value, radius: pointRadius, tissue, metadata, color: pointColor }
+                    : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue, metadata, color: pointColor };
             });
 
             return { label, data, violinColor };
         });
-    }, [selected, rows]);
+
+        //apply sorting
+        distributions.sort((a, b) => {
+            if (sortBy === "tissue") {
+                return a.label.localeCompare(b.label); // alphabetical
+            }
+            if (sortBy === "median") {
+                const median = (arr: number[]) => {
+                    const sorted = [...arr].sort((x, y) => x - y);
+                    const mid = Math.floor(sorted.length / 2);
+                    return sorted.length % 2 !== 0
+                        ? sorted[mid]
+                        : (sorted[mid - 1] + sorted[mid]) / 2;
+                };
+                return median(b.data.map((d) => d.value)) - median(a.data.map((d) => d.value));
+            }
+            if (sortBy === "max") {
+                return Math.max(...b.data.map((d) => d.value)) - Math.max(...a.data.map((d) => d.value));
+            }
+            return 0;
+        });
+
+        return distributions;
+    }, [selected, rows, sortBy]);
 
     const onViolinClicked = (violin: Distribution<TranscriptMetadata>) => {
         const rowsForDistribution = violin.data.map((point) => point.metadata);
@@ -84,13 +109,16 @@ const TranscriptExpressionBarPlot = ({
             sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
         >
             <TranscriptPlotControls
-                handleViewChange={handleViewChange}
-                handlePeakChange={handlePeakChange}
-                handleScaleChange={handleScaleChange}
+                setViewBy={setViewBy}
+                setPeak={setPeak}
+                setScale={setScale}
+                setSortBy={setSortBy}
                 scale={scale}
                 viewBy={viewBy}
+                sortBy={sortBy}
                 transcriptExpressionData={transcriptExpressionData}
                 selectedPeak={selectedPeak}
+                violin={true}
             />
             <Box
                 width={"100%"}

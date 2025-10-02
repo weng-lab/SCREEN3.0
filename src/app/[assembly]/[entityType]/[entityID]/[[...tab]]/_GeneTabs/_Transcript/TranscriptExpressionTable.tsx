@@ -1,4 +1,4 @@
-import { FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Tooltip, Typography } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import {
     gridFilteredSortedRowEntriesSelector,
     GridRowSelectionModel,
@@ -6,7 +6,7 @@ import {
     GridColDef,
     Table
 } from "@weng-lab/ui-components";
-import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility"
@@ -27,6 +27,58 @@ const TranscriptExpressionTable = ({
     scale
 }: TranscriptExpressionTableProps) => {
     const { data, loading, error } = transcriptExpressionData;
+
+    const transformedData: TranscriptMetadata[] = useMemo(() => {
+        if (!rows.length) return [];
+
+        let filteredData = rows
+
+        switch (viewBy) {
+            case "value": {
+                filteredData.sort((a, b) => b.value - a.value);
+                break;
+            }
+
+            case "tissue": {
+                const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
+
+                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
+                    const tissue = getTissue(item);
+                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
+                    return acc;
+                }, {});
+
+                filteredData.sort((a, b) => {
+                    const tissueA = getTissue(a);
+                    const tissueB = getTissue(b);
+                    const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
+                    if (maxDiff !== 0) return maxDiff;
+                    return b.value - a.value;
+                });
+                break;
+            }
+
+            case "tissueMax": {
+                const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
+
+                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
+                    const tissue = getTissue(item);
+                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
+                    return acc;
+                }, {});
+
+                filteredData = filteredData.filter((item) => {
+                    const tissue = getTissue(item);
+                    return item.value === maxValuesByTissue[tissue];
+                });
+
+                filteredData.sort((a, b) => b.value - a.value);
+                break;
+            }
+        }
+
+        return [...filteredData]
+    }, [rows, viewBy]);
 
 
     //This is used to prevent sorting from happening when clicking on the header checkbox
@@ -133,9 +185,9 @@ const TranscriptExpressionTable = ({
     };
 
     const handleSync = () => {
-        const rows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as TranscriptMetadata[];
-        if (!arraysAreEqual(sortedFilteredData, rows)) {
-            setSortedFilteredData(rows);
+        const syncrows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as TranscriptMetadata[];
+        if (!arraysAreEqual(sortedFilteredData, syncrows)) {
+            setSortedFilteredData(syncrows);
         }
     };
 
@@ -152,7 +204,7 @@ const TranscriptExpressionTable = ({
                 apiRef={apiRef}
                 label={"TSS Expression at " + selectedPeak}
                 density="standard"
-                rows={rows}
+                rows={transformedData}
                 columns={columns}
                 loading={loading}
                 pageSizeOptions={[10, 25, 50]}

@@ -12,9 +12,9 @@ export type TranscriptExpressionBarPlotProps =
     Partial<BarPlotProps<TranscriptMetadata>>
 
 const TranscriptExpressionBarPlot = ({
-    handleViewChange,
-    handlePeakChange,
-    handleScaleChange,
+    setPeak,
+    setViewBy,
+    setScale,
     scale,
     viewBy,
     geneData,
@@ -52,10 +52,10 @@ const TranscriptExpressionBarPlot = ({
     }, [sortedFilteredData, selected])
 
     const onBarClicked = (bar: BarData<TranscriptMetadata>) => {
-            if (selected.includes(bar.metadata)) {
-                setSelected(selected.filter((x) => x !== bar.metadata));
-            } else setSelected([...selected, bar.metadata]);
-        };
+        if (selected.includes(bar.metadata)) {
+            setSelected(selected.filter((x) => x !== bar.metadata));
+        } else setSelected([...selected, bar.metadata]);
+    };
 
     const PlotTooltip = (bar: BarData<TranscriptMetadata>) => {
         return (
@@ -71,9 +71,9 @@ const TranscriptExpressionBarPlot = ({
     return (
         <Box width={"100%"} height={"100%"} overflow={"auto"} padding={1} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative" }}>
             <TranscriptPlotControls
-                handleViewChange={handleViewChange}
-                handlePeakChange={handlePeakChange}
-                handleScaleChange={handleScaleChange}
+                setViewBy={setViewBy}
+                setPeak={setPeak}
+                setScale={setScale}
                 scale={scale}
                 viewBy={viewBy}
                 transcriptExpressionData={transcriptExpressionData}

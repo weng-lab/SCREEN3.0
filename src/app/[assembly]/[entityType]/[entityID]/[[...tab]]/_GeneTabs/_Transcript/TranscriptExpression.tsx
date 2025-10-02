@@ -23,9 +23,9 @@ export type SharedTranscriptExpressionPlotProps = TranscriptExpressionProps & {
     selectedPeak: string;
     viewBy: "value" | "tissue" | "tissueMax";
     scale: "linear" | "log"
-    handlePeakChange: (newPeak: string) => void;
-    handleViewChange: (newView: "value" | "tissue" | "tissueMax") => void;
-    handleScaleChange: (newScale: "linear" | "log") => void;
+    setPeak: (newPeak: string) => void;
+    setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
+    setScale: (newScale: "linear" | "log") => void;
 };
 
 const TranscriptExpression = (props: TranscriptExpressionProps) => {
@@ -43,22 +43,10 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
         }
     }, [peak, transcriptExpressionData]);
 
-    const handlePeakChange = (newPeak: string) => {
-        setPeak(newPeak);
-    };
-
-    const handleViewChange = (newView: "value" | "tissue" | "tissueMax") => {
-        console.log("view changed to ", newView)
-        setViewBy(newView);
-    };
-
-    const handleScaleChange = (newScale: "linear" | "log") => {
-        setScale(newScale);
-    };
-
     const rows: TranscriptMetadata[] = useMemo(() => {
         if (!transcriptExpressionData?.data?.length) return [];
 
+        //filter out the selected peak
         let filteredData = transcriptExpressionData.data.filter(d => d.peakId === peak);
 
         // Apply scaling to each item’s value
@@ -69,52 +57,8 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
                 : item.value ?? 0,
         }));
 
-        switch (viewBy) {
-            case "value": {
-                filteredData.sort((a, b) => b.value - a.value);
-                break;
-            }
-
-            case "tissue": {
-                const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
-
-                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
-                    const tissue = getTissue(item);
-                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
-                    return acc;
-                }, {});
-
-                filteredData.sort((a, b) => {
-                    const tissueA = getTissue(a);
-                    const tissueB = getTissue(b);
-                    const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
-                    if (maxDiff !== 0) return maxDiff;
-                    return b.value - a.value;
-                });
-                break;
-            }
-
-            case "tissueMax": {
-                const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
-
-                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
-                    const tissue = getTissue(item);
-                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
-                    return acc;
-                }, {});
-
-                filteredData = filteredData.filter((item) => {
-                    const tissue = getTissue(item);
-                    return item.value === maxValuesByTissue[tissue];
-                });
-
-                filteredData.sort((a, b) => b.value - a.value);
-                break;
-            }
-        }
-
         return [...filteredData];
-    }, [transcriptExpressionData, scale, peak, viewBy]);
+    }, [transcriptExpressionData, scale, peak]);
 
     const sharedAssayViewPlotProps: SharedTranscriptExpressionPlotProps = useMemo(
         () => ({
@@ -127,9 +71,9 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
             selectedPeak: peak,
             viewBy,
             scale,
-            handlePeakChange,
-            handleViewChange,
-            handleScaleChange,
+            setPeak,
+            setViewBy,
+            setScale,
             ...props,
         }),
         [
@@ -142,9 +86,9 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
             peak,
             viewBy,
             scale,
-            handlePeakChange,
-            handleViewChange,
-            handleScaleChange,
+            setPeak,
+            setViewBy,
+            setScale,
             props
         ]
     );

@@ -8,29 +8,35 @@ interface Peak {
 
 interface TranscriptPlotControlsProps {
     selectedPeak: string;
-    handlePeakChange: (peakID: string) => void;
+    setPeak: (peakID: string) => void;
     transcriptExpressionData: { peaks: Peak[] };
     scale: string;
-    handleScaleChange: (scale: string) => void;
+    setScale: (scale: string) => void;
     viewBy: string;
-    handleViewChange: (view: string) => void;
+    setViewBy: (view: string) => void;
+    violin?: boolean;
+    setSortBy?: (sortBy: "median" | "max" | "tissue") => void;
+    sortBy?: "median" | "max" | "tissue";
 }
 
 const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
     selectedPeak,
-    handlePeakChange,
+    setPeak,
     transcriptExpressionData,
     scale,
-    handleScaleChange,
+    setScale,
     viewBy,
-    handleViewChange,
+    setViewBy,
+    setSortBy = () => { },
+    sortBy = "median",
+    violin = false
 }) => (
     <Stack direction="row" spacing={2} alignItems="center" mb={2}>
         <FormControl>
             <FormLabel>Peak</FormLabel>
             <Select
                 value={selectedPeak}
-                onChange={(e) => handlePeakChange(e.target.value as string)}
+                onChange={(e) => setPeak(e.target.value as string)}
                 size="small"
                 renderValue={(value) =>
                     transcriptExpressionData?.peaks.find((p) => p.peakID === value)?.peakID || ""
@@ -51,7 +57,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
                 exclusive
                 onChange={(_event, value) => {
                     if (value !== null) {
-                        handleScaleChange(value);
+                        setScale(value);
                     }
                 }}
                 aria-label="View By"
@@ -65,31 +71,60 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
                 </ToggleButton>
             </ToggleButtonGroup>
         </FormControl>
-        <FormControl>
-            <FormLabel>View By</FormLabel>
-            <ToggleButtonGroup
-                color="primary"
-                value={viewBy}
-                exclusive
-                onChange={(_event, value) => {
-                    if (value !== null) {
-                        handleViewChange(value);
-                    }
-                }}
-                aria-label="View By"
-                size="small"
-            >
-                <ToggleButton sx={{ textTransform: "none" }} value="value">
-                    Value
-                </ToggleButton>
-                <ToggleButton sx={{ textTransform: "none" }} value="tissue">
-                    Tissue
-                </ToggleButton>
-                <ToggleButton sx={{ textTransform: "none" }} value="tissueMax">
-                    Tissue Max
-                </ToggleButton>
-            </ToggleButtonGroup>
-        </FormControl>
+        {!violin && (
+            <FormControl>
+                <FormLabel>View By</FormLabel>
+                <ToggleButtonGroup
+                    color="primary"
+                    value={viewBy}
+                    exclusive
+                    onChange={(_event, value) => {
+                        if (value !== null) {
+                            setViewBy(value);
+                        }
+                    }}
+                    aria-label="View By"
+                    size="small"
+                >
+                    <ToggleButton sx={{ textTransform: "none" }} value="value">
+                        Value
+                    </ToggleButton>
+                    <ToggleButton sx={{ textTransform: "none" }} value="tissue">
+                        Tissue
+                    </ToggleButton>
+                    <ToggleButton sx={{ textTransform: "none" }} value="tissueMax">
+                        Tissue Max
+                    </ToggleButton>
+                </ToggleButtonGroup>
+            </FormControl>
+        )}
+        {violin && (
+            <FormControl>
+                <FormLabel>Sort By</FormLabel>
+                <ToggleButtonGroup
+                    color="primary"
+                    value={sortBy}
+                    exclusive
+                    onChange={(_event, value) => {
+                        if (value !== null) {
+                            setSortBy(value);
+                        }
+                    }}
+                    aria-label="View By"
+                    size="small"
+                >
+                    <ToggleButton sx={{ textTransform: "none" }} value="max">
+                        Max
+                    </ToggleButton>
+                    <ToggleButton sx={{ textTransform: "none" }} value="median">
+                        Median
+                    </ToggleButton>
+                    <ToggleButton sx={{ textTransform: "none" }} value="tissue">
+                        Tissue
+                    </ToggleButton>
+                </ToggleButtonGroup>
+            </FormControl>
+        )}
     </Stack>
 );
 
