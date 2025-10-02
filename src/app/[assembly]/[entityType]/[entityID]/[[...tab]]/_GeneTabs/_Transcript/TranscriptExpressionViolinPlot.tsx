@@ -13,6 +13,7 @@ const TranscriptExpressionBarPlot = ({
     handleViewChange, 
     handlePeakChange, 
     handleScaleChange, 
+    setSelected,
     scale, 
     viewBy,
     geneData, 
@@ -56,6 +57,25 @@ const TranscriptExpressionBarPlot = ({
         });
     }, [selected, sortedFilteredData]);
 
+    const onViolinClicked = (violin: Distribution<TranscriptMetadata>) => {
+        const rowsForDistribution = violin.data.map((point) => point.metadata);
+
+        const allInDistributionSelected = rowsForDistribution.every(row => selected.some(x => x.expAccession === row.expAccession))
+
+        if (allInDistributionSelected) {
+            setSelected(selected.filter((row) => !rowsForDistribution.some((x) => x.expAccession === row.expAccession)));
+        } else {
+            const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.expAccession === row.expAccession));
+            setSelected([...selected, ...toSelect]);
+        }
+    };
+
+    const onPointClicked = (point: ViolinPoint<TranscriptMetadata>) => {
+        if (selected.includes(point.metadata)) {
+            setSelected(selected.filter((x) => x !== point.metadata));
+        } else setSelected([...selected, point.metadata]);
+    };
+
     return (
         <Box
             width={"100%"}
@@ -79,6 +99,8 @@ const TranscriptExpressionBarPlot = ({
                 axisLabel={`Transcript Expression at ${selectedPeak} of ${geneData.data.name} (RPM)`}
                 loading={transcriptExpressionData.loading}
                 labelOrientation="leftDiagonal"
+                onViolinClicked={onViolinClicked}
+                onPointClicked={onPointClicked}
                 violinProps={{
                     bandwidth: "scott",
                     showAllPoints: true,

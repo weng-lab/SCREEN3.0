@@ -20,6 +20,7 @@ const TranscriptExpressionBarPlot = ({
     geneData,
     transcriptExpressionData,
     selected,
+    setSelected,
     selectedPeak,
     sortedFilteredData,
     ...rest
@@ -50,6 +51,12 @@ const TranscriptExpressionBarPlot = ({
         )
     }, [sortedFilteredData, selected])
 
+    const onBarClicked = (bar: BarData<TranscriptMetadata>) => {
+            if (selected.includes(bar.metadata)) {
+                setSelected(selected.filter((x) => x !== bar.metadata));
+            } else setSelected([...selected, bar.metadata]);
+        };
+
     const PlotTooltip = (bar: BarData<TranscriptMetadata>) => {
         return (
             <>
@@ -74,6 +81,7 @@ const TranscriptExpressionBarPlot = ({
             />
             <BarPlot
                 {...rest}
+                onBarClicked={onBarClicked}
                 data={plotData}
                 topAxisLabel={`Transcript Expression at ${selectedPeak} of ${geneData.data.name} (RPM)`}
                 TooltipContents={PlotTooltip}

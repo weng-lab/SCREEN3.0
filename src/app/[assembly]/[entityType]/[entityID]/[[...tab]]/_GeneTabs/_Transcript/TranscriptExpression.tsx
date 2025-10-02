@@ -10,30 +10,32 @@ import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
 
 export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 
-export type SharedTranscriptExpressionPlotProps = {
-    selected: TranscriptMetadata[];
-    transcriptExpressionData: UseTranscriptExpressionReturn;
-    sortedFilteredData: TranscriptMetadata[];
-    selectedPeak: string;
-    viewBy?: "value" | "tissue" | "tissueMax";
-    scale?: "linear" | "log"
-    handlePeakChange?: (newPeak: string) => void;
-    handleViewChange?: (newView: "value" | "tissue" | "tissueMax") => void;
-    handleScaleChange?: (newScale: "linear" | "log") => void;
-};
-
 export type TranscriptExpressionProps = {
     geneData: UseGeneDataReturn<{ name: string }>;
 };
 
-const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
+export type SharedTranscriptExpressionPlotProps = TranscriptExpressionProps & {
+    selected: TranscriptMetadata[];
+    setSelected: (selected: TranscriptMetadata[]) => void;
+    sortedFilteredData: TranscriptMetadata[];
+    setSortedFilteredData: (data: TranscriptMetadata[]) => void;
+    transcriptExpressionData: UseTranscriptExpressionReturn;
+    selectedPeak: string;
+    viewBy: "value" | "tissue" | "tissueMax";
+    scale: "linear" | "log"
+    handlePeakChange: (newPeak: string) => void;
+    handleViewChange: (newView: "value" | "tissue" | "tissueMax") => void;
+    handleScaleChange: (newScale: "linear" | "log") => void;
+};
+
+const TranscriptExpression = (props: TranscriptExpressionProps) => {
     const [selected, setSelected] = useState<TranscriptMetadata[]>([]);
     const [peak, setPeak] = useState<string>("");
     const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value")
     const [scale, setScale] = useState<"linear" | "log">("linear")
     const [sortedFilteredData, setSortedFilteredData] = useState<TranscriptMetadata[]>([]);
 
-    const transcriptExpressionData = useTranscriptExpression({ gene: geneData?.data.name });
+    const transcriptExpressionData = useTranscriptExpression({ gene: props.geneData?.data.name });
 
     useEffect(() => {
         if (transcriptExpressionData && peak === "") {
@@ -54,88 +56,55 @@ const TranscriptExpression = ({ geneData }: TranscriptExpressionProps) => {
         setScale(newScale);
     };
 
-    const handleSelectionChange = (selected: TranscriptMetadata[]) => {
-        setSelected(selected);
-    };
-
-    const handleBarClick = (bar: BarData<TranscriptMetadata>) => {
-        if (selected.includes(bar.metadata)) {
-            setSelected(selected.filter((x) => x !== bar.metadata));
-        } else setSelected([...selected, bar.metadata]);
-    };
-
-    const handleViolinClick = (violin: Distribution<TranscriptMetadata>) => {
-        const rowsForDistribution = violin.data.map((point) => point.metadata);
-
-        const allInDistributionSelected = rowsForDistribution.every(row => selected.some(x => x.expAccession === row.expAccession))
-
-        if (allInDistributionSelected) {
-            setSelected((prev) => prev.filter((row) => !rowsForDistribution.some((x) => x.expAccession === row.expAccession)));
-        } else {
-            const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.expAccession === row.expAccession));
-            setSelected((prev) => [...prev, ...toSelect]);
-        }
-    };
-
-    const handleViolinPointClick = (point: ViolinPoint<TranscriptMetadata>) => {
-        if (selected.includes(point.metadata)) {
-            setSelected(selected.filter((x) => x !== point.metadata));
-        } else setSelected([...selected, point.metadata]);
-    };
+    const sharedAssayViewPlotProps: SharedTranscriptExpressionPlotProps = useMemo(
+        () => ({
+            selected,
+            setSelected,
+            sortedFilteredData,
+            setSortedFilteredData,
+            transcriptExpressionData,
+            selectedPeak: peak,
+            viewBy,
+            scale,
+            handlePeakChange,
+            handleViewChange,
+            handleScaleChange,
+            ...props,
+        }),
+        [
+            selected,
+            setSelected,
+            sortedFilteredData,
+            setSortedFilteredData,
+            transcriptExpressionData,
+            peak,
+            viewBy,
+            scale,
+            handlePeakChange,
+            handleViewChange,
+            handleScaleChange,
+            props
+        ]
+    );
 
     return (
         <TwoPaneLayout
             TableComponent={
-                <TranscriptExpressionTable
-                    geneData={geneData}
-                    selected={selected}
-                    onSelectionChange={handleSelectionChange}
-                    sortedFilteredData={sortedFilteredData}
-                    setSortedFilteredData={setSortedFilteredData}
-                    transcriptExpressionData={transcriptExpressionData}
-                    selectedPeak={peak}
-                    viewBy={viewBy}
-                    scale={scale}
-                />
+                <TranscriptExpressionTable {...sharedAssayViewPlotProps} />
             }
             plots={[
                 {
                     tabTitle: "Bar Plot",
                     icon: <BarChart />,
                     plotComponent: (
-                        <TranscriptExpressionBarPlot
-                            geneData={geneData}
-                            transcriptExpressionData={transcriptExpressionData}
-                            selected={selected}
-                            sortedFilteredData={sortedFilteredData}
-                            onBarClicked={handleBarClick}
-                            selectedPeak={peak}
-                            handlePeakChange={handlePeakChange}
-                            handleViewChange={handleViewChange}
-                            viewBy={viewBy}
-                            scale={scale}
-                            handleScaleChange={handleScaleChange}
-                        />
+                        <TranscriptExpressionBarPlot {...sharedAssayViewPlotProps} />
                     ),
                 },
                 {
                     tabTitle: "Violin Plot",
                     icon: <CandlestickChart />,
                     plotComponent: (
-                        <TranscriptExpressionViolinPlot
-                            geneData={geneData}
-                            selected={selected}
-                            sortedFilteredData={sortedFilteredData}
-                            transcriptExpressionData={transcriptExpressionData}
-                            onViolinClicked={handleViolinClick}
-                            onPointClicked={handleViolinPointClick}
-                            selectedPeak={peak}
-                            handlePeakChange={handlePeakChange}
-                            handleViewChange={handleViewChange}
-                            viewBy={viewBy}
-                            scale={scale}
-                            handleScaleChange={handleScaleChange}
-                        />
+                        <TranscriptExpressionViolinPlot {...sharedAssayViewPlotProps} />
                     ),
                 },
             ]}

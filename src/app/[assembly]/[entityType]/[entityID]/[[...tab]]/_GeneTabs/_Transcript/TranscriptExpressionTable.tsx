@@ -13,14 +13,11 @@ import { capitalizeFirstLetter } from "common/utility"
 import { SharedTranscriptExpressionPlotProps, TranscriptExpressionProps, TranscriptMetadata } from "./TranscriptExpression";
 
 export type TranscriptExpressionTableProps = TranscriptExpressionProps &
-    SharedTranscriptExpressionPlotProps & {
-        onSelectionChange: (selected: TranscriptMetadata[]) => void;
-        setSortedFilteredData: Dispatch<SetStateAction<TranscriptMetadata[]>>;
-    };
+    SharedTranscriptExpressionPlotProps
 
 const TranscriptExpressionTable = ({
     selected,
-    onSelectionChange,
+    setSelected,
     transcriptExpressionData,
     setSortedFilteredData,
     sortedFilteredData,
@@ -171,7 +168,7 @@ const TranscriptExpressionTable = ({
     const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
         const newIds = Array.from(ids.ids);
         const selectedRows = newIds.map((id) => transformedData.find((row) => row.expAccession === id));
-        onSelectionChange(selectedRows);
+        setSelected(selectedRows);
     };
 
     const apiRef = useGridApiRef();
