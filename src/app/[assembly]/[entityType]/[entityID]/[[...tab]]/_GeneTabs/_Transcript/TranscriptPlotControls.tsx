@@ -17,6 +17,8 @@ interface TranscriptPlotControlsProps {
     violin?: boolean;
     setSortBy?: (sortBy: "median" | "max" | "tissue") => void;
     sortBy?: "median" | "max" | "tissue";
+    setShowPoints?: (showPoints: boolean) => void;
+    showPoints?: boolean;
 }
 
 const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
@@ -29,7 +31,9 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
     setViewBy,
     setSortBy = () => { },
     sortBy = "median",
-    violin = false
+    violin = false,
+    setShowPoints = () => { },
+    showPoints = true,
 }) => (
     <Stack direction="row" spacing={2} alignItems="center" mb={2}>
         <FormControl>
@@ -99,31 +103,55 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
             </FormControl>
         )}
         {violin && (
-            <FormControl>
-                <FormLabel>Sort By</FormLabel>
-                <ToggleButtonGroup
-                    color="primary"
-                    value={sortBy}
-                    exclusive
-                    onChange={(_event, value) => {
-                        if (value !== null) {
-                            setSortBy(value);
-                        }
-                    }}
-                    aria-label="View By"
-                    size="small"
-                >
-                    <ToggleButton sx={{ textTransform: "none" }} value="max">
-                        Max
-                    </ToggleButton>
-                    <ToggleButton sx={{ textTransform: "none" }} value="median">
-                        Median
-                    </ToggleButton>
-                    <ToggleButton sx={{ textTransform: "none" }} value="tissue">
-                        Tissue
-                    </ToggleButton>
-                </ToggleButtonGroup>
-            </FormControl>
+            <Stack direction="row" spacing={2} alignItems="center">
+                <FormControl>
+                    <FormLabel>Sort By</FormLabel>
+                    <ToggleButtonGroup
+                        color="primary"
+                        value={sortBy}
+                        exclusive
+                        onChange={(_event, value) => {
+                            if (value !== null) {
+                                setSortBy(value);
+                            }
+                        }}
+                        aria-label="View By"
+                        size="small"
+                    >
+                        <ToggleButton sx={{ textTransform: "none" }} value="max">
+                            Max
+                        </ToggleButton>
+                        <ToggleButton sx={{ textTransform: "none" }} value="median">
+                            Median
+                        </ToggleButton>
+                        <ToggleButton sx={{ textTransform: "none" }} value="tissue">
+                            Tissue
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </FormControl>
+                <FormControl>
+                    <FormLabel>Show Points</FormLabel>
+                    <ToggleButtonGroup
+                        color="primary"
+                        value={showPoints}
+                        exclusive
+                        onChange={(_event, value) => {
+                            if (value !== null) {
+                                setShowPoints(value);
+                            }
+                        }}
+                        aria-label="show points"
+                        size="small"
+                    >
+                        <ToggleButton sx={{ textTransform: "none" }} value={true}>
+                            On
+                        </ToggleButton>
+                        <ToggleButton sx={{ textTransform: "none" }} value={false}>
+                            Off
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </FormControl>
+            </Stack>
         )}
     </Stack>
 );

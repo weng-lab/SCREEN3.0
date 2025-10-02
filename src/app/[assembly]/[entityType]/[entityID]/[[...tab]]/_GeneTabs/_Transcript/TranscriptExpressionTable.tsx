@@ -1,4 +1,4 @@
-import { IconButton, Tooltip } from "@mui/material";
+import { FormControl, FormLabel, IconButton, MenuItem, Select, Tooltip, Typography } from "@mui/material";
 import {
     gridFilteredSortedRowEntriesSelector,
     GridRowSelectionModel,
@@ -22,6 +22,7 @@ const TranscriptExpressionTable = ({
     setSortedFilteredData,
     sortedFilteredData,
     selectedPeak,
+    setPeak,
     viewBy,
     rows,
     scale
@@ -202,7 +203,28 @@ const TranscriptExpressionTable = ({
         <>
             <Table
                 apiRef={apiRef}
-                label={"TSS Expression at " + selectedPeak}
+                label={
+                    <>
+                        <Typography mr={1}>TSS Expressioon at</Typography>
+                        <FormControl>
+                            <Select
+                                value={selectedPeak}
+                                onChange={(e) => setPeak(e.target.value as string)}
+                                size="small"
+                                variant="standard"
+                                renderValue={(value) =>
+                                    transcriptExpressionData?.peaks.find((p) => p.peakID === value)?.peakID || ""
+                                }
+                            >
+                                {transcriptExpressionData?.peaks.map((peak) => (
+                                    <MenuItem key={peak.peakID} value={peak.peakID}>
+                                        {`${peak.peakID} (${peak.peakType})`}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </>
+                }
                 density="standard"
                 rows={transformedData}
                 columns={columns}
@@ -213,6 +235,7 @@ const TranscriptExpressionTable = ({
                         sortModel: [{ field: "rpm", sort: "desc" }],
                     },
                 }}
+                downloadFileName={"TSS Expression at " + selectedPeak}
                 // -- Selection Props --
                 checkboxSelection
                 getRowId={(row) => row.expAccession} //needed to match up data with the ids returned by onRowSelectionModelChange

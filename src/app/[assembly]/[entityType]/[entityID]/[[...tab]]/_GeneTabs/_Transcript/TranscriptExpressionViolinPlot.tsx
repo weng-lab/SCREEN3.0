@@ -24,6 +24,7 @@ const TranscriptExpressionBarPlot = ({
     ...rest
 }: TranscriptExpressionViolinPlotProps) => {
     const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max")
+    const [showPoints, setShowPoints] = useState<boolean>(true);
 
     const violinData: Distribution<TranscriptMetadata>[] = useMemo(() => {
         if (!rows) return [];
@@ -96,10 +97,14 @@ const TranscriptExpressionBarPlot = ({
     };
 
     const onPointClicked = (point: ViolinPoint<TranscriptMetadata>) => {
-        if (selected.includes(point.metadata)) {
-            setSelected(selected.filter((x) => x !== point.metadata));
-        } else setSelected([...selected, point.metadata]);
+        const id = point.metadata.expAccession;
+        if (selected.some((x) => x.expAccession === id)) {
+            setSelected(selected.filter((x) => x.expAccession !== id));
+        } else {
+            setSelected([...selected, point.metadata]);
+        }
     };
+
 
     return (
         <Box
@@ -113,6 +118,8 @@ const TranscriptExpressionBarPlot = ({
                 setPeak={setPeak}
                 setScale={setScale}
                 setSortBy={setSortBy}
+                setShowPoints={setShowPoints}
+                showPoints={showPoints}
                 scale={scale}
                 viewBy={viewBy}
                 sortBy={sortBy}
@@ -134,12 +141,13 @@ const TranscriptExpressionBarPlot = ({
                     onPointClicked={onPointClicked}
                     violinProps={{
                         bandwidth: "scott",
-                        showAllPoints: true,
+                        showAllPoints: showPoints,
                         jitter: 10,
                     }}
+                    crossProps={{
+                        outliers: showPoints ? "all" : "none",
+                    }}
                     pointTooltipBody={(point) => {
-                        const rpm = point.metadata?.value ?? 0;
-
                         return (
                             <Box maxWidth={300}>
                                 {point.outlier && <div><strong>Outlier</strong></div>}
