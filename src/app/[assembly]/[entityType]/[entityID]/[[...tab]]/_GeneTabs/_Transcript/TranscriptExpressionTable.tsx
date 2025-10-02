@@ -205,7 +205,7 @@ const TranscriptExpressionTable = ({
                 apiRef={apiRef}
                 label={
                     <>
-                        <Typography mr={1}>TSS Expressioon at</Typography>
+                        <Typography mr={1}>TSS Expression at</Typography>
                         <FormControl>
                             <Select
                                 value={selectedPeak}
