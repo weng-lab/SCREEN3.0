@@ -49,7 +49,11 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
                 color="primary"
                 value={scale}
                 exclusive
-                onChange={(_event, value) => handleScaleChange(value)}
+                onChange={(_event, value) => {
+                    if (value !== null) {
+                        handleScaleChange(value);
+                    }
+                }}
                 aria-label="View By"
                 size="small"
             >
@@ -67,7 +71,11 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
                 color="primary"
                 value={viewBy}
                 exclusive
-                onChange={(_event, value) => handleViewChange(value)}
+                onChange={(_event, value) => {
+                    if (value !== null) {
+                        handleViewChange(value);
+                    }
+                }}
                 aria-label="View By"
                 size="small"
             >

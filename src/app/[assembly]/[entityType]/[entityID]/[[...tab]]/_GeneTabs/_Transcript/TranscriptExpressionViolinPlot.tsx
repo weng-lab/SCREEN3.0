@@ -9,25 +9,25 @@ export type TranscriptExpressionViolinPlotProps = TranscriptExpressionProps &
     SharedTranscriptExpressionPlotProps &
     Partial<ViolinPlotProps<TranscriptMetadata>>
 
-const TranscriptExpressionBarPlot = ({ 
-    handleViewChange, 
-    handlePeakChange, 
-    handleScaleChange, 
+const TranscriptExpressionBarPlot = ({
+    handleViewChange,
+    handlePeakChange,
+    handleScaleChange,
     setSelected,
-    scale, 
+    scale,
     viewBy,
-    geneData, 
-    selectedPeak, 
-    transcriptExpressionData, 
-    selected, 
-    sortedFilteredData, 
-    ...rest 
+    geneData,
+    selectedPeak,
+    transcriptExpressionData,
+    selected,
+    rows,
+    ...rest
 }: TranscriptExpressionViolinPlotProps) => {
 
     const violinData: Distribution<TranscriptMetadata>[] = useMemo(() => {
-        if (!sortedFilteredData) return [];
+        if (!rows) return [];
 
-        const grouped = sortedFilteredData.reduce((acc, item) => {
+        const grouped = rows.reduce((acc, item) => {
             const key = item.organ;
             if (!acc[key]) acc[key] = [];
             acc[key].push(item);
@@ -55,7 +55,7 @@ const TranscriptExpressionBarPlot = ({
 
             return { label, data, violinColor };
         });
-    }, [selected, sortedFilteredData]);
+    }, [selected, rows]);
 
     const onViolinClicked = (violin: Distribution<TranscriptMetadata>) => {
         const rowsForDistribution = violin.data.map((point) => point.metadata);
@@ -80,7 +80,6 @@ const TranscriptExpressionBarPlot = ({
         <Box
             width={"100%"}
             height={"100%"}
-            overflow={"auto"}
             padding={1}
             sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
         >
@@ -93,34 +92,38 @@ const TranscriptExpressionBarPlot = ({
                 transcriptExpressionData={transcriptExpressionData}
                 selectedPeak={selectedPeak}
             />
-            <ViolinPlot
-                {...rest}
-                distributions={violinData}
-                axisLabel={`Transcript Expression at ${selectedPeak} of ${geneData.data.name} (RPM)`}
-                loading={transcriptExpressionData.loading}
-                labelOrientation="leftDiagonal"
-                onViolinClicked={onViolinClicked}
-                onPointClicked={onPointClicked}
-                violinProps={{
-                    bandwidth: "scott",
-                    showAllPoints: true,
-                    jitter: 10,
-                }}
-                pointTooltipBody={(point) => {
-                    const rpm = point.metadata?.value ?? 0;
+            <Box
+                width={"100%"}
+                height={"calc(100% - 63px)"} // bad fix for adjusting height to account for controls
+            >
+                <ViolinPlot
+                    {...rest}
+                    distributions={violinData}
+                    axisLabel={`TSS Expression at ${selectedPeak} of ${geneData.data.name} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
+                    loading={transcriptExpressionData.loading}
+                    labelOrientation="leftDiagonal"
+                    onViolinClicked={onViolinClicked}
+                    onPointClicked={onPointClicked}
+                    violinProps={{
+                        bandwidth: "scott",
+                        showAllPoints: true,
+                        jitter: 10,
+                    }}
+                    pointTooltipBody={(point) => {
+                        const rpm = point.metadata?.value ?? 0;
 
-                    return (
-                        <Box maxWidth={300}>
-                            {point.outlier && <div><strong>Outlier</strong></div>}
-                            <div><strong>Sample:</strong> {point.metadata?.biosampleName}</div>
-                            <div><strong>Tissue:</strong> {point.metadata?.organ}</div>
-                            <div><strong>Strand:</strong> {point.metadata?.strand}</div>
-                            <div><strong>RPM:</strong>{" "}{point.metadata?.value.toFixed(2)}</div>
-                        </Box>
-                    );
-                }}
-            />
-
+                        return (
+                            <Box maxWidth={300}>
+                                {point.outlier && <div><strong>Outlier</strong></div>}
+                                <div><strong>Sample:</strong> {point.metadata?.biosampleName}</div>
+                                <div><strong>Tissue:</strong> {point.metadata?.organ}</div>
+                                <div><strong>Strand:</strong> {point.metadata?.strand}</div>
+                                <div><strong>RPM:</strong>{" "}{point.metadata?.value.toFixed(2)}</div>
+                            </Box>
+                        );
+                    }}
+                />
+            </Box>
         </Box>
     );
 };

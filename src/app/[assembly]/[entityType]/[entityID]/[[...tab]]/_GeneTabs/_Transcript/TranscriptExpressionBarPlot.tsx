@@ -83,7 +83,7 @@ const TranscriptExpressionBarPlot = ({
                 {...rest}
                 onBarClicked={onBarClicked}
                 data={plotData}
-                topAxisLabel={`Transcript Expression at ${selectedPeak} of ${geneData.data.name} (RPM)`}
+                topAxisLabel={`TSS Expression at ${selectedPeak} of ${geneData.data.name} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
                 TooltipContents={PlotTooltip}
             />
         </Box>

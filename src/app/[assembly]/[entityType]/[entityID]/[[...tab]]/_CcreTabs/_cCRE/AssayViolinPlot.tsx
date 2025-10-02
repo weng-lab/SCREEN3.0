@@ -1,21 +1,17 @@
 import { Box } from "@mui/system";
-import { BarData, BarPlot, Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
+import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { SharedAssayViewPlotProps } from "./AssayView";
 import { capitalizeFirstLetter, truncateString } from "common/utility";
 import { tissueColors } from "common/lib/colors";
 import { BiosampleRow, formatAssay } from "./BiosampleActivity";
 import { useMemo } from "react";
-import { metadata } from "app/layout";
 
 const AssayViolinPlot = ({
   entity,
   rows,
-  columns,
   assay,
   selected,
   setSelected,
-  sortedFilteredData,
-  setSortedFilteredData,
 }: SharedAssayViewPlotProps) => {
 
   const violinData: Distribution<BiosampleRow>[] = useMemo(() => {

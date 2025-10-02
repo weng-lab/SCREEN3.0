@@ -23,69 +23,10 @@ const TranscriptExpressionTable = ({
     sortedFilteredData,
     selectedPeak,
     viewBy,
-    scale,
+    rows,
+    scale
 }: TranscriptExpressionTableProps) => {
     const { data, loading, error } = transcriptExpressionData;
-
-    const transformedData: TranscriptMetadata[] = useMemo(() => {
-        if (!transcriptExpressionData?.data?.length) return [];
-
-        let filteredData = transcriptExpressionData.data.filter(d => d.peakId === selectedPeak);
-
-        // Apply scaling to each item’s value
-        filteredData = filteredData.map((item) => ({
-            ...item,
-            value: scale === "log"
-                ? Math.log10((item.value ?? 0) + 1)
-                : item.value ?? 0,
-        }));
-
-        switch (viewBy) {
-            case "value": {
-                filteredData.sort((a, b) => b.value - a.value);
-                break;
-            }
-
-            case "tissue": {
-                const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
-
-                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
-                    const tissue = getTissue(item);
-                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
-                    return acc;
-                }, {});
-
-                filteredData.sort((a, b) => {
-                    const tissueA = getTissue(a);
-                    const tissueB = getTissue(b);
-                    const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
-                    if (maxDiff !== 0) return maxDiff;
-                    return b.value - a.value;
-                });
-                break;
-            }
-
-            case "tissueMax": {
-                const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
-
-                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
-                    const tissue = getTissue(item);
-                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
-                    return acc;
-                }, {});
-
-                filteredData = filteredData.filter((item) => {
-                    const tissue = getTissue(item);
-                    return item.value === maxValuesByTissue[tissue];
-                });
-
-                filteredData.sort((a, b) => b.value - a.value);
-                break;
-            }
-        }
-
-        return [...filteredData];
-    }, [transcriptExpressionData, scale, selectedPeak, viewBy]);
 
 
     //This is used to prevent sorting from happening when clicking on the header checkbox
@@ -126,7 +67,7 @@ const TranscriptExpressionTable = ({
         },
         {
             field: "rpm" as any, //Workaround for typing issue -- find better solution
-            headerName: "RPM",
+            headerName: `${scale === "log" ? "RPM(log10)" : "RPM"}`,
             type: "number",
             sortable: viewBy !== "tissue",
             valueGetter: (_, row) => {
@@ -167,7 +108,7 @@ const TranscriptExpressionTable = ({
 
     const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
         const newIds = Array.from(ids.ids);
-        const selectedRows = newIds.map((id) => transformedData.find((row) => row.expAccession === id));
+        const selectedRows = newIds.map((id) => rows.find((row) => row.expAccession === id));
         setSelected(selectedRows);
     };
 
@@ -211,7 +152,7 @@ const TranscriptExpressionTable = ({
                 apiRef={apiRef}
                 label={"TSS Expression at " + selectedPeak}
                 density="standard"
-                rows={transformedData}
+                rows={rows}
                 columns={columns}
                 loading={loading}
                 pageSizeOptions={[10, 25, 50]}

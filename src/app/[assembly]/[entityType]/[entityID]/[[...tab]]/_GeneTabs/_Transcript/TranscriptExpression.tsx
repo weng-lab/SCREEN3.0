@@ -1,5 +1,4 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
-import { BarData, Distribution, ViolinPoint } from "@weng-lab/visualization";
 import TwoPaneLayout from "common/components/TwoPaneLayout";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
@@ -15,6 +14,7 @@ export type TranscriptExpressionProps = {
 };
 
 export type SharedTranscriptExpressionPlotProps = TranscriptExpressionProps & {
+    rows: TranscriptMetadata[];
     selected: TranscriptMetadata[];
     setSelected: (selected: TranscriptMetadata[]) => void;
     sortedFilteredData: TranscriptMetadata[];
@@ -56,8 +56,69 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
         setScale(newScale);
     };
 
+    const rows: TranscriptMetadata[] = useMemo(() => {
+        if (!transcriptExpressionData?.data?.length) return [];
+
+        let filteredData = transcriptExpressionData.data.filter(d => d.peakId === peak);
+
+        // Apply scaling to each item’s value
+        filteredData = filteredData.map((item) => ({
+            ...item,
+            value: scale === "log"
+                ? Math.log10((item.value ?? 0) + 1)
+                : item.value ?? 0,
+        }));
+
+        switch (viewBy) {
+            case "value": {
+                filteredData.sort((a, b) => b.value - a.value);
+                break;
+            }
+
+            case "tissue": {
+                const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
+
+                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
+                    const tissue = getTissue(item);
+                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
+                    return acc;
+                }, {});
+
+                filteredData.sort((a, b) => {
+                    const tissueA = getTissue(a);
+                    const tissueB = getTissue(b);
+                    const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
+                    if (maxDiff !== 0) return maxDiff;
+                    return b.value - a.value;
+                });
+                break;
+            }
+
+            case "tissueMax": {
+                const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
+
+                const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
+                    const tissue = getTissue(item);
+                    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
+                    return acc;
+                }, {});
+
+                filteredData = filteredData.filter((item) => {
+                    const tissue = getTissue(item);
+                    return item.value === maxValuesByTissue[tissue];
+                });
+
+                filteredData.sort((a, b) => b.value - a.value);
+                break;
+            }
+        }
+
+        return [...filteredData];
+    }, [transcriptExpressionData, scale, peak, viewBy]);
+
     const sharedAssayViewPlotProps: SharedTranscriptExpressionPlotProps = useMemo(
         () => ({
+            rows,
             selected,
             setSelected,
             sortedFilteredData,
@@ -72,6 +133,7 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
             ...props,
         }),
         [
+            rows,
             selected,
             setSelected,
             sortedFilteredData,
