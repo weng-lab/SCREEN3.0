@@ -21,11 +21,14 @@ export type SharedAssayViewPlotProps = AssayViewProps & {
   setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
   sortedFilteredData: BiosampleRow[];
   setSortedFilteredData: Dispatch<SetStateAction<BiosampleRow[]>>
+  viewBy: "value" | "tissue" | "tissueMax";
+  setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
 };
 
 const AssayView = (props: AssayViewProps) => {
   const [selected, setSelected] = useState<BiosampleRow[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<BiosampleRow[]>([]);
+  const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value")
 
   const sharedAssayViewPlotProps: SharedAssayViewPlotProps = useMemo(
     () => ({
@@ -33,9 +36,11 @@ const AssayView = (props: AssayViewProps) => {
       setSelected,
       sortedFilteredData,
       setSortedFilteredData,
+      viewBy,
+      setViewBy,
       ...props,
     }),
-    [props, selected, sortedFilteredData]
+    [props, selected, sortedFilteredData, viewBy]
   ); 
 
   const plots: TwoPanePlotConfig[] = useMemo(() => {

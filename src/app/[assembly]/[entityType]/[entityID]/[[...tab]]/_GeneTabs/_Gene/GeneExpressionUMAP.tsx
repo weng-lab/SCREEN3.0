@@ -24,6 +24,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   geneData,
   selected,
   geneExpressionData,
+  setSelected,
   ...rest
 }: GeneExpressionUmapProps<T, S, Z>) => {
 
@@ -88,6 +89,10 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         };
       })
   }, [data, selected, colorScale, colorScheme]);
+
+  const handlePointsSelected = (selectedPoints: Point<PointMetadata>[]) => {
+    setSelected([...selected, ...selectedPoints.map(point => point.metaData)]);
+  };
 
   const TooltipBody = (point: Point<PointMetadata>) => {
     const avgTPM = (() => {
@@ -164,6 +169,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         <Box sx={{ flexGrow: 1 }}>
           <ScatterPlot
             {...rest}
+            onSelectionChange={handlePointsSelected}
             controlsHighlight={theme.palette.primary.light}
             pointData={scatterData}
             selectable

@@ -4,19 +4,21 @@ import { SharedAssayViewPlotProps } from "./AssayView";
 import { capitalizeFirstLetter, truncateString } from "common/utility";
 import { tissueColors } from "common/lib/colors";
 import { BiosampleRow, formatAssay } from "./BiosampleActivity";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { Typography } from "@mui/material";
+import AssayPlotControls from "./AssayPlotControls";
 
 const AssayBarPlot = ({
   entity,
-  rows,
-  columns,
   assay,
   selected,
   setSelected,
   sortedFilteredData,
-  setSortedFilteredData,
+  viewBy,
+  setViewBy,
+
 }: SharedAssayViewPlotProps) => {
+
   const plotData: BarData<BiosampleRow>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((row) => {
@@ -69,6 +71,10 @@ const AssayBarPlot = ({
       padding={1}
       sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
     >
+      <AssayPlotControls
+        viewBy={viewBy}
+        setViewBy={setViewBy}
+      />
       <BarPlot
         data={plotData}
         topAxisLabel={`${entity.entityID} ${formatAssay(assay)} z-scores`}
