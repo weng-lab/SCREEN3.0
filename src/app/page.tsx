@@ -144,7 +144,8 @@ export default function Home() {
           </Typography>
         </Stack>
         <MainSearch assembly={assembly} handleAssemblyChange={handleAssemblyChange} />
-        <Box
+        {/* Multiple Region Search */}
+        {/* <Box
           sx={{
             width: { xs: "90%", sm: "80%", md: "60%", lg: "45%" },
             display: "flex",
@@ -168,7 +169,7 @@ export default function Home() {
         </Box>
         <Collapse in={multipleRegionSearchVisible} sx={{ width: "100%" }} timeout={500}>
           <MultipleRegionSearch assembly={assembly} toggleMultipleRegionSearchVisible={toggleMultipleRegionSearchVisible} />
-        </Collapse>
+        </Collapse> */}
       </Box>
       <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
         <Typography
