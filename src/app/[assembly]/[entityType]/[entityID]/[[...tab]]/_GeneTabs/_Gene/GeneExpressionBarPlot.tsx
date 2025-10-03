@@ -4,6 +4,7 @@ import { capitalizeFirstLetter } from "common/utility"
 import { Box, Typography } from "@mui/material"
 import { tissueColors } from "common/lib/colors"
 import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
+import GenePlotControls from "./GenePlotControls"
 
 export type GeneExpressionBarPlotProps =
   GeneExpressionProps &
@@ -12,7 +13,22 @@ export type GeneExpressionBarPlotProps =
     scale: "linearTPM" | "logTPM";
   }
 
-const GeneExpressionBarPlot = ({ scale, geneData, selected, assembly, sortedFilteredData, ...rest }: GeneExpressionBarPlotProps) => {
+const GeneExpressionBarPlot = ({ 
+  scale, 
+  geneData, 
+  selected, 
+  setSelected,
+  assembly, 
+  sortedFilteredData, 
+  RNAtype,
+  setRNAType,
+  viewBy,
+  setViewBy,
+  setScale,
+  replicates,
+  setReplicates,
+  ...rest 
+}: GeneExpressionBarPlotProps) => {
 
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
     const maxLength = 20;
@@ -43,6 +59,12 @@ const GeneExpressionBarPlot = ({ scale, geneData, selected, assembly, sortedFilt
       })
     )
   }, [sortedFilteredData, selected])
+
+  const handleBarClick = (bar: BarData<PointMetadata>) => {
+    if (selected.includes(bar.metadata)) {
+      setSelected(selected.filter((x) => x !== bar.metadata));
+    } else setSelected([...selected, bar.metadata]);
+  };
 
   const PlotTooltip = useCallback(
     (bar: BarData<PointMetadata>) => {
@@ -78,8 +100,20 @@ const GeneExpressionBarPlot = ({ scale, geneData, selected, assembly, sortedFilt
 
   return (
     <Box width={"100%"} height={"100%"} overflow={"auto"} padding={1} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, position: "relative" }}>
+      <GenePlotControls
+        assembly={assembly}
+        RNAtype={RNAtype}
+        scale={scale}
+        viewBy={viewBy}
+        replicates={replicates}
+        setRNAType={setRNAType}
+        setViewBy={setViewBy}
+        setScale={setScale}
+        setReplicates={setReplicates}
+      />
       <BarPlot
         {...rest}
+        onBarClicked={handleBarClick}
         data={plotData}
         topAxisLabel={
           scale === "linearTPM"

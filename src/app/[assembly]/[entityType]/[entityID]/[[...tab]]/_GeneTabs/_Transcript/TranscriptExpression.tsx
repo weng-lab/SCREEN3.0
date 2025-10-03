@@ -60,7 +60,7 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
         return [...filteredData];
     }, [transcriptExpressionData, scale, peak]);
 
-    const sharedAssayViewPlotProps: SharedTranscriptExpressionPlotProps = useMemo(
+    const SharedTranscriptExpressionPlotProps: SharedTranscriptExpressionPlotProps = useMemo(
         () => ({
             rows,
             selected,
@@ -96,21 +96,21 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
     return (
         <TwoPaneLayout
             TableComponent={
-                <TranscriptExpressionTable {...sharedAssayViewPlotProps} />
+                <TranscriptExpressionTable {...SharedTranscriptExpressionPlotProps} />
             }
             plots={[
                 {
                     tabTitle: "Bar Plot",
                     icon: <BarChart />,
                     plotComponent: (
-                        <TranscriptExpressionBarPlot {...sharedAssayViewPlotProps} />
+                        <TranscriptExpressionBarPlot {...SharedTranscriptExpressionPlotProps} />
                     ),
                 },
                 {
                     tabTitle: "Violin Plot",
                     icon: <CandlestickChart />,
                     plotComponent: (
-                        <TranscriptExpressionViolinPlot {...sharedAssayViewPlotProps} />
+                        <TranscriptExpressionViolinPlot {...SharedTranscriptExpressionPlotProps} />
                     ),
                 },
             ]}

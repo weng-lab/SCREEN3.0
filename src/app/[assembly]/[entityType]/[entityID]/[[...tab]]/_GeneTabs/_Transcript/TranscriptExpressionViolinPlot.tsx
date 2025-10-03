@@ -105,7 +105,6 @@ const TranscriptExpressionBarPlot = ({
         }
     };
 
-
     return (
         <Box
             width={"100%"}
