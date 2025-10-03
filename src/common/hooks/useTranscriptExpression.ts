@@ -1,5 +1,4 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { GenomicRegion } from "app/_utility/types";
 import { useMemo } from "react";
 import { gql } from "types/generated/gql";
 import { TssRampageQuery } from "types/generated/graphql";
@@ -47,7 +46,11 @@ export type PeakInfo = {
   peakID: string,
   peakType: string,
   locusType: string,
-  coordinates: GenomicRegion
+  coordinates: {
+    chrom: string,
+    start: number,
+    end: number
+  }
 }
 
 export const useTranscriptExpression = ({ gene }: ExpressionParams): UseTranscriptExpressionReturn => {
