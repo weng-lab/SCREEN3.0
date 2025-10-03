@@ -1,16 +1,11 @@
 import React from "react";
 import {
-  Popper,
-  Paper,
-  Box,
   Stack,
   FormControl,
   FormLabel,
   ToggleButtonGroup,
   ToggleButton,
   Tooltip,
-  ClickAwayListener,
-  Button,
 } from "@mui/material";
 
 interface AdvancedFiltersPopperProps {

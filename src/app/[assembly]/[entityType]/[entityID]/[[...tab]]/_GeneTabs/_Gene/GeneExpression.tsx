@@ -118,25 +118,25 @@ const GeneExpression = (props: GeneExpressionProps) => {
   }, [geneExpressionData.data, RNAtype, replicates, scale]);
 
   const SharedGeneExpressionPlotProps: SharedGeneExpressionPlotProps = useMemo(
-          () => ({
-              rows,
-              selected,
-              setSelected,
-              sortedFilteredData,
-              setSortedFilteredData,
-              scale,
-              setScale,
-              replicates,
-              setReplicates,
-              viewBy,
-              setViewBy,
-              RNAtype,
-              setRNAType,
-              geneExpressionData,
-              ...props,
-          }),
-          [rows, selected, sortedFilteredData, scale, replicates, viewBy, RNAtype, geneExpressionData, props]
-      );
+    () => ({
+      rows,
+      selected,
+      setSelected,
+      sortedFilteredData,
+      setSortedFilteredData,
+      scale,
+      setScale,
+      replicates,
+      setReplicates,
+      viewBy,
+      setViewBy,
+      RNAtype,
+      setRNAType,
+      geneExpressionData,
+      ...props,
+    }),
+    [rows, selected, sortedFilteredData, scale, replicates, viewBy, RNAtype, geneExpressionData, props]
+  );
 
   return (
     <TwoPaneLayout
@@ -148,25 +148,25 @@ const GeneExpression = (props: GeneExpressionProps) => {
           tabTitle: "Bar Plot",
           icon: <BarChart />,
           plotComponent: (
-            <GeneExpressionBarPlot {...SharedGeneExpressionPlotProps}/>
+            <GeneExpressionBarPlot {...SharedGeneExpressionPlotProps} />
           ),
         },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
           plotComponent: (
-            <GeneExpressionViolinPlot {...SharedGeneExpressionPlotProps}/>
+            <GeneExpressionViolinPlot {...SharedGeneExpressionPlotProps} />
           ),
         },
         // Add back once query returns umap coordiantes
-         {
-           tabTitle: "UMAP",
-           icon: <ScatterPlot />,
-           plotComponent: (
-             <GeneExpressionUMAP {...SharedGeneExpressionPlotProps}/>
-           ),
-         },
-        
+        {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: (
+            <GeneExpressionUMAP {...SharedGeneExpressionPlotProps} />
+          ),
+        },
+
       ]}
     />
   );

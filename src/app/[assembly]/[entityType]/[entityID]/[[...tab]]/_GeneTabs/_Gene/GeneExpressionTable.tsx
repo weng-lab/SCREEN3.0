@@ -29,7 +29,10 @@ const GeneExpressionTable = ({
 
   // based on control buttons in parent, transform this data to match the expected format
   const transformedData: PointMetadata[] = useMemo(() => {
-    if (!data?.length) return [];
+    if (!rows.length) return [];
+    const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
+    const getTPM = (d: PointMetadata) =>
+      d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
 
     let result = rows;
 
@@ -37,35 +40,33 @@ const GeneExpressionTable = ({
     switch (viewBy) {
       case "byExperimentTPM": {
         result.sort((a, b) =>
-          (b.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0) -
-          (a.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0)
+          (getTPM(b)) -
+          (getTPM(a))
         );
         break;
       }
 
       case "byTissueTPM": {
-        const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
-
         const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
           const tissue = getTissue(item);
-          acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0);
+          acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getTPM(item));
           return acc;
         }, {});
+
+        const test = result.filter((item) => item.tissue === "heart")
+        console.log(test)
 
         result.sort((a, b) => {
           const tissueA = getTissue(a);
           const tissueB = getTissue(b);
           const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
           if (maxDiff !== 0) return maxDiff;
-          return b.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0 - a.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
-        });
+          return getTPM(b) - getTPM(a);
+        })
         break;
       }
 
       case "byTissueMaxTPM": {
-        const getTPM = (d: PointMetadata) =>
-          d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
-        const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
 
         const maxValuesByTissue: Record<string, number> = result.reduce((acc, item) => {
           const tissue = getTissue(item);
@@ -84,8 +85,8 @@ const GeneExpressionTable = ({
         break;
       }
     }
-    return result;
-  }, [data?.length, rows, viewBy]);
+    return [...result];
+  }, [rows, viewBy]);
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
   // const StopPropagationWrapper = (params) => (
