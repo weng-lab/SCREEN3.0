@@ -104,7 +104,7 @@ export default function Home() {
       <Box
         width="100%"
         height={"auto"}
-        paddingY={20}
+        paddingY={{xs: 10, md: 20}}
         sx={{
           background: `
             linear-gradient(${alpha(theme.palette.secondary.main, 0.9)}, ${alpha(theme.palette.secondary.main, 0.75)}),
@@ -120,24 +120,35 @@ export default function Home() {
           backgroundAttachment: 'fixed'
         }}
       >
-        <Stack direction={"row"} alignItems={"center"} spacing={4}>
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          alignItems="center"
+          justifyContent="space-around"
+          gap={{ xs: 2, md: 4 }}
+          textAlign={{ xs: "center", md: "left" }}
+        >
           <Image
             src="/helix.png"
             alt="Screen Helix"
             height={120}
             width={120}
-            style={{ width: "auto", height: 120 }}
+            style={{
+              width: "auto",
+              height: 100,
+            }}
             priority
             id="header-helix"
           />
-          <Typography variant="h4"
+
+          <Typography
+            variant="h4"
             sx={{
               fontWeight: 400,
-              fontSize: '40px',
-              lineHeight: '40px',
+              fontSize: { xs: "28px", md: "40px" },
+              lineHeight: { xs: "32px", md: "40px" },
               letterSpacing: 0,
-              color: 'white',
-              textAlign: 'center',
+              color: "white",
+              width: "fit-content",
             }}
           >
             Search Candidate cis-Regulatory Elements

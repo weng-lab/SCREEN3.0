@@ -62,7 +62,6 @@ const AssayTable = ({
 
       case "tissue": {
         const getTissue = (d: BiosampleRow) => d.ontology ?? "unknown";
-        console.log("here")
 
         const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
           const tissue = getTissue(item);
