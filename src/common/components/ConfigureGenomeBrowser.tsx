@@ -14,21 +14,22 @@ import { Close, CloseOutlined } from "@mui/icons-material";
 
 import BiosampleTables from "common/components/BiosampleTables/BiosampleTables";
 import { RegistryBiosample } from "common/components/BiosampleTables/types";
+import { RegistryBiosamplePlusRNA } from "common/_utility/types";
 
 const ConfigureGenomeBrowser = (props: {
   assembly: "GRCh38" | "mm10";
   handleClose?: () => void;
-  onBiosampleSelect?: (selected: RegistryBiosample | RegistryBiosample[] | null) => void;
+  onBiosampleSelect?: (selected: RegistryBiosamplePlusRNA | RegistryBiosamplePlusRNA[] | null) => void;
   multiselect?: boolean;
-  selectedBiosamples?: RegistryBiosample[] | null;
+  selectedBiosamples?: RegistryBiosamplePlusRNA[] | null;
 }) => {
-  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosample | RegistryBiosample[] | null>(props.selectedBiosamples ?? null);
+  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA | RegistryBiosamplePlusRNA[] | null>(props.selectedBiosamples ?? null);
 
-  const handleSetSelected = (selected: RegistryBiosample | RegistryBiosample[]) => {
+  const handleSetSelected = (selected: RegistryBiosamplePlusRNA | RegistryBiosamplePlusRNA[]) => {
     if (props.multiselect) {
-      setSelectedBiosamples(selected as RegistryBiosample[]);
+      setSelectedBiosamples(selected as RegistryBiosamplePlusRNA[]);
     } else {
-      setSelectedBiosamples(selected as RegistryBiosample);
+      setSelectedBiosamples(selected as RegistryBiosamplePlusRNA);
     }
   };
 
@@ -68,6 +69,7 @@ const ConfigureGenomeBrowser = (props: {
         <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
           <BiosampleTables
             assembly={props.assembly}
+            showRNAseq={true}
             selected={
               Array.isArray(selectedBiosamples)
                 ? selectedBiosamples.map((s) => s.name)
@@ -77,6 +79,7 @@ const ConfigureGenomeBrowser = (props: {
             slotProps={{ paperStack: { minWidth: { xs: "300px", lg: "500px" } } }}
             allowMultiSelect={props.multiselect}
             showCheckboxes={props.multiselect}
+            
           />
           {selectedBiosamples && (
             <div>

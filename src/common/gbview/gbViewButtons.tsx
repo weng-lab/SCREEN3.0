@@ -4,16 +4,16 @@ import { useState } from "react";
 import HighlightDialog from "./highlightDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import HighlightIcon from "@mui/icons-material/Highlight";
-import { RegistryBiosample } from "common/components/BiosampleTables/types";
 import ConfigureGBModal from "common/components/ConfigureGBModal";
 import { Assembly } from "types/globalTypes";
+import { RegistryBiosamplePlusRNA } from "common/_utility/types";
 
 export default function GBButtons({ browserStore, assembly, onBiosampleSelected, selectedBiosamples }:
     {
         browserStore: BrowserStoreInstance;
         assembly: string;
-        onBiosampleSelected: (biosample: RegistryBiosample[] | null) => void,
-        selectedBiosamples?: RegistryBiosample[] | null
+        onBiosampleSelected: (biosample: RegistryBiosamplePlusRNA[] | null) => void,
+        selectedBiosamples?: RegistryBiosamplePlusRNA[] | null
     }) {
     const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
     const [biosampleOpen, setBiosampleOpen] = useState(false);
@@ -22,7 +22,8 @@ export default function GBButtons({ browserStore, assembly, onBiosampleSelected,
         setBiosampleOpen(!biosampleOpen);
     };
 
-    const handleBiosampleSelected = (biosample: RegistryBiosample[] | null) => {
+    const handleBiosampleSelected = (biosample: RegistryBiosamplePlusRNA[] | null) => {
+        console.log("biosample rnaseq", biosample)
         onBiosampleSelected(biosample);
     };
 
@@ -46,6 +47,7 @@ export default function GBButtons({ browserStore, assembly, onBiosampleSelected,
                 Select Biosample
             </Button>
             <ConfigureGBModal
+               
                 assembly={assembly as Assembly}
                 open={biosampleOpen}
                 setOpen={handleSelectBiosampleClick}

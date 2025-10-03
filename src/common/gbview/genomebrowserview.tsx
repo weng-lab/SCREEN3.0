@@ -32,6 +32,21 @@ import GBButtons from "./gbViewButtons";
 import { RegistryBiosample } from "common/components/BiosampleTables/types";
 import { useChromHMMData } from "common/hooks/useChromHmmData";
 import { tissueColors } from "common/lib/colors";
+import { RegistryBiosamplePlusRNA } from "common/_utility/types";
+import { gql, useQuery } from "@apollo/client";
+
+const FETCH_RNASEQ_TRACKS = gql`
+  query fetchRNASeqData($assembly: String!, $biosample: [String]) {
+    rnaSeqQuery(assembly: $assembly, biosample: $biosample) {
+      expid
+      biosample
+      posfileid
+      negfileid
+      unstrandedfileid
+    }
+  }
+`;
+
 
 interface Transcript {
   id: string;
@@ -96,8 +111,9 @@ export default function GenomeBrowserView({
   type: AnyEntityType;
   assembly: Assembly;
 }) {
-  const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosample[] | null>(null);
+  const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(null);
 
+  console.log("selectedBiosample", selectedBiosamples)
   // const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates);
 
   const initialState: InitialBrowserState = {
@@ -122,7 +138,7 @@ export default function GenomeBrowserView({
   
   const router = useRouter();
   
-  const onBiosampleSelected = (biosamples: RegistryBiosample[] | null) => {
+  const onBiosampleSelected = (biosamples: RegistryBiosamplePlusRNA[] | null) => {
     if (biosamples && biosamples.length === 0) {
       setselectedBiosamples(null);
     } else {
@@ -184,7 +200,13 @@ export default function GenomeBrowserView({
   //   }
   //   return tempTracks;
   // }, [addHighlight, removeHighlight, chromHmmTracks]);
+  const rnaTracks = useRNAseqTracks(
+    assembly.toLowerCase(),
+    selectedBiosamples
+  );
 
+  console.log("rnaTracks",rnaTracks)
+  
   const initialTracks: Track[] = useMemo(() => {
     const tracks = assembly === "GRCh38" ? humanTracks : mouseTracks;
     const defaultTracks: Track[] = [
@@ -266,8 +288,9 @@ export default function GenomeBrowserView({
       );
     }
 
-    return [...defaultTracks, ...biosampleTracks, ...tracks];
-  }, [assembly, type, name, selectedBiosamples, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
+    console.log("rnaTracks in useMemo", rnaTracks)
+    return [...defaultTracks, ...biosampleTracks,  ...tracks, ...rnaTracks,];
+  }, [assembly, type, name, selectedBiosamples, addHighlight, removeHighlight, onGeneClick, onCcreClick, rnaTracks]);
 
   const trackStore = createTrackStore(initialTracks);
   const editTrack = trackStore((state) => state.editTrack);
@@ -430,7 +453,54 @@ export const stateDetails = {
   ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
 };
 
+function useRNAseqTracks(
+  assembly: string,
+  selectedBiosamples: RegistryBiosamplePlusRNA[] | null,
 
+) {
+  // condition: only run if selectedBiosamples exist AND at least one has rnaseq=true
+  const biosampleNames =
+    selectedBiosamples && selectedBiosamples.some(b => b.rnaseq)
+      ? selectedBiosamples.map(b => b.name) // adjust if biosample key is different
+      : null;
+
+  const { data, loading, error } = useQuery(FETCH_RNASEQ_TRACKS, {
+    variables: { assembly, biosample: biosampleNames },
+    skip: !biosampleNames,
+  });
+
+  const rnaTracks: Track[] = useMemo(() => {
+    if (!biosampleNames || loading || error || !data?.rnaSeqQuery) return [];
+
+    const tracks: Track[] = [];
+
+    data.rnaSeqQuery.forEach((entry: any) => {
+      const { expid, biosample, posfileid, negfileid, unstrandedfileid } = entry;
+
+      // helper to build a track
+      const makeTrack = (expid: string, fileId: string, strand: string, color: string) => { return {
+        id: `${expid}-${fileId}-${strand}`,
+        title: `RNA-seq ${strand} strand signal of unique reads rep 1 ${expid} ${fileId}`,
+        height: 100,
+        titleSize: 12,
+        trackType: TrackType.BigWig,
+        color,
+        url: `https://www.encodeproject.org/files/${fileId}/@@download/${fileId}.bigWig?proxy=true`,
+        displayMode: DisplayMode.Full,
+       
+        
+      } as BigWigConfig};
+
+      if (posfileid) tracks.push(makeTrack(expid,posfileid, "plus", "#00AA00"));
+      if (negfileid) tracks.push(makeTrack(expid,negfileid, "minus", "#00AA00"));
+      if (unstrandedfileid) tracks.push(makeTrack(expid, unstrandedfileid, "unstranded", "#00AA00"));
+    });
+
+    return tracks;
+  }, [biosampleNames, data, loading, error]);
+
+  return rnaTracks;
+}
 function generateBiosampleTracks(
   biosamples: RegistryBiosample[],
   onHover: (item: Rect) => void,
