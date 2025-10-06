@@ -245,7 +245,7 @@ export default function GenomeBrowserView({
     onCcreClick(item);
   };  
   
-  generateBiosampleTracks(assembly.toLowerCase(), selectedBiosamples, trackStore, onHover, onLeave, onClick, colors);
+  useBiosampleTracks(assembly.toLowerCase(), selectedBiosamples, trackStore, onHover, onLeave, onClick, colors);
   
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
@@ -398,7 +398,7 @@ export const stateDetails = {
   ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
 };
 
-function generateBiosampleTracks(
+function useBiosampleTracks(
   assembly: string,
   selectedBiosamples: RegistryBiosamplePlusRNA[] | null,
   trackStore: TrackStoreInstance,
