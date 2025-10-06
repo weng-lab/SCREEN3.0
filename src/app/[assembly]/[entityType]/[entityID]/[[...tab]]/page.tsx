@@ -72,13 +72,13 @@ export default function DetailsPage({
     throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity));
   }
 
-  const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
+  const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID: decodeURIComponent(entityID) });
 
   if (loading) {
     return <CircularProgress />;
   }
 
-  if (data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" && !data?.coordinates) {
+  if (data && data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" && !data?.coordinates) {
     return <Typography>Issue fetching data on {entityID}</Typography>;
   }
 
