@@ -262,7 +262,7 @@ const humanCcreTabs: readonly TabConfig<
   },
   {
     route: "additional-chromatin-signatures",
-    label: "Additional Chromatin Singatures",
+    label: "Additional Chromatin Signatures",
     component: AdditionalChromatinSignatures
   }
 ] as const;
