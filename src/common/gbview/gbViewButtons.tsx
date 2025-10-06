@@ -6,7 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import HighlightIcon from "@mui/icons-material/Highlight";
 import ConfigureGBModal from "common/components/ConfigureGBModal";
 import { Assembly } from "types/globalTypes";
-import { RegistryBiosamplePlusRNA } from "common/_utility/types";
+import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 
 export default function GBButtons({
   browserStore,
