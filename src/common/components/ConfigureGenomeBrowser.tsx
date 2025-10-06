@@ -47,11 +47,6 @@ const ConfigureGenomeBrowser = (props: {
     props.handleClose?.();
   };
 
-  const isDisabled =
-    !selectedBiosamples ||
-    (Array.isArray(selectedBiosamples) &&
-      (selectedBiosamples.length === 0 || selectedBiosamples.length > 10));
-
   return (
     <>
       <Stack direction={"row"} justifyContent={"space-between"}>
@@ -128,8 +123,7 @@ const ConfigureGenomeBrowser = (props: {
           <span>
             <Button
               sx={{ textTransform: "none" }}
-              variant="contained"
-              disabled={isDisabled}
+              variant="contained"              
               onClick={handleSubmit}
             >
               Submit

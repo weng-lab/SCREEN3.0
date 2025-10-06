@@ -219,31 +219,9 @@ export default function GenomeBrowserView({
         tooltip: (rect: Rect) => <CCRETooltip assembly={assembly} name={rect.name || ""} {...rect} />,
       },
     ];
-
-    let biosampleTracks: Track[] = [];
-    if (selectedBiosamples && 0 > 1) {
-      const onHover = (item: Rect) => {
-        addHighlight({
-          color: item.color || "blue",
-          domain: { start: item.start, end: item.end },
-          id: "tmp-ccre",
-        });
-      };
-
-      const onLeave = () => {
-        removeHighlight("tmp-ccre");
-      };
-
-      const onClick = (item: Rect) => {
-        onCcreClick(item);
-      };
-
-      biosampleTracks = generateBiosampleTracks(selectedBiosamples, onHover, onLeave, onClick, colors);
-    }
-
-    //console.log("rnaTracks in useMemo", rnaTracks)
-    return [...defaultTracks, ...biosampleTracks, ...tracks];
-  }, [assembly, type, name, selectedBiosamples, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
+    
+    return [...defaultTracks, ...tracks];
+  }, [assembly, type, name, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
   const trackStore = useMemo(() => {
     return createTrackStore(initialTracks);
@@ -251,8 +229,24 @@ export default function GenomeBrowserView({
 
   const editTrack = trackStore((state) => state.editTrack);
 
-  useRNAseqTracks(assembly.toLowerCase(), selectedBiosamples, trackStore);
+  const onHover = (item: Rect) => {
+    addHighlight({
+      color: item.color || "blue",
+      domain: { start: item.start, end: item.end },
+      id: "tmp-ccre",
+    });
+  };
 
+  const onLeave = () => {
+    removeHighlight("tmp-ccre");
+  };
+
+  const onClick = (item: Rect) => {
+    onCcreClick(item);
+  };  
+  
+  generateBiosampleTracks(assembly.toLowerCase(), selectedBiosamples, trackStore, onHover, onLeave, onClick, colors);
+  
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
       editTrack("gene-track", {
@@ -404,11 +398,22 @@ export const stateDetails = {
   ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
 };
 
-function useRNAseqTracks(
+function generateBiosampleTracks(
   assembly: string,
   selectedBiosamples: RegistryBiosamplePlusRNA[] | null,
-  trackStore: TrackStoreInstance
+  trackStore: TrackStoreInstance,
+  onHover: (item: Rect) => void,
+  onLeave: (item: Rect) => void,
+  onClick: (item: Rect) => void,
+  colors: {
+    ccre: string;
+    dnase: string;
+    h3k4me3: string;
+    h3k27ac: string;
+    ctcf: string;
+  }
 ) {
+  const tracks: Track[] = [];
   const insertTrack = trackStore((state) => state.insertTrack);
   const currentTracks = trackStore((state) => state.tracks);
   const removeTrack = trackStore((state) => state.removeTrack);
@@ -426,20 +431,99 @@ function useRNAseqTracks(
     skip: !biosampleNames,
   });
 
+  if(selectedBiosamples && data && !loading) {
+    for (const biosample of selectedBiosamples) {
+      // Get available signal accessions (remove null values)
+      const signals = [
+        biosample.dnase_signal,
+        biosample.h3k4me3_signal,
+        biosample.h3k27ac_signal,
+        biosample.ctcf_signal,
+      ].filter((signal): signal is string => !!signal);
+
+      if (signals.length > 0) {
+        const bigBedUrl = `https://downloads.wenglab.org/Registry-V4/${signals.join("_")}.bigBed`;
+
+        const ccreTrack: BigBedConfig = {
+          id: `biosample-ccre-${biosample.name}`,
+          title: `cCREs in ${biosample.displayname}`,
+          titleSize: 12,
+          trackType: TrackType.BigBed,
+          displayMode: DisplayMode.Dense,
+          color: colors.ccre,
+          height: 20,
+          url: bigBedUrl,
+          onHover,
+          onLeave,
+          onClick,
+        };
+        tracks.push(ccreTrack);
+      }
+
+      if (biosample.dnase_signal) {
+        tracks.push({
+          id: `biosample-dnase-${biosample.name}`,
+          title: `DNase-seq signal in ${biosample.displayname}`,
+          titleSize: 12,
+          trackType: TrackType.BigWig,
+          displayMode: DisplayMode.Full,
+          color: colors.dnase,
+          height: 50,
+          url: `https://www.encodeproject.org/files/${biosample.dnase_signal}/@@download/${biosample.dnase_signal}.bigWig`,
+        } as BigWigConfig);
+      }
+
+      if (biosample.h3k4me3_signal) {
+        tracks.push({
+          id: `biosample-h3k4me3-${biosample.name}`,
+          title: `H3K4me3 ChIP-seq signal in ${biosample.displayname}`,
+          titleSize: 12,
+          trackType: TrackType.BigWig,
+          displayMode: DisplayMode.Full,
+          color: colors.h3k4me3,
+          height: 50,
+          url: `https://www.encodeproject.org/files/${biosample.h3k4me3_signal}/@@download/${biosample.h3k4me3_signal}.bigWig`,
+        } as BigWigConfig);
+      }
+
+      if (biosample.h3k27ac_signal) {
+        tracks.push({
+          id: `biosample-h3k27ac-${biosample.name}`,
+          title: `H3K27ac ChIP-seq signal in ${biosample.displayname}`,
+          titleSize: 12,
+          trackType: TrackType.BigWig,
+          displayMode: DisplayMode.Full,
+          color: colors.h3k27ac,
+          height: 50,
+          url: `https://www.encodeproject.org/files/${biosample.h3k27ac_signal}/@@download/${biosample.h3k27ac_signal}.bigWig`,
+        } as BigWigConfig);
+      }
+
+      if (biosample.ctcf_signal) {
+        tracks.push({
+          id: `biosample-ctcf-${biosample.name}`,
+          title: `CTCF ChIP-seq signal in ${biosample.displayname}`,
+          titleSize: 12,
+          trackType: TrackType.BigWig,
+          displayMode: DisplayMode.Full,
+          color: colors.ctcf,
+          height: 50,
+          url: `https://www.encodeproject.org/files/${biosample.ctcf_signal}/@@download/${biosample.ctcf_signal}.bigWig`,
+        } as BigWigConfig);
+      }
+    }
+  }
   const rnaTracks: Track[] = useMemo(() => {
     if (!biosampleNames || loading || error || !data?.rnaSeqQuery) return [];
-
     const tracks: Track[] = [];
-
     data.rnaSeqQuery.forEach((entry: any) => {
       const { expid, biosample, posfileid, negfileid, unstrandedfileid } = entry;
-
-      // helper to build a track
+      
       const makeTrack = (expid: string, fileId: string, strand: string, color: string) => {
         return {
           id: `rnaseq_${expid}-${fileId}-${strand}`,
-          title: `RNA-seq ${strand} strand signal of unique reads rep 1 ${expid} ${fileId}`,
-          height: 100,
+          title: `RNA-seq ${strand} strand signal of unique reads rep 1 ${expid} ${fileId} in ${selectedBiosamples.find(b=>b.name===biosample).displayname}`,
+          height: 50,
           titleSize: 12,
           trackType: TrackType.BigWig,
           color,
@@ -457,7 +541,7 @@ function useRNAseqTracks(
   }, [biosampleNames, data, loading, error]);
 
   useEffect(() => {
-    rnaTracks.forEach((track) => {
+    [...tracks, ...rnaTracks].forEach((track) => {
       if (!currentTracks.some((t) => t.id === track.id)) {
         insertTrack(track);
       }
@@ -467,12 +551,15 @@ function useRNAseqTracks(
       if (track.id.includes("rnaseq_") && !rnaTracks.some((t) => t.id === track.id)) {
         removeTrack(track.id);
       }
+      if (track.id.includes("biosample-") && !tracks.some((t) => t.id === track.id)) {
+        removeTrack(track.id);
+      }
     });
-  }, [rnaTracks, insertTrack, removeTrack, currentTracks]);
+  }, [rnaTracks, tracks, insertTrack, removeTrack, currentTracks]);
 }
 
-function generateBiosampleTracks(
-  biosamples: RegistryBiosample[],
+/*function generateBiosampleTracks(
+  biosamples: RegistryBiosamplePlusRNA[],
   onHover: (item: Rect) => void,
   onLeave: (item: Rect) => void,
   onClick: (item: Rect) => void,
@@ -482,10 +569,19 @@ function generateBiosampleTracks(
     h3k4me3: string;
     h3k27ac: string;
     ctcf: string;
-  }
-): Track[] {
+  },
+  trackStore: TrackStoreInstance
+) {
   const tracks: Track[] = [];
 
+  const insertTrack = trackStore((state) => state.insertTrack);
+  const currentTracks = trackStore((state) => state.tracks);
+  const removeTrack = trackStore((state) => state.removeTrack);
+
+  
+  if(biosamples){
+
+  
   for (const biosample of biosamples) {
     // Get available signal accessions (remove null values)
     const signals = [
@@ -522,7 +618,7 @@ function generateBiosampleTracks(
         trackType: TrackType.BigWig,
         displayMode: DisplayMode.Full,
         color: colors.dnase,
-        height: 100,
+        height: 50,
         url: `https://www.encodeproject.org/files/${biosample.dnase_signal}/@@download/${biosample.dnase_signal}.bigWig`,
       } as BigWigConfig);
     }
@@ -535,7 +631,7 @@ function generateBiosampleTracks(
         trackType: TrackType.BigWig,
         displayMode: DisplayMode.Full,
         color: colors.h3k4me3,
-        height: 100,
+        height: 50,
         url: `https://www.encodeproject.org/files/${biosample.h3k4me3_signal}/@@download/${biosample.h3k4me3_signal}.bigWig`,
       } as BigWigConfig);
     }
@@ -548,7 +644,7 @@ function generateBiosampleTracks(
         trackType: TrackType.BigWig,
         displayMode: DisplayMode.Full,
         color: colors.h3k27ac,
-        height: 100,
+        height: 50,
         url: `https://www.encodeproject.org/files/${biosample.h3k27ac_signal}/@@download/${biosample.h3k27ac_signal}.bigWig`,
       } as BigWigConfig);
     }
@@ -561,14 +657,27 @@ function generateBiosampleTracks(
         trackType: TrackType.BigWig,
         displayMode: DisplayMode.Full,
         color: colors.ctcf,
-        height: 100,
+        height: 50,
         url: `https://www.encodeproject.org/files/${biosample.ctcf_signal}/@@download/${biosample.ctcf_signal}.bigWig`,
       } as BigWigConfig);
     }
   }
+  }
+  useEffect(() => {
+    tracks.forEach((track) => {
+      if (!currentTracks.some((t) => t.id === track.id)) {
+        insertTrack(track);
+      }
+    });
 
-  return tracks;
-}
+    currentTracks.forEach((track) => {
+      if (track.id.includes("biosample-") && !tracks.some((t) => t.id === track.id)) {
+        removeTrack(track.id);
+      }
+    });
+  }, [tracks, insertTrack, removeTrack, currentTracks]);
+  //return tracks;
+}*/
 
 const humanTracks: Track[] = [
   {
@@ -578,7 +687,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#06da93",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/DNAse_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
   {
@@ -588,7 +697,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#ff0000",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/H3K4me3_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
   {
@@ -598,7 +707,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#ffcd00",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/H3K27ac_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
   {
@@ -608,7 +717,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#00b0d0",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/CTCF_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
   {
@@ -618,7 +727,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#02c7b9",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/ATAC_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
 ];
@@ -631,7 +740,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#06da93",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/DNase_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
   {
@@ -641,7 +750,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#ff0000",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/H3K4me3_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
   {
@@ -651,7 +760,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#ffcd00",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/H3K27ac_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
   {
@@ -661,7 +770,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#00b0d0",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/CTCF_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
   {
@@ -671,7 +780,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#02c7b9",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/ATAC_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
 ];
