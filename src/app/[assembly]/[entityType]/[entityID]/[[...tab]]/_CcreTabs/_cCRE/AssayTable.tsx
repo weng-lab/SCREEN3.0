@@ -8,6 +8,7 @@ import {
   Table,
   useGridApiRef,
 } from "@weng-lab/ui-components";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 const assays: Assay[] = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"];
 
@@ -48,6 +49,8 @@ const AssayTable = ({
   setSortedFilteredData,
   viewBy,
 }: SharedAssayViewPlotProps) => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const transformedData: BiosampleRow[] = useMemo(() => {
     if (!rows) return [];
@@ -62,7 +65,6 @@ const AssayTable = ({
 
       case "tissue": {
         const getTissue = (d: BiosampleRow) => d.ontology ?? "unknown";
-        console.log("here")
 
         const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
           const tissue = getTissue(item);
@@ -184,7 +186,7 @@ const AssayTable = ({
       keepNonExistentRowsSelected
       // -- End Selection Props --
       onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
-      divHeight={{ height: "100%", minHeight: "580px" }}
+      divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: [{ field: assay, sort: "desc" }] },

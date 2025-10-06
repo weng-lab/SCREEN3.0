@@ -1,11 +1,11 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
-import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useMemo } from "react";
 import InfoIcon from "@mui/icons-material/Info";
-import { Typography } from "@mui/material";
+import { Typography, useMediaQuery, useTheme } from "@mui/material";
 
 import { Table } from "@weng-lab/ui-components";
 import { OpenInNew } from "@mui/icons-material";
-import { IconButton, Link, Tooltip } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import { capitalizeFirstLetter } from "common/utility";
 
 import {
@@ -30,6 +30,8 @@ const BiosampleEnrichmentTable = ({
   sortedFilteredData,
 }: BiosampleEnrichmentTableProps) => {
   const { data, loading, error } = enrichmentdata;
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
     const newIds = Array.from(ids.ids);
@@ -175,7 +177,7 @@ const BiosampleEnrichmentTable = ({
         rowSelectionModel={{ type: "include", ids: new Set(selected.map((x) => x.accession)) }}
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structur
-        divHeight={{ height: "100%", minHeight: "580px"}}
+        divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
         labelTooltip={
                   <Tooltip
                     title={
