@@ -14,10 +14,11 @@ import {
   DisplayMode,
   InitialBrowserState,
   Track,
+  TrackStoreInstance,
   TrackType,
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import ControlButtons from "./controls";
@@ -164,49 +165,7 @@ export default function GenomeBrowserView({
     },
     [assembly, router]
   );
-  
-  // const bulkChromHmmTracks = useMemo(() => {
-  //   if (!chromHmmTracks) return [];
-  //   const tempTracks: Track[] = [];
-  //   for (const tissue of Object.keys(chromHmmTracks)) {
-  //     const samples = chromHmmTracks[tissue];
-  //     const bulkbed: BulkBedConfig = {
-  //       id: `${tissue}-bulkbed`,
-  //       titleSize: 12,
-  //       color: tissueColors[tissue] ?? tissueColors.missing,
-  //       trackType: TrackType.BulkBed,
-  //       displayMode: DisplayMode.Full,
-  //       datasets: samples.map((sample, index) => {
-  //         return {
-  //           name: sample.sample + (index + 1).toString(),
-  //           url: sample.url,
-  //         };
-  //       }),
-  //       title: tissue,
-  //       height: 15 * samples.length,
-  //       tooltip: (rect) => Tooltip(rect, tissue),
-  //       onHover: (rect) => {
-  //         addHighlight({
-  //           color: rect.color,
-  //           domain: { start: rect.start, end: rect.end },
-  //           id: "tmp-bulkbed",
-  //         });
-  //       },
-  //       onLeave: () => {
-  //         removeHighlight("tmp-bulkbed");
-  //       },
-  //     };
-  //     tempTracks.push(bulkbed);
-  //   }
-  //   return tempTracks;
-  // }, [addHighlight, removeHighlight, chromHmmTracks]);
-  const rnaTracks = useRNAseqTracks(
-    assembly.toLowerCase(),
-    selectedBiosamples
-  );
 
-  console.log("rnaTracks",rnaTracks)
-  
   const initialTracks: Track[] = useMemo(() => {
     const tracks = assembly === "GRCh38" ? humanTracks : mouseTracks;
     const defaultTracks: Track[] = [
@@ -262,7 +221,7 @@ export default function GenomeBrowserView({
     ];
 
     let biosampleTracks: Track[] = [];
-    if (selectedBiosamples) {
+    if (selectedBiosamples && 0>1 ) {
       const onHover = (item: Rect) => {
         addHighlight({
           color: item.color || "blue",
@@ -288,12 +247,43 @@ export default function GenomeBrowserView({
       );
     }
 
-    console.log("rnaTracks in useMemo", rnaTracks)
-    return [...defaultTracks, ...biosampleTracks,  ...tracks, ...rnaTracks,];
-  }, [assembly, type, name, selectedBiosamples, addHighlight, removeHighlight, onGeneClick, onCcreClick, rnaTracks]);
+    //console.log("rnaTracks in useMemo", rnaTracks)
+    return [...defaultTracks, ...biosampleTracks,  ...tracks];
+  }, [assembly, type, name, selectedBiosamples, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
-  const trackStore = createTrackStore(initialTracks);
+  const trackStore = useMemo(()=>{ return createTrackStore(initialTracks)},[initialTracks]) 
+  
+  const currentTracks = trackStore((state) => state.tracks);
   const editTrack = trackStore((state) => state.editTrack);
+  const insertTrack = trackStore((state) => state.insertTrack);
+  const removeTrack = trackStore((state) => state.removeTrack);
+
+  const rnaseqTracks = useRNAseqTracks(
+    assembly.toLowerCase(),
+    selectedBiosamples,
+    //insertTrack,
+    //currentTracks
+  //  removeTrack,
+   // currentTracks
+  );
+
+  useEffect(() => {
+    rnaseqTracks.forEach((track) => {
+      // check if the track is not already in the browser state
+      if (!currentTracks.some((t) => t.id === track.id)) {
+       
+        insertTrack(track);
+      }
+    });
+
+    // Remove tracks that are no longer selected
+    currentTracks.forEach((track) => {
+      if (!rnaseqTracks.some((t) => t.id === track.id)) {
+        removeTrack(track.id);
+      }
+    });
+  }, [currentTracks, rnaseqTracks, insertTrack, removeTrack]);
+
 
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
@@ -456,8 +446,16 @@ export const stateDetails = {
 function useRNAseqTracks(
   assembly: string,
   selectedBiosamples: RegistryBiosamplePlusRNA[] | null,
+  //trackStore: TrackStoreInstance
+  //insertTrack: (track: Track, index?: number) => void,
+  //removeTrack: (id: string) => void,
+  //currentTracks: Track[] 
 
 ) {
+  //  const insertTrack = trackStore((state) => state.insertTrack);
+   // const currentTracks = trackStore((state) => state.tracks);
+    //const editTrack = trackStore((state) => state.editTrack);    
+    //const removeTrack = trackStore((state) => state.removeTrack);
   // condition: only run if selectedBiosamples exist AND at least one has rnaseq=true
   const biosampleNames =
     selectedBiosamples && selectedBiosamples.some(b => b.rnaseq)
@@ -500,6 +498,18 @@ function useRNAseqTracks(
   }, [biosampleNames, data, loading, error]);
 
   return rnaTracks;
+  /*rnaTracks.forEach(r=>{
+    if (!currentTracks.some((t) => t.id === r.id)) {
+      insertTrack(r)
+    }
+  });*/
+  
+    // Remove tracks that are no longer selected
+    /*currentTracks.forEach((track) => {
+      if (!rnaTracks.some((t) => t.id === track.id)) {
+        removeTrack(track.id);
+      }
+    });*/
 }
 function generateBiosampleTracks(
   biosamples: RegistryBiosample[],
