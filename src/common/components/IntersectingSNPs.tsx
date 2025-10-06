@@ -59,7 +59,7 @@ const IntersectingSNPs = ({ region }: { region: GenomicRange }) => {
     loading={loadingSnps}     
     label={`Intersecting SNPs`}      
     emptyTableFallback={"No intersecting SNPs found in this region"}
-    divHeight={{height: "400px"}}
+    divHeight={{maxHeight: "400px"}}
   />
   );
 };
