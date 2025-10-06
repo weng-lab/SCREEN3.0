@@ -1,5 +1,5 @@
 import { SharedAssayViewPlotProps } from "./AssayView";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import {
   GridColumnVisibilityModel,
@@ -8,7 +8,7 @@ import {
   Table,
   useGridApiRef,
 } from "@weng-lab/ui-components";
-import { Button } from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 const assays: Assay[] = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"];
 
@@ -47,7 +47,63 @@ const AssayTable = ({
   setSelected,
   sortedFilteredData,
   setSortedFilteredData,
+  viewBy,
 }: SharedAssayViewPlotProps) => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const transformedData: BiosampleRow[] = useMemo(() => {
+    if (!rows) return [];
+
+    let filteredData = rows
+
+    switch (viewBy) {
+      case "value": {
+        filteredData.sort((a, b) => b[assay] - a[assay]);
+        break;
+      }
+
+      case "tissue": {
+        const getTissue = (d: BiosampleRow) => d.ontology ?? "unknown";
+
+        const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
+          const tissue = getTissue(item);
+          acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item[assay]);
+          return acc;
+        }, {});
+
+        filteredData.sort((a, b) => {
+          const tissueA = getTissue(a);
+          const tissueB = getTissue(b);
+          const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
+          if (maxDiff !== 0) return maxDiff;
+          return b[assay] - a[assay];
+        });
+        break;
+      }
+
+      case "tissueMax": {
+        const getTissue = (d: BiosampleRow) => d.ontology ?? "unknown";
+
+        const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
+          const tissue = getTissue(item);
+          acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item[assay]);
+          return acc;
+        }, {});
+
+        filteredData = filteredData.filter((item) => {
+          const tissue = getTissue(item);
+          return item[assay] === maxValuesByTissue[tissue];
+        });
+
+        filteredData.sort((a, b) => b[assay] - a[assay]);
+        break;
+      }
+    }
+
+    return [...filteredData]
+  }, [rows, viewBy, assay]);
+
   const apiRef = useGridApiRef();
 
   // const tableCols = useMemo(() => {
@@ -90,6 +146,13 @@ const AssayTable = ({
     apiRef.current.sortColumn(assay, "desc");
   }, [apiRef, assay]);
 
+  useEffect(() => {
+          const isCustomSorted = viewBy === "tissue";
+          if (isCustomSorted && apiRef?.current) {
+              apiRef.current.setSortModel([]); // completely clears internal sort
+          }
+      }, [viewBy, apiRef, assay]);
+
   /**
    * Resize cols on assay change. Need to use requestAnimationFrame to queue this update until after
    * the column changes are completed. This calls the autosize method right before the next repaint.
@@ -111,7 +174,7 @@ const AssayTable = ({
   return (
     <Table
       label={`${entity.entityID} ${formatAssay(assay)} z-scores`}
-      rows={rows}
+      rows={transformedData}
       loading={!rows}
       columns={columns}
       apiRef={apiRef}
@@ -123,12 +186,12 @@ const AssayTable = ({
       keepNonExistentRowsSelected
       // -- End Selection Props --
       onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
-      divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+      divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: [{ field: assay, sort: "desc" }] },
       }}
-      />
+    />
   );
 };
 

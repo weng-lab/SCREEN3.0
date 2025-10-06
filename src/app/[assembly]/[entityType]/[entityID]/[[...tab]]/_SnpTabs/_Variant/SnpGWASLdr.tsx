@@ -70,7 +70,7 @@ export default function SnpGWASLdr({ snpid }: { snpid: string }) {
         <Skeleton variant="rounded" width={"100%"} height={100} />
       ) : (
         <Table
-          rows={gwasnps}
+          rows={gwasnps.filter(g=>g.disease !== "" && g.study_source !== "")}
           columns={cols}
           initialState={{
             sorting: {

@@ -2,14 +2,15 @@ import { RegistryBiosample } from "common/components/BiosampleTables/types";
 import ConfigureGenomeBrowser from "./ConfigureGenomeBrowser";
 import { Dialog } from "@mui/material";
 import { isNullish } from "@apollo/client/cache/inmemory/helpers";
+import { RegistryBiosamplePlusRNA } from "common/_utility/types";
 
 interface Props {
   assembly: "mm10" | "GRCh38";
   open: boolean;
   multiselect?: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onBiosampleSelect: (biosample: RegistryBiosample | RegistryBiosample[] | null) => void;
-  selectedBiosamples?: RegistryBiosample[] | null;
+  onBiosampleSelect: (biosample: RegistryBiosamplePlusRNA | RegistryBiosamplePlusRNA[] | null) => void;
+  selectedBiosamples?: RegistryBiosamplePlusRNA[] | null;
 }
 
 const ConfigureGBModal: React.FC<Props> = ({ assembly, open, multiselect, setOpen, onBiosampleSelect, selectedBiosamples }) => {

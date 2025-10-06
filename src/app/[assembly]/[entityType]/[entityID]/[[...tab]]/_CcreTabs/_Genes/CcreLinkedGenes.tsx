@@ -7,13 +7,14 @@ import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import useClosestgenes from "common/hooks/useClosestGenes";
 
-
-
 export default function CcreLinkedGenes({ accession, coordinates }: { accession: string; coordinates: GenomicRange }) {
-  
   const { data: linkedGenes, loading, error } = useLinkedGenes([accession]);
-  const { data: closestGenes, loading: closestGeneLoading, error: closestGeneError} = useClosestgenes(accession, "GRCh38");
-  
+  const {
+    data: closestGenes,
+    loading: closestGeneLoading,
+    error: closestGeneError,
+  } = useClosestgenes(accession, "GRCh38");
+
   if (loading || closestGeneLoading) {
     const NUM_TABLES = 5;
     return (
@@ -92,7 +93,6 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
     },
   ];
 
- 
   const closestGenesCols: GridColDef[] = [
     {
       field: "name",

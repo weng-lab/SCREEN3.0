@@ -1,136 +1,172 @@
 import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
-import { BarData } from "@weng-lab/visualization";
 import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
-import { Distribution, ViolinPoint } from "@weng-lab/visualization";
 import { Assembly } from "types/globalTypes";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
-
-export type SharedGeneExpressionPlotProps = {
-  selected: PointMetadata[];
-  geneExpressionData: UseGeneExpressionReturn;
-  sortedFilteredData: PointMetadata[];
-};
 
 export type GeneExpressionProps = {
   geneData: UseGeneDataReturn<{ name: string }>;
   assembly: Assembly;
 };
 
-const GeneExpression = ({ geneData, assembly }: GeneExpressionProps) => {
+export type SharedGeneExpressionPlotProps = GeneExpressionProps & {
+  rows: PointMetadata[];
+  selected: PointMetadata[];
+  setSelected: (selected: PointMetadata[]) => void;
+  geneExpressionData: UseGeneExpressionReturn;
+  sortedFilteredData: PointMetadata[];
+  setSortedFilteredData: (data: PointMetadata[]) => void;
+  scale: "linearTPM" | "logTPM";
+  setScale: (newScale: "linearTPM" | "logTPM") => void;
+  replicates: "mean" | "all";
+  setReplicates: (newReplicates: "mean" | "all") => void;
+  viewBy: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM";
+  setViewBy: (newView: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM") => void;
+  RNAtype: "all" | "polyA plus RNA-seq" | "total RNA-seq";
+  setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void;
+};
+
+const GeneExpression = (props: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
   const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
+  const [replicates, setReplicates] = useState<"mean" | "all">("mean")
+  const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM")
+  const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">(props.assembly === "GRCh38" ? "total RNA-seq" : "all")
 
-  const geneExpressionData = useGeneExpression({ id: geneData?.data.id, assembly: assembly });
+  const geneExpressionData = useGeneExpression({ id: props.geneData?.data.id, assembly: props.assembly });
 
-  const handleScaleChange = (newScale: "linearTPM" | "logTPM") => {
-    setScale(newScale);
-  }
+  const rows: PointMetadata[] = useMemo(() => {
+    if (!geneExpressionData?.data?.length) return [];
 
-  const handlePointsSelected = (pointsInfo: PointMetadata[]) => {
-    setSelected([...selected, ...pointsInfo]);
-  };
+    const filteredData = geneExpressionData.data.filter(d => RNAtype === "all" || d.assay_term_name === RNAtype)
 
-  const handleSelectionChange = (selected: PointMetadata[]) => {
-    setSelected(selected);
-  };
+    let result: PointMetadata[] = filteredData.flatMap((entry) => {
+      const files = entry.gene_quantification_files?.filter(Boolean) ?? [];
 
-  const handleBarClick = (bar: BarData<PointMetadata>) => {
-    if (selected.includes(bar.metadata)) {
-      setSelected(selected.filter((x) => x !== bar.metadata));
-    } else setSelected([...selected, bar.metadata]);
-  };
+      if (replicates === "all") {
+        return files.flatMap((file, i) => {
+          const quants = file.quantifications?.filter(Boolean) ?? [];
+          const quant = quants[0]
 
-  const handleViolinClick = (violin: Distribution<PointMetadata>) => {
-    const rowsForDistribution = violin.data.map((point) => point.metadata);
-    
-    const allInDistributionSelected = rowsForDistribution.every(row => selected.some(x => x.accession === row.accession))
+          const rawTPM = quant.tpm;
+          const scaledTPM =
+            scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
 
-    if (allInDistributionSelected) {
-      setSelected((prev) => prev.filter((row) => !rowsForDistribution.some((x) => x.accession === row.accession)));
-    } else {
-      const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.accession === row.accession));
-      setSelected((prev) => [...prev, ...toSelect]);
-    }
-  };
+          const repLabel = file.biorep != null ? ` rep. ${file.biorep}` : "";
+          const modifiedAccession = `${entry.accession}${repLabel}`;
 
-  const handleViolinPointClick = (point: ViolinPoint<PointMetadata>) => {
-    if (selected.includes(point.metadata)) {
-      setSelected(selected.filter((x) => x !== point.metadata));
-    } else setSelected([...selected, point.metadata]);
-  };
+          return {
+            ...entry,
+            accession: modifiedAccession,
+            gene_quantification_files: [
+              {
+                ...file,
+                quantifications: [
+                  {
+                    ...quant,
+                    tpm: scaledTPM,
+                  },
+                ],
+              },
+            ],
+          };
+        });
+      } else {
+        // replicates === "mean"
+        const allQuants = files.flatMap(
+          (file) => file.quantifications?.filter(Boolean) ?? []
+        );
+        if (!allQuants.length) return [];
+
+        const avgTPM =
+          allQuants.reduce((sum, q) => sum + q.tpm, 0) / allQuants.length;
+
+        const scaledTPM =
+          scale === "logTPM" ? Math.log10(avgTPM + 1) : avgTPM;
+
+        return [
+          {
+            ...entry,
+            gene_quantification_files: [
+              {
+                accession: files[0]?.accession,
+                biorep: null,
+                quantifications: [
+                  {
+                    __typename: "GeneQuantification",
+                    file_accession: "average",
+                    tpm: scaledTPM,
+                  },
+                ],
+                __typename: "GeneQuantificationFile",
+              },
+            ],
+          },
+        ];
+      }
+    });
+
+    return result;
+  }, [geneExpressionData.data, RNAtype, replicates, scale]);
+
+  const SharedGeneExpressionPlotProps: SharedGeneExpressionPlotProps = useMemo(
+    () => ({
+      rows,
+      selected,
+      setSelected,
+      sortedFilteredData,
+      setSortedFilteredData,
+      scale,
+      setScale,
+      replicates,
+      setReplicates,
+      viewBy,
+      setViewBy,
+      RNAtype,
+      setRNAType,
+      geneExpressionData,
+      ...props,
+    }),
+    [rows, selected, sortedFilteredData, scale, replicates, viewBy, RNAtype, geneExpressionData, props]
+  );
 
   return (
     <TwoPaneLayout
       TableComponent={
-        <GeneExpressionTable
-          geneData={geneData}
-          selected={selected}
-          onSelectionChange={handleSelectionChange}
-          sortedFilteredData={sortedFilteredData}
-          setSortedFilteredData={setSortedFilteredData}
-          geneExpressionData={geneExpressionData}
-          assembly={assembly}
-          scale={scale}
-          onScaleChange={handleScaleChange}
-        />
+        <GeneExpressionTable {...SharedGeneExpressionPlotProps} />
       }
       plots={[
         {
           tabTitle: "Bar Plot",
           icon: <BarChart />,
           plotComponent: (
-            <GeneExpressionBarPlot
-              assembly={assembly}
-              geneData={geneData}
-              selected={selected}
-              sortedFilteredData={sortedFilteredData}
-              geneExpressionData={geneExpressionData}
-              onBarClicked={handleBarClick}
-              scale={scale}
-            />
+            <GeneExpressionBarPlot {...SharedGeneExpressionPlotProps} />
           ),
         },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
           plotComponent: (
-            <GeneExpressionViolinPlot
-              assembly={assembly}
-              geneData={geneData}
-              selected={selected}
-              sortedFilteredData={sortedFilteredData}
-              geneExpressionData={geneExpressionData}
-              onViolinClicked={handleViolinClick}
-              onPointClicked={handleViolinPointClick}
-              scale={scale}
-            />
+            <GeneExpressionViolinPlot {...SharedGeneExpressionPlotProps} />
           ),
         },
         // Add back once query returns umap coordiantes
-         {
-           tabTitle: "UMAP",
-           icon: <ScatterPlot />,
-           plotComponent: (
-             <GeneExpressionUMAP
-               assembly={assembly}
-               geneData={geneData}
-               selected={selected}
-               sortedFilteredData={sortedFilteredData}
-               geneExpressionData={geneExpressionData}
-               onSelectionChange={(points) => handlePointsSelected(points.map((x) => x.metaData))}
-             />
-           ),
-         },
-        
+        {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: (
+            <GeneExpressionUMAP {...SharedGeneExpressionPlotProps} />
+          ),
+        },
+
       ]}
     />
   );

@@ -9,8 +9,9 @@ import { useState } from "react";
 import ConfigureGBModal from "./ConfigureGBModal";
 import { RegistryBiosample } from "common/components/BiosampleTables/types";
 import { CancelRounded } from "@mui/icons-material";
+import { RegistryBiosamplePlusRNA } from "common/_utility/types";
 const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembly: string }) => {
-  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample | null>(null);
+  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
 
   const {
     data: dataCcres,
@@ -54,7 +55,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
   const showH3k27ac = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k27ac ? true : false) : true;
   const showH3k4me3 = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k4me3 ? true : false) : true;
 
-  const handleBiosampleSelected = (biosample: RegistryBiosample | null) => {
+  const handleBiosampleSelected = (biosample: RegistryBiosamplePlusRNA | null) => {
     setSelectedBiosample(biosample);
   };
 
