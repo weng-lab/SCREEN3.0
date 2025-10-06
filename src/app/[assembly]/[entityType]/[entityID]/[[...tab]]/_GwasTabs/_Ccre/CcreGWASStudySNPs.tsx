@@ -196,11 +196,13 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
           {
             field:
               selectedBiosample && selectedBiosample.atac ? "ctspecific.atac_zscore" : "atac_zscore",
-            renderHeader: () => (
+            renderHeader: () => {
+            const headerVal = selectedBiosample && selectedBiosample.atac ? "ATAC" : "ATAC max Z"
+              return(
               <strong>
-                <p>ATAC max Z</p>
+                <p>{headerVal}</p>
               </strong>
-            ),
+            )},
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.atac
                 ? row.ctspecific.atac_zscore.toFixed(2)
@@ -215,11 +217,13 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
               selectedBiosample && selectedBiosample.h3k27ac
                 ? "ctspecific.enhancer_zscore"
                 : "enhancer_zscore",
-            renderHeader: () => (
+            renderHeader: () => { 
+              const headerVal = selectedBiosample && selectedBiosample.h3k27ac ? "H3k27ac" : "H3k27ac max Z"
+              return (
               <strong>
-                <p>H3k27ac max Z</p>
+                <p>{headerVal}</p>
               </strong>
-            ),
+            )},
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.h3k27ac
                 ? row.ctspecific.enhancer_zscore.toFixed(2)
@@ -234,11 +238,13 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
               selectedBiosample && selectedBiosample.h3k4me3
                 ? "ctspecific.promoter_zscore"
                 : "promoter_zscore",
-            renderHeader: () => (
+            renderHeader: () => { 
+              const headerVal = selectedBiosample && selectedBiosample.h3k4me3 ? "H3k4me3" : "H3k4me3 max Z"
+              return (
               <strong>
-                <p>H3k4me3 max Z</p>
+                <p>{headerVal}</p>
               </strong>
-            ),
+            )},
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.h3k4me3
                 ? row.ctspecific.promoter_zscore.toFixed(2)
@@ -251,11 +257,13 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
           {
             field:
               selectedBiosample && selectedBiosample.ctcf ? "ctspecific.ctcf_zscore" : "ctcf_zscore",
-            renderHeader: () => (
+            renderHeader: () => {
+              const headerVal = selectedBiosample && selectedBiosample.ctcf ? "CTCF" : "CTCF max Z"
+              return(
               <strong>
-                <p>CTCF max Z</p>
+                <p>{headerVal}</p>
               </strong>
-            ),
+            )},
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.ctcf
                 ? row.ctspecific.ctcf_zscore.toFixed(2)
@@ -268,11 +276,13 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
           {
             field:
               selectedBiosample && selectedBiosample.dnase ? "ctspecific.dnase_zscore" : "dnase_zscore",
-            renderHeader: () => (
+            renderHeader: () => {
+              const headerVal = selectedBiosample && selectedBiosample.dnase ? "DNase" : "DNase max Z"
+              return(
               <strong>
-                <p>DNase max Z</p>
+                <p>{headerVal}</p>
               </strong>
-            ),
+            )},
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.dnase
                 ? row.ctspecific.dnase_zscore.toFixed(2)

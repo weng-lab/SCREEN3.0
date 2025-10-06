@@ -111,9 +111,9 @@ export default function GenomeBrowserView({
   type: AnyEntityType;
   assembly: Assembly;
 }) {
-  const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(null);
+ const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(null);
 
-  console.log("selectedBiosample", selectedBiosamples);
+
   // const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates);
 
   const initialState: InitialBrowserState = useMemo(() => {
