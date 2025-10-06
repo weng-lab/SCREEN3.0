@@ -439,7 +439,7 @@ function useRNAseqTracks(
         return {
           id: `rnaseq_${expid}-${fileId}-${strand}`,
           title: `RNA-seq ${strand} strand signal of unique reads rep 1 ${expid} ${fileId}`,
-          height: 100,
+          height: 50,
           titleSize: 12,
           trackType: TrackType.BigWig,
           color,
@@ -522,7 +522,7 @@ function generateBiosampleTracks(
         trackType: TrackType.BigWig,
         displayMode: DisplayMode.Full,
         color: colors.dnase,
-        height: 100,
+        height: 50,
         url: `https://www.encodeproject.org/files/${biosample.dnase_signal}/@@download/${biosample.dnase_signal}.bigWig`,
       } as BigWigConfig);
     }
@@ -535,7 +535,7 @@ function generateBiosampleTracks(
         trackType: TrackType.BigWig,
         displayMode: DisplayMode.Full,
         color: colors.h3k4me3,
-        height: 100,
+        height: 50,
         url: `https://www.encodeproject.org/files/${biosample.h3k4me3_signal}/@@download/${biosample.h3k4me3_signal}.bigWig`,
       } as BigWigConfig);
     }
@@ -548,7 +548,7 @@ function generateBiosampleTracks(
         trackType: TrackType.BigWig,
         displayMode: DisplayMode.Full,
         color: colors.h3k27ac,
-        height: 100,
+        height: 50,
         url: `https://www.encodeproject.org/files/${biosample.h3k27ac_signal}/@@download/${biosample.h3k27ac_signal}.bigWig`,
       } as BigWigConfig);
     }
@@ -561,7 +561,7 @@ function generateBiosampleTracks(
         trackType: TrackType.BigWig,
         displayMode: DisplayMode.Full,
         color: colors.ctcf,
-        height: 100,
+        height: 50,
         url: `https://www.encodeproject.org/files/${biosample.ctcf_signal}/@@download/${biosample.ctcf_signal}.bigWig`,
       } as BigWigConfig);
     }
@@ -578,7 +578,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#06da93",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/DNAse_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
   {
@@ -588,7 +588,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#ff0000",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/H3K4me3_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
   {
@@ -598,7 +598,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#ffcd00",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/H3K27ac_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
   {
@@ -608,7 +608,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#00b0d0",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/CTCF_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
   {
@@ -618,7 +618,7 @@ const humanTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#02c7b9",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/ATAC_All_ENCODE_MAR20_2024_merged.bw",
   } as BigWigConfig,
 ];
@@ -631,7 +631,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#06da93",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/DNase_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
   {
@@ -641,7 +641,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#ff0000",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/H3K4me3_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
   {
@@ -651,7 +651,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#ffcd00",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/H3K27ac_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
   {
@@ -661,7 +661,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#00b0d0",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/CTCF_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
   {
@@ -671,7 +671,7 @@ const mouseTracks: Track[] = [
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
     color: "#02c7b9",
-    height: 100,
+    height: 50,
     url: "https://downloads.wenglab.org/ATAC_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   } as BigWigConfig,
 ];
