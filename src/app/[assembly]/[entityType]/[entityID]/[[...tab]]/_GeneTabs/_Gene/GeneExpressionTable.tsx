@@ -1,5 +1,5 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
-import { IconButton } from "@mui/material";
+import { IconButton, useMediaQuery, useTheme } from "@mui/material";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
@@ -26,6 +26,8 @@ const GeneExpressionTable = ({
   viewBy,
 }: GeneExpressionTableProps) => {
   const { data, loading, error } = geneExpressionData;
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   // based on control buttons in parent, transform this data to match the expected format
   const transformedData: PointMetadata[] = useMemo(() => {
@@ -225,7 +227,7 @@ const GeneExpressionTable = ({
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         // -- End Selection Props --
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
-        divHeight={{ height: "100%", minHeight: "580px" }}
+        divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
       />
     </>
   );

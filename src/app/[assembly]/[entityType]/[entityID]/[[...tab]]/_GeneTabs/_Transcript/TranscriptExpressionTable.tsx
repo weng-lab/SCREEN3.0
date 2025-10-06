@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, IconButton, MenuItem, Select, Tooltip, Typography } from "@mui/material";
+import { FormControl, FormLabel, IconButton, MenuItem, Select, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import {
     gridFilteredSortedRowEntriesSelector,
     GridRowSelectionModel,
@@ -28,6 +28,8 @@ const TranscriptExpressionTable = ({
     scale
 }: TranscriptExpressionTableProps) => {
     const { data, loading, error } = transcriptExpressionData;
+    const theme = useTheme();
+    const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
     const transformedData: TranscriptMetadata[] = useMemo(() => {
         if (!rows.length) return [];
@@ -244,7 +246,7 @@ const TranscriptExpressionTable = ({
                 keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
                 // -- End Selection Props --
                 onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
-                divHeight={{ height: "100%", minHeight: "580px" }}
+                divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
             />
         </>
     );
