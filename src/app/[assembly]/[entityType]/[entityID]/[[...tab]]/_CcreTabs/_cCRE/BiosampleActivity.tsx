@@ -112,11 +112,7 @@ const classificationFormatting: Partial<GridColDef> = {
   },
 };
 
-const ctAgnosticCols: GridColDef[] = [
-  {
-    headerName: "Cell Type",
-    field: "displayname",
-  },
+const ctAgnosticCols: GridColDef[] = [  
   {
     headerName: "DNase max-Z",
     field: "dnase",
@@ -497,7 +493,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
           // borderColor: "divider"
         }}
       >
-        <Tab value="tables" label="Combined Assay View" />
+        <Tab value="tables" label="Classification" />
         <Tab value="dnase" label="DNase" />
         <Tab value="atac" label="ATAC" />
         <Tab value="h3k4me3" label="H3K4me3" />

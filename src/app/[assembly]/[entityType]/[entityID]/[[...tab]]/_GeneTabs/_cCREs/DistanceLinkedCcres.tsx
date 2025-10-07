@@ -10,7 +10,8 @@ import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { usePathname } from "next/navigation";
 import { Assembly } from "types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
-import { calcDistCcreToTSS } from "common/utility";
+import { calcDistCcreToTSS, ccreClassDescriptions } from "common/utility";
+import { GROUP_COLOR_MAP } from "common/lib/colors";
 
 export type Transcript = {
   id: string;
@@ -122,7 +123,7 @@ export default function DistanceLinkedCcres({
             </div>
           }
         >
-          <span>{params.value}</span>
+          <span>{ccreClassDescriptions[params.value] ?? ""}</span>
         </Tooltip>
       ),
     },
