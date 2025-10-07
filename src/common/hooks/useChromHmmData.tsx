@@ -72,12 +72,54 @@ export const stateDetails = {
   ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
 };
 
+export const ChromHmmTissues = [
+    "adipose",
+    "adrenal gland",
+    "blood",
+    "blood vessel",
+    "bone",
+    "bone marrow",
+    "brain",
+    "breast",
+    "connective tissue",
+    "embryo",
+    "esophagus",
+    "heart",
+    "large intestine",
+    "liver",
+    "lung",
+    "muscle",
+    "nerve",
+    "ovary",
+    "pancreas",
+    "paraythroid gland",
+    "penis",
+    "placenta",
+    "prostate",
+    "skin",
+    "small intestine",
+    "spleen",
+    "stomach",
+    "testis",
+    "thymus",
+    "thyroid",
+    "uterus",
+    "vagina"
+];
+
 export function useChromHMMData(coordinates: GenomicRange) {
   const [tracks, setTracks] = useState<Record<string, ChromTrack[]>>(null);
-  const [chromhmmtrackswithtissue, setChromhmmtrackswithtissue] =
-    useState(null);
+  const [chromHmmTracksWithTissue, setChromhmmTracksWithTissue] = useState<
+    {
+      tissue: string;
+      url: string;
+      biosample: string;
+    }[]
+  >(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false)
+
+  console.log(tracks)
 
   useEffect(() => {
     const fetchAndProcessData = async () => {
@@ -99,7 +141,7 @@ export function useChromHMMData(coordinates: GenomicRange) {
           })
           .flat();
 
-        setChromhmmtrackswithtissue(flatTracks);
+        setChromhmmTracksWithTissue(flatTracks);
       } catch (error) {
         console.error("Error fetching ChromHMM data:", error);
         setError(true)
@@ -116,7 +158,7 @@ export function useChromHMMData(coordinates: GenomicRange) {
     useQuery(BIG_QUERY, {
       variables: {
         bigRequests:
-          chromhmmtrackswithtissue?.map((track) => ({
+          chromHmmTracksWithTissue?.map((track) => ({
             chr1: coordinates.chromosome!,
             start: coordinates.start,
             end: coordinates.end,
@@ -124,12 +166,12 @@ export function useChromHMMData(coordinates: GenomicRange) {
             url: track.url,
           })) || [],
       },
-      skip: !chromhmmtrackswithtissue,
+      skip: !chromHmmTracksWithTissue,
     });
 
   // Process the data for the table view
   const processedTableData = useMemo(() => {
-    if (!bigQueryData || !chromhmmtrackswithtissue || bigQueryLoading)
+    if (!bigQueryData || !chromHmmTracksWithTissue || bigQueryLoading)
       return undefined;
 
     return bigQueryData.bigRequests.map((b, i) => {
@@ -144,11 +186,11 @@ export function useChromHMMData(coordinates: GenomicRange) {
           ")",
         chr: f.chr,
         color: f.color,
-        tissue: chromhmmtrackswithtissue[i].tissue,
-        biosample: chromhmmtrackswithtissue[i].biosample,
+        tissue: chromHmmTracksWithTissue[i].tissue,
+        biosample: chromHmmTracksWithTissue[i].biosample,
       };
     });
-  }, [bigQueryData, chromhmmtrackswithtissue, bigQueryLoading]);
+  }, [bigQueryData, chromHmmTracksWithTissue, bigQueryLoading]);
 
   return {
     tracks,

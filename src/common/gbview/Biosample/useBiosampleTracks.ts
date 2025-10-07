@@ -4,6 +4,7 @@ import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/type
 import { useEffect, useMemo } from "react";
 import { gql } from "types/generated";
 import { colors } from "../constants";
+import { Assembly } from "types/globalTypes";
 
 const FETCH_RNASEQ_TRACKS = gql(`
   query fetchRNASeqData($assembly: String!, $biosample: [String]) {
@@ -20,7 +21,7 @@ const FETCH_RNASEQ_TRACKS = gql(`
 
 
 export const useBiosampleTracks = (
-  assembly: string,
+  assembly: Assembly,
   selectedBiosamples: RegistryBiosamplePlusRNA[] | null,
   trackStore: TrackStoreInstance,
   onHover: (item: Rect) => void,
@@ -41,7 +42,7 @@ export const useBiosampleTracks = (
   );
 
   const { data, loading, error } = useQuery(FETCH_RNASEQ_TRACKS, {
-    variables: { assembly, biosample: biosampleNames },
+    variables: { assembly: assembly.toLowerCase(), biosample: biosampleNames },
     skip: !biosampleNames,
   });
 
