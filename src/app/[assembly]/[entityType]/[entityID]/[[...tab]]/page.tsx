@@ -148,7 +148,7 @@ export default function DetailsPage({
         case "":
           return <GeneExpression geneData={geneData} assembly={assembly} />;
         case "ccres":
-          return assembly === "GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
+          return <GeneLinkedIcres geneData={geneData} assembly={assembly}/> ;
         case "variants":
           return <EQTLs data={geneData.data} entityType="gene" assembly={assembly} />;
         case "transcript-expression":
