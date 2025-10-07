@@ -119,8 +119,6 @@ export function useChromHMMData(coordinates: GenomicRange) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false)
 
-  console.log(tracks)
-
   useEffect(() => {
     const fetchAndProcessData = async () => {
       try {
