@@ -292,6 +292,23 @@ export function calcDistRegionToPosition(
 }
 
 /**
+ * Returns the signed distance from coord1 to coord2.
+ */
+export function calcSignedDistRegionToRegion(
+  coord1: { start: number; end: number },
+  coord2: { start: number; end: number }
+): number {
+  if (coord2.end < coord1.start) {
+    return coord2.end - coord1.start;
+  } else if (coord2.start > coord1.end) {
+    return coord2.start - coord1.end;
+  } else {
+    return 0;
+  }
+}
+
+
+/**
  *
  * @param coord1
  * @param coord2
