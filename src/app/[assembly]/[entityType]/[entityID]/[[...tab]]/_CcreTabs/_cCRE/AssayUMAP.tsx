@@ -194,6 +194,8 @@ const AssayUMAP = ({
         <ScatterPlot
           pointData={scatterData}
           onPointClicked={handlePointClick}
+          leftAxisLabel="UMAP-2"
+          bottomAxisLabel="UMAP-1"
           selectable
           loading={loading_umap}
           miniMap={{

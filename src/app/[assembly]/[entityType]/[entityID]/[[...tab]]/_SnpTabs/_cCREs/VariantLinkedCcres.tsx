@@ -7,7 +7,7 @@ import { UseSnpDataReturn } from "common/hooks/useSnpData";
 import { useMemo, useState } from "react";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { DistanceSlider } from "./DistanceSlider";
-import { calcDistRegionToRegion } from "common/utility";
+import { calcSignedDistRegionToRegion } from "common/utility";
 
 const VariantLinkedCcres = ({
     variantData,
@@ -50,7 +50,7 @@ const VariantLinkedCcres = ({
                 start: d?.start,
                 end: d?.start + d?.len,
                 group: d?.pct,
-                distance: calcDistRegionToRegion({start: d?.start, end: d?.start + d?.len} ,{start: variantData.data[0].coordinates.start, end: variantData.data[0].coordinates.end}),
+                distance: calcSignedDistRegionToRegion({start: variantData.data[0].coordinates.start, end: variantData.data[0].coordinates.end}, {start: d?.start, end: d?.start + d?.len}),
             };
         })
 
@@ -125,12 +125,13 @@ const VariantLinkedCcres = ({
                 </>
             ),
             type: "number",
-            valueFormatter: (value?: string) => {
-                if (value == null) {
-                    return "";
-                }
-                return value.toLocaleString();
+            renderCell: ({ value }) => {
+                if (value == null) return "";
+                const direction = value === 0 ? "" : value < 0 ? "-" : "+";
+                const absValue = Math.abs(value);
+                return <span>{`${direction}${absValue.toLocaleString()}`}</span>;
             },
+            sortComparator: (v1, v2) => Math.abs(v1) - Math.abs(v2),
         },
     ];
 
