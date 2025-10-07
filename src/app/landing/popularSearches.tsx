@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Grow, Box, Stack, Typography, IconButton } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Link from "next/link";
-import { useGrowOnScroll } from "app/page";
+import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
 
 export interface PopularSearchesProps {
     assembly: string;

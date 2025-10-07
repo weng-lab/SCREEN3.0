@@ -1,10 +1,10 @@
 import React from "react";
 import { Grid, Grow, Box, Stack, Typography, IconButton } from "@mui/material";
 import Link from "next/link";
-import { useGrowOnScroll } from "app/page";
 import DownloadIcon from '@mui/icons-material/Download';
 import { useTheme } from "@mui/material/styles";
 import Config from "../../config.json";
+import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
 
 export interface TrendingDatasetsProps {
     assembly: string;
