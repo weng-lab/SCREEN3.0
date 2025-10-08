@@ -86,12 +86,17 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({
                                 <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
                                     {entity.region}
                                 </Typography>
-                                <Typography variant="h6" sx={{
-                                    fontWeight: "bold", overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2, // ✅ allows wrapping but clamps height
-                                    WebkitBoxOrient: "vertical", }} >
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: "bold", 
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: "vertical",
+                                    }}
+                                >
                                     {entity.entity}: {entity.name}
                                 </Typography>
                             </Stack>
@@ -105,7 +110,6 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({
                                     width: 40,
                                     height: 40,
                                     borderRadius: "50%",
-                                    alignSelf: "flex-end",
                                     position: "absolute",
                                     bottom: 20,
                                     right: 20,

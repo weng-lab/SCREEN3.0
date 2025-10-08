@@ -163,7 +163,7 @@ export default function Home() {
       </Box>
       <Box width={"100%"} justifyContent={"flex-start"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
         <Typography variant="h6" sx={{ fontWeight: 550 }}>📈 Trending Datasets</Typography>
-        <TrendingDatasets assembly={assembly} />
+        <TrendingDatasets />
       </Box>
     </div>
   );
