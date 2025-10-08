@@ -9,7 +9,8 @@ import React, { useState } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { Assembly } from "types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
-import { calcDistCcreToTSS } from "common/utility";
+import { calcDistCcreToTSS, ccreClassDescriptions } from "common/utility";
+
 
 export type Transcript = {
   id: string;
@@ -121,7 +122,7 @@ export default function DistanceLinkedCcres({
             </div>
           }
         >
-          <span>{params.value}</span>
+          <span>{ccreClassDescriptions[params.value] ?? ""}</span>
         </Tooltip>
       ),
     },

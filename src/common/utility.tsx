@@ -394,3 +394,14 @@ const assemblyEncoding: {[key in Assembly]: string} = {
 const assemblyDecoding: {[key: string]: Assembly} = Object.fromEntries(
   Object.entries(assemblyEncoding).map(([entity, encoding]: [Assembly, string]) => [encoding, entity])
 );
+
+export const ccreClassDescriptions: Record<string, string> = {
+  PLS: "Promoter",
+  pELS: "Proximal Enhancer",
+  dELS: "Distal Enhancer",
+  "CA-H3K4me3": "CA-H3K4me3",
+  "CA-CTCF": "CA-CTCF",
+  "CA-TF": "CA-TF",
+  CA: "CA",
+  TF: "TF",
+};
