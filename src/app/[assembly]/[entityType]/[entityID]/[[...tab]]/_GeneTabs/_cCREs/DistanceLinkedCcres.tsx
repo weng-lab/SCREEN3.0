@@ -1,13 +1,12 @@
-import { Box, Button, IconButton, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 import useNearbycCREs from "common/hooks/useNearBycCREs";
 import { useCcreData } from "common/hooks/useCcreData";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import CalculateIcon from '@mui/icons-material/Calculate';
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
-import { usePathname } from "next/navigation";
 import { Assembly } from "types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { calcDistCcreToTSS, ccreClassDescriptions } from "common/utility";
@@ -26,11 +25,11 @@ export type Transcript = {
 
 export default function DistanceLinkedCcres({
   geneData,
+  assembly
 }: {
   geneData: UseGeneDataReturn<{ name: string }>;
+  assembly: Assembly
 }) {
-  const pathname = usePathname()
-  const assembly = pathname.split("/")[1]
 
   const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
   const [distance, setDistance] = useState<number>(10000);
@@ -71,7 +70,7 @@ export default function DistanceLinkedCcres({
   const {
     data: dataCcreDetails,
     loading: loadingCcreDetails,
-  } = useCcreData({ accession: dataNearby?.map((d) => d.ccre), assembly: "GRCh38" });
+  } = useCcreData({ accession: dataNearby?.map((d) => d.ccre), assembly: assembly as Assembly});
 
   const nearbyccres = dataNearby
     ?.map((d) => {
@@ -97,7 +96,7 @@ export default function DistanceLinkedCcres({
       headerName: "Accession",
       renderCell: (params) => {
         return (
-          <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
+          <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
             {params.value}
           </LinkComponent>
         );
@@ -209,7 +208,7 @@ export default function DistanceLinkedCcres({
             </Tooltip>
           </Stack>
         }
-        divHeight={{ maxHeight: "400px" }}
+        divHeight={{ maxHeight: assembly === "GRCh38" ? "400px" : "600px" }}
         toolbarSlot={
           <Tooltip title="Calculate Nearby cCREs by">
             <Button
@@ -244,6 +243,7 @@ export default function DistanceLinkedCcres({
         calcMethod={calcMethod}
         handleDistanceChange={handleDistanceChange}
         handleMethodChange={handleMethodChange}
+        assembly={assembly}
       />
     </Box>
   );

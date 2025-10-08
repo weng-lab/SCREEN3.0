@@ -60,6 +60,7 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({
                                     : `/${assembly}/${entity.entity.toLowerCase()}/${entity.name}`
                             }
                             sx={{
+                                position: "relative",
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "space-between",
@@ -68,7 +69,7 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({
                                 background: (theme) =>
                                     `linear-gradient(135deg, #283593 0%, #1a237e 25%, ${theme.palette.primary.main} 100%)`,
                                 color: "white",
-                                minHeight: 160,
+                                height: 160,
                                 p: 3,
                                 boxShadow: 3,
                                 textDecoration: "none",
@@ -85,7 +86,12 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({
                                 <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
                                     {entity.region}
                                 </Typography>
-                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                <Typography variant="h6" sx={{
+                                    fontWeight: "bold", overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2, // ✅ allows wrapping but clamps height
+                                    WebkitBoxOrient: "vertical", }} >
                                     {entity.entity}: {entity.name}
                                 </Typography>
                             </Stack>
@@ -100,6 +106,9 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({
                                     height: 40,
                                     borderRadius: "50%",
                                     alignSelf: "flex-end",
+                                    position: "absolute",
+                                    bottom: 20,
+                                    right: 20,
                                 }}
                             >
                                 <ArrowForwardIcon />
