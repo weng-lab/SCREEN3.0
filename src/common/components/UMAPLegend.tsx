@@ -154,7 +154,7 @@ export default function UMAPLegend<T extends BiosampleRow | PointMetadata>({
             ) : (
                 <Stack
                     direction="row"
-                    spacing={0.5}
+                    spacing={1}
                     alignItems="center"
                     mr={1}
                     onMouseMove={(e) => handleMouseOver(e, scatterData)}
@@ -172,12 +172,39 @@ export default function UMAPLegend<T extends BiosampleRow | PointMetadata>({
                         transition: "background-color 0.2s ease",
                     }}
                 >
-                    <Typography color="text.secondary" fontWeight="bold">
-                        Legend
-                    </Typography>
                     <InfoOutlinedIcon fontSize="small" color="action" />
+                    <Typography color="text.secondary" fontWeight="bold">Legend:</Typography>
+                    {legendEntries.slice(0, 3).map((entry, i) => (
+                        <Box
+                            key={i}
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mr: 1,
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    width: 12,
+                                    height: 12,
+                                    bgcolor: entry.color,
+                                    borderRadius: "50%",
+                                    mr: 0.5,
+                                }}
+                            />
+                            <Typography variant="body2" color="text.secondary">
+                                {entry.label}
+                            </Typography>
+                        </Box>
+                    ))}
+                    {legendEntries.length > 3 && (
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <Typography variant="body2" color="text.secondary">
+                                ...
+                            </Typography>
+                        </Stack>
+                    )}
                 </Stack>
-
             )}
             {tooltipOpen && tooltipData && (
                 <TooltipComponent
