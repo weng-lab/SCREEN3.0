@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     Box,
     Radio,
@@ -7,11 +7,12 @@ import {
     Typography,
     Stack,
     IconButton,
-    FormHelperText,
     FormControl,
+    Tooltip,
 } from '@mui/material';
 import AutoComplete from 'common/components/autocomplete';
-import { Search } from '@mui/icons-material';
+import { Search, InfoOutlined } from '@mui/icons-material';
+import { Result } from '@weng-lab/ui-components';
 
 type MainSearchProps = {
     assembly: "GRCh38" | "mm10";
@@ -19,6 +20,92 @@ type MainSearchProps = {
 };
 
 const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange }) => {
+
+    const defaultResults: Result[] = useMemo(() => {
+        if (assembly === "GRCh38") {
+            return [
+                {
+                    title: "chr19:44,905,754-44,909,393",
+                    domain: {
+                        chromosome: "chr19",
+                        start: 44905754,
+                        end: 44909393,
+                    },
+                    description: "chr19:44,905,754-44,909,393",
+                    type: "Coordinate",
+                },
+                {
+                    title: "SP1",
+                    description:
+                        "Sp1 Transcription Factor\nENSG00000185591.10\nchr12:53380176-53416446",
+                    domain: {
+                        chromosome: "chr12",
+                        start: 53380176,
+                        end: 53416446,
+                    },
+                    type: "Gene",
+                },
+                {
+                    title: "EH38E3314260",
+                    description: "chr19:50417519-50417853",
+                    domain: {
+                        chromosome: "chr19",
+                        start: 50417519,
+                        end: 50417853,
+                    },
+                    type: "cCRE",
+                },
+                {
+                    title: "rs9466027",
+                    description: "chr6:21298226-21298227",
+                    domain: {
+                        chromosome: "chr6",
+                        start: 21298226,
+                        end: 21298227,
+                    },
+                    type: "SNP",
+                },
+                {
+                    title: "Adiponectin Levels",
+                    description: "Dastani Z\n22479202",
+                    id: "Dastani_Z-22479202-Adiponectin_levels",
+                    type: "Study",
+                },
+            ];
+        } else return [
+            {
+                title: "chr7:19,696,109-19,699,188",
+                domain: {
+                    chromosome: "chr7",
+                    start: 19696109,
+                    end: 19699188,
+                },
+                description: "chr7:19,696,109-19,699,188",
+                type: "Coordinate",
+            },
+            {
+                title: "Sp1",
+                description:
+                    "Sp1 Transcription Factor\nENSMUSG00000001280.13\nchr15:102406143-102436404",
+                domain: {
+                    chromosome: "chr15",
+                    start: 102406143,
+                    end: 102436404,
+                },
+                type: "Gene",
+            },
+            {
+                title: "EM10E1179536",
+                description: "chr7:19698911-19699257",
+                domain: {
+                    chromosome: "chr7",
+                    start: 19698911,
+                    end: 19699257,
+                },
+                type: "cCRE",
+            },
+        ];
+    }, [assembly]);
 
     return (
         <>
@@ -88,13 +175,14 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
                                 </IconButton>
                             ),
                         }}
+                        defaultResults={defaultResults}
                         assembly={assembly}
                         id="main-search-component"
                         slotProps={{
                             box: { gap: 1 },
                             input: {
                                 size: "small",
-                                label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
+                                label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant, GWAS," : ""} or locus`,
                                 placeholder: "Enter a gene, cCRE, variant or locus",
                                 sx: {
                                     "& .MuiOutlinedInput-root": {
@@ -122,17 +210,26 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
                             },
                         }}
                     />
-                    <FormHelperText sx={{ ml: 0, color: "white" }}>
-                        Try{" "}
-                        &quot;<i>{assembly === "GRCh38" ? "SOX4" : "Sox4"}</i>&quot;,{" "}
-                        &quot;<i>{assembly === "GRCh38" ? "EH38E3314260" : "EM10E0000207"}</i>&quot;
-                        {assembly === "GRCh38" && (
-                            <>
-                                , &quot;<i>rs9466027</i>&quot;
-                            </>
-                        )}
-                        , or &quot;chr12:53380176-53416446&quot;
-                    </FormHelperText>
+                    <Stack direction="row" alignItems="center" justifyContent="flex-start" mt={1}>
+                        <Tooltip
+                            title={
+                                <Box>
+                                    {defaultResults.map((r, i) => (
+                                        <Typography key={i} variant="body2">
+                                            <strong>{r.type}: </strong>{r.title}
+                                        </Typography>
+                                    ))}
+                                </Box>
+                            }
+                            arrow
+                            placement="bottom"
+                        >
+                            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: "white", cursor: "default" }}>
+                                <InfoOutlined fontSize="small" />
+                                <Typography variant="body2">Try these example searches to get started</Typography>
+                            </Stack>
+                        </Tooltip>
+                    </Stack>
                 </FormControl>
             </Box>
         </>

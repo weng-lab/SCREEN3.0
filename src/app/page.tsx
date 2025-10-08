@@ -1,7 +1,7 @@
 //Home Page
 "use client";
 import { Box, Button, Grid, Link, Stack, Typography } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { theme } from "./theme";
 import { alpha } from '@mui/material/styles';
 import Image from "next/image"
