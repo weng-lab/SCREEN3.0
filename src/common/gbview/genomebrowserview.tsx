@@ -302,7 +302,7 @@ export default function GenomeBrowserView({
           value={null}
           queries={["Gene", "SNP", "cCRE", "Coordinate"]}
           geneLimit={3}
-          sx={{ width: '300px' }}
+          sx={{ minWidth: '200px', width: '350px', flexShrink: 1 }}
           slots={{
             button: (
               <IconButton sx={{ color: theme.palette.primary.main }}>

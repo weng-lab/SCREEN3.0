@@ -37,7 +37,7 @@ export default function GBButtons({
   };
 
   return (
-    <Box display="flex" gap={2}>
+    <Box display="flex" gap={1}>
       <Button
         variant="contained"
         startIcon={<HighlightIcon />}

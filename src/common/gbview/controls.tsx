@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Stack, Typography } from "@mui/material"
+import { Box, Button, Divider, Stack, Typography, ButtonGroup as MuiButtonGroup } from "@mui/material"
 import { useCallback } from "react";
 import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 
@@ -47,84 +47,94 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
     [domain, setDomain]
   );
 
+  type ButtonConfig =  { label: string, onClick: (value: number) => void, value: number }
+
   // Reusable button group component
   const ButtonGroup = ({
-    title,
     buttons,
   }: {
-    title: string;
-    buttons: ({
-      label: string;
-      onClick: (value: number) => void;
-      value: number;
-    } | "divider")[];
+    buttons: ButtonConfig[];
+  }) => (
+    <MuiButtonGroup>
+      {buttons.map((btn, index) => {
+        return (
+          <Button
+            key={index}
+            variant="outlined"
+            size="small"
+            onClick={() => btn.onClick(btn.value)}
+            sx={{
+              padding: "2px 8px",
+              minWidth: "30px",
+              fontSize: "0.8rem",
+            }}
+          >
+            {btn.label}
+          </Button>
+        );
+      })}
+    </MuiButtonGroup>
+  );
+
+  const TwoSidedControl = ({
+    leftButtons,
+    rightButtons,
+    label,
+  }: {
+    leftButtons: ButtonConfig[];
+    rightButtons: ButtonConfig[];
+    label: string;
   }) => (
     <Stack alignItems={"center"}>
-      <Typography variant="body2" pr={1}>
-        {title}
+      <Typography variant="body2">
+        {label}
       </Typography>
-      <Box display={"flex"}>
-        {buttons.map((btn, index) => {
-          if (btn === "divider") return <Divider key={index} orientation="vertical" flexItem sx={{mx: 1}} />
-          return (
-            <Button
-              key={index}
-              variant="outlined"
-              size="small"
-              onClick={() => btn.onClick(btn.value)}
-              title={`${title} ${btn.value.toLocaleString()}`}
-              sx={{
-                padding: "2px 8px",
-                minWidth: "30px",
-                fontSize: "0.8rem",
-              }}
-            >
-              {btn.label}
-            </Button>
-          );
-        })}
-      </Box>
+      <Stack direction={"row"} spacing={0.5}>
+        <ButtonGroup buttons={leftButtons} />
+        <Divider orientation="vertical" flexItem />
+        <ButtonGroup buttons={rightButtons} />
+      </Stack>
     </Stack>
   );
 
   const width = domain.end - domain.start;
 
-  // Define button configurations
-  const buttonGroups = [
-    {
-      title: "Move",
-      buttons: [
-        { label: "◄◄◄", onClick: shift, value: -width },
-        { label: "◄◄", onClick: shift, value: -Math.round(width / 2) },
-        { label: "◄", onClick: shift, value: -Math.round(width / 4) },
-        "divider" as const,
-        { label: "►", onClick: shift, value: Math.round(width / 4) },
-        { label: "►►", onClick: shift, value: Math.round(width / 2) },
-        { label: "►►►", onClick: shift, value: width },
-      ],
-    },
-    {
-      title: "Zoom",
-      buttons: [
-        { label: "-100x", onClick: zoom, value: 100 },
-        { label: "-10x", onClick: zoom, value: 10 },
-        { label: "-3x", onClick: zoom, value: 3 },
-        { label: "-1.5x", onClick: zoom, value: 1.5 },
-        "divider" as const,
-        { label: "+1.5x", onClick: zoom, value: 1 / 1.5 },
-        { label: "+3x", onClick: zoom, value: 1 / 3 },
-        { label: "+10x", onClick: zoom, value: 1 / 10 },
-        { label: "+100x", onClick: zoom, value: 1 / 100 },
-      ],
-    },
-  ];
+  const buttonGroups = {
+    "moveLeft": [
+      { label: "◄◄◄", onClick: shift, value: -width },
+      { label: "◄◄", onClick: shift, value: -Math.round(width / 2) },
+      { label: "◄", onClick: shift, value: -Math.round(width / 4) },
+    ],
+    "moveRight": [
+      { label: "►", onClick: shift, value: Math.round(width / 4) },
+      { label: "►►", onClick: shift, value: Math.round(width / 2) },
+      { label: "►►►", onClick: shift, value: width },
+    ],
+    "zoomOut": [
+      { label: "-100x", onClick: zoom, value: 100 },
+      { label: "-10x", onClick: zoom, value: 10 },
+      { label: "-3x", onClick: zoom, value: 3 },
+      { label: "-1.5x", onClick: zoom, value: 1.5 },
+    ],
+    "zoomIn": [
+      { label: "+1.5x", onClick: zoom, value: 1 / 1.5 },
+      { label: "+3x", onClick: zoom, value: 1 / 3 },
+      { label: "+10x", onClick: zoom, value: 1 / 10 },
+      { label: "+100x", onClick: zoom, value: 1 / 100 },
+    ],
+  };
 
   return (
     //only allow wrapping on xs-md, since that's then the parent layout is in a column. Nowrap forces cytoband to shrink instead when arranged in a row
-    <Box display={"flex"} flexDirection={"row"} flexWrap={{xs: "wrap", lg: "nowrap"}} justifyContent={"center"} gap={2}>
-      {buttonGroups.map((group, index) => (
-        <ButtonGroup key={index} title={group.title} buttons={group.buttons} />
-      ))}
+    <Box
+      display={"flex"}
+      flexDirection={"row"}
+      flexWrap={{ xs: "wrap", lg: "nowrap" }}
+      justifyContent={"center"}
+      gap={2}
+    >
+      <TwoSidedControl leftButtons={buttonGroups.moveLeft} rightButtons={buttonGroups.moveRight} label="Move" />
+      <TwoSidedControl leftButtons={buttonGroups.zoomOut} rightButtons={buttonGroups.zoomIn} label="Zoom" />
     </Box>
   );
 }
