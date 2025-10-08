@@ -6,7 +6,7 @@ import { useQuery } from "@apollo/client";
  */
 import { BigBedData } from "bigwig-reader";
 import { gql } from "types/generated/gql";
-import { GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 
 export const BIG_QUERY = gql(`
   query BigRequests($bigRequests: [BigRequest!]!) {
@@ -107,7 +107,7 @@ export const ChromHmmTissues = [
     "vagina"
 ];
 
-export function useChromHMMData(coordinates: GenomicRange) {
+export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = "GRCh38") {
   const [tracks, setTracks] = useState<Record<string, ChromTrack[]>>(null);
   const [chromHmmTracksWithTissue, setChromhmmTracksWithTissue] = useState<
     {
@@ -117,12 +117,19 @@ export function useChromHMMData(coordinates: GenomicRange) {
     }[]
   >(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchAndProcessData = async () => {
       try {
         setLoading(true);
+        // Skip fetching if not GRCh38
+        if (assembly !== "GRCh38") {
+          setTracks(null);
+          setChromhmmTracksWithTissue(null);
+          setLoading(false);
+          return;
+        }
 
         // Fetch tracks
         const tracksData = await getTracks();
@@ -149,7 +156,7 @@ export function useChromHMMData(coordinates: GenomicRange) {
     };
 
     fetchAndProcessData();
-  }, []);
+  }, [assembly]);
 
   // BigQuery for the table data
   const { data: bigQueryData, loading: bigQueryLoading, error: bigQueryError } =
@@ -164,7 +171,7 @@ export function useChromHMMData(coordinates: GenomicRange) {
             url: track.url,
           })) || [],
       },
-      skip: !chromHmmTracksWithTissue,
+      skip: !chromHmmTracksWithTissue || assembly !== "GRCh38",
     });
 
   // Process the data for the table view

@@ -1,6 +1,6 @@
 "use client";
 import { Search } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
@@ -115,6 +115,7 @@ export default function GenomeBrowserView({
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
+  const domain = browserStore((state) => state.domain);
 
   const router = useRouter();
 
@@ -225,7 +226,7 @@ export default function GenomeBrowserView({
   };
 
   useBiosampleTracks(assembly, selectedBiosamples, trackStore, onHover, onLeave, onCcreClick);
-  const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates);
+  const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates, assembly);
 
   useEffect(() => {
     if (!chromHmmTracks) return
@@ -286,76 +287,61 @@ export default function GenomeBrowserView({
 
     setDomain(expandCoordinates(r.domain, SearchToScreenTypes[r.type]));
   };
+
   const theme = useTheme();
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
   return (
-    <Grid container spacing={2} sx={{ mt: "0rem", mb: "1rem" }} justifyContent="center" alignItems="center">
-      <Grid
-        size={{ xs: 12, lg: 12 }}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "0px",
-        }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            mb: 2,
+    <Stack spacing={2}>
+      <Stack direction={{xs: "column", sm: "row"}} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
+        <GenomeSearch
+          size="small"
+          assembly={assembly as Assembly}
+          onSearchSubmit={handeSearchSubmit}
+          // Forcing null value here to clear input after option is selected so that coordinates are displayed
+          value={null}
+          queries={["Gene", "SNP", "cCRE", "Coordinate"]}
+          geneLimit={3}
+          sx={{ width: '300px' }}
+          slots={{
+            button: (
+              <IconButton sx={{ color: theme.palette.primary.main }}>
+                <Search />
+              </IconButton>
+            ),
           }}
-        >
-          <GenomeSearch
-            size="small"
-            assembly={assembly as Assembly}
-            onSearchSubmit={handeSearchSubmit}
-            queries={["Gene", "SNP", "cCRE", "Coordinate"]}
-            geneLimit={3}
-            sx={{ width: "400px" }}
-            slots={{
-              button: (
-                <IconButton sx={{ color: theme.palette.primary.main }}>
-                  <Search />
-                </IconButton>
-              ),
-            }}
-            slotProps={{
-              input: {
-                label: "Change browser region",
-                sx: {
-                  backgroundColor: "white",
-                  "& label.Mui-focused": {
-                    color: theme.palette.primary.main,
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: theme.palette.primary.main,
-                    },
+          slotProps={{
+            input: {
+              label: "Change Browser Region",
+              sx: {
+                backgroundColor: "white",
+                "& label.Mui-focused": {
+                  color: theme.palette.primary.main,
+                },
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: theme.palette.primary.main,
                   },
                 },
               },
-            }}
-          />
-          <GBButtons
-            browserStore={browserStore}
-            assembly={assembly}
-            onBiosampleSelected={onBiosampleSelected}
-            selectedBiosamples={selectedBiosamples}
-            selectedChromHmmTissues={selectedChromHmmTissues}
-            setSelectedChromHmmTissues={setSelectedChromHmmTissues}
-          />
-        </Box>
+            },
+          }}
+        />
+        <GBButtons
+          browserStore={browserStore}
+          assembly={assembly}
+          onBiosampleSelected={onBiosampleSelected}
+          selectedBiosamples={selectedBiosamples}
+          selectedChromHmmTissues={selectedChromHmmTissues}
+          setSelectedChromHmmTissues={setSelectedChromHmmTissues}
+        />
+      </Stack>
+      <Stack direction={{xs: "column", lg: "row"}} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
         <DomainDisplay browserStore={browserStore} assembly={assembly} />
         <ControlButtons browserStore={browserStore} />
-      </Grid>
-      <Grid size={{ xs: 12, lg: 12 }}>
-        <Browser browserStore={browserStore} trackStore={trackStore} />
-      </Grid>
+      </Stack>
+      <Browser browserStore={browserStore} trackStore={trackStore} />
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
-    </Grid>
+    </Stack>
   );
 }

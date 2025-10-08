@@ -44,16 +44,23 @@ export default function GBButtons({
         size="small"
         onClick={() => setHighlightDialogOpen(true)}
       >
-        View Current Highlights
+        Highlights
       </Button>
       <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => handleSelectBiosampleClick()}>
-        Select Biosample Tracks
+        Biosample Tracks
       </Button>
-      <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => setChromHmmDialogOpen(true)}>
-        Select Chrom HMM Tracks
-      </Button>
+      {assembly === "GRCh38" && (
+        <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => setChromHmmDialogOpen(true)}>
+          Chrom HMM Tracks
+        </Button>
+      )}
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
-      <ChromHmmDialog open={chromHmmDialogOpen} setOpen={setChromHmmDialogOpen} selectedChromHmmTissues={selectedChromHmmTissues} setSelectedChromHmmTissues={setSelectedChromHmmTissues} />
+      <ChromHmmDialog
+        open={chromHmmDialogOpen}
+        setOpen={setChromHmmDialogOpen}
+        selectedChromHmmTissues={selectedChromHmmTissues}
+        setSelectedChromHmmTissues={setSelectedChromHmmTissues}
+      />
       <ConfigureGBModal
         assembly={assembly as Assembly}
         open={biosampleOpen}
