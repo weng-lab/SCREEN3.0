@@ -10,11 +10,11 @@ import MouseIcon from "common/_utility/mouseIcon";
 
 const trendingDataSets = [
     { name: "All Human cCREs", subtitle: "2,348,854 cCREs • 1,888 cell types", size: "129.1 MB", link: Config.Downloads.HumanCCREs },
-    { name: "Human Promoter-Like", subtitle: "PLS (47,532)", size: "2.6 MB", link: Config.Downloads.HumanPromoters },
-    { name: "All Human Candidate Enhancers", subtitle: "pELS & dELS (1,718,669)", size: "94.4 MB", link: Config.Downloads.HumanEnhancers },
+    { name: "Human Promoter-Like", subtitle: "47,532 cCREs", size: "2.6 MB", link: Config.Downloads.HumanPromoters },
+    { name: "All Human Candidate Enhancers", subtitle: "1,718,669 cCREs", size: "94.4 MB", link: Config.Downloads.HumanEnhancers },
     { name: "All Mouse cCREs", subtitle: "926,843 cCREs • 366 cell types", size: "50.6 MB", link: Config.Downloads.MouseCCREs },
-    { name: "Mouse Promoter-Like", subtitle: "PLS (27,332)", size: "1.5 MB", link: Config.Downloads.MousePromoters },
-    { name: "All Mouse Candidate Enhancers", subtitle: "pELS & dELS (512,001)", size: "28.2 MB", link: Config.Downloads.MouseEnhancers },
+    { name: "Mouse Promoter-Like", subtitle: "27,332 cCREs", size: "1.5 MB", link: Config.Downloads.MousePromoters },
+    { name: "All Mouse Candidate Enhancers", subtitle: "512,001 cCREs", size: "28.2 MB", link: Config.Downloads.MouseEnhancers },
 ];
 
 const TrendingDatasets: React.FC = ({
