@@ -11,7 +11,7 @@ import {
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
-import GeneLinkedIcres from "./_GeneTabs/_cCREs/GeneLinkedCcres";
+import GeneLinkedCcres from "./_GeneTabs/_cCREs/GeneLinkedCcres";
 import VariantInfo from "./_SnpTabs/_Variant/Variant";
 import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
@@ -145,7 +145,7 @@ export default function DetailsPage({
         case "":
           return <GeneExpression geneData={geneData} assembly={assembly} />;
         case "ccres":
-          return <GeneLinkedIcres geneData={geneData} assembly={assembly}/> ;
+          return <GeneLinkedCcres geneData={geneData} assembly={assembly}/>;
         case "variants":
           return <EQTLs data={geneData.data} entityType="gene" assembly={assembly} />;
         case "transcript-expression":
