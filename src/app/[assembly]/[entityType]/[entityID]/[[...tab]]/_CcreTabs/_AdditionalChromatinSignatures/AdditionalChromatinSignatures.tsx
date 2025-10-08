@@ -1,7 +1,7 @@
 import { EntityViewComponentProps } from "common/EntityDetails/entityTabsConfig";
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { DataTable, Table } from "@weng-lab/ui-components";
+import { DataTable, GridColDef, Table } from "@weng-lab/ui-components";
 import Grid from "@mui/material/Grid";
 import { Box, CircularProgress, LinearProgress, Stack, Tab, Typography } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
@@ -37,6 +37,114 @@ query entexActiveAnnotationsQuery( $coordinates: GenomicRangeInput! ) {
     }
 
 }`);
+
+const chromHmmCols: GridColDef[] = [
+  {
+    headerName: "Tissue",
+    field: "tissue",
+  },
+  {
+    headerName: "Biosample",
+    field: "biosample",
+  },
+  {
+    headerName: "States",
+    field: "name",
+    renderCell: (params) => <b style={{ color: params.row.color }}>{params.value}</b>,
+  },
+  {
+    headerName: "Chromosome",
+    field: "chr",
+  },
+  {
+    headerName: "Start",
+    field: "start",
+    type: "number",
+  },
+  {
+    headerName: "End",
+    field: "end",
+    type: "number",
+  },
+];
+
+const entexCols: GridColDef[] = [
+  {
+    headerName: "Tissue",
+    field: "tissue",
+    valueFormatter: (value: string) =>
+      value
+        .split("_")
+        .map((s) => s[0].toUpperCase() + s.slice(1))
+        .join(" "),
+  },
+  {
+    headerName: "Assay",
+    field: "assay",
+    valueFormatter: (value: string) => value.replaceAll("_", ", "),
+  },
+  {
+    headerName: "Donor",
+    field: "donor",
+  },
+  {
+    headerName: "Hap 1 Count",
+    field: "hap1_count",
+    type: "number",
+  },
+  {
+    headerName: "Hap 2 Count",
+    field: "hap2_count",
+    type: "number",
+  },
+  {
+    headerName: "Hap 1 Allele Ratio",
+    field: "hap1_allele_ratio",
+    type: "number",
+    valueFormatter: (value: number) => value.toFixed(2),
+  },
+  {
+    headerName: "Experiment Accession",
+    field: "experiment_accession",
+    renderCell: (params) => (
+      <LinkComponent href={`https://www.encodeproject.org/experiments/${params.value}`} openInNewTab showExternalIcon>
+        {params.value}
+      </LinkComponent>
+    ),
+  },
+  {
+    headerName: "p Beta-Binomial",
+    field: "p_betabinom",
+    type: "number",
+    valueFormatter: (value: number) => value.toFixed(2),
+  },
+  {
+    headerName: "Imbalance Significance",
+    field: "imbalance_significance",
+    type: "number",
+  },
+];
+
+const entexActiveCols: GridColDef[] = [
+  {
+    headerName: "Tissue",
+    field: "tissue",
+    valueFormatter: (value: string) =>
+      value
+        .split("_")
+        .map((s) => s[0].toUpperCase() + s.slice(1))
+        .join(" "),
+  },
+  {
+    headerName: "Supporting Assays",
+    field: "assay_score",
+    valueFormatter: (value: string) =>
+      value
+        .split("|")
+        .map((s) => s.split(":")[0])
+        .join(", "),
+  },
+];
 
 export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentProps) => {
   const [tab, setTab] = useState<number>(1)
@@ -75,52 +183,9 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
       <TabPanel value={1} sx={{ p: 0 }}>
         {" "}
         <Stack>
-          {/* <Typography variant="caption">Classification Proportions, Core Collection:</Typography>
-      <Box sx={{ marginBottom: "12px" }}>
-        {loading ? (
-          <LinearProgress />
-        ) : (
-          // <ClassProportionsBar
-          // rows={coreCollection}
-          // height={4}
-          // width={width}
-          // orientation="horizontal"
-          // tooltipTitle="Classification Proportions, Core Collection"
-          // />
-          <></>
-        )}
-      </Box> */}
           <Table
             label={`ChromHMM States`}
-            columns={[
-              {
-                headerName: "Tissue",
-                field: "tissue",
-              },
-              {
-                headerName: "Biosample",
-                field: "biosample",
-              },
-              {
-                headerName: "States",
-                field: "name",
-                renderCell: (params) => <b style={{ color: params.row.color }}>{params.value}</b>,
-              },
-              {
-                headerName: "Chromosome",
-                field: "chr",
-              },
-              {
-                headerName: "Start",
-                field: "start",
-                type: "number",
-              },
-              {
-                headerName: "End",
-                field: "end",
-                type: "number",
-              },
-            ]}
+            columns={chromHmmCols}
             rows={processedTableData}
             loading={loading}
             error={!!error}
@@ -133,66 +198,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
         <Stack spacing={2}>
           <Table
             label={`ENTEx`}
-            columns={[
-              {
-                headerName: "Tissue",
-                field: "tissue",
-                valueFormatter: (value: string) =>
-                  value
-                    .split("_")
-                    .map((s) => s[0].toUpperCase() + s.slice(1))
-                    .join(" "),
-              },
-              {
-                headerName: "Assay",
-                field: "assay",
-                valueFormatter: (value: string) => value.replaceAll("_", ", "),
-              },
-              {
-                headerName: "Donor",
-                field: "donor",
-              },
-              {
-                headerName: "Hap 1 Count",
-                field: "hap1_count",
-                type: "number",
-              },
-              {
-                headerName: "Hap 2 Count",
-                field: "hap2_count",
-                type: "number",
-              },
-              {
-                headerName: "Hap 1 Allele Ratio",
-                field: "hap1_allele_ratio",
-                type: "number",
-                valueFormatter: (value: number) => value.toFixed(2),
-              },
-              {
-                headerName: "Experiment Accession",
-                field: "experiment_accession",
-                renderCell: (params) => (
-                  <LinkComponent
-                    href={`https://www.encodeproject.org/experiments/${params.value}`}
-                    openInNewTab
-                    showExternalIcon
-                  >
-                    {params.value}
-                  </LinkComponent>
-                ),
-              },
-              {
-                headerName: "p Beta-Binomial",
-                field: "p_betabinom",
-                type: "number",
-                valueFormatter: (value: number) => value.toFixed(2),
-              },
-              {
-                headerName: "Imbalance Significance",
-                field: "imbalance_significance",
-                type: "number",
-              },
-            ]}
+            columns={entexCols}
             rows={dataEntex?.entexQuery}
             loading={loadingEntex}
             error={!!errorEntex}
@@ -200,26 +206,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
           />
           <Table
             label={`ENTEx Active Annotations`}
-            columns={[
-              {
-                headerName: "Tissue",
-                field: "tissue",
-                valueFormatter: (value: string) =>
-                  value
-                    .split("_")
-                    .map((s) => s[0].toUpperCase() + s.slice(1))
-                    .join(" "),
-              },
-              {
-                headerName: "Supporting Assays",
-                field: "assay_score",
-                valueFormatter: (value: string) =>
-                  value
-                    .split("|")
-                    .map((s) => s.split(":")[0])
-                    .join(", "),
-              },
-            ]}
+            columns={entexActiveCols}
             rows={dataAnnotations?.entexActiveAnnotationsQuery}
             loading={loadingAnnotations}
             error={!!errorAnnotations}
