@@ -177,6 +177,8 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
             miniMap={map}
             groupPointsAnchor="accession"
             tooltipBody={(point) => <TooltipBody {...point} />}
+            leftAxisLabel="UMAP-2"
+            bottomAxisLabel="UMAP-1"
           />
         </Box>
       </Stack>

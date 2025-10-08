@@ -4,7 +4,6 @@ import GenomeBrowserView from "common/gbview/genomebrowserview";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import { isValidAssembly } from "types/globalTypes";
 import {
-  entityTabsConfig,
   getComponentForEntity,
   isValidEntityType,
   isValidRouteForEntity,
@@ -12,7 +11,7 @@ import {
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
-import GeneLinkedIcres from "./_GeneTabs/_cCREs/GeneLinkedCcres";
+import GeneLinkedCcres from "./_GeneTabs/_cCREs/GeneLinkedCcres";
 import VariantInfo from "./_SnpTabs/_Variant/Variant";
 import IntersectingGenes from "common/components/IntersectingGenes";
 import IntersectingSNPs from "common/components/IntersectingSNPs";
@@ -25,12 +24,10 @@ import { GWASStudyGenes } from "./_GwasTabs/_Gene/GWASStudyGenes";
 import { GWASStudySNPs } from "./_GwasTabs/_Variant/GWASStudySNPs";
 import BiosampleEnrichment from "./_GwasTabs/_BiosampleEnrichment/BiosampleEnrichment";
 import {
-  AnyOpenEntity,
   CandidateOpenEntity,
   isValidOpenEntity,
 } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import GWASGenomeBrowserView from "./_GwasTabs/_Browser/gwasgenomebrowserview";
-import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import VariantLinkedCcres from "./_SnpTabs/_cCREs/VariantLinkedCcres";
 import TranscriptExpression from "./_GeneTabs/_Transcript/TranscriptExpression";
 
@@ -72,13 +69,13 @@ export default function DetailsPage({
     throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity));
   }
 
-  const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
+  const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID: decodeURIComponent(entityID) });
 
   if (loading) {
     return <CircularProgress />;
   }
 
-  if (data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" && !data?.coordinates) {
+  if (data && data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" && !data?.coordinates) {
     return <Typography>Issue fetching data on {entityID}</Typography>;
   }
 
@@ -148,7 +145,7 @@ export default function DetailsPage({
         case "":
           return <GeneExpression geneData={geneData} assembly={assembly} />;
         case "ccres":
-          return assembly === "GRCh38" ? <GeneLinkedIcres geneData={geneData} /> : <>Linked mouse ccREs </>;
+          return <GeneLinkedCcres geneData={geneData} assembly={assembly}/>;
         case "variants":
           return <EQTLs data={geneData.data} entityType="gene" assembly={assembly} />;
         case "transcript-expression":

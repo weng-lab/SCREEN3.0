@@ -12,6 +12,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import { Assembly } from "types/globalTypes";
 
 interface CalculateNearbyCCREsPopperProps {
     open: boolean;
@@ -22,6 +23,7 @@ interface CalculateNearbyCCREsPopperProps {
     handleMethodChange: (method: "body" | "tss" | "3gene") => void;
     distance: number;
     handleDistanceChange: (distance: number) => void;
+    assembly: Assembly;
 }
 
 const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
@@ -32,7 +34,8 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
     calcMethod,
     handleMethodChange,
     distance,
-    handleDistanceChange
+    handleDistanceChange,
+    assembly
 }) => {
     return (
         <Popper
@@ -45,7 +48,7 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
             <ClickAwayListener onClickAway={handleClickAway}>
                 <Paper elevation={8} sx={{ minWidth: 200 }}>
                     <Box sx={{ p: 2 }}>
-                        <Typography sx={{mb: 2}}>Calculate Nearby cCREs by:</Typography>
+                        <Typography sx={{ mb: 2 }}>Calculate Nearby cCREs by:</Typography>
                         <Stack direction={"row"} spacing={2}>
                             <FormControl>
                                 <RadioGroup
@@ -71,11 +74,13 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
                                             </>
                                         }
                                     />
-                                    <FormControlLabel
-                                        value="3gene"
-                                        control={<Radio />}
-                                        label="Closest 3 Genes"
-                                    />
+                                    {assembly === "GRCh38" && (
+                                        <FormControlLabel
+                                            value="3gene"
+                                            control={<Radio />}
+                                            label="Closest 3 Genes"
+                                        />
+                                    )}
                                 </RadioGroup>
                             </FormControl>
                         </Stack>

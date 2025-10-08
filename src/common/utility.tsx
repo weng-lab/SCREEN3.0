@@ -292,6 +292,23 @@ export function calcDistRegionToPosition(
 }
 
 /**
+ * Returns the signed distance from coord1 to coord2.
+ */
+export function calcSignedDistRegionToRegion(
+  coord1: { start: number; end: number },
+  coord2: { start: number; end: number }
+): number {
+  if (coord2.end < coord1.start) {
+    return coord2.end - coord1.start;
+  } else if (coord2.start > coord1.end) {
+    return coord2.start - coord1.end;
+  } else {
+    return 0;
+  }
+}
+
+
+/**
  *
  * @param coord1
  * @param coord2
@@ -377,3 +394,14 @@ const assemblyEncoding: {[key in Assembly]: string} = {
 const assemblyDecoding: {[key: string]: Assembly} = Object.fromEntries(
   Object.entries(assemblyEncoding).map(([entity, encoding]: [Assembly, string]) => [encoding, entity])
 );
+
+export const ccreClassDescriptions: Record<string, string> = {
+  PLS: "Promoter",
+  pELS: "Proximal Enhancer",
+  dELS: "Distal Enhancer",
+  "CA-H3K4me3": "CA-H3K4me3",
+  "CA-CTCF": "CA-CTCF",
+  "CA-TF": "CA-TF",
+  CA: "CA",
+  TF: "TF",
+};

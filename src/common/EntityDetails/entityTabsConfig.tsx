@@ -1,15 +1,5 @@
 import { Assembly } from "types/globalTypes";
 import type { ReactElement } from "react";
-import VariantInfo from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpTabs/_Variant/Variant";
-import EQTLs from "common/components/EQTLTables";
-import GenomeBrowserView from "common/gbview/genomebrowserview";
-import GeneExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
-import GeneLinkedIcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/GeneLinkedCcres";
-import CcreLinkedGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Genes/CcreLinkedGenes";
-import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Variants/CcreVariantsTab";
-import IntersectingCcres from "common/components/IntersectingCcres";
-import IntersectingGenes from "common/components/IntersectingGenes";
-import IntersectingSNPs from "common/components/IntersectingSNPs";
 import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
@@ -336,13 +326,13 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "browser">[]
     component: null,
   },
   { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: () => <p>Linked mouse cCREs</p> },
-  {
-    route: "variants",
-    label: "Variants",
-    iconPath: VariantIconPath,
-    // component: EQTLs,
-    component: null,
-  },
+  // {
+  //   route: "variants",
+  //   label: "Variants",
+  //   iconPath: VariantIconPath,
+  //   // component: EQTLs,
+  //   component: null,
+  // },
   {
     route: "browser",
     label: "Genome Browser",
@@ -359,18 +349,18 @@ const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser" | 
     iconPath: CcreIconPath,
     component: BiosampleActivity,
   },
-  {
-    route: "genes",
-    label: "Genes",
-    iconPath: GeneIconPath,
-    component: () => <p>This should have Linked Genes for Mouse cCREs</p>,
-  },
-  {
-    route: "variants",
-    label: "Variant",
-    iconPath: VariantIconPath,
-    component: () => <p>Variants for mouse cCREs </p>,
-  },
+  // {
+  //   route: "genes",
+  //   label: "Genes",
+  //   iconPath: GeneIconPath,
+  //   component: () => <p>This should have Linked Genes for Mouse cCREs</p>,
+  // },
+  // {
+  //   route: "variants",
+  //   label: "Variant",
+  //   iconPath: VariantIconPath,
+  //   component: () => <p>Variants for mouse cCREs </p>,
+  // },
   {
     route: "conservation",
     label: "Conservation",
@@ -407,12 +397,12 @@ const mouseRegionTabs: readonly TabConfig<"variants" | "ccres" | "genes" | "brow
     //  component: IntersectingGenes
     component: null,
   },
-  {
-    route: "variants",
-    label: "Variant",
-    iconPath: VariantIconPath,
-    component: () => <p>This page should have intersecting mouse SNPs</p>,
-  },
+  // {
+  //   route: "variants",
+  //   label: "Variant",
+  //   iconPath: VariantIconPath,
+  //   component: () => <p>This page should have intersecting mouse SNPs</p>,
+  // },
   {
     route: "browser",
     label: "Genome Browser",

@@ -18,7 +18,7 @@ export default function Footer() {
     {
       title: "Explore/Tools",
       links: [
-        { name: "PsychScreen", href: "https://psychscreen.wenglab.org/psychscreen" },
+        { name: "PsychSCREEN", href: "https://psychscreen.wenglab.org/psychscreen" },
         { name: "igSCREEN", href: "https://igscreen.vercel.app/" },
         { name: "Factorbook", href: "https://www.factorbook.org/" },
         // { name: "GWAS", href: "/gwas" },

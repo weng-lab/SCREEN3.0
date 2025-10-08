@@ -104,6 +104,7 @@ export default function GWASLdr({ accession }: { accession: string }) {
           emptyTableFallback={
             "This cCRE does not overlap a variant associated with significant changes in gene expression"
           }
+          divHeight={{maxHeight: "400px"}}
         />
       )}
     </Box>

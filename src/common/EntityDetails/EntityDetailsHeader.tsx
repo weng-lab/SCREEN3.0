@@ -1,12 +1,13 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
-import { formatPortal } from "common/utility";
+import { ccreClassDescriptions, formatPortal } from "common/utility";
 import { Assembly } from "types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { AnyEntityType } from "./entityTabsConfig";
+
 
 export type EntityDetailsHeaderProps = {
   assembly: Assembly;
@@ -35,23 +36,14 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
  * @todo this should be put in a utils file
  */
   //map descriptions to the class
-  const ccreClassDescriptions: Record<string, string> = {
-    PLS: "(Promoter-like Signature)",
-    pELS: "(Proximal Enhancer)",
-    dELS: "(Distal Enhancer)",
-    "CA-H3K4me3": "(Chromatin Accessibility + H3K4me3)",
-    "CA-CTCF": "(Chromatin Accessibility + CTCF)",
-    "CA-TF": "(Chromatin Accessibility + Transcription Factor)",
-    CA: "(Chromatin Accessibility)",
-    TF: "(Transcription Factor)",
-  };
+  
 
   const subtitle =
     entityType === "gene" ? (
       geneID
     ) : entityType === "ccre" ? (
       <>
-        {ccreClass} {ccreClassDescriptions[ccreClass] ?? ""}
+        {ccreClassDescriptions[ccreClass] ?? ""}
       </>
     ) : entityType === "variant" ? (
       !ref ? (
