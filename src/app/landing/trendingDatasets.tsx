@@ -5,21 +5,19 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { useTheme } from "@mui/material/styles";
 import Config from "../../config.json";
 import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
-
-export interface TrendingDatasetsProps {
-    assembly: string;
-}
+import HumanIcon from "common/_utility/humanIcon";
+import MouseIcon from "common/_utility/mouseIcon";
 
 const trendingDataSets = [
-    { name: "All Candidate Enhancers", subtitle: "pELS & dELS (1,718,669)", size: "94.4 MB", link: Config.Downloads.HumanEnhancers },
-    { name: "All Candidate Enhancers", subtitle: "", size: "129.1 MB", link: "/downloads/ccre/enhancers" },
-    { name: "All Candidate Enhancers", subtitle: "", size: "129.1 MB", link: "/downloads/ccre/enhancers" },
-    { name: "All Candidate Enhancers", subtitle: "", size: "129.1 MB", link: "/downloads/ccre/enhancers" },
-    { name: "All Candidate Enhancers", subtitle: "", size: "129.1 MB", link: "/downloads/ccre/enhancers" },
-    { name: "All Candidate Enhancers", subtitle: "", size: "129.1 MB", link: "/downloads/ccre/enhancers" },
+    { name: "All Human cCREs", subtitle: "2,348,854 cCREs • 1,888 cell types", size: "129.1 MB", link: Config.Downloads.HumanCCREs },
+    { name: "Human Promoter-Like", subtitle: "47,532 cCREs", size: "2.6 MB", link: Config.Downloads.HumanPromoters },
+    { name: "All Human Candidate Enhancers", subtitle: "1,718,669 cCREs", size: "94.4 MB", link: Config.Downloads.HumanEnhancers },
+    { name: "All Mouse cCREs", subtitle: "926,843 cCREs • 366 cell types", size: "50.6 MB", link: Config.Downloads.MouseCCREs },
+    { name: "Mouse Promoter-Like", subtitle: "27,332 cCREs", size: "1.5 MB", link: Config.Downloads.MousePromoters },
+    { name: "All Mouse Candidate Enhancers", subtitle: "512,001 cCREs", size: "28.2 MB", link: Config.Downloads.MouseEnhancers },
 ];
-const TrendingDatasets: React.FC<TrendingDatasetsProps> = ({
-    assembly,
+
+const TrendingDatasets: React.FC = ({
 }) => {
     const theme = useTheme();
 
@@ -49,11 +47,12 @@ const TrendingDatasets: React.FC<TrendingDatasetsProps> = ({
                             flexDirection="column"
                             justifyContent="space-between"
                             alignItems="flex-start"
+                            position="relative"
                             borderRadius={3}
                             component={Link}
                             href={data.link}
                             sx={{
-                                minHeight: 160,
+                                height: 160,
                                 p: 3,
                                 boxShadow: 3,
                                 justifyContent: "space-between",
@@ -70,19 +69,58 @@ const TrendingDatasets: React.FC<TrendingDatasetsProps> = ({
                             }}
                         >
                             <Stack spacing={1}>
-                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: "bold",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: "vertical",
+                                    }}
+                                >
                                     {data.name}
                                 </Typography>
-                                <Typography variant="body1">
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 1,
+                                        WebkitBoxOrient: "vertical",
+                                    }}
+                                >
                                     {data.subtitle}
                                 </Typography>
                                 <Typography variant="body2">
                                     {data.size}
                                 </Typography>
                             </Stack>
+                            {data.name.includes("Human") && (
+                                <Box
+                                    position={"absolute"}
+                                    top={20}
+                                    right={20}
+                                >
+                                    <HumanIcon size={40} />
+                                </Box>
+                            )}
+                            {data.name.includes("Mouse") && (
+                                <Box
+                                    position={"absolute"}
+                                    top={20}
+                                    right={20}
+                                >
+                                    <MouseIcon size={40} />
+                                </Box>
+                            )}
                             <IconButton
                                 sx={{
-                                    alignSelf: "flex-end",
+                                    position: "absolute",
+                                    bottom: 20,
+                                    right: 20,
                                     backgroundColor: theme.palette.secondary.light,
                                     color: theme.palette.primary.light,
                                     borderRadius: 3,

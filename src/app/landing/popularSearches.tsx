@@ -19,9 +19,9 @@ const popularSearchesGRCh38 = [
 ];
 
 const popularSearchesMM10 = [
-    { entity: "Gene", name: "Sox4", region: "chr13:28,948,919-28,953,713" },
-    { entity: "cCRE", name: "EM10E0000207", region: "chr1:26,047,867-26,048,149" },
-    { entity: "Region", name: "chr12:53380176-53416446", region: "chr12:53380176-53416446" },
+    { entity: "Gene", name: "Sp1", region: "chr15:102,406,143-102,436,404" },
+    { entity: "cCRE", name: "EM10E1179536", region: "chr7:19,698,911-19,699,257" },
+    { entity: "Region", name: "chr7:19,696,109-19,699,188", region: "chr7:19,696,109-19,699,188" },
     // { entity: "Gene", name: "Apoe", region: "chr7:19,696,109-19,699,188" },
     // { entity: "cCRE", name: "EM10E0000229", region: "chr1:32,965,032-32,965,317" },
     // { entity: "Biosample", name: "Brain", region: "chr13:28,948,919-28,953,713" },
@@ -86,12 +86,17 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({
                                 <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
                                     {entity.region}
                                 </Typography>
-                                <Typography variant="h6" sx={{
-                                    fontWeight: "bold", overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2, // ✅ allows wrapping but clamps height
-                                    WebkitBoxOrient: "vertical", }} >
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: "bold", 
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: "vertical",
+                                    }}
+                                >
                                     {entity.entity}: {entity.name}
                                 </Typography>
                             </Stack>
@@ -105,7 +110,6 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({
                                     width: 40,
                                     height: 40,
                                     borderRadius: "50%",
-                                    alignSelf: "flex-end",
                                     position: "absolute",
                                     bottom: 20,
                                     right: 20,

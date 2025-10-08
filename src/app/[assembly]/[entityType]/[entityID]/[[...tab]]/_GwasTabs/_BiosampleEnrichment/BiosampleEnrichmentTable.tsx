@@ -1,6 +1,6 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
 import React, { Dispatch, SetStateAction, useMemo } from "react";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Typography, useMediaQuery, useTheme } from "@mui/material";
 
 import { Table } from "@weng-lab/ui-components";
@@ -35,7 +35,7 @@ const BiosampleEnrichmentTable = ({
 
   const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
     const newIds = Array.from(ids.ids);
-    const selectedRows = newIds.map((id) => transformedData.find((row) => row.accession === id));
+    const selectedRows = newIds.map((id) => data.find((row) => row.accession === id));
     onSelectionChange(selectedRows);
   };
 
@@ -66,22 +66,10 @@ const BiosampleEnrichmentTable = ({
     }
   };
 
-  // based on control buttons in parent, transform this data to match the expected format
-  const transformedData: GWASEnrichment[] = useMemo(() => {
-    if (!data?.length) return [];
-    let result: GWASEnrichment[] = data;
-
-    return result;
-  }, [data]);
-
   const columns: GridColDef<(typeof data)[number]>[] = [
     {
       field: "displayname",
-      renderHeader: () => (
-        <strong>
-          <p>Biosample</p>
-        </strong>
-      ),
+      headerName: "Biosample",
       valueGetter: (_, row) => {
         return capitalizeFirstLetter(row.displayname);
       },
@@ -101,39 +89,23 @@ const BiosampleEnrichmentTable = ({
     },
     {
       field: "fc",
-      renderHeader: () => (
-        <strong>
-          <p>Fold Change</p>
-        </strong>
-      ),
+      headerName: "Fold Change",
       valueGetter: (_, row) => row.fc.toFixed(3),
     },
     {
       field: "fdr",
-      renderHeader: () => (
-        <strong>
-          <p>FDR</p>
-        </strong>
-      ),
+      headerName: "FDR",
       valueGetter: (_, row) => row.fdr.toFixed(3),
     },
     {
       field: "pvalue",
-      renderHeader: () => (
-        <strong>
-          <i>P</i>
-        </strong>
-      ),
+      headerName: "P",
       valueGetter: (_, row) => row.pvalue.toFixed(3),
     },
 
     {
       field: "ontology",
-      renderHeader: () => (
-        <strong>
-          <p>Tissue</p>
-        </strong>
-      ),
+      headerName: "Tissue",
       valueGetter: (_, row) => row.ontology,
     },
     {
@@ -154,6 +126,14 @@ const BiosampleEnrichmentTable = ({
     },
   ];
 
+  const tooltip = useMemo(() => (
+    <Tooltip
+      title="Suggested Biosamples: Suggested biosamples to investigate based on cCRE enrichment as calculated by the Variant Enrichment and Sample Prioritization Analysis (VESPA) pipeline"
+    >
+      <InfoOutlinedIcon fontSize="inherit" />
+    </Tooltip>
+  ), []);
+
   return error ? (
     <Typography>Error Fetching GWAS Enrichment</Typography>
   ) : (
@@ -161,7 +141,7 @@ const BiosampleEnrichmentTable = ({
       <Table
         apiRef={apiRef}
         showToolbar
-        rows={transformedData || []}
+        rows={data || []}
         columns={columns}
         loading={loading}
         label={`Suggested Biosamples`}
@@ -178,15 +158,7 @@ const BiosampleEnrichmentTable = ({
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structur
         divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
-        labelTooltip={
-                  <Tooltip
-                    title={
-                      "Suggested Biosamples: Suggested biosamples to investigate based on cCRE enrichment as calculated by the Variant Enrichment and Sample Prioritization Analysis (VESPA) pipeline"
-                    }
-                  >
-                    <InfoIcon fontSize="inherit" />
-                  </Tooltip>
-                }
+        labelTooltip={tooltip}
       />
     </>
   );

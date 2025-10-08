@@ -1,7 +1,7 @@
 //Home Page
 "use client";
 import { Box, Button, Grid, Link, Stack, Typography } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { theme } from "./theme";
 import { alpha } from '@mui/material/styles';
 import Image from "next/image"
@@ -163,7 +163,7 @@ export default function Home() {
       </Box>
       <Box width={"100%"} justifyContent={"flex-start"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
         <Typography variant="h6" sx={{ fontWeight: 550 }}>📈 Trending Datasets</Typography>
-        <TrendingDatasets assembly={assembly} />
+        <TrendingDatasets />
       </Box>
     </div>
   );
