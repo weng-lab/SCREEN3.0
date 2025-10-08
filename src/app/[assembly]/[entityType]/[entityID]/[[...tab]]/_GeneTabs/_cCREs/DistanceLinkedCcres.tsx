@@ -10,7 +10,7 @@ import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { Assembly } from "types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { calcDistCcreToTSS, ccreClassDescriptions } from "common/utility";
-import { GROUP_COLOR_MAP } from "common/lib/colors";
+
 
 export type Transcript = {
   id: string;

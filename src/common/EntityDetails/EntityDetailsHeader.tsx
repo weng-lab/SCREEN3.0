@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { AnyEntityType } from "./entityTabsConfig";
-import { GROUP_COLOR_MAP } from "common/lib/colors";
+
 
 export type EntityDetailsHeaderProps = {
   assembly: Assembly;
