@@ -6,10 +6,9 @@ import { CancelRounded } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import InfoIcon from "@mui/icons-material/Info";
 import { useCcreData } from "common/hooks/useCcreData";
-import { RegistryBiosample } from "common/components/BiosampleTables/types";
+import { RegistryBiosample, RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import ConfigureGBModal from "common/components/ConfigureGBModal";
-import { RegistryBiosamplePlusRNA } from "common/_utility/types";
 export type CcreGWASStudySNPsProps = {
   study_name: string;
   totalldblocks: number;

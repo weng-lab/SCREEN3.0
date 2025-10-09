@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
-import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionaCharacterization/FunctionalCharacterization";
+import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionalCharacterization/FunctionalCharacterization";
 import { AdditionalChromatinSignatures } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_AdditionalChromatinSignatures/AdditionalChromatinSignatures";
 import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Convservation/GeneConservation";
 
@@ -79,7 +79,7 @@ export type EntityRoute<A extends Assembly, E extends EntityType<A>> = E extends
 
 /**
  * TabList type takes in assembly and EntityType and returns corresponding string literal union
- * The prettier auto-formatting on this is pretty horrendous, appologies
+ * The prettier auto-formatting on this is pretty horrendous, apologies
 */
 
 type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
@@ -259,7 +259,7 @@ const humanCcreTabs: readonly TabConfig<
   },
   {
     route: "additional-chromatin-signatures",
-    label: "Additional Chromatin Singatures",
+    label: "Additional Chromatin Signatures",
     component: AdditionalChromatinSignatures
   }
 ] as const;

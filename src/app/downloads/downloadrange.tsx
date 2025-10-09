@@ -4,7 +4,7 @@ import { Box, Button, Checkbox, CircularProgress, CircularProgressProps, FormCon
 import { Close, Download } from "@mui/icons-material"
 import BiosampleTables from "../../common/components/BiosampleTables/BiosampleTables"
 import { RegistryBiosample } from "../../common/components/BiosampleTables/types"
-import { downloadBED, parseGenomicRegion } from "common/_utility/searchHelpers"
+import { downloadBED, parseGenomicRegion } from "common/_utility/downloadRangeHelpers"
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number },

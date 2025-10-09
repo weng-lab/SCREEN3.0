@@ -1,8 +1,6 @@
-import { RegistryBiosample } from "common/components/BiosampleTables/types";
+import { RegistryBiosamplePlusRNA } from "./BiosampleTables/types";
 import ConfigureGenomeBrowser from "./ConfigureGenomeBrowser";
 import { Dialog } from "@mui/material";
-import { isNullish } from "@apollo/client/cache/inmemory/helpers";
-import { RegistryBiosamplePlusRNA } from "common/_utility/types";
 
 interface Props {
   assembly: "mm10" | "GRCh38";

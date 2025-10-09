@@ -118,7 +118,7 @@ const capra_experimentMap: Record<string, CAPRA_ExperimentInfo> = {
 const crispr_experimentMap: Record<string, CRISPR_ExperimentInfo> = {
   "ENCSR179FSH": { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "OCI-AML2" },
   "ENCSR274OEB": { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "K562" },
-  "ENCSR295VER": { design: "roliferation CRISPRi screen (dCas9-KRAB-WSR7EEE)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
+  "ENCSR295VER": { design: "proliferation CRISPRi screen (dCas9-KRAB-WSR7EEE)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
   "ENCSR369UFO": { design: "proliferation CRISPRi screen (dCas9-RYBP)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
   "ENCSR372CKT": { design: "proliferation CRISPRi screen (dCas9-ZNF705-KRAB)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
   "ENCSR381RDB": { design: "proliferation CRISPRi screen (dCas9-RYBP)", lab: "Will Greenleaf, Stanford",  cellType: "K562" },

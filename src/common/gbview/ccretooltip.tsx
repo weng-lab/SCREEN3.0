@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useMemo } from "react";
-import { client } from "../../app/client"
 
 const GROUP_COLOR_MAP: Map<string, string> = new Map([
   ["CA-CTCF", "Chromatin Accessible with CTCF:#00B0F0"],
@@ -86,7 +85,6 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({
       accession: name,
       experiments,
     },
-    client,
   });
 
   const width = 400;
