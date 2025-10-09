@@ -7,8 +7,8 @@ import encodeEncyclopedia from "../../../public/assets/about/images/encodeencycl
 import classifications from "../../../public/assets/about/images/classifications.png"
 import biosamples from "../../../public/assets/about/images/biosamples.png"
 import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS } from "../../common/lib/colors"
-import { CreateLink } from "../../common/utility";
 import ContactForm from "./contactForm";
+import { LinkComponent } from "common/components/LinkComponent"
 
 export default function About() {
 
@@ -156,7 +156,7 @@ export default function About() {
           {/* API Documentation */}
           <Grid id="api-documentation" size={12}>
             <Typography mb={1} variant="h2">API Documentation</Typography>
-            <CreateLink linkPrefix={"https://weng-lab.github.io/SCREEN2.0/"} label={"SCREEN API Documentation"} showExternalIcon />
+            <LinkComponent href={"https://weng-lab.github.io/SCREEN2.0/"} showExternalIcon openInNewTab>SCREEN API Documentation</LinkComponent>
           </Grid>
           {/* Contact Us */}
           <Grid id="contact-us" size={12}>

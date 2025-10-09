@@ -20,7 +20,7 @@ const CCRE_ICRE_QUERY = gql(`query cCREAutocompleteQuery(
   }
 }`);
 
-export default function useNearbycCREs(geneData: UseGeneDataReturn<{ name: string }>, method: string, assembly: Assembly, distance: number) {
+export default function useNearbycCREs(geneData: UseGeneDataReturn<{ name: string, assembly: Assembly }>, method: string, assembly: Assembly, distance: number) {
 
   //coordiantes used to determine nearby ccres if method is not 3 closest genes
     const regions: Coordinate[] = useMemo(() => {

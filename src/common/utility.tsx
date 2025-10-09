@@ -45,27 +45,6 @@ export const truncateString = (input: string, maxLength: number) => {
 }
 
 /**
- * 
- * @param props 
- * @returns 
- */
-export const CreateLink: React.FC<{ 
-  linkPrefix: string,
-   linkArg?: string, 
-   label: string, 
-   showExternalIcon?: boolean,
-   onClick?: React.MouseEventHandler<HTMLAnchorElement>
-    variant?: LinkProps["variant"], textColor?: string, underline?: "none" | "always" | "hover" }> = (props) => {
-  const link = props.linkPrefix + (props.linkArg ?? "")
-  return (
-    <Link variant={props.variant} href={link} rel="noopener noreferrer" target="_blank" color={props.textColor} underline={props.underline} onClick={props.onClick}>
-      {props.label}
-      {props.showExternalIcon && <Launch sx={{ display: "inline-flex", verticalAlign: "middle", ml: 0.5 }} color="inherit" fontSize="inherit" />}
-    </Link>
-  )
-}
-
-/**
  * Very dumb parser for genomic range. No input checking. Assumes proper formatting and no commas in values.
  * Will handle URL encoding of ':' as '%3A'
  * @param input `String` with format chr:start-end
@@ -107,6 +86,15 @@ export function formatPortal(subpath: string): string {
     default:
       return null;
   }
+}
+
+/**
+ * 
+ * @param region GenomicRange
+ * @returns formatted string representing the range
+ */
+export function formatGenomicRange(region: GenomicRange){
+  return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
 }
 
 /**

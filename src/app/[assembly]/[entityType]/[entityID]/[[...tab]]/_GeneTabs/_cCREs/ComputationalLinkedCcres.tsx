@@ -5,12 +5,13 @@ import LinkedElements, { TableDef } from "common/components/linkedElements/linke
 import { accessionCol } from "common/components/linkedElements/columns";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { usePathname } from "next/navigation";
+import { Assembly } from "types/globalTypes";
 
 
 export default function ComputationalLinkedCcres({
   geneData,
 }: {
-  geneData: UseGeneDataReturn<{ name: string }>;
+  geneData: UseGeneDataReturn<{ name: string, assembly: Assembly }>;
 }) {
   const { data, loading, error } = useLinkedICREs(geneData?.data.id);
   const pathname = usePathname()
