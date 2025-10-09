@@ -51,7 +51,7 @@ export default function GBButtons({
       </Button>
       {assembly === "GRCh38" && (
         <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => setChromHmmDialogOpen(true)}>
-          Chrom HMM Tracks
+          ChromHMM Tracks
         </Button>
       )}
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />

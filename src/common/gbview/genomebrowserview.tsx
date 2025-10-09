@@ -292,17 +292,15 @@ export default function GenomeBrowserView({
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
   return (
-    <Stack spacing={2}>
-      <Stack direction={{xs: "column", sm: "row"}} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
+    <Stack>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
         <GenomeSearch
           size="small"
           assembly={assembly as Assembly}
           onSearchSubmit={handeSearchSubmit}
-          // Forcing null value here to clear input after option is selected so that coordinates are displayed
-          value={null}
           queries={["Gene", "SNP", "cCRE", "Coordinate"]}
           geneLimit={3}
-          sx={{ minWidth: '200px', width: '350px', flexShrink: 1 }}
+          sx={{ minWidth: "200px", width: "350px", flexShrink: 1 }}
           slots={{
             button: (
               <IconButton sx={{ color: theme.palette.primary.main }}>
@@ -336,7 +334,16 @@ export default function GenomeBrowserView({
           setSelectedChromHmmTissues={setSelectedChromHmmTissues}
         />
       </Stack>
-      <Stack direction={{xs: "column", lg: "row"}} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
+      <Stack
+        direction={{ xs: "column", lg: "row" }}
+        spacing={2}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+        border={"1px solid rgb(204, 204, 204)"}
+        borderBottom={"none"}
+        p={1}
+        mt={2}
+      >
         <DomainDisplay browserStore={browserStore} assembly={assembly} />
         <ControlButtons browserStore={browserStore} />
       </Stack>
