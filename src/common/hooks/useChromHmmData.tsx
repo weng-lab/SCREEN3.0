@@ -6,7 +6,7 @@ import { useQuery } from "@apollo/client";
  */
 import { BigBedData } from "bigwig-reader";
 import { gql } from "types/generated/gql";
-import { GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "types/globalTypes";
 
 export const BIG_QUERY = gql(`
   query BigRequests($bigRequests: [BigRequest!]!) {
@@ -72,17 +72,64 @@ export const stateDetails = {
   ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
 };
 
-export function useChromHMMData(coordinates: GenomicRange) {
+export const ChromHmmTissues = [
+    "adipose",
+    "adrenal gland",
+    "blood",
+    "blood vessel",
+    "bone",
+    "bone marrow",
+    "brain",
+    "breast",
+    "connective tissue",
+    "embryo",
+    "esophagus",
+    "heart",
+    "large intestine",
+    "liver",
+    "lung",
+    "muscle",
+    "nerve",
+    "ovary",
+    "pancreas",
+    "paraythroid gland",
+    "penis",
+    "placenta",
+    "prostate",
+    "skin",
+    "small intestine",
+    "spleen",
+    "stomach",
+    "testis",
+    "thymus",
+    "thyroid",
+    "uterus",
+    "vagina"
+];
+
+export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = "GRCh38") {
   const [tracks, setTracks] = useState<Record<string, ChromTrack[]>>(null);
-  const [chromhmmtrackswithtissue, setChromhmmtrackswithtissue] =
-    useState(null);
+  const [chromHmmTracksWithTissue, setChromhmmTracksWithTissue] = useState<
+    {
+      tissue: string;
+      url: string;
+      biosample: string;
+    }[]
+  >(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchAndProcessData = async () => {
       try {
         setLoading(true);
+        // Skip fetching if not GRCh38
+        if (assembly !== "GRCh38") {
+          setTracks(null);
+          setChromhmmTracksWithTissue(null);
+          setLoading(false);
+          return;
+        }
 
         // Fetch tracks
         const tracksData = await getTracks();
@@ -99,7 +146,7 @@ export function useChromHMMData(coordinates: GenomicRange) {
           })
           .flat();
 
-        setChromhmmtrackswithtissue(flatTracks);
+        setChromhmmTracksWithTissue(flatTracks);
       } catch (error) {
         console.error("Error fetching ChromHMM data:", error);
         setError(true)
@@ -109,14 +156,14 @@ export function useChromHMMData(coordinates: GenomicRange) {
     };
 
     fetchAndProcessData();
-  }, []);
+  }, [assembly]);
 
   // BigQuery for the table data
   const { data: bigQueryData, loading: bigQueryLoading, error: bigQueryError } =
     useQuery(BIG_QUERY, {
       variables: {
         bigRequests:
-          chromhmmtrackswithtissue?.map((track) => ({
+          chromHmmTracksWithTissue?.map((track) => ({
             chr1: coordinates.chromosome!,
             start: coordinates.start,
             end: coordinates.end,
@@ -124,12 +171,12 @@ export function useChromHMMData(coordinates: GenomicRange) {
             url: track.url,
           })) || [],
       },
-      skip: !chromhmmtrackswithtissue,
+      skip: !chromHmmTracksWithTissue || assembly !== "GRCh38",
     });
 
   // Process the data for the table view
   const processedTableData = useMemo(() => {
-    if (!bigQueryData || !chromhmmtrackswithtissue || bigQueryLoading)
+    if (!bigQueryData || !chromHmmTracksWithTissue || bigQueryLoading)
       return undefined;
 
     return bigQueryData.bigRequests.map((b, i) => {
@@ -144,11 +191,11 @@ export function useChromHMMData(coordinates: GenomicRange) {
           ")",
         chr: f.chr,
         color: f.color,
-        tissue: chromhmmtrackswithtissue[i].tissue,
-        biosample: chromhmmtrackswithtissue[i].biosample,
+        tissue: chromHmmTracksWithTissue[i].tissue,
+        biosample: chromHmmTracksWithTissue[i].biosample,
       };
     });
-  }, [bigQueryData, chromhmmtrackswithtissue, bigQueryLoading]);
+  }, [bigQueryData, chromHmmTracksWithTissue, bigQueryLoading]);
 
   return {
     tracks,

@@ -10,11 +10,18 @@ import { MenuControlProvider } from "common/MenuContext";
 import MuiXLicense from "common/MuiXLicense";
 import { Suspense } from "react";
 import { theme } from "./theme";
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 
 export const metadata = {
   title: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
   description: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
 };
+
+
+if (process.env.NODE_ENV !== "production") {
+  loadDevMessages();
+  loadErrorMessages();
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

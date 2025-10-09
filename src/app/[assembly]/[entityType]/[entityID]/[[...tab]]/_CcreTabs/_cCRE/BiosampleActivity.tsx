@@ -145,7 +145,7 @@ const ctAgnosticCols: GridColDef[] = [
   },
 ];
 
-const coreAndPartialCols: GridColDef[] = [
+const getCoreAndPartialCols = (): GridColDef[] => [
   {
     headerName: "Cell Type",
     field: "displayname",
@@ -221,7 +221,7 @@ const assayInfo = (row: BiosampleRow) => {
   };
 }
 
-const ancillaryCols = coreAndPartialCols.filter((col) => col.field !== "dnase" && col.field !== "group");
+const getAncillaryCols = () => getCoreAndPartialCols().filter((col) => col.field !== "dnase" && col.field !== "group");
 
 export const GET_CCRE_CT_TF = gql(`
   query cCRETF($accession: String!, $assembly: String!) {
@@ -532,7 +532,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                 <Table
                   label="Core Collection"
                   rows={coreCollection}
-                  columns={coreAndPartialCols}
+                  columns={getCoreAndPartialCols()}
                   loading={loadingCorePartialAncillary}
                   error={errorCorePartialAncillary}
                   divHeight={{ height: "400px" }}
@@ -559,7 +559,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                 <Table
                   label="Partial Data Collection"
                   rows={partialDataCollection}
-                  columns={coreAndPartialCols}
+                  columns={getCoreAndPartialCols()}
                   loading={loadingCorePartialAncillary}
                   error={errorCorePartialAncillary}
                   divHeight={{ height: "400px" }}
@@ -570,7 +570,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
               <Table
                 label="Ancillary Collection"
                 rows={ancillaryCollection}
-                columns={ancillaryCols}
+                columns={getAncillaryCols()}
                 loading={loadingCorePartialAncillary}
                 error={errorCorePartialAncillary}
                 divHeight={{ height: "400px" }}
@@ -581,7 +581,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
           )}
         </ParentSize>
       ) : (
-        <AssayView rows={assaySpecificRows} columns={coreAndPartialCols} assay={tab} entity={entity} />
+        <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
       )}
     </>
   );

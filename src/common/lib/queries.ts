@@ -2,26 +2,8 @@
  * Send the request to our Server from a server component
  */
 'use server'
-import { ApolloQueryResult, TypedDocumentNode, gql } from "@apollo/client"
+import { ApolloQueryResult, gql } from "@apollo/client"
 import { getClient } from "common/lib/client";
-
-type RegistryBiosample = {
-  name: string;
-  ontology: string;
-  lifeStage: string;
-  sampleType: string;
-  displayname: string;
-  dnase: string | null;
-  h3k4me3: string | null;
-  h3k27ac: string | null;
-  ctcf: string | null;
-  atac: string | null;
-  dnase_signal: string | null;
-  h3k4me3_signal: string | null;
-  h3k27ac_signal: string | null;
-  ctcf_signal: string | null;
-  atac_signal: string | null;
-};
 
 const cCRE_QUERY = gql`
   query ccreSearchQuery_1(
@@ -184,68 +166,5 @@ export async function MainQuery(assembly: string = null, chromosome: string = nu
   }
   
   return data
-}
-
-
-export type BIOSAMPLE_Data = {
-  human: { biosamples: RegistryBiosample[]},
-  mouse: {biosamples: RegistryBiosample[]}
-}
-
-const BIOSAMPLE_QUERY: TypedDocumentNode<BIOSAMPLE_Data> = gql`
-  query biosamples_3 {
-    human: ccREBiosampleQuery(assembly: "grch38") {
-      biosamples {
-        name
-        ontology
-        lifeStage
-        sampleType
-        displayname
-        dnase: experimentAccession(assay: "DNase")
-        h3k4me3: experimentAccession(assay: "H3K4me3")
-        h3k27ac: experimentAccession(assay: "H3K27ac")
-        ctcf: experimentAccession(assay: "CTCF")
-        atac: experimentAccession(assay: "ATAC")
-        dnase_signal: fileAccession(assay: "DNase")
-        h3k4me3_signal: fileAccession(assay: "H3K4me3")
-        h3k27ac_signal: fileAccession(assay: "H3K27ac")
-        ctcf_signal: fileAccession(assay: "CTCF")
-        atac_signal: fileAccession(assay: "ATAC")
-      }
-    }
-    mouse: ccREBiosampleQuery(assembly: "mm10") {
-      biosamples {
-        name
-        ontology
-        lifeStage
-        sampleType
-        displayname
-        dnase: experimentAccession(assay: "DNase")
-        h3k4me3: experimentAccession(assay: "H3K4me3")
-        h3k27ac: experimentAccession(assay: "H3K27ac")
-        ctcf: experimentAccession(assay: "CTCF")
-        atac: experimentAccession(assay: "ATAC")
-        dnase_signal: fileAccession(assay: "DNase")
-        h3k4me3_signal: fileAccession(assay: "H3K4me3")
-        h3k27ac_signal: fileAccession(assay: "H3K27ac")
-        ctcf_signal: fileAccession(assay: "CTCF")
-        atac_signal: fileAccession(assay: "ATAC")
-      }
-    }
-  }
-`
-
-export async function biosampleQuery() {
-  let returnData: ApolloQueryResult<BIOSAMPLE_Data>
-  try {
-    const res = await getClient().query({
-      query: BIOSAMPLE_QUERY,
-    })
-    returnData = { data: res.data, loading: res.loading, networkStatus: res.networkStatus, error: res.error }
-  } catch (error) {
-    console.log(error)
-  } finally {
-    return returnData
-  }
 }
 
