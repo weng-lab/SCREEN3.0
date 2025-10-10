@@ -25,6 +25,7 @@ const GeneExpressionBarPlot = ({
   setViewBy,
   replicates,
   setReplicates,
+  ref,
   rows,
   ...rest
 }: GeneExpressionViolinPlotProps) => {
@@ -187,6 +188,8 @@ const GeneExpressionBarPlot = ({
           crossProps={{
             outliers: showPoints ? "all" : "none",
           }}
+          ref={ref}
+          downloadFileName={`${geneData.data.name}_expression_violin_plot`}
           pointTooltipBody={(point) => {
             const rawTPM = point.metadata?.gene_quantification_files[0].quantifications[0].tpm ?? 0;
             const displayTPM =

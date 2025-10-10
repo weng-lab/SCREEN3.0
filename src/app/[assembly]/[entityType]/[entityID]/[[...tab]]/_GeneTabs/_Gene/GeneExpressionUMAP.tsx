@@ -25,6 +25,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   selected,
   geneExpressionData,
   setSelected,
+  ref,
   ...rest
 }: GeneExpressionUmapProps<T, S, Z>) => {
 
@@ -179,6 +180,8 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
             tooltipBody={(point) => <TooltipBody {...point} />}
             leftAxisLabel="UMAP-2"
             bottomAxisLabel="UMAP-1"
+            ref={ref}
+            downloadFileName={`${geneData.data.name}_expression_UMAP`}
           />
         </Box>
       </Stack>

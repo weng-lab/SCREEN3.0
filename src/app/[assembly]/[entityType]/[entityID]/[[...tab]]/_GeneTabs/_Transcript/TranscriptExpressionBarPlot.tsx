@@ -23,6 +23,7 @@ const TranscriptExpressionBarPlot = ({
     setSelected,
     selectedPeak,
     sortedFilteredData,
+    ref,
     ...rest
 }: TranscriptExpressionBarPlotProps) => {
 
@@ -85,6 +86,8 @@ const TranscriptExpressionBarPlot = ({
                 data={plotData}
                 topAxisLabel={`TSS Expression at ${selectedPeak} of ${geneData.data.name} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
                 TooltipContents={PlotTooltip}
+                ref={ref}
+                downloadFileName={`${geneData.data.name}_TSS_bar_plot`}
             />
         </Box>
     )

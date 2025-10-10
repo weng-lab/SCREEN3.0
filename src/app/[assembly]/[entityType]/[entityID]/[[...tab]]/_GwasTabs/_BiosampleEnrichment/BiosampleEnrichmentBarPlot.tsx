@@ -1,6 +1,6 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
 //import VerticalBarPlot, { BarData, BarPlotProps } from "common/components/VerticalBarPlot";
-import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
+import { BarPlot, BarData, BarPlotProps, DownloadPlotHandle } from "@weng-lab/visualization";
 import { Box } from "@mui/material";
 import { capitalizeFirstLetter } from "common/utility";
 import { tissueColors } from "common/lib/colors";
@@ -10,12 +10,16 @@ export type BiosampleEnrichmentBarPlotProps = {
   selected: GWASEnrichment[];
   sortedFilteredData: GWASEnrichment[];
   onBarClicked: (bar: BarData<GWASEnrichment>) => void;
+  ref: React.RefObject<DownloadPlotHandle>;
+  study: string;
 };
 
 const BiosampleEnrichmentBarPlot = ({
   data,
   selected,
   sortedFilteredData,
+  ref,
+  study,
   ...rest
 }: BiosampleEnrichmentBarPlotProps) => {
   const makeLabel = (fc: number, biosample: string, accession: string): string => {
@@ -73,6 +77,8 @@ const BiosampleEnrichmentBarPlot = ({
             </>
           );
         }}
+        ref={ref}
+        downloadFileName={`${study}_lollipop_plot`}
       />
     </Box>
   );
