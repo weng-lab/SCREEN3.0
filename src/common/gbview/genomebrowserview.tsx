@@ -1,6 +1,6 @@
 "use client";
 import { Search } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
@@ -18,7 +18,7 @@ import {
   TrackType,
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import ControlButtons from "./controls";
@@ -30,23 +30,13 @@ import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import CCRETooltip from "./ccretooltip";
 import DomainDisplay from "./domainDisplay";
 import GBButtons from "./gbViewButtons";
-import { RegistryBiosample } from "common/components/BiosampleTables/types";
+import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { useChromHMMData } from "common/hooks/useChromHmmData";
 import { tissueColors } from "common/lib/colors";
-import { RegistryBiosamplePlusRNA } from "common/_utility/types";
-import { gql, useQuery } from "@apollo/client";
-
-const FETCH_RNASEQ_TRACKS = gql`
-  query fetchRNASeqData($assembly: String!, $biosample: [String]) {
-    rnaSeqQuery(assembly: $assembly, biosample: $biosample) {
-      expid
-      biosample
-      posfileid
-      negfileid
-      unstrandedfileid
-    }
-  }
-`;
+import { chromHmmStateDetails, humanDefaultTracks, mouseDefaultTracks } from "./constants";
+import { useBiosampleTracks } from "./Biosample/useBiosampleTracks";
+import { ChromHmmTooltip } from "./ChromHMM/ChromHmmTooltip";
+import { capitalizeFirstLetter } from "common/utility";
 
 interface Transcript {
   id: string;
@@ -56,15 +46,6 @@ interface Transcript {
   exons?: Exon[];
   color?: string;
 }
-
-const colors = {
-  ccre: "#D05F45",
-  dnase: "#06da93",
-  h3k4me3: "#ff0000",
-  h3k27ac: "#ffcd00",
-  ctcf: "#00b0d0",
-  atac: "#02c7b9",
-};
 
 const SearchToScreenTypes: Record<Result["type"], AnyEntityType> = {
   Coordinate: "region",
@@ -111,10 +92,8 @@ export default function GenomeBrowserView({
   type: AnyEntityType;
   assembly: Assembly;
 }) {
- const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(null);
-
-
-  // const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates);
+  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(null);
+  const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>([]);
 
   const initialState: InitialBrowserState = useMemo(() => {
     return {
@@ -136,14 +115,15 @@ export default function GenomeBrowserView({
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
+  const domain = browserStore((state) => state.domain);
 
   const router = useRouter();
 
   const onBiosampleSelected = (biosamples: RegistryBiosamplePlusRNA[] | null) => {
     if (biosamples && biosamples.length === 0) {
-      setselectedBiosamples(null);
+      setSelectedBiosamples(null);
     } else {
-      setselectedBiosamples(biosamples);
+      setSelectedBiosamples(biosamples);
     }
   };
 
@@ -167,7 +147,7 @@ export default function GenomeBrowserView({
   );
 
   const initialTracks: Track[] = useMemo(() => {
-    const tracks = assembly === "GRCh38" ? humanTracks : mouseTracks;
+    const tracks = assembly === "GRCh38" ? humanDefaultTracks : mouseDefaultTracks;
     const defaultTracks: Track[] = [
       {
         id: "gene-track",
@@ -219,13 +199,17 @@ export default function GenomeBrowserView({
         tooltip: (rect: Rect) => <CCRETooltip assembly={assembly} name={rect.name || ""} {...rect} />,
       },
     ];
-    
+
     return [...defaultTracks, ...tracks];
   }, [assembly, type, name, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
   const trackStore = useMemo(() => {
     return createTrackStore(initialTracks);
   }, [initialTracks]);
+
+  const currentTracks = trackStore((state) => state.tracks);
+    const insertTrack = trackStore((state) => state.insertTrack);
+  const removeTrack = trackStore((state) => state.removeTrack);
 
   const editTrack = trackStore((state) => state.editTrack);
 
@@ -241,11 +225,53 @@ export default function GenomeBrowserView({
     removeHighlight("tmp-ccre");
   };
 
-  const onClick = (item: Rect) => {
-    onCcreClick(item);
-  };  
-  
-  useBiosampleTracks(assembly.toLowerCase(), selectedBiosamples, trackStore, onHover, onLeave, onClick, colors);
+  useBiosampleTracks(assembly, selectedBiosamples, trackStore, onHover, onLeave, onCcreClick);
+  const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates, assembly);
+
+  useEffect(() => {
+    if (!chromHmmTracks) return
+    selectedChromHmmTissues.forEach((tissue) => {
+      // for each selected tissue, add bulk bed of chrom hmm tracks if not already added
+      if (!currentTracks.some((t) => t.id === tissue)) {
+        const allTissueTracks = chromHmmTracks[tissue];
+        const chromHmmTissueBulkBed: BulkBedConfig = {
+          id: `ChromHmm_${tissue}_bulkbed`,
+          titleSize: 12,
+          color: tissueColors[tissue] ?? tissueColors.missing,
+          trackType: TrackType.BulkBed,
+          displayMode: DisplayMode.Full,
+          datasets: allTissueTracks.map((sample, index) => {
+            return {
+              name: sample.displayName,
+              url: sample.url,
+            };
+          }),
+          title: `${capitalizeFirstLetter(tissue)} ChromHMM States`,
+          height: 15 * allTissueTracks.length,
+          tooltip: (rect) => ChromHmmTooltip(rect, tissue, rect.datasetName),
+          onHover: (rect) => {
+            addHighlight({
+              color: rect.color,
+              domain: { start: rect.start, end: rect.end },
+              id: "tmp-bulkbed",
+            });
+          },
+          onLeave: () => {
+            removeHighlight("tmp-bulkbed");
+          },
+        };
+        insertTrack(chromHmmTissueBulkBed);
+      }
+      currentTracks.forEach((track) => {
+        if (
+          track.id.includes("ChromHmm") &&
+          !selectedChromHmmTissues.some((tissue) => tissue === track.id.split("_")[1])
+        ) {
+          removeTrack(track.id);
+        }
+      });
+    });
+  }, [addHighlight, chromHmmTracks, currentTracks, insertTrack, removeHighlight, removeTrack, selectedChromHmmTissues])
   
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
@@ -266,400 +292,63 @@ export default function GenomeBrowserView({
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
   return (
-    <Grid container spacing={2} sx={{ mt: "0rem", mb: "1rem" }} justifyContent="center" alignItems="center">
-      <Grid
-        size={{ xs: 12, lg: 12 }}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "0px",
-        }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            mb: 2,
+    <Stack>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
+        <GenomeSearch
+          size="small"
+          assembly={assembly as Assembly}
+          onSearchSubmit={handeSearchSubmit}
+          queries={["Gene", "SNP", "cCRE", "Coordinate"]}
+          geneLimit={3}
+          sx={{ minWidth: "200px", width: "350px", flexShrink: 1 }}
+          slots={{
+            button: (
+              <IconButton sx={{ color: theme.palette.primary.main }}>
+                <Search />
+              </IconButton>
+            ),
           }}
-        >
-          <GenomeSearch
-            size="small"
-            assembly={assembly as Assembly}
-            onSearchSubmit={handeSearchSubmit}
-            queries={["Gene", "SNP", "cCRE", "Coordinate"]}
-            geneLimit={3}
-            sx={{ width: "400px" }}
-            slots={{
-              button: (
-                <IconButton sx={{ color: theme.palette.primary.main }}>
-                  <Search />
-                </IconButton>
-              ),
-            }}
-            slotProps={{
-              input: {
-                label: "Change browser region",
-                sx: {
-                  backgroundColor: "white",
-                  "& label.Mui-focused": {
-                    color: theme.palette.primary.main,
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: theme.palette.primary.main,
-                    },
+          slotProps={{
+            input: {
+              label: "Change Browser Region",
+              sx: {
+                backgroundColor: "white",
+                "& label.Mui-focused": {
+                  color: theme.palette.primary.main,
+                },
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: theme.palette.primary.main,
                   },
                 },
               },
-            }}
-          />
-          <GBButtons
-            browserStore={browserStore}
-            assembly={assembly}
-            onBiosampleSelected={onBiosampleSelected}
-            selectedBiosamples={selectedBiosamples}
-          />
-        </Box>
+            },
+          }}
+        />
+        <GBButtons
+          browserStore={browserStore}
+          assembly={assembly}
+          onBiosampleSelected={onBiosampleSelected}
+          selectedBiosamples={selectedBiosamples}
+          selectedChromHmmTissues={selectedChromHmmTissues}
+          setSelectedChromHmmTissues={setSelectedChromHmmTissues}
+        />
+      </Stack>
+      <Stack
+        direction={{ xs: "column", lg: "row" }}
+        spacing={2}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+        border={"1px solid rgb(204, 204, 204)"}
+        borderBottom={"none"}
+        p={1}
+        mt={2}
+      >
         <DomainDisplay browserStore={browserStore} assembly={assembly} />
         <ControlButtons browserStore={browserStore} />
-      </Grid>
-      <Grid size={{ xs: 12, lg: 12 }}>
-        <Browser browserStore={browserStore} trackStore={trackStore} />
-      </Grid>
+      </Stack>
+      <Browser browserStore={browserStore} trackStore={trackStore} />
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
-    </Grid>
+    </Stack>
   );
 }
-
-function Tooltip(rect: Rect, tissue: string) {
-  return (
-    <g>
-      <rect width={240} height={70} fill="white" stroke="none" filter="drop-shadow(2px 2px 2px rgba(0,0,0,0.2))" />
-      <rect width={15} height={15} fill={stateDetails[rect.name].color} x={10} y={10} />
-      <text x={35} y={22} fontSize={12} fontWeight="bold">
-        {stateDetails[rect.name].description}({stateDetails[rect.name].stateno})
-      </text>
-      <text x={10} y={40} fontSize={12}>
-        {rect.name}
-      </text>
-      <text x={10} y={58} fontSize={12}>
-        {tissue}
-      </text>
-    </g>
-  );
-}
-
-export const stateDetails = {
-  ["TssFlnk"]: { description: "Flanking TSS", stateno: "E1", color: "#FF4500" },
-  ["TssFlnkD"]: {
-    description: "Flanking TSS downstream",
-    stateno: "E2",
-    color: "#FF4500",
-  },
-  ["TssFlnkU"]: {
-    description: "Flanking TSS upstream",
-    stateno: "E3",
-    color: "#FF4500",
-  },
-  ["Tss"]: { description: "Active TSS", stateno: "E4", color: "#FF0000" },
-  ["Enh1"]: { description: "Enhancer", stateno: "E5", color: "#FFDF00" },
-  ["Enh2"]: { description: "Enhancer", stateno: "E6", color: "#FFDF00" },
-  ["EnhG1"]: {
-    description: "Enhancer in gene",
-    stateno: "E7",
-    color: "#AADF07",
-  },
-  ["EnhG2"]: {
-    description: "Enhancer in gene",
-    stateno: "E8",
-    color: "#AADF07",
-  },
-  ["TxWk"]: {
-    description: "Weak transcription",
-    stateno: "E9",
-    color: "#3F9A50",
-  },
-  ["Biv"]: { description: "Bivalent", stateno: "E10", color: "#CD5C5C" },
-  ["ReprPC"]: {
-    description: "Repressed by Polycomb",
-    stateno: "E11",
-    color: "#8937DF",
-  },
-  ["Quies"]: { description: "Quiescent", stateno: "E12", color: "#DCDCDC" },
-  ["Het"]: { description: "Heterochromatin", stateno: "E13", color: "#4B0082" },
-  ["ZNF/Rpts"]: {
-    description: "ZNF genes repreats",
-    stateno: "E14",
-    color: "#68cdaa",
-  },
-  ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
-};
-
-function useBiosampleTracks(
-  assembly: string,
-  selectedBiosamples: RegistryBiosamplePlusRNA[] | null,
-  trackStore: TrackStoreInstance,
-  onHover: (item: Rect) => void,
-  onLeave: (item: Rect) => void,
-  onClick: (item: Rect) => void,
-  colors: {
-    ccre: string;
-    dnase: string;
-    h3k4me3: string;
-    h3k27ac: string;
-    ctcf: string;
-  }
-) {
-  const tracks: Track[] = [];
-  const insertTrack = trackStore((state) => state.insertTrack);
-  const currentTracks = trackStore((state) => state.tracks);
-  const removeTrack = trackStore((state) => state.removeTrack);
-
-  const biosampleNames = useMemo(
-    () =>
-      selectedBiosamples && selectedBiosamples.some((b) => b.rnaseq)
-        ? selectedBiosamples.map((b) => b.name) // adjust if biosample key is different
-        : null,
-    [selectedBiosamples]
-  );
-
-  const { data, loading, error } = useQuery(FETCH_RNASEQ_TRACKS, {
-    variables: { assembly, biosample: biosampleNames },
-    skip: !biosampleNames,
-  });
-
-  if(selectedBiosamples && data && !loading) {
-    for (const biosample of selectedBiosamples) {
-      // Get available signal accessions (remove null values)
-      const signals = [
-        biosample.dnase_signal,
-        biosample.h3k4me3_signal,
-        biosample.h3k27ac_signal,
-        biosample.ctcf_signal,
-      ].filter((signal): signal is string => !!signal);
-
-      if (signals.length > 0) {
-        const bigBedUrl = `https://downloads.wenglab.org/Registry-V4/${signals.join("_")}.bigBed`;
-
-        const ccreTrack: BigBedConfig = {
-          id: `biosample-ccre-${biosample.name}`,
-          title: `cCREs in ${biosample.displayname}`,
-          titleSize: 12,
-          trackType: TrackType.BigBed,
-          displayMode: DisplayMode.Dense,
-          color: colors.ccre,
-          height: 20,
-          url: bigBedUrl,
-          onHover,
-          onLeave,
-          onClick,
-        };
-        tracks.push(ccreTrack);
-      }
-
-      if (biosample.dnase_signal) {
-        tracks.push({
-          id: `biosample-dnase-${biosample.name}`,
-          title: `DNase-seq signal in ${biosample.displayname}`,
-          titleSize: 12,
-          trackType: TrackType.BigWig,
-          displayMode: DisplayMode.Full,
-          color: colors.dnase,
-          height: 50,
-          url: `https://www.encodeproject.org/files/${biosample.dnase_signal}/@@download/${biosample.dnase_signal}.bigWig`,
-        } as BigWigConfig);
-      }
-
-      if (biosample.h3k4me3_signal) {
-        tracks.push({
-          id: `biosample-h3k4me3-${biosample.name}`,
-          title: `H3K4me3 ChIP-seq signal in ${biosample.displayname}`,
-          titleSize: 12,
-          trackType: TrackType.BigWig,
-          displayMode: DisplayMode.Full,
-          color: colors.h3k4me3,
-          height: 50,
-          url: `https://www.encodeproject.org/files/${biosample.h3k4me3_signal}/@@download/${biosample.h3k4me3_signal}.bigWig`,
-        } as BigWigConfig);
-      }
-
-      if (biosample.h3k27ac_signal) {
-        tracks.push({
-          id: `biosample-h3k27ac-${biosample.name}`,
-          title: `H3K27ac ChIP-seq signal in ${biosample.displayname}`,
-          titleSize: 12,
-          trackType: TrackType.BigWig,
-          displayMode: DisplayMode.Full,
-          color: colors.h3k27ac,
-          height: 50,
-          url: `https://www.encodeproject.org/files/${biosample.h3k27ac_signal}/@@download/${biosample.h3k27ac_signal}.bigWig`,
-        } as BigWigConfig);
-      }
-
-      if (biosample.ctcf_signal) {
-        tracks.push({
-          id: `biosample-ctcf-${biosample.name}`,
-          title: `CTCF ChIP-seq signal in ${biosample.displayname}`,
-          titleSize: 12,
-          trackType: TrackType.BigWig,
-          displayMode: DisplayMode.Full,
-          color: colors.ctcf,
-          height: 50,
-          url: `https://www.encodeproject.org/files/${biosample.ctcf_signal}/@@download/${biosample.ctcf_signal}.bigWig`,
-        } as BigWigConfig);
-      }
-    }
-  }
-  const rnaTracks: Track[] = useMemo(() => {
-    if (!biosampleNames || loading || error || !data?.rnaSeqQuery) return [];
-    const tracks: Track[] = [];
-    data.rnaSeqQuery.forEach((entry: any) => {
-      const { expid, biosample, posfileid, negfileid, unstrandedfileid } = entry;
-      
-      const makeTrack = (expid: string, fileId: string, strand: string, color: string) => {
-        return {
-          id: `rnaseq_${expid}-${fileId}-${strand}`,
-          title: `RNA-seq ${strand} strand signal of unique reads rep 1 ${expid} ${fileId} in ${selectedBiosamples.find(b=>b.name===biosample).displayname}`,
-          height: 50,
-          titleSize: 12,
-          trackType: TrackType.BigWig,
-          color,
-          url: `https://www.encodeproject.org/files/${fileId}/@@download/${fileId}.bigWig?proxy=true`,
-          displayMode: DisplayMode.Full,
-        } as BigWigConfig;
-      };
-
-      if (posfileid) tracks.push(makeTrack(expid, posfileid, "plus", "#00AA00"));
-      if (negfileid) tracks.push(makeTrack(expid, negfileid, "minus", "#00AA00"));
-      if (unstrandedfileid) tracks.push(makeTrack(expid, unstrandedfileid, "unstranded", "#00AA00"));
-    });
-
-    return tracks;
-  }, [biosampleNames, data, loading, error]);
-
-  useEffect(() => {
-    [...tracks, ...rnaTracks].forEach((track) => {
-      if (!currentTracks.some((t) => t.id === track.id)) {
-        insertTrack(track);
-      }
-    });
-
-    currentTracks.forEach((track) => {
-      if (track.id.includes("rnaseq_") && !rnaTracks.some((t) => t.id === track.id)) {
-        removeTrack(track.id);
-      }
-      if (track.id.includes("biosample-") && !tracks.some((t) => t.id === track.id)) {
-        removeTrack(track.id);
-      }
-    });
-  }, [rnaTracks, tracks, insertTrack, removeTrack, currentTracks]);
-}
-
-const humanTracks: Track[] = [
-  {
-    id: "default-dnase",
-    title: "Agregated DNase-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#06da93",
-    height: 50,
-    url: "https://downloads.wenglab.org/DNAse_All_ENCODE_MAR20_2024_merged.bw",
-  } as BigWigConfig,
-  {
-    id: "default-h3k4me3",
-    title: "Aggregated H3K4me3 ChIP-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#ff0000",
-    height: 50,
-    url: "https://downloads.wenglab.org/H3K4me3_All_ENCODE_MAR20_2024_merged.bw",
-  } as BigWigConfig,
-  {
-    id: "default-h3k27ac",
-    title: "Aggregated H3K27ac ChIP-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#ffcd00",
-    height: 50,
-    url: "https://downloads.wenglab.org/H3K27ac_All_ENCODE_MAR20_2024_merged.bw",
-  } as BigWigConfig,
-  {
-    id: "default-ctcf",
-    title: "Aggregated CTCF ChIP-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#00b0d0",
-    height: 50,
-    url: "https://downloads.wenglab.org/CTCF_All_ENCODE_MAR20_2024_merged.bw",
-  } as BigWigConfig,
-  {
-    id: "default-atac",
-    title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#02c7b9",
-    height: 50,
-    url: "https://downloads.wenglab.org/ATAC_All_ENCODE_MAR20_2024_merged.bw",
-  } as BigWigConfig,
-];
-
-const mouseTracks: Track[] = [
-  {
-    id: "default-dnase",
-    title: "Aggregated DNase-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#06da93",
-    height: 50,
-    url: "https://downloads.wenglab.org/DNase_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
-  } as BigWigConfig,
-  {
-    id: "default-h3k4me3",
-    title: "Aggregated H3K4me3 ChIP-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#ff0000",
-    height: 50,
-    url: "https://downloads.wenglab.org/H3K4me3_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
-  } as BigWigConfig,
-  {
-    id: "default-h3k27ac",
-    title: "Aggregated H3K27ac ChIP-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#ffcd00",
-    height: 50,
-    url: "https://downloads.wenglab.org/H3K27ac_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
-  } as BigWigConfig,
-  {
-    id: "default-ctcf",
-    title: "Aggregated CTCF ChIP-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#00b0d0",
-    height: 50,
-    url: "https://downloads.wenglab.org/CTCF_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
-  } as BigWigConfig,
-  {
-    id: "default-atac",
-    title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
-    titleSize: 12,
-    trackType: TrackType.BigWig,
-    displayMode: DisplayMode.Full,
-    color: "#02c7b9",
-    height: 50,
-    url: "https://downloads.wenglab.org/ATAC_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
-  } as BigWigConfig,
-];

@@ -11,10 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Close, CloseOutlined } from "@mui/icons-material";
-
 import BiosampleTables from "common/components/BiosampleTables/BiosampleTables";
-import { RegistryBiosample } from "common/components/BiosampleTables/types";
-import { RegistryBiosamplePlusRNA } from "common/_utility/types";
+import { RegistryBiosamplePlusRNA } from "./BiosampleTables/types";
 
 const ConfigureGenomeBrowser = (props: {
   assembly: "GRCh38" | "mm10";

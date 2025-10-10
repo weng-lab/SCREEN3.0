@@ -26,7 +26,6 @@ import { BiosampleUMAP, PointMetaData } from "./types"
 import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/lib/colors"
 import { UMAP_QUERY } from "./queries"
 import BiosampleTables from "../../common/components/BiosampleTables/BiosampleTables"
-import { client } from "../client"
 
 type Selected = {
   assembly: "Human" | "Mouse"
@@ -84,7 +83,6 @@ export function DataMatrices() {
     variables: { assembly: selectedAssay.assembly === "Human" ? "grch38" : "mm10", assay: selectedAssay.assay, a: selectedAssay.assay.toLowerCase() },
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
-    client,
   })
   const [bounds, setBounds] = useState(undefined)
   const [lifeStage, setLifeStage] = useState("all")
