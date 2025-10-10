@@ -2,10 +2,11 @@ import { BarChart, CandlestickChart } from "@mui/icons-material";
 import TwoPaneLayout from "common/components/TwoPaneLayout";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
+import { DownloadPlotHandle } from "@weng-lab/visualization";
 
 export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 
@@ -26,6 +27,7 @@ export type SharedTranscriptExpressionPlotProps = TranscriptExpressionProps & {
     setPeak: (newPeak: string) => void;
     setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
     setScale: (newScale: "linear" | "log") => void;
+    ref?: React.RefObject<DownloadPlotHandle>;
 };
 
 const TranscriptExpression = (props: TranscriptExpressionProps) => {
@@ -34,6 +36,9 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
     const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value")
     const [scale, setScale] = useState<"linear" | "log">("linear")
     const [sortedFilteredData, setSortedFilteredData] = useState<TranscriptMetadata[]>([]);
+
+    const barRef = useRef<DownloadPlotHandle>(null);
+    const violinRef = useRef<DownloadPlotHandle>(null);
 
     const transcriptExpressionData = useTranscriptExpression({ gene: props.geneData?.data.name });
 
@@ -103,15 +108,17 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
                     tabTitle: "Bar Plot",
                     icon: <BarChart />,
                     plotComponent: (
-                        <TranscriptExpressionBarPlot {...SharedTranscriptExpressionPlotProps} />
+                        <TranscriptExpressionBarPlot ref={barRef} {...SharedTranscriptExpressionPlotProps} />
                     ),
+                    ref: barRef
                 },
                 {
                     tabTitle: "Violin Plot",
                     icon: <CandlestickChart />,
                     plotComponent: (
-                        <TranscriptExpressionViolinPlot {...SharedTranscriptExpressionPlotProps} />
+                        <TranscriptExpressionViolinPlot ref={violinRef} {...SharedTranscriptExpressionPlotProps} />
                     ),
+                    ref: violinRef
                 },
             ]}
         />

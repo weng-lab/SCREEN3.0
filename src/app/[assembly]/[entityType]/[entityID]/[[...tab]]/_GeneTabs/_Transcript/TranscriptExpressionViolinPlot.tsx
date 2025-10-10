@@ -21,6 +21,7 @@ const TranscriptExpressionBarPlot = ({
     transcriptExpressionData,
     selected,
     rows,
+    ref,
     ...rest
 }: TranscriptExpressionViolinPlotProps) => {
     const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max")
@@ -146,6 +147,8 @@ const TranscriptExpressionBarPlot = ({
                     crossProps={{
                         outliers: showPoints ? "all" : "none",
                     }}
+                    ref={ref}
+                    downloadFileName={`${geneData.data.name}_TSS_violin_plot`}
                     pointTooltipBody={(point) => {
                         return (
                             <Box maxWidth={300}>
