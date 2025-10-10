@@ -16,11 +16,14 @@ type renderCellParams = GridRenderCellParams<LinkedGeneInfo> | GridRenderCellPar
 export const geneNameCol: colDef = {
   field: "gene",
   headerName: "Common Gene Name",
-  renderCell: (params: renderCellParams) => (
-    <LinkComponent href={`/GRCh38/gene/${params.value}`}>
+  renderCell: (params: renderCellParams) =>
+    params.value.startsWith("ENSG") ? (
       <i>{params.value}</i>
-    </LinkComponent>
-  ),
+    ) : (
+      <LinkComponent href={`/GRCh38/gene/${params.value}`}>
+        <i>{params.value}</i>
+      </LinkComponent>
+    ),
 };
 
 const GeneTypeFormatter = (value: string, row: LinkedGeneInfo) =>
