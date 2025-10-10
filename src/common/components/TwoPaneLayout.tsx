@@ -1,11 +1,16 @@
 import { CloseFullscreenRounded, TableChartRounded } from "@mui/icons-material"
-import { Stack, Box, Typography, Tabs, Tab, TabOwnProps, IconButton, Tooltip } from "@mui/material"
+import { Stack, Box, Typography, Tabs, Tab, TabOwnProps, IconButton, Tooltip, Button, useMediaQuery } from "@mui/material"
+import DownloadIcon from '@mui/icons-material/Download';
+import { theme } from "app/theme";
 import { useEffect, useMemo, useRef, useState } from "react"
+import DownloadModal from "./DownloadModal";
+import { DownloadPlotHandle } from "@weng-lab/visualization";
 
 export type TwoPanePlotConfig = {
   tabTitle: string;
   icon?: TabOwnProps["icon"];
   plotComponent: React.ReactNode;
+  ref?: React.RefObject<DownloadPlotHandle>
 };
 
 export type TwoPaneLayoutProps = {
@@ -18,6 +23,9 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
   const [tableOpen, setTableOpen] = useState(true)
   const tableRef = useRef<HTMLDivElement>(null);
   const [tableHeight, setTableHeight] = useState<number | null>(null);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   //listens for changes in the size of the table component and passes that height into the figure container
   useEffect(() => {
@@ -60,6 +68,30 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
     )
   }
 
+  const DownloadButton = () => {
+    const onClick = () => {
+      setModalOpen(true);
+    }
+    return isXs ? (
+      <IconButton
+        color="primary"
+        aria-label="download"
+        size="small"
+        onClick={onClick}
+      >
+        <DownloadIcon />
+      </IconButton>
+    ) : (
+      <Button
+        variant="outlined"
+        startIcon={<DownloadIcon />}
+        onClick={onClick}
+      >
+        Download
+      </Button>
+    );
+  };
+
   //  Handles unavailable index being selected due to hidden plot
   useEffect(() => {
     if (tab > plots.length - 1) {
@@ -91,16 +123,19 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
           </div>
         </Box>
       <Box flex="1 1 0" minWidth={0} id="tabs_figure_container">
-        <Stack direction={"row"} alignItems={"center"} mb={2} gap={2}>
-          {!tableOpen &&
-            <TableIconButton />
-          }
-          <Tabs value={tabValue} onChange={handleSetTab} id="plot_tabs">
-            {plotTabs.map((tab, i) =>
-              // minHeight: 48px is initial value for tabs without icon. With icon it's 72 which is way too tall
-              <Tab label={tab.tabTitle} key={i} icon={tab.icon} iconPosition="start" sx={{minHeight: '48px'}} />)
+        <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+          <Stack direction={"row"} alignItems={"center"} mb={2} gap={2}>
+            {!tableOpen &&
+              <TableIconButton />
             }
-          </Tabs>
+            <Tabs value={tabValue} onChange={handleSetTab} id="plot_tabs">
+              {plotTabs.map((tab, i) =>
+                // minHeight: 48px is initial value for tabs without icon. With icon it's 72 which is way too tall
+                <Tab label={isXs ? "" : tab.tabTitle} key={i} icon={tab.icon} iconPosition="start" sx={{ minHeight: '48px' }} />)
+              }
+            </Tabs>
+          </Stack>
+          <DownloadButton />
         </Stack>
         {figures.map((Figure, i) =>
           <Box 
@@ -113,6 +148,14 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
           >
             {Figure.component}
           </Box>
+        )}
+        {modalOpen && (
+          <DownloadModal
+            open={modalOpen}
+            onClose={() => setModalOpen(false)}
+            ref={plots[tabValue]?.ref?.current}
+            plotTitle={plots[tabValue]?.tabTitle}
+          />
         )}
       </Box>
     </Stack>

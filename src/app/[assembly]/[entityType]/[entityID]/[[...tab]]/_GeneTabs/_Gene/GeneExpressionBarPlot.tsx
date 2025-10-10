@@ -27,6 +27,7 @@ const GeneExpressionBarPlot = ({
   setScale,
   replicates,
   setReplicates,
+  ref,
   ...rest 
 }: GeneExpressionBarPlotProps) => {
 
@@ -121,6 +122,8 @@ const GeneExpressionBarPlot = ({
             : `${geneData?.data.name} Expression - Log\u2081\u2080(TPM + 1)`
         }
         TooltipContents={PlotTooltip}
+        ref={ref}
+        downloadFileName={`${geneData.data.name}_expression_bar_plot`}
       />
     </Box>
   )
