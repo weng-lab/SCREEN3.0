@@ -13,7 +13,7 @@ import { DownloadPlotHandle } from "@weng-lab/visualization";
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
 export type GeneExpressionProps = {
-  geneData: UseGeneDataReturn<{ name: string }>;
+  geneData: UseGeneDataReturn<{ name: string, assembly: Assembly }>;
   assembly: Assembly;
 };
 

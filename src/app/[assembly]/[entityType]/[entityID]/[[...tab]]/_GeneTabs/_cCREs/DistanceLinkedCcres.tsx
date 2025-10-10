@@ -27,7 +27,7 @@ export default function DistanceLinkedCcres({
   geneData,
   assembly
 }: {
-  geneData: UseGeneDataReturn<{ name: string }>;
+  geneData: UseGeneDataReturn<{ name: string, assembly: Assembly }>;
   assembly: Assembly
 }) {
 

@@ -1,6 +1,6 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
-import { ccreClassDescriptions, formatPortal } from "common/utility";
+import { ccreClassDescriptions, formatGenomicRange, formatPortal } from "common/utility";
 import { Assembly } from "types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
@@ -19,7 +19,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
   const c = entityMetadata?.__typename !== "GwasStudies" && (entityMetadata?.__typename === "SCREENSearchResult" ? {chromosome: entityMetadata?.chrom, start: entityMetadata?.start, end: entityMetadata?.start + entityMetadata?.len } : entityMetadata?.coordinates);
-  const coordinatesDisplay = c && `${c.chromosome}:${c.start.toLocaleString()}-${c.end.toLocaleString()}`;
+  const coordinatesDisplay = c && formatGenomicRange(c);
 
   const description = useGeneDescription(entityID, entityType).description;
   const SnpAlleleFrequencies = useSnpFrequencies([entityID], entityType);
