@@ -56,12 +56,10 @@ const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: Assay
 const AssayUMAP = ({
   entity,
   rows,
-  columns,
   assay,
   selected,
   setSelected,
-  sortedFilteredData,
-  setSortedFilteredData,
+  ref
 }: SharedAssayViewPlotProps) => {
   const [colorScheme, setColorScheme] = useState<"score" | "organ/tissue" | "sampleType">("score");
   const [scoreColorMode, setScoreColorMode] = useState<"active"| "all">("active")
@@ -205,6 +203,8 @@ const AssayUMAP = ({
             },
           }}
           tooltipBody={(point) => <TooltipBody metaData={point.metaData} assay={assay} />}
+          ref={ref}
+          downloadFileName={`${assay}_UMAP`}
         />
       </Box>
     </Stack>

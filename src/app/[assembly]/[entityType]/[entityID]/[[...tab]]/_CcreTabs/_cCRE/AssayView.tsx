@@ -1,6 +1,6 @@
 import { GridColDef } from "@weng-lab/ui-components";
 import { Assay, BiosampleRow } from "./BiosampleActivity";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useRef, useState } from "react";
 import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayout";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
@@ -8,6 +8,7 @@ import AssayBarPlot from "./AssayBarPlot";
 import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
+import { DownloadPlotHandle } from "@weng-lab/visualization";
 
 export type AssayViewProps = {
   rows: BiosampleRow[];
@@ -23,12 +24,17 @@ export type SharedAssayViewPlotProps = AssayViewProps & {
   setSortedFilteredData: Dispatch<SetStateAction<BiosampleRow[]>>
   viewBy: "value" | "tissue" | "tissueMax";
   setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
+  ref?: React.RefObject<DownloadPlotHandle>;
 };
 
 const AssayView = (props: AssayViewProps) => {
   const [selected, setSelected] = useState<BiosampleRow[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<BiosampleRow[]>([]);
   const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value")
+
+  const barRef = useRef<DownloadPlotHandle>(null);
+  const violinRef = useRef<DownloadPlotHandle>(null);
+  const scatterRef = useRef<DownloadPlotHandle>(null);
 
   const sharedAssayViewPlotProps: SharedAssayViewPlotProps = useMemo(
     () => ({
@@ -48,19 +54,22 @@ const AssayView = (props: AssayViewProps) => {
       {
         tabTitle: "Bar Plot",
         icon: <BarChart />,
-        plotComponent: <AssayBarPlot {...sharedAssayViewPlotProps} />,
+        plotComponent: <AssayBarPlot ref={barRef} {...sharedAssayViewPlotProps} />,
+        ref: barRef
       },
       {
         tabTitle: "Violin Plot",
         icon: <CandlestickChart />,
-        plotComponent: <AssayViolinPlot {...sharedAssayViewPlotProps} />,
+        plotComponent: <AssayViolinPlot ref={violinRef} {...sharedAssayViewPlotProps} />,
+        ref: violinRef
       },
     ];
     if (!(props.assay === "atac")) {
       plots.push({
         tabTitle: "UMAP",
         icon: <ScatterPlot />,
-        plotComponent: <AssayUMAP {...sharedAssayViewPlotProps} />,
+        plotComponent: <AssayUMAP ref={scatterRef} {...sharedAssayViewPlotProps} />,
+        ref: scatterRef
       });
     }
     return plots
