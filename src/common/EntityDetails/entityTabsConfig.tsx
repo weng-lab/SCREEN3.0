@@ -5,6 +5,7 @@ import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...t
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionalCharacterization/FunctionalCharacterization";
 import { AdditionalChromatinSignatures } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_AdditionalChromatinSignatures/AdditionalChromatinSignatures";
+import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Convservation/GeneConservation";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -149,7 +150,7 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
   },
 ] as const;
 
-const humanGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "transcript-expression" | "browser">[] = [
+const humanGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "conservation" | "transcript-expression" | "browser">[] = [
   {
     route: "",
     label: "Gene",
@@ -170,6 +171,12 @@ const humanGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "transcript-
     iconPath: VariantIconPath,
     // component: EQTLs,
     component: null,
+  },
+  {
+    route: "conservation",
+    label: "Conservation",
+    iconPath: ConservationIconPath,
+    component: GeneConservation,
   },
   {
     route: "browser",
@@ -317,7 +324,7 @@ const mouseVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
   },
 ] as const;
 
-const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "browser">[] = [
+const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "conservation" | "browser">[] = [
   {
     route: "",
     label: "Gene",
@@ -333,6 +340,12 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "browser">[]
   //   // component: EQTLs,
   //   component: null,
   // },
+    {
+    route: "conservation",
+    label: "Conservation",
+    iconPath: ConservationIconPath,
+    component: GeneConservation,
+  },
   {
     route: "browser",
     label: "Genome Browser",

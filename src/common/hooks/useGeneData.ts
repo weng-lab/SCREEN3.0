@@ -35,15 +35,15 @@ const GENE_Query = gql(`
  */
 
 export type UseGeneDataParams = 
-  | { name: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly?: Assembly }
-  | { coordinates: GenomicRange; name?: never; entityType?: AnyEntityType; assembly?: Assembly }
+  | { name: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly: Assembly; skip?: boolean }
+  | { coordinates: GenomicRange; name?: never; entityType?: AnyEntityType; assembly: Assembly; skip?: boolean }
 
 export type UseGeneDataReturn<T extends UseGeneDataParams> =
   T extends ({ coordinates: GenomicRange | GenomicRange[] } | { name: string[] })
   ? { data: GeneQuery["gene"] | undefined; loading: boolean; error: ApolloError }
   : { data: GeneQuery["gene"][0] | undefined; loading: boolean; error: ApolloError };
 
-export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, entityType, assembly}: T): UseGeneDataReturn<T> => {
+export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, entityType, assembly, skip}: T): UseGeneDataReturn<T> => {
 
   const { data, loading, error } = useQuery(
     GENE_Query,
@@ -56,7 +56,7 @@ export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, ent
         version: assembly === "GRCh38" ? 29 : 25,
         name
       },
-      skip: (entityType !== undefined) && entityType !== 'gene',
+      skip: skip || (entityType !== undefined && entityType !== 'gene'),
     }
   );
 

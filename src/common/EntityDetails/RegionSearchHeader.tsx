@@ -1,4 +1,5 @@
 import { Stack, Typography } from "@mui/material";
+import { formatGenomicRange } from "common/utility";
 import { GenomicRange } from "types/globalTypes";
 
 export type RegionSearchHeaderProps = {
@@ -19,7 +20,7 @@ const RegionSearchHeader = ({ region }: RegionSearchHeaderProps) => {
     >
       <Typography variant="subtitle1">Region Search</Typography>
       <Typography variant="h4">
-        {region.chromosome}:{region.start.toLocaleString()}-{region.end.toLocaleString()}
+        {formatGenomicRange(region)}
       </Typography>
     </Stack>
   );

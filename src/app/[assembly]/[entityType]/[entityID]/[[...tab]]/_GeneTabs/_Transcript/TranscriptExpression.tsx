@@ -6,11 +6,12 @@ import { useEffect, useState, useMemo } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
+import { Assembly } from "types/globalTypes";
 
 export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 
 export type TranscriptExpressionProps = {
-    geneData: UseGeneDataReturn<{ name: string }>;
+    geneData: UseGeneDataReturn<{ name: string, assembly: Assembly }>;
 };
 
 export type SharedTranscriptExpressionPlotProps = TranscriptExpressionProps & {
