@@ -42,7 +42,7 @@ query entexActiveAnnotationsQuery( $coordinates: GenomicRangeInput! ) {
 
 const chromHmmCols: GridColDef[] = [
   {
-    headerName: "Tissue",
+    headerName: "Organ/Tissue",
     field: "tissue",
   },
   {
@@ -183,37 +183,24 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
         </TabList>
       </Box>
       <TabPanel value={1} sx={{ p: 0 }}>
-        <ParentSize>
-          {({ width }) => (
-            <Stack>
-              <Typography variant="caption">ChromHMM State Proportions, All Tissues:</Typography>
-              <Box sx={{ marginBottom: "12px" }}>
-                {loading || error ? (
-                  <LinearProgress />
-                ) : (
-                  <ProportionsBar
-                    data={getProportionsFromArray(processedTableData, "state", CHROM_HMM_STATES)}
-                    getColor={(key) => chromHmmStateDetails[key].color}
-                    formatLabel={(key) => getChromHmmStateDisplayname(key)}
-                    width={width}
-                    height={4}
-                    orientation="horizontal"
-                    tooltipTitle="ChromHMM State Proportions, All Tissues"
-                  />
-                )}
-              </Box>
-              <Table
-                label={`ChromHMM States`}
-                columns={chromHmmCols}
-                rows={processedTableData}
-                loading={loading}
-                error={!!error}
-                divHeight={{ height: "600px" }}
-                initialState={{ sorting: { sortModel: [{ field: "tissue", sort: "asc" }] } }}
-              />
-            </Stack>
-          )}
-        </ParentSize>
+        <ProportionsBar
+          label="ChromHMM State Proportions, All Tissues:"
+          data={getProportionsFromArray(processedTableData, "state", CHROM_HMM_STATES)}
+          getColor={(key) => chromHmmStateDetails[key].color}
+          formatLabel={(key) => getChromHmmStateDisplayname(key)}
+          loading={loading || !!error}
+          tooltipTitle="ChromHMM State Proportions, All Tissues"
+          style={{ marginBottom: "8px" }}
+        />
+        <Table
+          label={`ChromHMM States`}
+          columns={chromHmmCols}
+          rows={processedTableData}
+          loading={loading}
+          error={!!error}
+          divHeight={{ height: "600px" }}
+          initialState={{ sorting: { sortModel: [{ field: "tissue", sort: "asc" }] } }}
+        />
       </TabPanel>
       <TabPanel value={2} sx={{ p: 0 }}>
         <Stack spacing={2}>

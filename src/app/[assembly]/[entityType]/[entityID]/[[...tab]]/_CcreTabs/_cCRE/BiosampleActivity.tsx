@@ -484,7 +484,7 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const disableCsvEscapeChar = { slotProps: { toolbar: { csvOptions: { escapeFormulas: false } } } };
 
-  const partialCollectionchromAccess = useMemo(() => {
+  const partialCollectionChromAccess = useMemo(() => {
     if (!partialDataCollection) return
     let highDNase = 0;
     let lowDNase = 0;
@@ -506,8 +506,6 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,
           },
-          // borderBottom: 1,
-          // borderColor: "divider"
         }}
       >
         <Tab value="tables" label="Classification" />
@@ -518,95 +516,77 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
         <Tab value="ctcf" label="CTCF" />
       </Tabs>
       {tab === "tables" ? (
-        <ParentSize>
-          {({ width }) => (
-            <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
-              <Table
-                label="Cell type agnostic classification"
-                rows={ctAgnosticRow}
-                columns={ctAgnosticCols}
-                loading={loading_Ct_Agnostic}
-                //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
-                divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
-                error={!!error_Ct_Agnostic}
-                {...disableCsvEscapeChar}
-              />
-              <Stack>
-                <Typography variant="caption">Classification Proportions, Core Collection:</Typography>
-                <Box sx={{ marginBottom: "12px" }}>
-                  {loadingCorePartialAncillary || errorCorePartialAncillary ? (
-                    <LinearProgress />
-                  ) : (
-                    <ProportionsBar
-                      data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}
-                      getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
-                      formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
-                      height={4}
-                      width={width}
-                      orientation="horizontal"
-                      tooltipTitle="Classification Proportions, Core Collection"
-                    />
-                  )}
-                </Box>
-                <Table
-                  label="Core Collection"
-                  labelTooltip={CORE_COLLECTION_TOOLTIP}
-                  rows={coreCollection}
-                  columns={getCoreAndPartialCols()}
-                  loading={loadingCorePartialAncillary}
-                  error={errorCorePartialAncillary}
-                  divHeight={{ height: "400px" }}
-                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-                  {...disableCsvEscapeChar}
-                />
-              </Stack>
-              <Stack>
-                <Typography variant="caption">Chromatin Accessibility, Partial Data Collection:</Typography>
-                <Box sx={{ marginBottom: "12px" }}>
-                  {loadingCorePartialAncillary || errorCorePartialAncillary ? (
-                    <LinearProgress />
-                  ) : (
-                    <ProportionsBar
-                      data={partialCollectionchromAccess}
-                      getColor={(key) => (key === "highDNase" ? "#06DA93" : "#e1e1e1")}
-                      formatLabel={(key) =>
-                        key === "highDNase"
-                          ? "High Chromatin Accessibility (DNase ≥ 1.64)"
-                          : "Low Chromatin Accessibility (DNase < 1.64)"
-                      }
-                      height={4}
-                      width={width}
-                      orientation="horizontal"
-                      tooltipTitle="Chromatin Accessibility, Partial Data Collection"
-                    />
-                  )}
-                </Box>
-                <Table
-                  label="Partial Data Collection"
-                  labelTooltip={PARTIAL_COLLECTION_TOOLTIP}
-                  rows={partialDataCollection}
-                  columns={getCoreAndPartialCols()}
-                  loading={loadingCorePartialAncillary}
-                  error={errorCorePartialAncillary}
-                  divHeight={{ height: "400px" }}
-                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-                  {...disableCsvEscapeChar}
-                />
-              </Stack>
-              <Table
-                label="Ancillary Collection"
-                labelTooltip={ANCILLARY_COLLECTION_TOOLTIP}
-                rows={ancillaryCollection}
-                columns={getAncillaryCols()}
-                loading={loadingCorePartialAncillary}
-                error={errorCorePartialAncillary}
-                divHeight={{ height: "400px" }}
-                initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
-                {...disableCsvEscapeChar}
-              />
-            </Stack>
-          )}
-        </ParentSize>
+        <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
+          <Table
+            label="Cell type agnostic classification"
+            rows={ctAgnosticRow}
+            columns={ctAgnosticCols}
+            loading={loading_Ct_Agnostic}
+            //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+            divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
+            error={!!error_Ct_Agnostic}
+            {...disableCsvEscapeChar}
+          />
+          <div>
+            <ProportionsBar
+              data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}
+              label="Classification Proportions, Core Collection:"
+              loading={loadingCorePartialAncillary || errorCorePartialAncillary}
+              getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
+              formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
+              tooltipTitle="Classification Proportions, Core Collection"
+              style={{ marginBottom: "8px" }}
+            />
+            <Table
+              label="Core Collection"
+              labelTooltip={CORE_COLLECTION_TOOLTIP}
+              rows={coreCollection}
+              columns={getCoreAndPartialCols()}
+              loading={loadingCorePartialAncillary}
+              error={errorCorePartialAncillary}
+              divHeight={{ height: "400px" }}
+              initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+              {...disableCsvEscapeChar}
+            />
+          </div>
+          <div>
+            <ProportionsBar
+              data={partialCollectionChromAccess}
+              label="Chromatin Accessibility, Partial Data Collection:"
+              loading={loadingCorePartialAncillary || errorCorePartialAncillary}
+              getColor={(key) => (key === "highDNase" ? "#06DA93" : "#e1e1e1")}
+              formatLabel={(key) =>
+                key === "highDNase"
+                  ? "High Chromatin Accessibility (DNase ≥ 1.64)"
+                  : "Low Chromatin Accessibility (DNase < 1.64)"
+              }
+              tooltipTitle="Chromatin Accessibility, Partial Data Collection"
+              style={{ marginBottom: "12px" }}
+            />
+            <Table
+              label="Partial Data Collection"
+              labelTooltip={PARTIAL_COLLECTION_TOOLTIP}
+              rows={partialDataCollection}
+              columns={getCoreAndPartialCols()}
+              loading={loadingCorePartialAncillary}
+              error={errorCorePartialAncillary}
+              divHeight={{ height: "400px" }}
+              initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+              {...disableCsvEscapeChar}
+            />
+          </div>
+          <Table
+            label="Ancillary Collection"
+            labelTooltip={ANCILLARY_COLLECTION_TOOLTIP}
+            rows={ancillaryCollection}
+            columns={getAncillaryCols()}
+            loading={loadingCorePartialAncillary}
+            error={errorCorePartialAncillary}
+            divHeight={{ height: "400px" }}
+            initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
+            {...disableCsvEscapeChar}
+          />
+        </Stack>
       ) : (
         <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
       )}

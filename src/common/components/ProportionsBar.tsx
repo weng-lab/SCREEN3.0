@@ -1,9 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { BarStack, BarStackHorizontal } from "@visx/shape";
 import { scaleBand, scaleLinear } from "@visx/scale";
 import { useTooltip, defaultStyles, useTooltipInPortal } from "@visx/tooltip";
 import { localPoint } from "@visx/event";
-import { Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
+import { LinearProgress, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import { TooltipInPortalProps } from "@visx/tooltip/lib/hooks/useTooltipInPortal";
 
 export const getProportionsFromArray = <T extends Record<K, string>, K extends string, V extends string>(
@@ -55,10 +55,9 @@ export function sortObjectByValueDesc(
 
 export type ProportionBarProps<K extends string> = {
   data: Record<K, number>;
-  width: number;
-  height: number;
-  orientation: "vertical" | "horizontal";
   tooltipTitle: string;
+  label?: string;
+  loading?: boolean;
   getColor: (key: K) => string;
   /**
    * By default this component keeps original insertion order, set this to sort descending.
@@ -73,10 +72,9 @@ export type ProportionBarProps<K extends string> = {
 
 export const ProportionsBar = <K extends string>({
   data,
-  width,
-  height,
-  orientation,
   tooltipTitle,
+  label,
+  loading = false,
   sortDescending = false,
   getColor,
   formatLabel,
@@ -87,20 +85,26 @@ export const ProportionsBar = <K extends string>({
     detectBounds: true,
   });
 
-  const plotData = useMemo(() => sortDescending ? sortObjectByValueDesc(data) : data, [data, sortDescending])
+  const plotData = useMemo(() => {
+    if (!data) return null
+    return sortDescending ? sortObjectByValueDesc(data) : data
+  }, [data, sortDescending]);
 
   //Fix weird type error on build
   //Type error: 'TooltipInPortal' cannot be used as a JSX component.
   const TooltipComponent = TooltipInPortal as unknown as React.FC<TooltipInPortalProps>;
 
-  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } =
-    useTooltip<ProportionBarProps<K>["data"]>();
+  const { tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } = useTooltip();
 
-  const totalCount = (Object.values(plotData) as number[]).reduce((prev, curr) => prev + curr, 0);
+  const totalCount = plotData ? (Object.values(plotData) as number[]).reduce((prev, curr) => prev + curr, 0) : 0;
+
+  const outerDivRef = useRef<HTMLDivElement>(null)
+
+  const width = outerDivRef?.current ? outerDivRef.current.offsetWidth : 0
 
   const barLengthScale = scaleLinear<number>({
     domain: [0, totalCount],
-    range: orientation === "vertical" ? [height, 0] : [0, width],
+    range: [0, width],
   });
 
   //Not actually using since this is only a single bar
@@ -114,14 +118,13 @@ export const ProportionsBar = <K extends string>({
     showTooltip({
       tooltipLeft: coords.x,
       tooltipTop: coords.y,
-      tooltipData: plotData,
     });
   };
 
   const sharedProps = useMemo(
     () => ({
       data: [plotData],
-      keys: Object.keys(plotData),
+      keys: plotData ? Object.keys(plotData) : [],
       color: getColor,
     }),
     [plotData, getColor]
@@ -130,34 +133,37 @@ export const ProportionsBar = <K extends string>({
   const hitboxPadding = 10;
 
   return (
-    <div style={{ position: "relative", width, height, ...style }} ref={containerRef}>
-      <svg width={width} height={height} style={{ display: "block" }}>
-        {orientation === "vertical" ? (
-          <BarStack {...sharedProps} xScale={uselessScale} yScale={barLengthScale} x={() => ""} width={width} />
-        ) : (
-          <BarStackHorizontal
-            {...sharedProps}
-            xScale={barLengthScale}
-            yScale={uselessScale}
-            y={() => ""}
-            height={height}
+    <div style={{ ...style }} ref={outerDivRef}>
+      {label && <Typography variant="caption">{label}</Typography>}
+      {loading ? (
+        <LinearProgress />
+      ) : (
+        <div style={{position: "relative"}}>
+          <svg width={width} height={4} style={{ display: "block" }}>
+            <BarStackHorizontal
+              {...sharedProps}
+              xScale={barLengthScale}
+              yScale={uselessScale}
+              y={() => ""}
+              height={4}
+            />
+          </svg>
+          <div
+            ref={containerRef}
+            style={{
+              position: "absolute",
+              left: -hitboxPadding,
+              top: -hitboxPadding,
+              width: width + hitboxPadding * 2,
+              height: 4 + hitboxPadding * 2,
+              zIndex: 2,
+              background: "transparent",
+            }}
+            onMouseMove={(e) => handleMouseOver(e)}
+            onMouseLeave={hideTooltip}
           />
-        )}
-      </svg>
-      {/* Expand mouse over area since the bar is small */}
-      <div
-        style={{
-          position: "absolute",
-          left: -hitboxPadding,
-          top: -hitboxPadding,
-          width: width + hitboxPadding * 2,
-          height: height + hitboxPadding * 2,
-          zIndex: 2,
-          background: "transparent",
-        }}
-        onMouseMove={(e) => handleMouseOver(e)}
-        onMouseLeave={hideTooltip}
-      />
+        </div>
+      )}
       {tooltipOpen && (
         <TooltipComponent top={tooltipTop} left={tooltipLeft} style={{ zIndex: 1000, ...defaultStyles }}>
           <Typography>{tooltipTitle}</Typography>
