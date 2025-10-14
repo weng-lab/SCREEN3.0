@@ -8,9 +8,11 @@ import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "types/globalTypes";
 import { gql } from "types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useChromHMMData } from "common/hooks/useChromHmmData";
-import ClassProportionsBar from "../_cCRE/ClassProportionsBar";
+import { CHROM_HMM_STATES, getChromHmmStateDisplayname, stateDetails, useChromHMMData } from "common/hooks/useChromHmmData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { ProportionsBar, getProportionsFromArray } from "common/components/ProportionsBar";
+import { ParentSize } from "@visx/responsive";
+import { chromHmmStateDetails } from "common/gbview/constants";
 
 const ENTEx_QUERY = gql(`
 query ENTEXQuery($accession: String!){
@@ -48,9 +50,9 @@ const chromHmmCols: GridColDef[] = [
     field: "biosample",
   },
   {
-    headerName: "States",
-    field: "name",
-    renderCell: (params) => <b style={{ color: params.row.color }}>{params.value}</b>,
+    headerName: "State",
+    field: "state",
+    renderCell: (params) => <b style={{ color: params.row.color }}>{getChromHmmStateDisplayname(params.value)}</b>,
   },
   {
     headerName: "Chromosome",
@@ -181,18 +183,37 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
         </TabList>
       </Box>
       <TabPanel value={1} sx={{ p: 0 }}>
-        {" "}
-        <Stack>
-          <Table
-            label={`ChromHMM States`}
-            columns={chromHmmCols}
-            rows={processedTableData}
-            loading={loading}
-            error={!!error}
-            divHeight={{ height: "600px" }}
-            initialState={{ sorting: { sortModel: [{ field: "tissue", sort: "asc" }] } }}
-          />
-        </Stack>
+        <ParentSize>
+          {({ width }) => (
+            <Stack>
+              <Typography variant="caption">ChromHMM State Proportions, All Tissues:</Typography>
+              <Box sx={{ marginBottom: "12px" }}>
+                {loading || error ? (
+                  <LinearProgress />
+                ) : (
+                  <ProportionsBar
+                    data={getProportionsFromArray(processedTableData, "state", CHROM_HMM_STATES)}
+                    getColor={(key) => chromHmmStateDetails[key].color}
+                    formatLabel={(key) => getChromHmmStateDisplayname(key)}
+                    width={width}
+                    height={4}
+                    orientation="horizontal"
+                    tooltipTitle="ChromHMM State Proportions, All Tissues"
+                  />
+                )}
+              </Box>
+              <Table
+                label={`ChromHMM States`}
+                columns={chromHmmCols}
+                rows={processedTableData}
+                loading={loading}
+                error={!!error}
+                divHeight={{ height: "600px" }}
+                initialState={{ sorting: { sortModel: [{ field: "tissue", sort: "asc" }] } }}
+              />
+            </Stack>
+          )}
+        </ParentSize>
       </TabPanel>
       <TabPanel value={2} sx={{ p: 0 }}>
         <Stack spacing={2}>

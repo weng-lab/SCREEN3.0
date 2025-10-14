@@ -2,7 +2,6 @@
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
-import ClassProportionsBar from "./ClassProportionsBar";
 import { Box, LinearProgress, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "types/generated";
 import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
@@ -13,6 +12,8 @@ import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
 import { AssayWheel } from "common/components/AssayWheel";
+import { ProportionsBar, getProportionsFromArray } from "common/components/ProportionsBar";
+import { CCRE_CLASSES } from "common/consts";
 
 export type BiosampleRow = {
   name?: string;
@@ -20,7 +21,7 @@ export type BiosampleRow = {
   sampleType?: string;
   lifeStage?: string;
   ontology?: string;
-  class?: CcreClass;
+  class: CcreClass;
   collection: "core" | "partial" | "ancillary"
   dnase?: number;
   dnaseAccession?: string
@@ -483,6 +484,16 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const disableCsvEscapeChar = { slotProps: { toolbar: { csvOptions: { escapeFormulas: false } } } };
 
+  const partialCollectionchromAccess = useMemo(() => {
+    if (!partialDataCollection) return
+    let highDNase = 0;
+    let lowDNase = 0;
+    partialDataCollection.forEach((row) => {
+      row.dnase >= 1.64 ? highDNase++ : lowDNase++;
+    });
+    return { highDNase, lowDNase };
+  }, [partialDataCollection]);
+
   return (
     <>
       <Tabs
@@ -526,8 +537,10 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                   {loadingCorePartialAncillary || errorCorePartialAncillary ? (
                     <LinearProgress />
                   ) : (
-                    <ClassProportionsBar
-                      rows={coreCollection}
+                    <ProportionsBar
+                      data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}
+                      getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
+                      formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
                       height={4}
                       width={width}
                       orientation="horizontal"
@@ -553,13 +566,18 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
                   {loadingCorePartialAncillary || errorCorePartialAncillary ? (
                     <LinearProgress />
                   ) : (
-                    <ClassProportionsBar
-                      rows={partialDataCollection}
-                      orientation="horizontal"
+                    <ProportionsBar
+                      data={partialCollectionchromAccess}
+                      getColor={(key) => (key === "highDNase" ? "#06DA93" : "#e1e1e1")}
+                      formatLabel={(key) =>
+                        key === "highDNase"
+                          ? "High Chromatin Accessibility (DNase ≥ 1.64)"
+                          : "Low Chromatin Accessibility (DNase < 1.64)"
+                      }
                       height={4}
                       width={width}
+                      orientation="horizontal"
                       tooltipTitle="Chromatin Accessibility, Partial Data Collection"
-                      onlyUseChromatinAccessibility
                     />
                   )}
                 </Box>
