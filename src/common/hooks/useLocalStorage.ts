@@ -1,0 +1,28 @@
+import { Domain, Highlight, Track } from "@weng-lab/genomebrowser";
+
+type LocalBrowserState = {
+  domain: Domain;
+  highlights: Highlight[];
+};
+
+export function getLocalBrowser(name: string): LocalBrowserState | null {
+  const localBrowserState = sessionStorage.getItem(name + "-browser-state");
+  if (!localBrowserState) return null;
+  const localBrowserStateJson = JSON.parse(localBrowserState) as LocalBrowserState;
+  return localBrowserStateJson;
+}
+
+export function setLocalBrowser(name: string, localBrowserState: LocalBrowserState) {
+  sessionStorage.setItem(name + "-browser-state", JSON.stringify(localBrowserState));
+}
+
+export function setLocalTracks(tracks: Track[]) {
+  sessionStorage.setItem("local-tracks", JSON.stringify(tracks));
+}
+
+export function getLocalTracks(): Track[] {
+  const localTracks = sessionStorage.getItem("local-tracks");
+  if (!localTracks) return [];
+  const localTracksJson = JSON.parse(localTracks) as Track[];
+  return localTracksJson;
+}
