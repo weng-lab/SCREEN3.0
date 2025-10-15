@@ -62,7 +62,7 @@ const GeneExpression = (props: GeneExpressionProps) => {
           const quants = file.quantifications?.filter(Boolean) ?? [];
           const quant = quants[0]
 
-          const rawTPM = quant.tpm;
+          const rawTPM = quant?.tpm;
           const scaledTPM =
             scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
 
@@ -93,7 +93,7 @@ const GeneExpression = (props: GeneExpressionProps) => {
         if (!allQuants.length) return [];
 
         const avgTPM =
-          allQuants.reduce((sum, q) => sum + q.tpm, 0) / allQuants.length;
+          allQuants.reduce((sum, q) => sum + q?.tpm, 0) / allQuants.length;
 
         const scaledTPM =
           scale === "logTPM" ? Math.log10(avgTPM + 1) : avgTPM;

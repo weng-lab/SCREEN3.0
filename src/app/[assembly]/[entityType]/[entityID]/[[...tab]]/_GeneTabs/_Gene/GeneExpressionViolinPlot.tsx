@@ -44,7 +44,7 @@ const GeneExpressionBarPlot = ({
 
     let distributions = Object.entries(grouped).map(([tissue, group]) => {
       const values = group.map(
-        (d) => d.gene_quantification_files[0].quantifications[0].tpm
+        (d) => d.gene_quantification_files[0].quantifications[0]?.tpm
       );
       const label = tissue;
       const violinColor =
@@ -191,7 +191,7 @@ const GeneExpressionBarPlot = ({
           ref={ref}
           downloadFileName={`${geneData.data.name}_expression_violin_plot`}
           pointTooltipBody={(point) => {
-            const rawTPM = point.metadata?.gene_quantification_files[0].quantifications[0].tpm ?? 0;
+            const rawTPM = point.metadata?.gene_quantification_files[0].quantifications[0]?.tpm ?? 0;
             const displayTPM =
               scale === "linearTPM" ? rawTPM : Math.log10(rawTPM + 1);
 
