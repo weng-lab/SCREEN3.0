@@ -26,3 +26,19 @@ export function getLocalTracks(): Track[] {
   const localTracksJson = JSON.parse(localTracks) as Track[];
   return localTracksJson;
 }
+
+// temporary until we rework track selection
+export function setLocalBiosamples(biosamples: any[] | null) {
+  if (biosamples === null || biosamples.length === 0) {
+    sessionStorage.removeItem("selected-biosamples");
+  } else {
+    sessionStorage.setItem("selected-biosamples", JSON.stringify(biosamples));
+  }
+}
+
+export function getLocalBiosamples(): any[] | null {
+  const localBiosamples = sessionStorage.getItem("selected-biosamples");
+  if (!localBiosamples) return null;
+  const localBiosamplesJson = JSON.parse(localBiosamples);
+  return localBiosamplesJson;
+}

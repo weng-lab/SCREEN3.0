@@ -37,7 +37,14 @@ import { chromHmmStateDetails, humanDefaultTracks, mouseDefaultTracks } from "./
 import { useBiosampleTracks } from "./Biosample/useBiosampleTracks";
 import { ChromHmmTooltip } from "./ChromHMM/ChromHmmTooltip";
 import { capitalizeFirstLetter } from "common/utility";
-import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "common/hooks/useLocalStorage";
+import {
+  getLocalBrowser,
+  getLocalTracks,
+  setLocalBrowser,
+  setLocalTracks,
+  getLocalBiosamples,
+  setLocalBiosamples,
+} from "common/hooks/useLocalStorage";
 
 interface Transcript {
   id: string;
@@ -93,7 +100,7 @@ export default function GenomeBrowserView({
   type: AnyEntityType;
   assembly: Assembly;
 }) {
-  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(null);
+  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
   const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>([]);
 
   const initialState: InitialBrowserState = useMemo(() => {
@@ -123,6 +130,10 @@ export default function GenomeBrowserView({
   useEffect(() => {
     setLocalBrowser(name, { domain, highlights });
   }, [domain, highlights]);
+
+  useEffect(() => {
+    setLocalBiosamples(selectedBiosamples);
+  }, [selectedBiosamples]);
 
   const router = useRouter();
 
