@@ -115,7 +115,7 @@ const GeneExpressionBarPlot = ({
         disabled={isV40}
       />
       {isV40 ? (
-        <Typography>No Gene expression data availible on GENCODE V40 genes</Typography>
+        <Typography>No Gene expression data available on GENCODE V40 genes</Typography>
       ) : (
         <BarPlot
           {...rest}
