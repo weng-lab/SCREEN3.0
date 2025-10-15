@@ -2,7 +2,6 @@
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
-import ClassProportionsBar from "./ClassProportionsBar";
 import { Box, LinearProgress, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "types/generated";
 import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
@@ -13,6 +12,8 @@ import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
 import { AssayWheel } from "common/components/AssayWheel";
+import { ProportionsBar, getProportionsFromArray } from "common/components/ProportionsBar";
+import { CCRE_CLASSES } from "common/consts";
 
 export type BiosampleRow = {
   name?: string;
@@ -20,7 +21,7 @@ export type BiosampleRow = {
   sampleType?: string;
   lifeStage?: string;
   ontology?: string;
-  class?: CcreClass;
+  class: CcreClass;
   collection: "core" | "partial" | "ancillary"
   dnase?: number;
   dnaseAccession?: string
@@ -315,6 +316,12 @@ export const formatAssay = (assay: Assay) => {
   }
 }
 
+const CORE_COLLECTION_TOOLTIP = "Thanks to the extensive coordination efforts by the ENCODE4 Biosample Working Group, 171 biosamples have DNase, H3K4me3, H3K27ac, and CTCF data. We refer to these samples as the biosample-specific Core Collection of cCREs. These samples cover a variety of tissues and organs and primarily comprise primary tissues and cells. We suggest that users prioritize these samples for their analysis as they contain all the relevant marks for the most complete annotation of cCREs."
+
+const PARTIAL_COLLECTION_TOOLTIP = "To supplement the Core Collection, 1,154 biosamples have DNase in addition to various combinations of the other marks (but not all three). Though we are unable to annotate the full spectrum of cCRE classes in these biosamples, having DNase enables us to annotate element boundaries with high resolution. Therefore, we refer to this group as the Partial Data Collection. In these biosamples, we classify elements using the available marks. For example, if a sample lacks H3K27ac and CTCF, its cCREs can only be assigned to the promoter, CA-H3K4me3, and CA groups, not the enhancer or CA-CTCF groups. The Partial Data Collection contains some unique tissues and cell states that are not represented in the Core Collection, such as fetal brain tissue and stimulated immune cells that may be of high interest to some researchers. Therefore, if users are interested in cCRE annotations in such biosamples, we suggest leveraging the cell type-agnostic annotations or annotations from similar biosamples in the Core Collection, to supplement their analyses."
+
+const ANCILLARY_COLLECTION_TOOLTIP = "For the 563 biosamples lacking DNase data, we do not have the resolution to identify specific elements and we refer to these annotations as the Ancillary Collection. In these biosamples, we simply label cCREs as having a high or low signal for every available assay. We highly suggest that users do not use annotations from the Ancillary Collection unless they are anchoring their analysis on cCREs from the Core Collection or Partial Data Collection."
+
 //Cache is not working as expected when switching between open cCREs
 export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
   // Assay values are used to index into row object, so need to modify assaySpecificRows if changing assays here
@@ -477,6 +484,16 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const disableCsvEscapeChar = { slotProps: { toolbar: { csvOptions: { escapeFormulas: false } } } };
 
+  const partialCollectionChromAccess = useMemo(() => {
+    if (!partialDataCollection) return
+    let highDNase = 0;
+    let lowDNase = 0;
+    partialDataCollection.forEach((row) => {
+      row.dnase >= 1.64 ? highDNase++ : lowDNase++;
+    });
+    return { highDNase, lowDNase };
+  }, [partialDataCollection]);
+
   return (
     <>
       <Tabs
@@ -489,8 +506,6 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,
           },
-          // borderBottom: 1,
-          // borderColor: "divider"
         }}
       >
         <Tab value="tables" label="Classification" />
@@ -501,85 +516,77 @@ export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
         <Tab value="ctcf" label="CTCF" />
       </Tabs>
       {tab === "tables" ? (
-        <ParentSize>
-          {({ width }) => (
-            <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
-              <Table
-                label="Cell type agnostic classification"
-                rows={ctAgnosticRow}
-                columns={ctAgnosticCols}
-                loading={loading_Ct_Agnostic}
-                //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
-                divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
-                error={!!error_Ct_Agnostic}
-                {...disableCsvEscapeChar}
-              />
-              <Stack>
-                <Typography variant="caption">Classification Proportions, Core Collection:</Typography>
-                <Box sx={{ marginBottom: "12px" }}>
-                  {loadingCorePartialAncillary || errorCorePartialAncillary ? (
-                    <LinearProgress />
-                  ) : (
-                    <ClassProportionsBar
-                      rows={coreCollection}
-                      height={4}
-                      width={width}
-                      orientation="horizontal"
-                      tooltipTitle="Classification Proportions, Core Collection"
-                    />
-                  )}
-                </Box>
-                <Table
-                  label="Core Collection"
-                  rows={coreCollection}
-                  columns={getCoreAndPartialCols()}
-                  loading={loadingCorePartialAncillary}
-                  error={errorCorePartialAncillary}
-                  divHeight={{ height: "400px" }}
-                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-                  {...disableCsvEscapeChar}
-                />
-              </Stack>
-              <Stack>
-                <Typography variant="caption">Chromatin Accessibility, Partial Data Collection:</Typography>
-                <Box sx={{ marginBottom: "12px" }}>
-                  {loadingCorePartialAncillary || errorCorePartialAncillary ? (
-                    <LinearProgress />
-                  ) : (
-                    <ClassProportionsBar
-                      rows={partialDataCollection}
-                      orientation="horizontal"
-                      height={4}
-                      width={width}
-                      tooltipTitle="Chromatin Accessibility, Partial Data Collection"
-                      onlyUseChromatinAccessibility
-                    />
-                  )}
-                </Box>
-                <Table
-                  label="Partial Data Collection"
-                  rows={partialDataCollection}
-                  columns={getCoreAndPartialCols()}
-                  loading={loadingCorePartialAncillary}
-                  error={errorCorePartialAncillary}
-                  divHeight={{ height: "400px" }}
-                  initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-                  {...disableCsvEscapeChar}
-                />
-              </Stack>
-              <Table
-                label="Ancillary Collection"
-                rows={ancillaryCollection}
-                columns={getAncillaryCols()}
-                loading={loadingCorePartialAncillary}
-                error={errorCorePartialAncillary}
-                divHeight={{ height: "400px" }}
-                initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
-                {...disableCsvEscapeChar}
-              />
-            </Stack>
-          )}
-        </ParentSize>
+        <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
+          <Table
+            label="Cell type agnostic classification"
+            rows={ctAgnosticRow}
+            columns={ctAgnosticCols}
+            loading={loading_Ct_Agnostic}
+            //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+            divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
+            error={!!error_Ct_Agnostic}
+            {...disableCsvEscapeChar}
+          />
+          <div>
+            <ProportionsBar
+              data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}
+              label="Classification Proportions, Core Collection:"
+              loading={loadingCorePartialAncillary || errorCorePartialAncillary}
+              getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
+              formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
+              tooltipTitle="Classification Proportions, Core Collection"
+              style={{ marginBottom: "8px" }}
+            />
+            <Table
+              label="Core Collection"
+              labelTooltip={CORE_COLLECTION_TOOLTIP}
+              rows={coreCollection}
+              columns={getCoreAndPartialCols()}
+              loading={loadingCorePartialAncillary}
+              error={errorCorePartialAncillary}
+              divHeight={{ height: "400px" }}
+              initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+              {...disableCsvEscapeChar}
+            />
+          </div>
+          <div>
+            <ProportionsBar
+              data={partialCollectionChromAccess}
+              label="Chromatin Accessibility, Partial Data Collection:"
+              loading={loadingCorePartialAncillary || errorCorePartialAncillary}
+              getColor={(key) => (key === "highDNase" ? "#06DA93" : "#e1e1e1")}
+              formatLabel={(key) =>
+                key === "highDNase"
+                  ? "High Chromatin Accessibility (DNase ≥ 1.64)"
+                  : "Low Chromatin Accessibility (DNase < 1.64)"
+              }
+              tooltipTitle="Chromatin Accessibility, Partial Data Collection"
+              style={{ marginBottom: "12px" }}
+            />
+            <Table
+              label="Partial Data Collection"
+              labelTooltip={PARTIAL_COLLECTION_TOOLTIP}
+              rows={partialDataCollection}
+              columns={getCoreAndPartialCols()}
+              loading={loadingCorePartialAncillary}
+              error={errorCorePartialAncillary}
+              divHeight={{ height: "400px" }}
+              initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
+              {...disableCsvEscapeChar}
+            />
+          </div>
+          <Table
+            label="Ancillary Collection"
+            labelTooltip={ANCILLARY_COLLECTION_TOOLTIP}
+            rows={ancillaryCollection}
+            columns={getAncillaryCols()}
+            loading={loadingCorePartialAncillary}
+            error={errorCorePartialAncillary}
+            divHeight={{ height: "400px" }}
+            initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
+            {...disableCsvEscapeChar}
+          />
+        </Stack>
       ) : (
         <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
       )}
