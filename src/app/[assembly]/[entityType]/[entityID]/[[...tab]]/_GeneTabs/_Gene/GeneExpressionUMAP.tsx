@@ -51,7 +51,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   //find the max logTPM for the domain fo the gradient
   const maxValue = useMemo(() => {
     if (!data || data.length === 0) return 0;
-    return Math.max(...data.map((x) => logTransform(x.gene_quantification_files[0].quantifications[0].tpm)));
+    return Math.max(...data.map((x) => logTransform(x.gene_quantification_files[0].quantifications[0]?.tpm)));
   }, [data]);
 
   const colorScale = useMemo(
@@ -71,7 +71,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
 
     return data
       .map((x) => {
-        const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.gene_quantification_files[0].quantifications[0].tpm)));
+        const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.gene_quantification_files[0].quantifications[0]?.tpm)));
 
         const getColor = () => {
           if (isHighlighted(x) || selected.length === 0) {
@@ -102,7 +102,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
 
       files.forEach(file => {
         if (file.quantifications && file.quantifications.length > 0) {
-          const firstTPM = file.quantifications[0].tpm;
+          const firstTPM = file.quantifications[0]?.tpm;
           if (firstTPM !== undefined && firstTPM !== null) {
             tpms.push(firstTPM);
           }
@@ -149,7 +149,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
       </FormControl>
     );
   };
-
+  
   return (
     <>
       <Stack
@@ -158,6 +158,8 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         padding={1}
         sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
       >
+        {scatterData && scatterData.length>0 && scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm!==undefined ?
+        <>
         <Stack direction="row" justifyContent="space-between" alignItems="center" >
           <ColorBySelect />
           <UMAPLegend
@@ -184,6 +186,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
             downloadFileName={`${geneData.data.name}_expression_UMAP`}
           />
         </Box>
+        </> : <></>}
       </Stack>
     </>
   );
