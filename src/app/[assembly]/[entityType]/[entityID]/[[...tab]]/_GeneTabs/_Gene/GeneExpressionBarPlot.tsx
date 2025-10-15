@@ -13,13 +13,13 @@ export type GeneExpressionBarPlotProps =
     scale: "linearTPM" | "logTPM";
   }
 
-const GeneExpressionBarPlot = ({ 
-  scale, 
-  geneData, 
-  selected, 
+const GeneExpressionBarPlot = ({
+  scale,
+  geneData,
+  selected,
   setSelected,
-  assembly, 
-  sortedFilteredData, 
+  assembly,
+  sortedFilteredData,
   RNAtype,
   setRNAType,
   viewBy,
@@ -28,7 +28,8 @@ const GeneExpressionBarPlot = ({
   replicates,
   setReplicates,
   ref,
-  ...rest 
+  isV40,
+  ...rest
 }: GeneExpressionBarPlotProps) => {
 
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
@@ -111,20 +112,25 @@ const GeneExpressionBarPlot = ({
         setViewBy={setViewBy}
         setScale={setScale}
         setReplicates={setReplicates}
+        disabled={isV40}
       />
-      <BarPlot
-        {...rest}
-        onBarClicked={handleBarClick}
-        data={plotData}
-        topAxisLabel={
-          scale === "linearTPM"
-            ? `${geneData?.data.name} Expression - TPM`
-            : `${geneData?.data.name} Expression - Log\u2081\u2080(TPM + 1)`
-        }
-        TooltipContents={PlotTooltip}
-        ref={ref}
-        downloadFileName={`${geneData.data.name}_expression_bar_plot`}
-      />
+      {isV40 ? (
+        <Typography>No Gene expression data available on GENCODE V40 genes</Typography>
+      ) : (
+        <BarPlot
+          {...rest}
+          onBarClicked={handleBarClick}
+          data={plotData}
+          topAxisLabel={
+            scale === "linearTPM"
+              ? `${geneData?.data.name} Expression - TPM`
+              : `${geneData?.data.name} Expression - Log\u2081\u2080(TPM + 1)`
+          }
+          TooltipContents={PlotTooltip}
+          ref={ref}
+          downloadFileName={`${geneData.data.name}_expression_bar_plot`}
+        />
+      )}
     </Box>
   )
 }
