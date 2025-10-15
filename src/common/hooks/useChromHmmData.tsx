@@ -26,7 +26,27 @@ export type ChromTrack = {
   url: string;
 };
 
-export const stateDetails = {
+export const CHROM_HMM_STATES = [
+  "TssFlnk",
+  "TssFlnkD",
+  "TssFlnkU",
+  "Tss",
+  "Enh1",
+  "Enh2",
+  "EnhG1",
+  "EnhG2",
+  "TxWk",
+  "Biv",
+  "ReprPC",
+  "Quies",
+  "Het",
+  "ZNF/Rpts",
+  "Tx",
+] as const;
+
+export type ChromHmmState = typeof CHROM_HMM_STATES[number]
+
+export const stateDetails: Record<ChromHmmState, { description: string; stateno: string; color: string }> = {
   ["TssFlnk"]: { description: "Flanking TSS", stateno: "E1", color: "#FF4500" },
   ["TssFlnkD"]: {
     description: "Flanking TSS downstream",
@@ -65,12 +85,16 @@ export const stateDetails = {
   ["Quies"]: { description: "Quiescent", stateno: "E12", color: "#DCDCDC" },
   ["Het"]: { description: "Heterochromatin", stateno: "E13", color: "#4B0082" },
   ["ZNF/Rpts"]: {
-    description: "ZNF genes repreats",
+    description: "ZNF genes repeats",
     stateno: "E14",
     color: "#68cdaa",
   },
   ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
 };
+
+export function getChromHmmStateDisplayname(state: ChromHmmState){
+  return stateDetails[state].description + " (" + stateDetails[state].stateno + ")";
+}
 
 export const ChromHmmTissues = [
     "adipose",
@@ -184,11 +208,7 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
       return {
         start: f.start,
         end: f.end,
-        name:
-          stateDetails[f.name].description +
-          " (" +
-          stateDetails[f.name].stateno +
-          ")",
+        state: f.name as ChromHmmState,
         chr: f.chr,
         color: f.color,
         tissue: chromHmmTracksWithTissue[i].tissue,

@@ -1,5 +1,5 @@
 /**
- * @todo remove this file probably?
+ * @todo cleanup dead igSCREEN stuff if not used
  */
 
 export const studyLinks = {
@@ -33,3 +33,5 @@ export const cellCategoryDisplaynames = {
   Progenitors: "Progenitor Cells",
   gd_Tcells: "Gamma Delta T Cells"
 }
+
+export const CCRE_CLASSES = ["PLS", "pELS", "dELS", "CA-H3K4me3", "CA-CTCF", "CA-TF", "CA", "TF", "InActive", "noclass"] as const;

@@ -2,6 +2,8 @@
  * These are where the universal shared types should be kept
  */
 
+import { CCRE_CLASSES } from "common/consts";
+
 export interface GenomicRange {
   chromosome: string;
   start: number;
@@ -10,17 +12,7 @@ export interface GenomicRange {
 
 export type Assembly = "GRCh38" | "mm10"
 
-export type CcreClass =
-  | "PLS"
-  | "pELS"
-  | "dELS"
-  | "CA-H3K4me3"
-  | "CA-CTCF"
-  | "CA-TF"
-  | "CA"
-  | "TF"
-  | "InActive"
-  | "noclass";
+export type CcreClass = typeof CCRE_CLASSES[number];
 
 // Generate type guards
 export const isValidAssembly = (value: string): value is Assembly => 
