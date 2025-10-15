@@ -1,14 +1,15 @@
 import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BarChart } from "@mui/icons-material";
 import BiosampleEnrichmentTable from "./BiosampleEnrichmentTable";
 import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnrichmentData";
-
-import { BarData } from "@weng-lab/visualization";
+import { BarData, DownloadPlotHandle } from "@weng-lab/visualization";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
+
 export type BiosampleEnrichmentProps = {
   study_name: string;
 };
+
 const BiosampleEnrichment = ({ study_name }: BiosampleEnrichmentProps) => {
   const {
     data: dataGWASEnrichment,
@@ -17,6 +18,9 @@ const BiosampleEnrichment = ({ study_name }: BiosampleEnrichmentProps) => {
   } = useGWASEnrichmentData({ study: study_name });
   const [selected, setSelected] = useState<GWASEnrichment[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<GWASEnrichment[]>([]);
+
+  const lollipopRef = useRef<DownloadPlotHandle>(null);
+
   const handleSelectionChange = (selected: GWASEnrichment[]) => {
     setSelected(selected);
   };
@@ -50,10 +54,13 @@ const BiosampleEnrichment = ({ study_name }: BiosampleEnrichmentProps) => {
                   selected={selected}
                   sortedFilteredData={sortedFilteredData}
                   onBarClicked={handleBarClick}
+                  ref={lollipopRef}
+                  study={study_name}
                 />
               ) : (
                 <></>
               ),
+              ref: lollipopRef
           },
         ]}
       />

@@ -15,6 +15,7 @@ const AssayViolinPlot = ({
   setSelected,
   viewBy,
   setViewBy,
+  ref
 }: SharedAssayViewPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max")
   const [showPoints, setShowPoints] = useState<boolean>(true);
@@ -152,6 +153,8 @@ const AssayViolinPlot = ({
           crossProps={{
             outliers: showPoints ? "all" : "none",
           }}
+          ref={ref}
+          downloadFileName={`${assay}_violin_plot`}
           pointTooltipBody={(point) => {
             return (
               <Box maxWidth={300}>

@@ -291,12 +291,15 @@ export default function GenomeBrowserView({
   const theme = useTheme();
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
+  const geneVersion = assembly === "GRCh38" ? [29, 40] : 25
+
   return (
     <Stack>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
         <GenomeSearch
           size="small"
           assembly={assembly as Assembly}
+          geneVersion={geneVersion}
           onSearchSubmit={handeSearchSubmit}
           queries={["Gene", "SNP", "cCRE", "Coordinate"]}
           geneLimit={3}

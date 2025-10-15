@@ -15,6 +15,7 @@ const AssayBarPlot = ({
   setSelected,
   sortedFilteredData,
   viewBy,
+  ref,
   setViewBy,
 
 }: SharedAssayViewPlotProps) => {
@@ -81,6 +82,8 @@ const AssayBarPlot = ({
         cutoffNegativeValues
         onBarClicked={handleBarClick}
         TooltipContents={PlotTooltip}
+        ref={ref}
+        downloadFileName={`${assay}_bar_plot`}
       />
     </Box>
   );

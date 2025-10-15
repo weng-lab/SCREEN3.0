@@ -1,5 +1,5 @@
 import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
@@ -8,6 +8,7 @@ import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Assembly } from "types/globalTypes";
+import { DownloadPlotHandle } from "@weng-lab/visualization";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
@@ -31,6 +32,7 @@ export type SharedGeneExpressionPlotProps = GeneExpressionProps & {
   setViewBy: (newView: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM") => void;
   RNAtype: "all" | "polyA plus RNA-seq" | "total RNA-seq";
   setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void;
+  ref?: React.RefObject<DownloadPlotHandle>;
 };
 
 const GeneExpression = (props: GeneExpressionProps) => {
@@ -40,6 +42,10 @@ const GeneExpression = (props: GeneExpressionProps) => {
   const [replicates, setReplicates] = useState<"mean" | "all">("mean")
   const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM")
   const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">(props.assembly === "GRCh38" ? "total RNA-seq" : "all")
+
+  const barRef = useRef<DownloadPlotHandle>(null);
+  const violinRef = useRef<DownloadPlotHandle>(null);
+  const scatterRef = useRef<DownloadPlotHandle>(null);
 
   const geneExpressionData = useGeneExpression({ id: props.geneData?.data.id, assembly: props.assembly });
 
@@ -56,7 +62,7 @@ const GeneExpression = (props: GeneExpressionProps) => {
           const quants = file.quantifications?.filter(Boolean) ?? [];
           const quant = quants[0]
 
-          const rawTPM = quant.tpm;
+          const rawTPM = quant?.tpm;
           const scaledTPM =
             scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
 
@@ -87,7 +93,7 @@ const GeneExpression = (props: GeneExpressionProps) => {
         if (!allQuants.length) return [];
 
         const avgTPM =
-          allQuants.reduce((sum, q) => sum + q.tpm, 0) / allQuants.length;
+          allQuants.reduce((sum, q) => sum + q?.tpm, 0) / allQuants.length;
 
         const scaledTPM =
           scale === "logTPM" ? Math.log10(avgTPM + 1) : avgTPM;
@@ -148,25 +154,26 @@ const GeneExpression = (props: GeneExpressionProps) => {
           tabTitle: "Bar Plot",
           icon: <BarChart />,
           plotComponent: (
-            <GeneExpressionBarPlot {...SharedGeneExpressionPlotProps} />
+            <GeneExpressionBarPlot ref={barRef} {...SharedGeneExpressionPlotProps} />
           ),
+          ref: barRef
         },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
           plotComponent: (
-            <GeneExpressionViolinPlot {...SharedGeneExpressionPlotProps} />
+            <GeneExpressionViolinPlot ref={violinRef} {...SharedGeneExpressionPlotProps} />
           ),
+          ref: violinRef
         },
-        // Add back once query returns umap coordiantes
         {
           tabTitle: "UMAP",
           icon: <ScatterPlot />,
           plotComponent: (
-            <GeneExpressionUMAP {...SharedGeneExpressionPlotProps} />
+            <GeneExpressionUMAP ref={scatterRef} {...SharedGeneExpressionPlotProps} />
           ),
+          ref: scatterRef
         },
-
       ]}
     />
   );

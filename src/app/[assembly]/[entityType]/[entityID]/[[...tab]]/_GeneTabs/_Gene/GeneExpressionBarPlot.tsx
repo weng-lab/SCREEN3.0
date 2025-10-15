@@ -27,6 +27,7 @@ const GeneExpressionBarPlot = ({
   setScale,
   replicates,
   setReplicates,
+  ref,
   ...rest 
 }: GeneExpressionBarPlotProps) => {
 
@@ -49,8 +50,8 @@ const GeneExpressionBarPlot = ({
         return (
           {
             category: x.tissue,
-            label: makeLabel(x.gene_quantification_files[0].quantifications[0].tpm, x.biosample, x.accession),
-            value: x.gene_quantification_files[0].quantifications[0].tpm, //indexing into 0th position, only one gene so quantifications should always be length 1
+            label: makeLabel(x.gene_quantification_files[0].quantifications[0]?.tpm, x.biosample, x.accession),
+            value: x.gene_quantification_files[0].quantifications[0]?.tpm, //indexing into 0th position, only one gene so quantifications should always be length 1
             color: (anySelected && isSelected || !anySelected) ? tissueColors[x.tissue] ?? tissueColors.missing : '#CCCCCC',
             id: i.toString(),
             metadata: x
@@ -121,6 +122,8 @@ const GeneExpressionBarPlot = ({
             : `${geneData?.data.name} Expression - Log\u2081\u2080(TPM + 1)`
         }
         TooltipContents={PlotTooltip}
+        ref={ref}
+        downloadFileName={`${geneData.data.name}_expression_bar_plot`}
       />
     </Box>
   )
