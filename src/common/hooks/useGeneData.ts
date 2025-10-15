@@ -1,6 +1,7 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
 import { gql } from "types/generated/gql";
+import { useMemo } from "react";
 import { GeneQuery } from "types/generated/graphql";
 import { Assembly, GenomicRange } from "types/globalTypes";
 
@@ -45,7 +46,9 @@ export type UseGeneDataReturn<T extends UseGeneDataParams> =
 
 export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, entityType, assembly, skip}: T): UseGeneDataReturn<T> => {
 
-  const { data, loading, error } = useQuery(
+  const shouldQueryBothVersions = assembly === "GRCh38" && !skip && (entityType === undefined || entityType === 'gene');
+
+  const v29Query = useQuery(
     GENE_Query,
     {
       variables: {
@@ -53,19 +56,84 @@ export const useGeneData = <T extends UseGeneDataParams>({name, coordinates, ent
         start: coordinates?.start,
         end: coordinates?.end,
         assembly,
-        version: assembly === "GRCh38" ? 29 : 25,
+        version: 29,
         name
       },
-      skip: skip || (entityType !== undefined && entityType !== 'gene'),
+      skip: !shouldQueryBothVersions,
     }
   );
+
+  const v40Query = useQuery(
+    GENE_Query,
+    {
+      variables: {
+        chromosome: coordinates?.chromosome,
+        start: coordinates?.start,
+        end: coordinates?.end,
+        assembly,
+        version: 40,
+        name
+      },
+      skip: !shouldQueryBothVersions,
+    }
+  );
+
+  // For mouse, just use v25
+  const mouseQuery = useQuery(
+    GENE_Query,
+    {
+      variables: {
+        chromosome: coordinates?.chromosome,
+        start: coordinates?.start,
+        end: coordinates?.end,
+        assembly,
+        version: 25,
+        name
+      },
+      skip: assembly !== "mm10" || skip || (entityType !== undefined && entityType !== 'gene'),
+    }
+  );
+
+  // Combine and deduplicate results for human, keeping v40 when duplicates exist
+  const processedData = useMemo(() => {
+    if (assembly === "GRCh38") {
+      if (v29Query.loading || v40Query.loading) return undefined;
+      if (!v29Query.data?.gene && !v40Query.data?.gene) return undefined;
+
+      // Create a map of gene IDs to their data, preferring v40
+      const geneMap = new Map();
+      
+      // Add v29 genes first
+      v29Query.data?.gene?.forEach(gene => {
+        if (gene) geneMap.set(gene.id, gene);
+      });
+      
+      // Override with v40 genes
+      v40Query.data?.gene?.forEach(gene => {
+        if (gene) geneMap.set(gene.id, gene);
+      });
+
+      // Convert back to array
+      return Array.from(geneMap.values());
+    } else {
+      return mouseQuery.data?.gene;
+    }
+  }, [assembly, v29Query.data, v40Query.data, mouseQuery.data, v29Query.loading, v40Query.loading]);
+
+  const isLoading = assembly === "GRCh38" 
+    ? (v29Query.loading || v40Query.loading)
+    : mouseQuery.loading;
+
+  const error = assembly === "GRCh38"
+    ? (v29Query.error || v40Query.error)
+    : mouseQuery.error;
 
   return {
     /**
      * return either whole array or just first item depending on input
      */
-    data: (coordinates || typeof name === "object") ? data?.gene : data?.gene[0],
-    loading,
+    data: (coordinates || typeof name === "object") ? processedData : processedData?.[0],
+    loading: isLoading,
     error,
   } as UseGeneDataReturn<T>
 }

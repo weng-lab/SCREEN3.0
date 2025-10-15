@@ -131,9 +131,12 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
     } else return defaultMouseResults;
   }, [props.assembly]);
 
+  const geneVersion = props.assembly === "GRCh38" ? [29, 40] : 25
+
   return (
     <GenomeSearch
       assembly={props.assembly}
+      geneVersion={geneVersion}
       ccreLimit={3}
       showiCREFlag={false}
       queries={["Gene", "cCRE", "SNP", "Coordinate", "Study"]}
