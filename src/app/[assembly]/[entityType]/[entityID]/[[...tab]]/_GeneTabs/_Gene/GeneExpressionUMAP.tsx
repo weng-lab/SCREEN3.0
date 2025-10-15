@@ -158,7 +158,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         padding={1}
         sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
       >
-        {scatterData && scatterData.length>0 && scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm ?
+        {scatterData && scatterData.length>0 && scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm!==undefined ?
         <>
         <Stack direction="row" justifyContent="space-between" alignItems="center" >
           <ColorBySelect />
