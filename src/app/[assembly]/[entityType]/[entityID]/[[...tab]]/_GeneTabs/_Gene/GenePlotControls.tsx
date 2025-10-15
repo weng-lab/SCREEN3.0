@@ -8,7 +8,7 @@ import {
   Tooltip,
 } from "@mui/material";
 
-interface AdvancedFiltersPopperProps {
+interface ControlProps {
   assembly: string;
   RNAtype: string;
   scale: string;
@@ -23,9 +23,10 @@ interface AdvancedFiltersPopperProps {
   setShowPoints?: (showPoints: boolean) => void;
   showPoints?: boolean;
   violin?: boolean;
+  disabled?: boolean;
 }
 
-const GenePlotControls: React.FC<AdvancedFiltersPopperProps> = ({
+const GenePlotControls: React.FC<ControlProps> = ({
   assembly,
   RNAtype,
   scale,
@@ -40,6 +41,7 @@ const GenePlotControls: React.FC<AdvancedFiltersPopperProps> = ({
   setShowPoints = () => { },
   showPoints = true,
   violin = false,
+  disabled = false
 }) => {
   return (
     <Stack direction="row" spacing={2} mb={2} flexWrap="wrap">
@@ -57,13 +59,13 @@ const GenePlotControls: React.FC<AdvancedFiltersPopperProps> = ({
           aria-label="RNA-seq Type"
           size="small"
         >
-          <ToggleButton sx={{ textTransform: "none" }} value="total RNA-seq">
+          <ToggleButton sx={{ textTransform: "none" }} value="total RNA-seq" disabled={disabled}>
             Total
           </ToggleButton>
           <Tooltip title={assembly === "GRCh38" && "Only available in mm10"}>
             <div>
               <ToggleButton
-                disabled={assembly === "GRCh38"}
+                disabled={assembly === "GRCh38" || disabled}
                 sx={{ textTransform: "none" }}
                 value="polyA plus RNA-seq"
               >
@@ -74,7 +76,7 @@ const GenePlotControls: React.FC<AdvancedFiltersPopperProps> = ({
           <Tooltip title={assembly === "GRCh38" && "Only available in mm10"}>
             <div>
               <ToggleButton
-                disabled={assembly === "GRCh38"}
+                disabled={assembly === "GRCh38" || disabled}
                 sx={{ textTransform: "none" }}
                 value="all"
               >
@@ -98,6 +100,7 @@ const GenePlotControls: React.FC<AdvancedFiltersPopperProps> = ({
           }}
           aria-label="Scale"
           size="small"
+          disabled={disabled}
         >
           <ToggleButton sx={{ textTransform: "none" }} value="linearTPM">
             Linear
@@ -121,6 +124,7 @@ const GenePlotControls: React.FC<AdvancedFiltersPopperProps> = ({
           }}
           aria-label="Replicates"
           size="small"
+          disabled={disabled}
         >
           <ToggleButton sx={{ textTransform: "none" }} value="mean">
             Average
@@ -194,6 +198,7 @@ const GenePlotControls: React.FC<AdvancedFiltersPopperProps> = ({
             }}
             aria-label="View By"
             size="small"
+            disabled={disabled}
           >
             <ToggleButton sx={{ textTransform: "none" }} value="byExperimentTPM">
               Experiment

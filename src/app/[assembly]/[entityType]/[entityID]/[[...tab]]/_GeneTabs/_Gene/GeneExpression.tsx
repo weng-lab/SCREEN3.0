@@ -9,6 +9,7 @@ import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { Assembly } from "types/globalTypes";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
+import VersionFallback from "./GeneVersionFallback";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
@@ -33,6 +34,7 @@ export type SharedGeneExpressionPlotProps = GeneExpressionProps & {
   RNAtype: "all" | "polyA plus RNA-seq" | "total RNA-seq";
   setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void;
   ref?: React.RefObject<DownloadPlotHandle>;
+  isV40?: boolean;
 };
 
 const GeneExpression = (props: GeneExpressionProps) => {
@@ -49,8 +51,14 @@ const GeneExpression = (props: GeneExpressionProps) => {
 
   const geneExpressionData = useGeneExpression({ id: props.geneData?.data.id, assembly: props.assembly });
 
+  const isV40 = useMemo(() => {
+    const files = geneExpressionData?.data?.[0]?.gene_quantification_files?.[0];
+    const hasTpm = files?.quantifications?.[0]?.tpm !== undefined;
+    return Boolean(geneExpressionData?.data?.length) && !hasTpm;
+  }, [geneExpressionData?.data]);
+
   const rows: PointMetadata[] = useMemo(() => {
-    if (!geneExpressionData?.data?.length) return [];
+    if (!geneExpressionData?.data?.length || isV40) return [];
 
     const filteredData = geneExpressionData.data.filter(d => RNAtype === "all" || d.assay_term_name === RNAtype)
 
@@ -121,7 +129,7 @@ const GeneExpression = (props: GeneExpressionProps) => {
     });
 
     return result;
-  }, [geneExpressionData.data, RNAtype, replicates, scale]);
+  }, [geneExpressionData.data, isV40, RNAtype, replicates, scale]);
 
   const SharedGeneExpressionPlotProps: SharedGeneExpressionPlotProps = useMemo(
     () => ({
@@ -145,18 +153,18 @@ const GeneExpression = (props: GeneExpressionProps) => {
   );
 
   return (
+    <>
+    {isV40 && <VersionFallback gene={props.geneData.data.name} />}
     <TwoPaneLayout
-      TableComponent={
-        <GeneExpressionTable {...SharedGeneExpressionPlotProps} />
-      }
+      TableComponent={<GeneExpressionTable {...SharedGeneExpressionPlotProps} />}
       plots={[
         {
           tabTitle: "Bar Plot",
           icon: <BarChart />,
           plotComponent: (
-            <GeneExpressionBarPlot ref={barRef} {...SharedGeneExpressionPlotProps} />
+            <GeneExpressionBarPlot ref={barRef} {...SharedGeneExpressionPlotProps} isV40={isV40} />
           ),
-          ref: barRef
+          ref: barRef,
         },
         {
           tabTitle: "Violin Plot",
@@ -164,7 +172,7 @@ const GeneExpression = (props: GeneExpressionProps) => {
           plotComponent: (
             <GeneExpressionViolinPlot ref={violinRef} {...SharedGeneExpressionPlotProps} />
           ),
-          ref: violinRef
+          ref: violinRef,
         },
         {
           tabTitle: "UMAP",
@@ -172,11 +180,14 @@ const GeneExpression = (props: GeneExpressionProps) => {
           plotComponent: (
             <GeneExpressionUMAP ref={scatterRef} {...SharedGeneExpressionPlotProps} />
           ),
-          ref: scatterRef
+          ref: scatterRef,
         },
       ]}
+      isV40={isV40}
     />
+    </>
   );
+
 };
 
 export default GeneExpression;

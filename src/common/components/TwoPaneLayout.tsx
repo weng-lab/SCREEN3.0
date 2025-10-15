@@ -16,9 +16,10 @@ export type TwoPanePlotConfig = {
 export type TwoPaneLayoutProps = {
   TableComponent: React.ReactNode
   plots: TwoPanePlotConfig[]
+  isV40?: boolean;
 }
 
-const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
+const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutProps) => {
   const [tab, setTab] = useState<number>(0)
   const [tableOpen, setTableOpen] = useState(true)
   const tableRef = useRef<HTMLDivElement>(null);
@@ -78,6 +79,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
         aria-label="download"
         size="small"
         onClick={onClick}
+        disabled={isV40}
       >
         <DownloadIcon />
       </IconButton>
@@ -86,6 +88,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
         variant="outlined"
         startIcon={<DownloadIcon />}
         onClick={onClick}
+        disabled={isV40}
       >
         Download
       </Button>
@@ -131,7 +134,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
             <Tabs value={tabValue} onChange={handleSetTab} id="plot_tabs">
               {plotTabs.map((tab, i) =>
                 // minHeight: 48px is initial value for tabs without icon. With icon it's 72 which is way too tall
-                <Tab label={isXs ? "" : tab.tabTitle} key={i} icon={tab.icon} iconPosition="start" sx={{ minHeight: '48px' }} />)
+                <Tab label={isXs ? "" : tab.tabTitle} key={i} icon={tab.icon} iconPosition="start" sx={{ minHeight: '48px' }} disabled={isV40}/>)
               }
             </Tabs>
           </Stack>
