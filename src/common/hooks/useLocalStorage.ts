@@ -42,3 +42,18 @@ export function getLocalBiosamples(): any[] | null {
   const localBiosamplesJson = JSON.parse(localBiosamples);
   return localBiosamplesJson;
 }
+
+export function setLocalChromHmmTissues(tissues: string[] | null) {
+  if (tissues === null || tissues.length === 0) {
+    sessionStorage.removeItem("selected-chromhmm-tissues");
+  } else {
+    sessionStorage.setItem("selected-chromhmm-tissues", JSON.stringify(tissues));
+  }
+}
+
+export function getLocalChromHmmTissues(): string[] {
+  const localTissues = sessionStorage.getItem("selected-chromhmm-tissues");
+  if (!localTissues) return [];
+  const localTissuesJson = JSON.parse(localTissues) as string[];
+  return localTissuesJson;
+}
