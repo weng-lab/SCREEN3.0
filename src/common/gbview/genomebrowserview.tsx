@@ -1,6 +1,6 @@
 "use client";
 import { Search } from "@mui/icons-material";
-import { Box, IconButton, Stack } from "@mui/material";
+import { Box, Button, IconButton, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
@@ -9,8 +9,8 @@ import {
   Browser,
   BulkBedConfig,
   Chromosome,
-  createBrowserStore,
-  createTrackStore,
+  createBrowserStoreMemo,
+  createTrackStoreMemo,
   DisplayMode,
   InitialBrowserState,
   Track,
@@ -37,6 +37,15 @@ import { chromHmmStateDetails, humanDefaultTracks, mouseDefaultTracks } from "./
 import { useBiosampleTracks } from "./Biosample/useBiosampleTracks";
 import { ChromHmmTooltip } from "./ChromHMM/ChromHmmTooltip";
 import { capitalizeFirstLetter } from "common/utility";
+import {
+  getLocalBrowser,
+  getLocalTracks,
+  setLocalBrowser,
+  setLocalTracks,
+  getLocalBiosamples,
+  setLocalBiosamples,
+} from "common/hooks/useLocalStorage";
+import PageviewIcon from "@mui/icons-material/Pageview";
 
 interface Transcript {
   id: string;
@@ -92,16 +101,16 @@ export default function GenomeBrowserView({
   type: AnyEntityType;
   assembly: Assembly;
 }) {
-  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(null);
+  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
   const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>([]);
 
   const initialState: InitialBrowserState = useMemo(() => {
     return {
-      domain: expandCoordinates(coordinates, type),
+      domain: getLocalBrowser(name)?.domain || expandCoordinates(coordinates, type),
       marginWidth: 150,
       trackWidth: 1350,
       multiplier: 3,
-      highlights: [
+      highlights: getLocalBrowser(name)?.highlights || [
         {
           id: name || coordinates.chromosome + ":" + coordinates.start + "-" + coordinates.end,
           domain: { chromosome: coordinates.chromosome, start: coordinates.start, end: coordinates.end },
@@ -109,13 +118,23 @@ export default function GenomeBrowserView({
         },
       ],
     };
-  }, [coordinates, type, name]);
+  }, [getLocalBrowser, coordinates, type, name]);
 
-  const browserStore = useMemo(() => createBrowserStore(initialState), [initialState]);
+  const browserStore = createBrowserStoreMemo(initialState, [initialState]);
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
+
   const domain = browserStore((state) => state.domain);
+  const highlights = browserStore((state) => state.highlights);
+
+  useEffect(() => {
+    setLocalBrowser(name, { domain, highlights });
+  }, [domain, highlights]);
+
+  useEffect(() => {
+    setLocalBiosamples(selectedBiosamples);
+  }, [selectedBiosamples]);
 
   const router = useRouter();
 
@@ -147,6 +166,46 @@ export default function GenomeBrowserView({
   );
 
   const initialTracks: Track[] = useMemo(() => {
+    const localTracks = getLocalTracks();
+
+    if (localTracks.length > 0) {
+      // Set interaction callbacks for tracks
+      localTracks.forEach((track) => {
+        if (track.trackType === TrackType.Transcript) {
+          track.geneName = name;
+          track.onHover = (item: Transcript) => {
+            addHighlight({
+              id: item.name + "-temp" || "dsadsfd",
+              domain: { start: item.coordinates.start, end: item.coordinates.end },
+              color: item.color || "blue",
+            });
+          };
+          track.onLeave = (item: Transcript) => {
+            removeHighlight(item.name + "-temp" || "dsadsfd");
+          };
+          track.onClick = (item: Transcript) => {
+            onGeneClick(item);
+          };
+        }
+        if (track.trackType === TrackType.BigBed) {
+          track.onHover = (item: Rect) => {
+            addHighlight({
+              id: item.name + "-temp" || "ihqoviun",
+              domain: { start: item.start, end: item.end },
+              color: item.color || "blue",
+            });
+          };
+          track.onLeave = (item: Rect) => {
+            removeHighlight(item.name + "-temp" || "ihqoviun");
+          };
+          track.onClick = (item: Rect) => {
+            onCcreClick(item);
+          };
+          track.tooltip = (item: Rect) => <CCRETooltip assembly={assembly} name={item.name || ""} {...item} />;
+        }
+      });
+      return localTracks;
+    }
     const tracks = assembly === "GRCh38" ? humanDefaultTracks : mouseDefaultTracks;
     const defaultTracks: Track[] = [
       {
@@ -203,12 +262,10 @@ export default function GenomeBrowserView({
     return [...defaultTracks, ...tracks];
   }, [assembly, type, name, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
-  const trackStore = useMemo(() => {
-    return createTrackStore(initialTracks);
-  }, [initialTracks]);
+  const trackStore = createTrackStoreMemo(initialTracks, [initialTracks]);
 
   const currentTracks = trackStore((state) => state.tracks);
-    const insertTrack = trackStore((state) => state.insertTrack);
+  const insertTrack = trackStore((state) => state.insertTrack);
   const removeTrack = trackStore((state) => state.removeTrack);
 
   const editTrack = trackStore((state) => state.editTrack);
@@ -229,7 +286,7 @@ export default function GenomeBrowserView({
   const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates, assembly);
 
   useEffect(() => {
-    if (!chromHmmTracks) return
+    if (!chromHmmTracks) return;
     selectedChromHmmTissues.forEach((tissue) => {
       // for each selected tissue, add bulk bed of chrom hmm tracks if not already added
       if (!currentTracks.some((t) => t.id === tissue)) {
@@ -271,8 +328,12 @@ export default function GenomeBrowserView({
         }
       });
     });
-  }, [addHighlight, chromHmmTracks, currentTracks, insertTrack, removeHighlight, removeTrack, selectedChromHmmTissues])
-  
+  }, [addHighlight, chromHmmTracks, currentTracks, insertTrack, removeHighlight, removeTrack, selectedChromHmmTissues]);
+
+  useEffect(() => {
+    setLocalTracks(currentTracks);
+  }, [currentTracks]);
+
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
       editTrack("gene-track", {
@@ -291,43 +352,55 @@ export default function GenomeBrowserView({
   const theme = useTheme();
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
-  const geneVersion = assembly === "GRCh38" ? [29, 40] : 25
+  const geneVersion = assembly === "GRCh38" ? [29, 40] : 25;
 
   return (
     <Stack>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
-        <GenomeSearch
-          size="small"
-          assembly={assembly as Assembly}
-          geneVersion={geneVersion}
-          onSearchSubmit={handeSearchSubmit}
-          queries={["Gene", "SNP", "cCRE", "Coordinate"]}
-          geneLimit={3}
-          sx={{ minWidth: "200px", width: "350px", flexShrink: 1 }}
-          slots={{
-            button: (
-              <IconButton sx={{ color: theme.palette.primary.main }}>
-                <Search />
-              </IconButton>
-            ),
-          }}
-          slotProps={{
-            input: {
-              label: "Change Browser Region",
-              sx: {
-                backgroundColor: "white",
-                "& label.Mui-focused": {
-                  color: theme.palette.primary.main,
-                },
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: theme.palette.primary.main,
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
+        <Box display="flex" gap={2} alignItems="center">
+          <GenomeSearch
+            size="small"
+            assembly={assembly as Assembly}
+            geneVersion={geneVersion}
+            onSearchSubmit={handeSearchSubmit}
+            queries={["Gene", "SNP", "cCRE", "Coordinate"]}
+            geneLimit={3}
+            sx={{ minWidth: "200px", width: "350px", flexShrink: 1 }}
+            slots={{
+              button: (
+                <IconButton sx={{ color: theme.palette.primary.main }}>
+                  <Search />
+                </IconButton>
+              ),
+            }}
+            slotProps={{
+              input: {
+                label: "Change Browser Region",
+                sx: {
+                  backgroundColor: "white",
+                  "& label.Mui-focused": {
+                    color: theme.palette.primary.main,
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused fieldset": {
+                      borderColor: theme.palette.primary.main,
+                    },
                   },
                 },
               },
-            },
-          }}
-        />
+            }}
+          />
+          <Button
+            variant="contained"
+            startIcon={<PageviewIcon />}
+            color="primary"
+            size="small"
+            onClick={() => setDomain(expandCoordinates(coordinates, type))}
+          >
+            Recenter on {name || "Selected Region"}
+          </Button>
+        </Box>
+
         <GBButtons
           browserStore={browserStore}
           assembly={assembly}
