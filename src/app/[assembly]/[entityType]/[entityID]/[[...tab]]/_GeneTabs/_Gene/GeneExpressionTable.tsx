@@ -5,7 +5,8 @@ import {
   GridRowSelectionModel,
   useGridApiRef,
   GridColDef,
-  Table
+  Table,
+  GRID_CHECKBOX_SELECTION_COL_DEF
 } from "@weng-lab/ui-components";
 import { useEffect, useMemo } from "react";
 import React from "react";
@@ -91,19 +92,19 @@ const GeneExpressionTable = ({
   }, [rows, viewBy]);
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
-  // const StopPropagationWrapper = (params) => (
-  //   <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
-  //     <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
-  //   </div>
-  // );
+  const StopPropagationWrapper = (params) => (
+    <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
+      <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
+    </div>
+  );
 
   const columns: GridColDef<PointMetadata>[] = [
-    // {
-    //   ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<PointMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
-    //   sortable: true,
-    //   hideable: false,
-    //   renderHeader: StopPropagationWrapper,
-    // },
+    {
+      ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<PointMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+      sortable: true,
+      hideable: false,
+      renderHeader: StopPropagationWrapper,
+    },
     {
       field: "biosample",
       headerName: "Sample",
