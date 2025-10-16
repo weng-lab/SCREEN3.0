@@ -28,7 +28,6 @@ export const useBiosampleTracks = (
   onLeave: (item: Rect) => void,
   onClick: (item: Rect) => void,
 ) => {
-  const tracks: Track[] = useMemo(() => [], []);
   const insertTrack = trackStore((state) => state.insertTrack);
   const currentTracks = trackStore((state) => state.tracks);
   const removeTrack = trackStore((state) => state.removeTrack);
@@ -46,7 +45,11 @@ export const useBiosampleTracks = (
     skip: !biosampleNames,
   });
 
-  if(selectedBiosamples && data && !loading) {
+  const tracks: Track[] = useMemo(() => {
+    if (!selectedBiosamples || loading) return [];
+
+    const newTracks: Track[] = [];
+
     for (const biosample of selectedBiosamples) {
       // Get available signal accessions (remove null values)
       const signals = [
@@ -72,11 +75,11 @@ export const useBiosampleTracks = (
           onLeave,
           onClick,
         };
-        tracks.push(ccreTrack);
+        newTracks.push(ccreTrack);
       }
 
       if (biosample.dnase_signal) {
-        tracks.push({
+        newTracks.push({
           id: `biosample-dnase-${biosample.name}`,
           title: `DNase-seq signal in ${biosample.displayname}`,
           titleSize: 12,
@@ -89,7 +92,7 @@ export const useBiosampleTracks = (
       }
 
       if (biosample.h3k4me3_signal) {
-        tracks.push({
+        newTracks.push({
           id: `biosample-h3k4me3-${biosample.name}`,
           title: `H3K4me3 ChIP-seq signal in ${biosample.displayname}`,
           titleSize: 12,
@@ -102,7 +105,7 @@ export const useBiosampleTracks = (
       }
 
       if (biosample.h3k27ac_signal) {
-        tracks.push({
+        newTracks.push({
           id: `biosample-h3k27ac-${biosample.name}`,
           title: `H3K27ac ChIP-seq signal in ${biosample.displayname}`,
           titleSize: 12,
@@ -115,7 +118,7 @@ export const useBiosampleTracks = (
       }
 
       if (biosample.ctcf_signal) {
-        tracks.push({
+        newTracks.push({
           id: `biosample-ctcf-${biosample.name}`,
           title: `CTCF ChIP-seq signal in ${biosample.displayname}`,
           titleSize: 12,
@@ -127,7 +130,9 @@ export const useBiosampleTracks = (
         } as BigWigConfig);
       }
     }
-  }
+
+    return newTracks;
+  }, [selectedBiosamples, loading, onHover, onLeave, onClick]);
   const rnaTracks: Track[] = useMemo(() => {
     if (!biosampleNames || loading || error || !data?.rnaSeqQuery) return [];
     const tracks: Track[] = [];
