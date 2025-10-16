@@ -356,7 +356,7 @@ export default function GenomeBrowserView({
 
   return (
     <Stack>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
         <Box display="flex" gap={2} alignItems="center">
           <GenomeSearch
             size="small"
