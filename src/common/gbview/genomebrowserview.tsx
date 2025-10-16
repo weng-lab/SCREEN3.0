@@ -1,6 +1,6 @@
 "use client";
 import { Search } from "@mui/icons-material";
-import { Box, IconButton, Stack } from "@mui/material";
+import { Box, Button, IconButton, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
@@ -45,6 +45,7 @@ import {
   getLocalBiosamples,
   setLocalBiosamples,
 } from "common/hooks/useLocalStorage";
+import PageviewIcon from "@mui/icons-material/Pageview";
 
 interface Transcript {
   id: string;
@@ -356,38 +357,50 @@ export default function GenomeBrowserView({
   return (
     <Stack>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
-        <GenomeSearch
-          size="small"
-          assembly={assembly as Assembly}
-          geneVersion={geneVersion}
-          onSearchSubmit={handeSearchSubmit}
-          queries={["Gene", "SNP", "cCRE", "Coordinate"]}
-          geneLimit={3}
-          sx={{ minWidth: "200px", width: "350px", flexShrink: 1 }}
-          slots={{
-            button: (
-              <IconButton sx={{ color: theme.palette.primary.main }}>
-                <Search />
-              </IconButton>
-            ),
-          }}
-          slotProps={{
-            input: {
-              label: "Change Browser Region",
-              sx: {
-                backgroundColor: "white",
-                "& label.Mui-focused": {
-                  color: theme.palette.primary.main,
-                },
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: theme.palette.primary.main,
+        <Box display="flex" gap={2} alignItems="center">
+          <GenomeSearch
+            size="small"
+            assembly={assembly as Assembly}
+            geneVersion={geneVersion}
+            onSearchSubmit={handeSearchSubmit}
+            queries={["Gene", "SNP", "cCRE", "Coordinate"]}
+            geneLimit={3}
+            sx={{ minWidth: "200px", width: "350px", flexShrink: 1 }}
+            slots={{
+              button: (
+                <IconButton sx={{ color: theme.palette.primary.main }}>
+                  <Search />
+                </IconButton>
+              ),
+            }}
+            slotProps={{
+              input: {
+                label: "Change Browser Region",
+                sx: {
+                  backgroundColor: "white",
+                  "& label.Mui-focused": {
+                    color: theme.palette.primary.main,
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused fieldset": {
+                      borderColor: theme.palette.primary.main,
+                    },
                   },
                 },
               },
-            },
-          }}
-        />
+            }}
+          />
+          <Button
+            variant="contained"
+            startIcon={<PageviewIcon />}
+            color="primary"
+            size="small"
+            onClick={() => setDomain(expandCoordinates(coordinates, type))}
+          >
+            Recenter on {name || "Selected Region"}
+          </Button>
+        </Box>
+
         <GBButtons
           browserStore={browserStore}
           assembly={assembly}
