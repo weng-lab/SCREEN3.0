@@ -41,6 +41,8 @@ import {
   setLocalTracks,
   getLocalBiosamples,
   setLocalBiosamples,
+  getLocalChromHmmTissues,
+  setLocalChromHmmTissues,
 } from "common/hooks/useLocalStorage";
 import PageviewIcon from "@mui/icons-material/Pageview";
 
@@ -99,7 +101,7 @@ export default function GenomeBrowserView({
   assembly: Assembly;
 }) {
   const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
-  const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>([]);
+  const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>(getLocalChromHmmTissues());
 
   const initialState: InitialBrowserState = useMemo(() => {
     return {
@@ -132,6 +134,10 @@ export default function GenomeBrowserView({
   useEffect(() => {
     setLocalBiosamples(selectedBiosamples);
   }, [selectedBiosamples]);
+
+  useEffect(() => {
+    setLocalChromHmmTissues(selectedChromHmmTissues);
+  }, [selectedChromHmmTissues]);
 
   const router = useRouter();
 
