@@ -1,16 +1,18 @@
-import { FormControl, FormLabel, IconButton, MenuItem, Select, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { FormControl, IconButton, MenuItem, Select, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import {
     gridFilteredSortedRowEntriesSelector,
     GridRowSelectionModel,
     useGridApiRef,
     GridColDef,
-    Table
+    Table,
+    GRID_CHECKBOX_SELECTION_COL_DEF
 } from "@weng-lab/ui-components";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility"
 import { SharedTranscriptExpressionPlotProps, TranscriptExpressionProps, TranscriptMetadata } from "./TranscriptExpression";
+import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 export type TranscriptExpressionTableProps = TranscriptExpressionProps &
     SharedTranscriptExpressionPlotProps
@@ -27,6 +29,7 @@ const TranscriptExpressionTable = ({
     rows,
     scale
 }: TranscriptExpressionTableProps) => {
+    const [autoSort, setAutoSort] = useState<boolean>(false);
     const { data, loading, error } = transcriptExpressionData;
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -85,19 +88,19 @@ const TranscriptExpressionTable = ({
 
 
     //This is used to prevent sorting from happening when clicking on the header checkbox
-    // const StopPropagationWrapper = (params) => (
-    //   <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
-    //     <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
-    //   </div>
-    // );
+    const StopPropagationWrapper = (params) => (
+        <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
+            <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
+        </div>
+    );
 
     const columns: GridColDef<TranscriptMetadata>[] = [
-        // {
-        //   ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<TranscriptMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
-        //   sortable: true,
-        //   hideable: false,
-        //   renderHeader: StopPropagationWrapper,
-        // },
+        {
+            ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<TranscriptMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+            sortable: true,
+            hideable: false,
+            renderHeader: StopPropagationWrapper,
+        },
         {
             field: "biosample",
             headerName: "Sample",
@@ -194,12 +197,39 @@ const TranscriptExpressionTable = ({
         }
     };
 
+    const AutoSortToolbar = useMemo(() => {
+        return (
+            <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />
+        )
+    }, [autoSort])
+
+    // handle auto sorting 
     useEffect(() => {
-        const isCustomSorted = viewBy === "tissue";
-        if (isCustomSorted && apiRef?.current) {
-            apiRef.current.setSortModel([]); // completely clears internal sort
+        const api = apiRef?.current;
+        if (!api) return;
+
+        const hasSelection = selected?.length > 0;
+
+        // handle sort by tissue special case
+        if (viewBy === "tissue") {
+            if (!autoSort || !hasSelection) {
+                api.setSortModel([]); // clear when autoSort off OR no selection
+            } else {
+                api.setSortModel([{ field: "__check__", sort: "desc" }]);
+            }
+            return;
         }
-    }, [viewBy, apiRef]);
+
+        // all other views
+        if (!autoSort) {
+            //reset sort if none selected
+            api.setSortModel([{ field: "rpm", sort: "desc" }]);
+            return;
+        }
+
+        //sort by checkboxes if some selected, otherwise sort by tpm
+        api.setSortModel([{ field: hasSelection ? "__check__" : "rpm", sort: "desc" }]);
+    }, [apiRef, autoSort, selected, viewBy]);
 
     return (
         <>
@@ -207,7 +237,7 @@ const TranscriptExpressionTable = ({
                 apiRef={apiRef}
                 label={
                     <>
-                        <Typography mr={1}>TSS Expression at</Typography>
+                        <Typography mr={1} display={{xs: "none", md: "inherit"}}>TSS Expression at</Typography>
                         <FormControl>
                             <Select
                                 value={selectedPeak}
@@ -247,6 +277,7 @@ const TranscriptExpressionTable = ({
                 // -- End Selection Props --
                 onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
                 divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
+                toolbarSlot={AutoSortToolbar}
             />
         </>
     );

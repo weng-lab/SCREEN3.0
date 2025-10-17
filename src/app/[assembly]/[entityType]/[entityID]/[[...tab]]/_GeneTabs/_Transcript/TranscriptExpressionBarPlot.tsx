@@ -28,8 +28,13 @@ const TranscriptExpressionBarPlot = ({
 }: TranscriptExpressionBarPlotProps) => {
 
     const makeLabel = (data) => {
-        const biosample = capitalizeFirstLetter(data.biosampleSummary.replaceAll("_", " "))
-        return `${data.value.toFixed(2)}, ${biosample} (${data.expAccession}) (${data.strand})`
+        const maxLength = 20;
+        let name = data.biosampleSummary.replaceAll("_", " ")
+        if (name.length > maxLength) {
+            name = name.slice(0, maxLength) + '...';
+        }
+        name = capitalizeFirstLetter(name);
+        return `${data.value.toFixed(2)}, ${name} (${data.expAccession}) (${data.strand})`
     }
 
     const plotData: BarData<TranscriptMetadata>[] = useMemo(() => {

@@ -230,7 +230,6 @@ const GeneExpressionTable = ({
     api.setSortModel([{ field: hasSelection ? "__check__" : "tpm", sort: "desc" }]);
   }, [apiRef, autoSort, selected, viewBy]);
 
-
   return (
     <>
       <Table
