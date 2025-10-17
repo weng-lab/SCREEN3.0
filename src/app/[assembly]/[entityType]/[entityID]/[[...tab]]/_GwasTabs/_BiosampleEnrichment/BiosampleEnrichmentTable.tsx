@@ -1,9 +1,8 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Typography, useMediaQuery, useTheme } from "@mui/material";
-
-import { Table } from "@weng-lab/ui-components";
+import { Table, GRID_CHECKBOX_SELECTION_COL_DEF } from "@weng-lab/ui-components";
 import { OpenInNew } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
 import { capitalizeFirstLetter } from "common/utility";
@@ -14,6 +13,7 @@ import {
   useGridApiRef,
   GridColDef,
 } from "@mui/x-data-grid-pro";
+import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 export type BiosampleEnrichmentTableProps = {
   enrichmentdata: UseGWASEnrichmentReturn;
@@ -29,6 +29,7 @@ const BiosampleEnrichmentTable = ({
   selected,
   sortedFilteredData,
 }: BiosampleEnrichmentTableProps) => {
+  const [autoSort, setAutoSort] = useState<boolean>(false);
   const { data, loading, error } = enrichmentdata;
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -66,7 +67,20 @@ const BiosampleEnrichmentTable = ({
     }
   };
 
+  //This is used to prevent sorting from happening when clicking on the header checkbox
+  const StopPropagationWrapper = (params) => (
+    <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
+      <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
+    </div>
+  );
+
   const columns: GridColDef<(typeof data)[number]>[] = [
+    {
+      ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<GWASEnrichment>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+      sortable: true,
+      hideable: false,
+      renderHeader: StopPropagationWrapper,
+    },
     {
       field: "displayname",
       headerName: "Biosample",
@@ -134,6 +148,26 @@ const BiosampleEnrichmentTable = ({
     </Tooltip>
   ), []);
 
+  const AutoSortToolbar = useMemo(() => {
+    return (
+      <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />
+    )
+  }, [autoSort])
+
+  // handle auto sorting 
+  useEffect(() => {
+    const api = apiRef?.current;
+    if (!api) return;
+    if (!autoSort) {
+      //reset sort if none selected
+      api.setSortModel([{ field: "fc", sort: "desc" }]);
+      return;
+    }
+
+    //sort by checkboxes if some selected, otherwise sort by tpm
+    api.setSortModel([{ field: selected?.length > 0 ? "__check__" : "fc", sort: "desc" }]);
+  }, [apiRef, autoSort, selected]);
+
   return error ? (
     <Typography>Error Fetching GWAS Enrichment</Typography>
   ) : (
@@ -159,6 +193,7 @@ const BiosampleEnrichmentTable = ({
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structur
         divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
         labelTooltip={tooltip}
+        toolbarSlot={AutoSortToolbar}
       />
     </>
   );

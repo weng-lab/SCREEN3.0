@@ -12,6 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew, Sort } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility"
+import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 export type GeneExpressionTableProps = GeneExpressionProps &
   SharedGeneExpressionPlotProps
@@ -26,7 +27,7 @@ const GeneExpressionTable = ({
   sortedFilteredData,
   viewBy,
 }: GeneExpressionTableProps) => {
-  const [autoSort, setAutoSort] = useState<boolean>(false)
+  const [autoSort, setAutoSort] = useState<boolean>(false);
   const { data, loading, error } = geneExpressionData;
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -195,20 +196,9 @@ const GeneExpressionTable = ({
     }
   };
 
-  const AutoSortSwitch = useMemo(() => {
+  const AutoSortToolbar = useMemo(() => {
     return (
-      <Tooltip title="Auto sort selected rows">
-        <FormControlLabel
-          value="autoSort"
-          control={<Switch color="primary" size="small" sx={{ mr: 1 }} checked={autoSort} onChange={(_, checked) => setAutoSort(checked)} />}
-          label={
-            <Box sx={{ display: "flex", alignItems: "center", lineHeight: 1 }}>
-              <Sort fontSize="small" />
-            </Box>
-          }
-          labelPlacement="start"
-        />
-      </Tooltip>
+      <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort}/>
     )
   }, [autoSort])
 
@@ -265,7 +255,7 @@ const GeneExpressionTable = ({
         // -- End Selection Props --
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
         divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
-        toolbarSlot={AutoSortSwitch}
+        toolbarSlot={AutoSortToolbar}
       />
     </>
   );
