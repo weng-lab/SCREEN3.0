@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import { Box, LinearProgress, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "types/generated";
-import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
+import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import { CcreClass, GenomicRange } from "types/globalTypes";
 import { GROUP_COLOR_MAP } from "common/lib/colors";
 import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
@@ -146,7 +146,20 @@ const ctAgnosticCols: GridColDef[] = [
   },
 ];
 
+//This is used to prevent sorting from happening when clicking on the header checkbox
+const StopPropagationWrapper = (params) => (
+  <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
+    <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
+  </div>
+);
+
 const getCoreAndPartialCols = (): GridColDef[] => [
+  {
+    ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+    sortable: true,
+    hideable: false,
+    renderHeader: StopPropagationWrapper,
+  },
   {
     headerName: "Cell Type",
     field: "displayname",

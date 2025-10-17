@@ -1,5 +1,5 @@
 import { SharedAssayViewPlotProps } from "./AssayView";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import {
   GridColumnVisibilityModel,
@@ -9,6 +9,7 @@ import {
   useGridApiRef,
 } from "@weng-lab/ui-components";
 import { useMediaQuery, useTheme } from "@mui/material";
+import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 const assays: Assay[] = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"];
 
@@ -49,6 +50,7 @@ const AssayTable = ({
   setSortedFilteredData,
   viewBy,
 }: SharedAssayViewPlotProps) => {
+  const [autoSort, setAutoSort] = useState<boolean>(false);
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -146,12 +148,39 @@ const AssayTable = ({
     apiRef.current.sortColumn(assay, "desc");
   }, [apiRef, assay]);
 
+  const AutoSortToolbar = useMemo(() => {
+    return (
+      <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />
+    )
+  }, [autoSort])
+
+  // handle auto sorting 
   useEffect(() => {
-          const isCustomSorted = viewBy === "tissue";
-          if (isCustomSorted && apiRef?.current) {
-              apiRef.current.setSortModel([]); // completely clears internal sort
-          }
-      }, [viewBy, apiRef, assay]);
+    const api = apiRef?.current;
+    if (!api) return;
+
+    const hasSelection = selected?.length > 0;
+
+    // handle sort by tissue special case
+    if (viewBy === "tissue") {
+      if (!autoSort || !hasSelection) {
+        api.setSortModel([]); // clear when autoSort off OR no selection
+      } else {
+        api.setSortModel([{ field: "__check__", sort: "desc" }]);
+      }
+      return;
+    }
+
+    // all other views
+    if (!autoSort) {
+      //reset sort if none selected
+      api.setSortModel([{ field: assay, sort: "desc" }]);
+      return;
+    }
+
+    //sort by checkboxes if some selected, otherwise sort by tpm
+    api.setSortModel([{ field: hasSelection ? "__check__" : assay, sort: "desc" }]);
+  }, [apiRef, assay, autoSort, selected, viewBy]);
 
   /**
    * Resize cols on assay change. Need to use requestAnimationFrame to queue this update until after
@@ -191,6 +220,7 @@ const AssayTable = ({
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: [{ field: assay, sort: "desc" }] },
       }}
+      toolbarSlot={AutoSortToolbar}
     />
   );
 };
