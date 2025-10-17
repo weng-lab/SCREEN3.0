@@ -1,5 +1,5 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
-import { IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { Box, FormControlLabel, IconButton, Switch, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
@@ -8,9 +8,9 @@ import {
   Table,
   GRID_CHECKBOX_SELECTION_COL_DEF
 } from "@weng-lab/ui-components";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import React from "react";
-import { OpenInNew } from "@mui/icons-material";
+import { OpenInNew, Sort } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility"
 
 export type GeneExpressionTableProps = GeneExpressionProps &
@@ -26,6 +26,7 @@ const GeneExpressionTable = ({
   sortedFilteredData,
   viewBy,
 }: GeneExpressionTableProps) => {
+  const [autoSort, setAutoSort] = useState<boolean>(false)
   const { data, loading, error } = geneExpressionData;
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -55,9 +56,6 @@ const GeneExpressionTable = ({
           acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getTPM(item));
           return acc;
         }, {});
-
-        const test = result.filter((item) => item.tissue === "heart")
-        console.log(test)
 
         result.sort((a, b) => {
           const tissueA = getTissue(a);
@@ -197,13 +195,51 @@ const GeneExpressionTable = ({
     }
   };
 
+  const AutoSortSwitch = useMemo(() => {
+    return (
+      <Tooltip title="Auto sort selected rows">
+        <FormControlLabel
+          value="autoSort"
+          control={<Switch color="primary" size="small" sx={{ mr: 1 }} checked={autoSort} onChange={(_, checked) => setAutoSort(checked)} />}
+          label={
+            <Box sx={{ display: "flex", alignItems: "center", lineHeight: 1 }}>
+              <Sort fontSize="small" />
+            </Box>
+          }
+          labelPlacement="start"
+        />
+      </Tooltip>
+    )
+  }, [autoSort])
 
+  // handle auto sorting 
   useEffect(() => {
-    const isCustomSorted = viewBy === "byTissueTPM";
-    if (isCustomSorted && apiRef?.current) {
-      apiRef.current.setSortModel([]); // completely clears internal sort
+    const api = apiRef?.current;
+    if (!api) return;
+
+    const hasSelection = selected?.length > 0;
+
+    // handle sort by tissue special case
+    if (viewBy === "byTissueTPM") {
+      if (!autoSort || !hasSelection) {
+        api.setSortModel([]); // clear when autoSort off OR no selection
+      } else {
+        api.setSortModel([{ field: "__check__", sort: "desc" }]);
+      }
+      return;
     }
-  }, [viewBy, apiRef]);
+
+    // all other views
+    if (!autoSort) {
+      //reset sort if none selected
+      api.setSortModel([{ field: "tpm", sort: "desc" }]);
+      return;
+    }
+
+    //sort by checkboxes if some selected, otherwise sort by tpm
+    api.setSortModel([{ field: hasSelection ? "__check__" : "tpm", sort: "desc" }]);
+  }, [apiRef, autoSort, selected, viewBy]);
+
 
   return (
     <>
@@ -229,6 +265,7 @@ const GeneExpressionTable = ({
         // -- End Selection Props --
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
         divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
+        toolbarSlot={AutoSortSwitch}
       />
     </>
   );
