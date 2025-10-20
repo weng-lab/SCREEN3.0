@@ -5,6 +5,8 @@ import {
   GridColumnVisibilityModel,
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
+  GridSortDirection,
+  GridSortModel,
   Table,
   useGridApiRef,
 } from "@weng-lab/ui-components";
@@ -154,6 +156,10 @@ const AssayTable = ({
     )
   }, [autoSort])
 
+  const initialSort: GridSortModel = useMemo(() =>
+    [{ field: assay, sort: "desc" as GridSortDirection }],
+    [assay]);
+
   // handle auto sorting 
   useEffect(() => {
     const api = apiRef?.current;
@@ -174,13 +180,13 @@ const AssayTable = ({
     // all other views
     if (!autoSort) {
       //reset sort if none selected
-      api.setSortModel([{ field: assay, sort: "desc" }]);
+      api.setSortModel(initialSort);
       return;
     }
 
     //sort by checkboxes if some selected, otherwise sort by tpm
-    api.setSortModel([{ field: hasSelection ? "__check__" : assay, sort: "desc" }]);
-  }, [apiRef, assay, autoSort, selected, viewBy]);
+    api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
+  }, [apiRef, autoSort, initialSort, selected, viewBy]);
 
   /**
    * Resize cols on assay change. Need to use requestAnimationFrame to queue this update until after
@@ -218,7 +224,7 @@ const AssayTable = ({
       divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
-        sorting: { sortModel: [{ field: assay, sort: "desc" }] },
+        sorting: { sortModel: initialSort },
       }}
       toolbarSlot={AutoSortToolbar}
     />

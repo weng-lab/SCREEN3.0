@@ -5,7 +5,9 @@ import {
     useGridApiRef,
     GridColDef,
     Table,
-    GRID_CHECKBOX_SELECTION_COL_DEF
+    GRID_CHECKBOX_SELECTION_COL_DEF,
+    GridSortDirection,
+    GridSortModel
 } from "@weng-lab/ui-components";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
@@ -203,6 +205,10 @@ const TranscriptExpressionTable = ({
         )
     }, [autoSort])
 
+    const initialSort: GridSortModel = useMemo(() =>
+        [{ field: "rpm", sort: "desc" as GridSortDirection }],
+        []);
+
     // handle auto sorting 
     useEffect(() => {
         const api = apiRef?.current;
@@ -223,13 +229,13 @@ const TranscriptExpressionTable = ({
         // all other views
         if (!autoSort) {
             //reset sort if none selected
-            api.setSortModel([{ field: "rpm", sort: "desc" }]);
+            api.setSortModel(initialSort);
             return;
         }
 
         //sort by checkboxes if some selected, otherwise sort by tpm
-        api.setSortModel([{ field: hasSelection ? "__check__" : "rpm", sort: "desc" }]);
-    }, [apiRef, autoSort, selected, viewBy]);
+        api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
+    }, [apiRef, autoSort, initialSort, selected, viewBy]);
 
     return (
         <>
@@ -263,7 +269,7 @@ const TranscriptExpressionTable = ({
                 pageSizeOptions={[10, 25, 50]}
                 initialState={{
                     sorting: {
-                        sortModel: [{ field: "rpm", sort: "desc" }],
+                        sortModel: initialSort,
                     },
                 }}
                 downloadFileName={"TSS Expression at " + selectedPeak}

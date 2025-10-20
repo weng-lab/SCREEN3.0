@@ -1,6 +1,6 @@
 import { TranscriptMetadata, SharedTranscriptExpressionPlotProps, TranscriptExpressionProps } from "./TranscriptExpression"
 import { useMemo } from "react"
-import { capitalizeFirstLetter, capitalizeWords } from "common/utility"
+import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility"
 import { Box, Typography } from "@mui/material"
 import { tissueColors } from "common/lib/colors"
 import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
@@ -27,16 +27,6 @@ const TranscriptExpressionBarPlot = ({
     ...rest
 }: TranscriptExpressionBarPlotProps) => {
 
-    const makeLabel = (data) => {
-        const maxLength = 20;
-        let name = data.biosampleSummary.replaceAll("_", " ")
-        if (name.length > maxLength) {
-            name = name.slice(0, maxLength) + '...';
-        }
-        name = capitalizeFirstLetter(name);
-        return `${data.value.toFixed(2)}, ${name} (${data.expAccession}) (${data.strand})`
-    }
-
     const plotData: BarData<TranscriptMetadata>[] = useMemo(() => {
         if (!sortedFilteredData) return []
         return (
@@ -46,7 +36,7 @@ const TranscriptExpressionBarPlot = ({
                 return (
                     {
                         category: capitalizeWords(x.organ),
-                        label: makeLabel(x),
+                        label: capitalizeFirstLetter(truncateString(x.biosampleSummary, 20)),
                         value: x.value,
                         color: (anySelected && isSelected || !anySelected) ? tissueColors[x.organ] ?? tissueColors.missing : '#CCCCCC',
                         metadata: x,

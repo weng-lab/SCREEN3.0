@@ -1,16 +1,18 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
-import { Box, FormControlLabel, IconButton, Switch, Tooltip, useMediaQuery, useTheme } from "@mui/material";
+import { IconButton, useMediaQuery, useTheme } from "@mui/material";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   useGridApiRef,
   GridColDef,
   Table,
-  GRID_CHECKBOX_SELECTION_COL_DEF
+  GRID_CHECKBOX_SELECTION_COL_DEF,
+  GridSortModel, 
+  GridSortDirection
 } from "@weng-lab/ui-components";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
-import { OpenInNew, Sort } from "@mui/icons-material";
+import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility"
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 
@@ -202,6 +204,10 @@ const GeneExpressionTable = ({
     )
   }, [autoSort])
 
+  const initialSort: GridSortModel = useMemo(() =>
+    [{ field: "tpm", sort: "desc" as GridSortDirection }],
+    []);
+
   // handle auto sorting 
   useEffect(() => {
     const api = apiRef?.current;
@@ -222,13 +228,13 @@ const GeneExpressionTable = ({
     // all other views
     if (!autoSort) {
       //reset sort if none selected
-      api.setSortModel([{ field: "tpm", sort: "desc" }]);
+      api.setSortModel(initialSort);
       return;
     }
 
     //sort by checkboxes if some selected, otherwise sort by tpm
-    api.setSortModel([{ field: hasSelection ? "__check__" : "tpm", sort: "desc" }]);
-  }, [apiRef, autoSort, selected, viewBy]);
+    api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
+  }, [apiRef, autoSort, initialSort, selected, viewBy]);
 
   return (
     <>
@@ -241,7 +247,7 @@ const GeneExpressionTable = ({
         pageSizeOptions={[10, 25, 50]}
         initialState={{
           sorting: {
-            sortModel: [{ field: "tpm", sort: "desc" }],
+            sortModel: initialSort,
           },
         }}
         // -- Selection Props --

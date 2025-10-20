@@ -12,6 +12,8 @@ import {
   GridRowSelectionModel,
   useGridApiRef,
   GridColDef,
+  GridSortDirection,
+  GridSortModel,
 } from "@mui/x-data-grid-pro";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 
@@ -148,6 +150,10 @@ const BiosampleEnrichmentTable = ({
     </Tooltip>
   ), []);
 
+  const initialSort: GridSortModel = useMemo(() =>
+    [{ field: "fc", sort: "desc" as GridSortDirection }],
+    []);
+
   const AutoSortToolbar = useMemo(() => {
     return (
       <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />
@@ -160,13 +166,13 @@ const BiosampleEnrichmentTable = ({
     if (!api) return;
     if (!autoSort) {
       //reset sort if none selected
-      api.setSortModel([{ field: "fc", sort: "desc" }]);
+      api.setSortModel(initialSort);
       return;
     }
 
     //sort by checkboxes if some selected, otherwise sort by tpm
-    api.setSortModel([{ field: selected?.length > 0 ? "__check__" : "fc", sort: "desc" }]);
-  }, [apiRef, autoSort, selected]);
+    api.setSortModel(selected?.length > 0 ? [{ field:  "__check__", sort: "desc" }] : initialSort);
+  }, [apiRef, autoSort, initialSort, selected]);
 
   return error ? (
     <Typography>Error Fetching GWAS Enrichment</Typography>
@@ -182,7 +188,7 @@ const BiosampleEnrichmentTable = ({
         emptyTableFallback={"No Suggested Biosamples found for this study"}
         initialState={{
           sorting: {
-            sortModel: [{ field: "fc", sort: "desc" }],
+            sortModel: initialSort,
           },
         }}
         checkboxSelection
