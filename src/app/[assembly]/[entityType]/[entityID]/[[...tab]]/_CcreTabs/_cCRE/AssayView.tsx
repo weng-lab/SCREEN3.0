@@ -1,6 +1,6 @@
 import { GridColDef } from "@weng-lab/ui-components";
 import { Assay, BiosampleRow } from "./BiosampleActivity";
-import { Dispatch, SetStateAction, useMemo, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayout";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
@@ -35,6 +35,11 @@ const AssayView = (props: AssayViewProps) => {
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
   const scatterRef = useRef<DownloadPlotHandle>(null);
+
+  useEffect(() => {
+    if (!props.assay) return
+    setSelected([])
+  }, [props.assay])
 
   const sharedAssayViewPlotProps: SharedAssayViewPlotProps = useMemo(
     () => ({

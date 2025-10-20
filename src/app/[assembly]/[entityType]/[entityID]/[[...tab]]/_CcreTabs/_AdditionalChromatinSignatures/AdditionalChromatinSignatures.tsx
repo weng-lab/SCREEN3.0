@@ -1,17 +1,15 @@
 import { EntityViewComponentProps } from "common/EntityDetails/entityTabsConfig";
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { DataTable, GridColDef, Table } from "@weng-lab/ui-components";
-import Grid from "@mui/material/Grid";
-import { Box, CircularProgress, LinearProgress, Stack, Tab, Typography } from "@mui/material";
+import { GridColDef, Table } from "@weng-lab/ui-components";
+import { Box, Stack, Tab } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "types/globalTypes";
 import { gql } from "types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
-import { CHROM_HMM_STATES, getChromHmmStateDisplayname, stateDetails, useChromHMMData } from "common/hooks/useChromHmmData";
+import { CHROM_HMM_STATES, getChromHmmStateDisplayname, useChromHMMData } from "common/hooks/useChromHmmData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { ProportionsBar, getProportionsFromArray } from "common/components/ProportionsBar";
-import { ParentSize } from "@visx/responsive";
 import { chromHmmStateDetails } from "common/gbview/constants";
 
 const ENTEx_QUERY = gql(`

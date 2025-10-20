@@ -5,12 +5,16 @@ import {
   GridRowSelectionModel,
   useGridApiRef,
   GridColDef,
-  Table
+  Table,
+  GRID_CHECKBOX_SELECTION_COL_DEF,
+  GridSortModel, 
+  GridSortDirection
 } from "@weng-lab/ui-components";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility"
+import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 export type GeneExpressionTableProps = GeneExpressionProps &
   SharedGeneExpressionPlotProps
@@ -25,6 +29,7 @@ const GeneExpressionTable = ({
   sortedFilteredData,
   viewBy,
 }: GeneExpressionTableProps) => {
+  const [autoSort, setAutoSort] = useState<boolean>(false);
   const { data, loading, error } = geneExpressionData;
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -54,9 +59,6 @@ const GeneExpressionTable = ({
           acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getTPM(item));
           return acc;
         }, {});
-
-        const test = result.filter((item) => item.tissue === "heart")
-        console.log(test)
 
         result.sort((a, b) => {
           const tissueA = getTissue(a);
@@ -91,19 +93,19 @@ const GeneExpressionTable = ({
   }, [rows, viewBy]);
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
-  // const StopPropagationWrapper = (params) => (
-  //   <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
-  //     <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
-  //   </div>
-  // );
+  const StopPropagationWrapper = (params) => (
+    <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
+      <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
+    </div>
+  );
 
   const columns: GridColDef<PointMetadata>[] = [
-    // {
-    //   ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<PointMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
-    //   sortable: true,
-    //   hideable: false,
-    //   renderHeader: StopPropagationWrapper,
-    // },
+    {
+      ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<PointMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+      sortable: true,
+      hideable: false,
+      renderHeader: StopPropagationWrapper,
+    },
     {
       field: "biosample",
       headerName: "Sample",
@@ -196,27 +198,56 @@ const GeneExpressionTable = ({
     }
   };
 
+  const AutoSortToolbar = useMemo(() => {
+    return (
+      <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort}/>
+    )
+  }, [autoSort])
 
+  const initialSort: GridSortModel = useMemo(() =>
+    [{ field: "tpm", sort: "desc" as GridSortDirection }],
+    []);
+
+  // handle auto sorting 
   useEffect(() => {
-    const isCustomSorted = viewBy === "byTissueTPM";
-    if (isCustomSorted && apiRef?.current) {
-      apiRef.current.setSortModel([]); // completely clears internal sort
+    const api = apiRef?.current;
+    if (!api) return;
+
+    const hasSelection = selected?.length > 0;
+
+    // handle sort by tissue special case
+    if (viewBy === "byTissueTPM") {
+      if (!autoSort || !hasSelection) {
+        api.setSortModel([]); // clear when autoSort off OR no selection
+      } else {
+        api.setSortModel([{ field: "__check__", sort: "desc" }]);
+      }
+      return;
     }
-  }, [viewBy, apiRef]);
+
+    // all other views
+    if (!autoSort) {
+      //reset sort if none selected
+      api.setSortModel(initialSort);
+      return;
+    }
+
+    //sort by checkboxes if some selected, otherwise sort by tpm
+    api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
+  }, [apiRef, autoSort, initialSort, selected, viewBy]);
 
   return (
     <>
       <Table
         apiRef={apiRef}
         label={`${geneData?.data.name} Expression`}
-        density="standard"
         rows={transformedData}
         columns={columns}
         loading={loading}
         pageSizeOptions={[10, 25, 50]}
         initialState={{
           sorting: {
-            sortModel: [{ field: "tpm", sort: "desc" }],
+            sortModel: initialSort,
           },
         }}
         // -- Selection Props --
@@ -228,6 +259,7 @@ const GeneExpressionTable = ({
         // -- End Selection Props --
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
         divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
+        toolbarSlot={AutoSortToolbar}
       />
     </>
   );
