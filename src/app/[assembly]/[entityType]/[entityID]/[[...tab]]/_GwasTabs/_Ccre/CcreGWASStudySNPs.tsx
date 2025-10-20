@@ -225,7 +225,7 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
             )},
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.h3k27ac
-                ? row.ctspecific.enhancer_zscore.toFixed(2)
+                ? row.ctspecific.h3k27ac_zscore.toFixed(2)
                 : row.enhancer_zscore.toFixed(2),
           },
         ]
@@ -235,7 +235,7 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
           {
             field:
               selectedBiosample && selectedBiosample.h3k4me3
-                ? "ctspecific.promoter_zscore"
+                ? "ctspecific.h3k4me3_zscore"
                 : "promoter_zscore",
             renderHeader: () => { 
               const headerVal = selectedBiosample && selectedBiosample.h3k4me3 ? "H3k4me3" : "H3k4me3 max Z"
@@ -246,7 +246,7 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
             )},
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.h3k4me3
-                ? row.ctspecific.promoter_zscore.toFixed(2)
+                ? row.ctspecific.h3k4me3_zscore.toFixed(2)
                 : row.promoter_zscore.toFixed(2),
           },
         ]
