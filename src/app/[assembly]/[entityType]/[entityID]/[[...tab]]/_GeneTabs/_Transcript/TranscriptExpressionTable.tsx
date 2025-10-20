@@ -257,7 +257,6 @@ const TranscriptExpressionTable = ({
                         </FormControl>
                     </>
                 }
-                density="standard"
                 rows={transformedData}
                 columns={columns}
                 loading={loading}

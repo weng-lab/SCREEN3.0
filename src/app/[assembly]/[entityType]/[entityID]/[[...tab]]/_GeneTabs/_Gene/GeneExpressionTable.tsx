@@ -235,7 +235,6 @@ const GeneExpressionTable = ({
       <Table
         apiRef={apiRef}
         label={`${geneData?.data.name} Expression`}
-        density="standard"
         rows={transformedData}
         columns={columns}
         loading={loading}
