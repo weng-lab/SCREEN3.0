@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/system";
 import { Point, ScatterPlot } from "@weng-lab/visualization";
 import { SharedAssayViewPlotProps } from "./AssayView";
-import { tissueColors } from "common/lib/colors";
+import { tissueColors } from "common/colors";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import {  useCallback, useMemo, useState } from "react";
 import { gql } from "types/generated";

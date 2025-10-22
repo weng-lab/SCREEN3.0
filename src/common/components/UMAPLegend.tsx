@@ -5,7 +5,7 @@ import { Point } from "@weng-lab/visualization";
 import { defaultStyles, useTooltip, useTooltipInPortal } from "@visx/tooltip";
 import { TooltipInPortalProps } from "@visx/tooltip/lib/hooks/useTooltipInPortal";
 import { localPoint } from "@visx/event";
-import { tissueColors } from "common/lib/colors"
+import { tissueColors } from "common/colors"
 import { interpolateYlOrRd } from "d3-scale-chromatic";
 import { ScaleLinear } from "d3-scale";
 import { generateDomain } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpressionUMAP";

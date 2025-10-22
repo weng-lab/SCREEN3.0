@@ -23,7 +23,7 @@ import { DataTable, DataTableColumn } from "@weng-lab/ui-components"
 import { ScatterPlot, Point } from "@weng-lab/visualization"
 import Config from "../../config.json"
 import { BiosampleUMAP, PointMetaData } from "./types"
-import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/lib/colors"
+import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/colors"
 import { UMAP_QUERY } from "./queries"
 import BiosampleTables from "../../common/components/BiosampleTables/BiosampleTables"
 

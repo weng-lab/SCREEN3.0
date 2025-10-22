@@ -3,7 +3,7 @@
  */
 'use server'
 import { ApolloQueryResult, gql } from "@apollo/client"
-import { getClient } from "common/lib/client";
+import { getClient } from "common/apollo/client";
 
 const cCRE_QUERY = gql`
   query ccreSearchQuery_1(

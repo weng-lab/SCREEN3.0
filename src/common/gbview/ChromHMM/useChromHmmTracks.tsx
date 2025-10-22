@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { BulkBedConfig, DisplayMode, TrackStoreInstance, TrackType } from "@weng-lab/genomebrowser";
-import { tissueColors } from "common/lib/colors";
+import { tissueColors } from "common/colors";
 import { capitalizeFirstLetter } from "common/utility";
 import { ChromHmmTooltip } from "./ChromHmmTooltip";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";

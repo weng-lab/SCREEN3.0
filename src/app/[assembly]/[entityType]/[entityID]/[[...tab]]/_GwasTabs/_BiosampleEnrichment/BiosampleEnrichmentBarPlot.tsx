@@ -3,7 +3,7 @@ import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnr
 import { BarPlot, BarData, BarPlotProps, DownloadPlotHandle } from "@weng-lab/visualization";
 import { Box } from "@mui/material";
 import { capitalizeFirstLetter } from "common/utility";
-import { tissueColors } from "common/lib/colors";
+import { tissueColors } from "common/colors";
 import { useMemo } from "react";
 export type BiosampleEnrichmentBarPlotProps = {
   data: UseGWASEnrichmentReturn;

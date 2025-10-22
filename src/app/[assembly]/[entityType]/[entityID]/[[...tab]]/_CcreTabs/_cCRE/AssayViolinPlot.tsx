@@ -2,7 +2,7 @@ import { Box } from "@mui/system";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { SharedAssayViewPlotProps } from "./AssayView";
 import { capitalizeFirstLetter } from "common/utility";
-import { tissueColors } from "common/lib/colors";
+import { tissueColors } from "common/colors";
 import { BiosampleRow, formatAssay } from "./BiosampleActivity";
 import { useMemo, useState } from "react";
 import AssayPlotControls from "./AssayPlotControls";

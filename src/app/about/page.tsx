@@ -6,7 +6,7 @@ import Image from "next/image"
 import encodeEncyclopedia from "../../../public/assets/about/images/encodeencyclopedia.png"
 import classifications from "../../../public/assets/about/images/classifications.png"
 import biosamples from "../../../public/assets/about/images/biosamples.png"
-import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS } from "../../common/lib/colors"
+import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS } from "../../common/colors"
 import ContactForm from "./contactForm";
 import { LinkComponent } from "common/components/LinkComponent"
 

@@ -2,7 +2,7 @@ import { TranscriptMetadata, SharedTranscriptExpressionPlotProps, TranscriptExpr
 import { useMemo } from "react"
 import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility"
 import { Box, Typography } from "@mui/material"
-import { tissueColors } from "common/lib/colors"
+import { tissueColors } from "common/colors"
 import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
 import TranscriptPlotControls from "./TranscriptPlotControls"
 

@@ -2,7 +2,7 @@ import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } fro
 import { useCallback, useMemo } from "react"
 import { capitalizeFirstLetter } from "common/utility"
 import { Box, Typography } from "@mui/material"
-import { tissueColors } from "common/lib/colors"
+import { tissueColors } from "common/colors"
 import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
 import GenePlotControls from "./GenePlotControls"
 

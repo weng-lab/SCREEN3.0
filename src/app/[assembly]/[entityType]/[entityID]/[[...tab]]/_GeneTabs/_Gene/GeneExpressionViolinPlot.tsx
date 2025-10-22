@@ -2,7 +2,7 @@ import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } fro
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
-import { tissueColors } from "common/lib/colors"
+import { tissueColors } from "common/colors"
 import GenePlotControls from "./GenePlotControls";
 
 export type GeneExpressionViolinPlotProps = GeneExpressionProps &

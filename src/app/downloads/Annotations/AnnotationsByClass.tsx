@@ -12,7 +12,7 @@ import {
   pELS,
   CTCF_Bound,
   ELS,
-} from "../../../common/lib/colors";
+} from "../../../common/colors";
 import DownloadContentLayout from "./DownloadContentLayout";
 import { Assembly } from "./Annotations";
 

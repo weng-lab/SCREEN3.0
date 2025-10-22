@@ -2,7 +2,7 @@ import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } fro
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
-import { tissueColors } from "common/lib/colors"
+import { tissueColors } from "common/colors"
 import { theme } from "app/theme";
 import { scaleLinear } from "@visx/scale";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
