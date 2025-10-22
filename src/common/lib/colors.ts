@@ -1,5 +1,3 @@
-import { CcreClass } from "types/globalTypes"
-
 /**
  * cCRE Groups
  */

@@ -1,4 +1,4 @@
-import { MainQuery } from "common/lib/queries"
+import { MainQuery } from "app/downloads/DownloadRange/queries"
 import { MainQueryData, SCREENSearchResult } from "./types"
 
 /**
