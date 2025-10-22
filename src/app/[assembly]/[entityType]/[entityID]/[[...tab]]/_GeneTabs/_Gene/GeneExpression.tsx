@@ -1,4 +1,4 @@
-import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout";
+import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout/TwoPaneLayout";
 import { useMemo, useRef, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";

@@ -9,8 +9,8 @@ import React, { useState } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { Assembly } from "types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
-import { calcDistCcreToTSS, ccreClassDescriptions } from "common/utility";
-
+import { calcDistCcreToTSS } from "common/utility";
+import { ccreClassDescriptions } from "common/consts";
 
 export type Transcript = {
   id: string;

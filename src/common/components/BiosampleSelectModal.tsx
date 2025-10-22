@@ -61,8 +61,6 @@ const BiosampleSelectModal = ({
     handleClose();
   };
 
-  console.log(selected.map((x) => x.name))
-
   return (
     <Dialog open={open} onClose={handleClose} disableRestoreFocus sx={{ "& .MuiDialog-paper": { maxWidth: "none" } }}>
       <Stack direction={"row"} justifyContent={"space-between"}>

@@ -5,7 +5,7 @@ import { Box, Button, Tooltip, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { toScientificNotationElement } from "common/utility";
 import { useState } from "react";
-import SelectCompuGenesMethod from "common/components/SelectCompuGenesMethod";
+import SelectCompuGenesMethod from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/SelectCompuGenesMethod";
 
 import useLinkedGenes from "common/hooks/useLinkedGenes";
 import { useCompuLinkedGenes } from "common/hooks/useCompuLinkedGenes";

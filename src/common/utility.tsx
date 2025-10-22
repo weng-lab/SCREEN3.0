@@ -1,5 +1,4 @@
 import { Assembly, GenomicRange } from "types/globalTypes";
-import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
 import { Typography, TypographyOwnProps } from "@mui/material";
 import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
@@ -94,33 +93,6 @@ export function formatPortal(subpath: string): string {
  */
 export function formatGenomicRange(region: GenomicRange){
   return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
-}
-
-/**
- *
- * @param cell use ```lineage``` field of return data
- * @returns the corresponding color for that cell category, or black if not found
- */
-export function getCellCategoryColor(cell: string): string {
-  return cellCategoryColors[cell] || "#000000";
-}
-
-/**
- *
- * @param cell use ```lineage``` field of return data
- * @returns the corresponding celltype display name for the category, or "Unknown Celltype if not found"
- */
-export function getCellCategoryDisplayname(cell: string) {
-  return cellCategoryDisplaynames[cell] || "Unknown Celltype";
-}
-
-/**
- *
- * @param study use ```study``` field of return data
- * @returns The corresponding DOI link for the study, or "Unknown Study" if not found
- */
-export function getStudyLink(study: string) {
-  return studyLinks[study] || "Unknown Study";
 }
 
 /**
@@ -357,14 +329,3 @@ const assemblyEncoding: {[key in Assembly]: string} = {
 const assemblyDecoding: {[key: string]: Assembly} = Object.fromEntries(
   Object.entries(assemblyEncoding).map(([entity, encoding]: [Assembly, string]) => [encoding, entity])
 );
-
-export const ccreClassDescriptions: Record<string, string> = {
-  PLS: "Promoter",
-  pELS: "Proximal Enhancer",
-  dELS: "Distal Enhancer",
-  "CA-H3K4me3": "CA-H3K4me3",
-  "CA-CTCF": "CA-CTCF",
-  "CA-TF": "CA-TF",
-  CA: "CA",
-  TF: "TF",
-};

@@ -1,5 +1,5 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
-import TwoPaneLayout from "common/components/TwoPaneLayout";
+import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
 import { useEffect, useState, useMemo, useRef } from "react";

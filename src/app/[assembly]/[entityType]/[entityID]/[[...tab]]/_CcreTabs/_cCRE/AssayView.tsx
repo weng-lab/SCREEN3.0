@@ -1,7 +1,7 @@
 import { GridColDef } from "@weng-lab/ui-components";
 import { Assay, BiosampleRow } from "./BiosampleActivity";
 import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
-import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayout";
+import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";

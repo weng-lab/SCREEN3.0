@@ -1,4 +1,4 @@
-import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout";
+import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout/TwoPaneLayout";
 import { useRef, useState } from "react";
 import { BarChart } from "@mui/icons-material";
 import BiosampleEnrichmentTable from "./BiosampleEnrichmentTable";
