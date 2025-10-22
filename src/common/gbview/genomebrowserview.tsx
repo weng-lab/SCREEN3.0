@@ -7,9 +7,9 @@ import {
   BigBedConfig,
   BigWigConfig,
   Browser,
-  BulkBedConfig,
   Chromosome,
   createBrowserStoreMemo,
+  createTrackStore,
   createTrackStoreMemo,
   DisplayMode,
   InitialBrowserState,
@@ -31,12 +31,9 @@ import CCRETooltip from "./ccretooltip";
 import DomainDisplay from "./domainDisplay";
 import GBButtons from "./gbViewButtons";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
-import { useChromHMMData } from "common/hooks/useChromHmmData";
-import { tissueColors } from "common/lib/colors";
 import { chromHmmStateDetails, humanDefaultTracks, mouseDefaultTracks } from "./constants";
 import { useBiosampleTracks } from "./Biosample/useBiosampleTracks";
-import { ChromHmmTooltip } from "./ChromHMM/ChromHmmTooltip";
-import { capitalizeFirstLetter } from "common/utility";
+import { useChromHmmTracks } from "./ChromHMM/useChromHmmTracks";
 import {
   getLocalBrowser,
   getLocalTracks,
@@ -44,6 +41,8 @@ import {
   setLocalTracks,
   getLocalBiosamples,
   setLocalBiosamples,
+  getLocalChromHmmTissues,
+  setLocalChromHmmTissues,
 } from "common/hooks/useLocalStorage";
 import PageviewIcon from "@mui/icons-material/Pageview";
 
@@ -102,7 +101,7 @@ export default function GenomeBrowserView({
   assembly: Assembly;
 }) {
   const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
-  const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>([]);
+  const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>(getLocalChromHmmTissues());
 
   const initialState: InitialBrowserState = useMemo(() => {
     return {
@@ -135,6 +134,10 @@ export default function GenomeBrowserView({
   useEffect(() => {
     setLocalBiosamples(selectedBiosamples);
   }, [selectedBiosamples]);
+
+  useEffect(() => {
+    setLocalChromHmmTissues(selectedChromHmmTissues);
+  }, [selectedChromHmmTissues]);
 
   const router = useRouter();
 
@@ -265,8 +268,6 @@ export default function GenomeBrowserView({
   const trackStore = createTrackStoreMemo(initialTracks, [initialTracks]);
 
   const currentTracks = trackStore((state) => state.tracks);
-  const insertTrack = trackStore((state) => state.insertTrack);
-  const removeTrack = trackStore((state) => state.removeTrack);
 
   const editTrack = trackStore((state) => state.editTrack);
 
@@ -283,52 +284,7 @@ export default function GenomeBrowserView({
   };
 
   useBiosampleTracks(assembly, selectedBiosamples, trackStore, onHover, onLeave, onCcreClick);
-  const { tracks: chromHmmTracks, processedTableData, loading, error } = useChromHMMData(coordinates, assembly);
-
-  useEffect(() => {
-    if (!chromHmmTracks) return;
-    selectedChromHmmTissues.forEach((tissue) => {
-      // for each selected tissue, add bulk bed of chrom hmm tracks if not already added
-      if (!currentTracks.some((t) => t.id === tissue)) {
-        const allTissueTracks = chromHmmTracks[tissue];
-        const chromHmmTissueBulkBed: BulkBedConfig = {
-          id: `ChromHmm_${tissue}_bulkbed`,
-          titleSize: 12,
-          color: tissueColors[tissue] ?? tissueColors.missing,
-          trackType: TrackType.BulkBed,
-          displayMode: DisplayMode.Full,
-          datasets: allTissueTracks.map((sample, index) => {
-            return {
-              name: sample.displayName,
-              url: sample.url,
-            };
-          }),
-          title: `${capitalizeFirstLetter(tissue)} ChromHMM States`,
-          height: 15 * allTissueTracks.length,
-          tooltip: (rect) => ChromHmmTooltip(rect, tissue, rect.datasetName),
-          onHover: (rect) => {
-            addHighlight({
-              color: rect.color,
-              domain: { start: rect.start, end: rect.end },
-              id: "tmp-bulkbed",
-            });
-          },
-          onLeave: () => {
-            removeHighlight("tmp-bulkbed");
-          },
-        };
-        insertTrack(chromHmmTissueBulkBed);
-      }
-      currentTracks.forEach((track) => {
-        if (
-          track.id.includes("ChromHmm") &&
-          !selectedChromHmmTissues.some((tissue) => tissue === track.id.split("_")[1])
-        ) {
-          removeTrack(track.id);
-        }
-      });
-    });
-  }, [addHighlight, chromHmmTracks, currentTracks, insertTrack, removeHighlight, removeTrack, selectedChromHmmTissues]);
+  useChromHmmTracks(selectedChromHmmTissues, coordinates, assembly, trackStore, addHighlight, removeHighlight);
 
   useEffect(() => {
     setLocalTracks(currentTracks);
@@ -353,6 +309,10 @@ export default function GenomeBrowserView({
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
   const geneVersion = assembly === "GRCh38" ? [29, 40] : 25;
+
+  useEffect(() => {
+    console.log(currentTracks.map((t) => t.id));
+  }, [currentTracks]);
 
   return (
     <Stack>

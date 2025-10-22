@@ -7,7 +7,7 @@ import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "types/globalTypes";
 import { gql } from "types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
-import { CHROM_HMM_STATES, getChromHmmStateDisplayname, stateDetails, useChromHMMData } from "common/hooks/useChromHmmData";
+import { CHROM_HMM_STATES, getChromHmmStateDisplayname, useChromHMMData } from "common/hooks/useChromHmmData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { chromHmmStateDetails } from "common/gbview/constants";

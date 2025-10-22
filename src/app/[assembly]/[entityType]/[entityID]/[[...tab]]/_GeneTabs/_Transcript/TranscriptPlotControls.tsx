@@ -35,7 +35,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
     setShowPoints = () => { },
     showPoints = true,
 }) => (
-    <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+    <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
         <FormControl>
             <FormLabel>Peak</FormLabel>
             <Select
