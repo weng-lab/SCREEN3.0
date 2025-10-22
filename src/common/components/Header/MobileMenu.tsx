@@ -2,7 +2,7 @@
 import { Search } from "@mui/icons-material";
 import { Box, Divider, Drawer, FormControlLabel, IconButton, List, ListItem, Radio, RadioGroup, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import MuiLink from "@mui/material/Link";
-import AutoComplete from "./autocomplete";
+import AutoComplete from "../autocomplete";
 import Link from "next/link";
 import { PageInfo } from "./Header";
 import CloseIcon from "@mui/icons-material/Close";

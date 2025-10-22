@@ -55,9 +55,6 @@ const GeneExpressionTable = ({
           return acc;
         }, {});
 
-        const test = result.filter((item) => item.tissue === "heart")
-        console.log(test)
-
         result.sort((a, b) => {
           const tissueA = getTissue(a);
           const tissueB = getTissue(b);

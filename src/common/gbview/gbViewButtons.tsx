@@ -4,10 +4,10 @@ import { useState } from "react";
 import HighlightDialog from "./highlightDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import HighlightIcon from "@mui/icons-material/Highlight";
-import ConfigureGBModal from "common/components/ConfigureGBModal";
 import { Assembly } from "types/globalTypes";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { ChromHmmDialog } from "./ChromHMM/ChromHmmDialog";
+import BiosampleSelectModal from "common/components/BiosampleSelectModal";
 
 export default function GBButtons({
   browserStore,
@@ -61,13 +61,13 @@ export default function GBButtons({
         selectedChromHmmTissues={selectedChromHmmTissues}
         setSelectedChromHmmTissues={setSelectedChromHmmTissues}
       />
-      <ConfigureGBModal
+      <BiosampleSelectModal
         assembly={assembly as Assembly}
         open={biosampleOpen}
-        setOpen={handleSelectBiosampleClick}
-        onBiosampleSelect={handleBiosampleSelected}
-        multiselect={true}
-        selectedBiosamples={selectedBiosamples ?? null}
+        setOpen={setBiosampleOpen}
+        onChange={handleBiosampleSelected}
+        multiSelect={true}
+        initialSelected={selectedBiosamples || []}
       />
     </Box>
   );

@@ -150,7 +150,6 @@ function cCRE_QUERY_VARIABLES(assembly: string, coordinates: {chromosome: string
  * @returns cCREs matching the search
  */
 export async function MainQuery(assembly: string = null, chromosome: string = null, start: number = null, end: number = null, biosample: string = null, nearbygenesdistancethreshold: number, nearbygeneslimit: number, accessions: string[] = null, noLimit?: boolean) {
-  console.log("queried with: " + assembly, chromosome, start, end, biosample + `${accessions ? " with accessions" : " no accessions"}`)
   let data: ApolloQueryResult<any>
   try {
     data = await getClient().query({
@@ -160,8 +159,7 @@ export async function MainQuery(assembly: string = null, chromosome: string = nu
       fetchPolicy: "no-cache",
     })
   } catch (error) {
-    console.log("error fetching main cCRE data")
-    console.log(error)
+    console.error(error)
     throw error
   }
   

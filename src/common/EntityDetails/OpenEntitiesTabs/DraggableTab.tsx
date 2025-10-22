@@ -4,8 +4,8 @@ import { styled, SxProps, Tab, TabProps, Theme, Tooltip } from "@mui/material";
 import { AnyOpenEntity, OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { useCallback, useContext, useMemo, useState } from "react";
-import HumanIcon from 'common/_utility/humanIcon';
-import MouseIcon from 'common/_utility/mouseIcon';
+import HumanIcon from 'common/components/HumanIcon';
+import MouseIcon from 'common/components/MouseIcon';
 import { theme } from "app/theme";
 
 export type DraggableTabProps = TabProps & {

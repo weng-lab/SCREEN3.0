@@ -1,10 +1,9 @@
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
-import { Typography, TypographyOwnProps, Link, LinkProps } from "@mui/material";
+import { Typography, TypographyOwnProps } from "@mui/material";
 import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
-import { Launch } from "@mui/icons-material";
-import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig, isValidRouteForEntity } from "./EntityDetails/entityTabsConfig";
+import { AnyTabRoute, AnyEntityType, validEntityTypes, entityTabsConfig } from "./EntityDetails/entityTabsConfig";
 
 export function getClassDisplayname(input: string) {
   switch (input) {
@@ -153,8 +152,8 @@ export function toScientificNotation(num: number, sigFigs?: number) {
 
 /**
  * @param num Number to convert to Sci Notation
- * @param variant MUI Typography Variant to be used
  * @param sigFigs Number of desired significant figures
+ * @param typographyProps Props spread onto Typography element
  * @returns
  */
 export function toScientificNotationElement(num: number, sigFigs: number, typographyProps?: TypographyOwnProps) {

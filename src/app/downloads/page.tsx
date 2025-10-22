@@ -4,7 +4,7 @@ import * as React from "react"
 import { Tabs, Tab, Divider, Stack, Box} from "@mui/material"
 import { DataMatrices } from "./datamatrices"
 import { useState } from "react"
-import { DownloadRange } from "./downloadrange"
+import { DownloadRange } from "./DownloadRange/downloadrange"
 import Annotations from "./Annotations/Annotations"
 
 function a11yProps(index: number) {

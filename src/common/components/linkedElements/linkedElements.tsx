@@ -8,9 +8,6 @@ export type TableDef<T extends LinkedGeneInfo | LinkedICREInfo> = TableProps & {
   sortDirection: "asc" | "desc";
 }
 
-// Combined types for GridColDef and GridRenderCellParams for linkedGenes and linkedICREs
-export type colDef = GridColDef<LinkedGeneInfo> | GridColDef<LinkedICREInfo>;
-
 export default function LinkedElements<T extends LinkedGeneInfo | LinkedICREInfo>({
   tables,
 }: {

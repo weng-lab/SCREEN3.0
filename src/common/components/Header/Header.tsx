@@ -13,16 +13,16 @@ import {
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Link from "next/link";
 import Image from "next/image";
-import AutoComplete from "./autocomplete";
+import AutoComplete from "../autocomplete";
 import { Search } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu"
 import { useRef, useState } from "react";
 import MobileMenu from "./MobileMenu";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { LinkComponent } from "./LinkComponent";
+import { LinkComponent } from "../LinkComponent";
 import { useMenuControl } from "common/MenuContext";
-import HumanIcon from 'common/_utility/humanIcon';
-import MouseIcon from 'common/_utility/mouseIcon';
+import HumanIcon from 'common/components/HumanIcon';
+import MouseIcon from 'common/components/MouseIcon';
 import { usePathname } from "next/navigation"
 
 export type PageInfo = {

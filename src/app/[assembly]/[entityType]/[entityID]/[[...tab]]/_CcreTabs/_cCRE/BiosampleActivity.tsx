@@ -1,8 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
-import ParentSize from "@visx/responsive/lib/components/ParentSize";
-import { Box, LinearProgress, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Stack, Tab, Tabs } from "@mui/material";
 import { gql } from "types/generated";
 import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import { CcreClass, GenomicRange } from "types/globalTypes";
@@ -11,8 +10,8 @@ import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitie
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
-import { AssayWheel } from "common/components/AssayWheel";
-import { ProportionsBar, getProportionsFromArray } from "common/components/ProportionsBar";
+import { AssayWheel } from "common/components/BiosampleTables/AssayWheel";
+import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { CCRE_CLASSES } from "common/consts";
 
 export type BiosampleRow = {
@@ -101,7 +100,6 @@ const zScoreFormatting: Partial<GridColDef> = {
 const classificationFormatting: Partial<GridColDef> = {
   renderCell: (params: GridRenderCellParams) => {
     const group = params.value;
-    // console.log(params)
     const colormap = GROUP_COLOR_MAP.get(group);
     const color = colormap ? (group === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
     const classification = colormap ? colormap.split(":")[0] : "DNase only";

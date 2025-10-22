@@ -1,7 +1,7 @@
 import { Button, Tooltip, Box, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Stack, Typography, Divider } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { Download } from "@mui/icons-material"
-import { ontologyDownloadMap } from "../../_utility/ontologyDownloads";
+import { ontologyDownloadMap } from "./ontologyDownloads";
 
 export type AggregateDownloadProps = {
     ontology: string

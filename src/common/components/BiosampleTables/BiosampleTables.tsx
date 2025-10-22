@@ -8,7 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useQuery } from "@apollo/client"
 import { filterBiosamples } from "./helpers"
 import { BIOSAMPLE_QUERY, RNA_SEQ_QUERY } from "./queries"
-import { AssayWheel } from "../AssayWheel"
+import { AssayWheel } from "./AssayWheel"
 import { DownloadButton } from "./DownloadButton"
 import { FilterCheckboxGroup } from "./FilterCheckboxGroup"
 import { AggregateDownloadButton } from "./AggregateDownload"
@@ -129,16 +129,21 @@ export const BiosampleTables = <
     const foundMatches = []
 
     if (allowMultiSelect) {
-      (selected as string[]).forEach(x => {
-        const match = data.find(y => (y.name === x) || (y.displayname === x))
+      (selected as string[]).forEach((x) => {
+        const match = data.find((y) => y.name === x || y.displayname === x);
         if (match) {
-          foundMatches.push(match)
+          foundMatches.push(match);
         } else {
-          console.error(`Could not find biosample with name or displayname: ${x}`)
+          console.error(`Could not find biosample with name or displayname: ${x}`);
         }
-      })
+      });
     } else {
-      foundMatches.push(data.find(sample => (sample.name === selected) || (sample.displayname === selected)))
+      const match = data.find((y) => y.name === selected || y.displayname === selected);
+      if (match) {
+        foundMatches.push(match);
+      } else {
+        console.error(`Could not find biosample with name or displayname: ${selected}`);
+      }
     }
 
     return foundMatches
@@ -233,7 +238,6 @@ export const BiosampleTables = <
     }
 
     const handleModifyAll = (samples: BiosampleData<HasRNASeq>[], action: "select" | "deselect") => {
-      console.log("modifying all")
       if (onChange && typeof onChange === 'function') {
         if (action === "select") {
           const toAdd = samples.filter(sample => !selectedSamples.some(x => x.name === sample.name));

@@ -66,8 +66,6 @@ const GeneConservation = ({ entity }: EntityViewComponentProps) => {
   const loading = loadingOrtholog || loadingCoords
   const error = !!(errorOrtholog || errorCoords)
 
-  console.log(dataCoords)
-
   return (
     <Table
       rows={rows}

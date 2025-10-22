@@ -1,7 +1,7 @@
 import { ButtonGroup, Button, Popper, Grow, Paper, ClickAwayListener, MenuList, MenuItem, Tooltip, Box } from "@mui/material";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { ArrowDropDown, Download, } from "@mui/icons-material"
-import { ontologyDownloadMap } from "../../_utility/ontologyDownloads";
+import { ontologyDownloadMap } from "./ontologyDownloads";
 
 export type DownloadButtonGroupProps = {
     ontology: string

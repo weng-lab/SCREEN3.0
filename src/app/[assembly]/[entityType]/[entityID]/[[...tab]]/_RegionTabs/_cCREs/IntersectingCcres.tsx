@@ -6,9 +6,10 @@ import { useCcreData } from "common/hooks/useCcreData";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useState } from "react";
-import ConfigureGBModal from "./ConfigureGBModal";
 import { CancelRounded } from "@mui/icons-material";
-import { RegistryBiosamplePlusRNA } from "./BiosampleTables/types";
+import { RegistryBiosamplePlusRNA } from "../../../../../../../common/components/BiosampleTables/types";
+import BiosampleSelectModal from "common/components/BiosampleSelectModal";
+
 const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembly: string }) => {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
 
@@ -220,7 +221,6 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
    
   ];
 
-  //console.log("dataCcres",dataCcres)
   return errorCcres ? (
     <Typography>Error Fetching Ccres</Typography>
   ) : (
@@ -273,11 +273,12 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
         }}
       >
 
-        <ConfigureGBModal
+        <BiosampleSelectModal
           assembly={assembly as Assembly}
           open={Boolean(virtualAnchor)}
           setOpen={handleClickClose}
-          onBiosampleSelect={handleBiosampleSelected}
+          onChange={(selected) => handleBiosampleSelected(selected[0])}
+          initialSelected={selectedBiosample ? [selectedBiosample] : []}
         />
       </Box>
     </>

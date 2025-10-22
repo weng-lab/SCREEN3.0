@@ -14,9 +14,7 @@ interface Props {
 }
 
 const SelectLdBlock: React.FC<Props> = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }) => {
-  console.log("ldblock",ldblock)  
   const [selectedldblock, setSelectedLdBlock] = useState(JSON.stringify(ldblock));   
-
 
   useEffect(() => {
     if (open && ldblock) {

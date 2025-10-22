@@ -5,8 +5,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { useTheme } from "@mui/material/styles";
 import Config from "../../config.json";
 import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
-import HumanIcon from "common/_utility/humanIcon";
-import MouseIcon from "common/_utility/mouseIcon";
+import HumanIcon from "common/components/HumanIcon";
+import MouseIcon from "common/components/MouseIcon";
 
 const trendingDataSets = [
     { name: "All Human cCREs", subtitle: "2,348,854 cCREs • 1,888 cell types", size: "129.1 MB", link: Config.Downloads.HumanCCREs },

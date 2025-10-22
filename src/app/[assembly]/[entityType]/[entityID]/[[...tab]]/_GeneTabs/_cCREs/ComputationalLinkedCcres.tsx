@@ -2,11 +2,22 @@ import { Box, Grid, Skeleton } from "@mui/material";
 import useLinkedICREs, { LinkedICREInfo } from "common/hooks/useLinkedICREs";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "../../_CcreTabs/_Genes/columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
-import { accessionCol } from "common/components/linkedElements/columns";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { usePathname } from "next/navigation";
 import { Assembly } from "types/globalTypes";
+import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
+import { LinkComponent } from "common/components/LinkComponent";
 
+
+export const accessionCol = (assembly: string): GridColDef => ({
+  field: "accession",
+  headerName: "Accession",
+  renderCell: (params: GridRenderCellParams) => (
+    <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
+      {params.value}
+    </LinkComponent>
+  ),
+});
 
 export default function ComputationalLinkedCcres({
   geneData,

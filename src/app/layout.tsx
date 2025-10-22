@@ -4,7 +4,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Analytics } from "@vercel/analytics/next";
 import { ApolloWrapper } from "common/apollo/apollo-wrapper";
 import Footer from "common/components/Footer";
-import Header from "common/components/Header";
+import Header from "common/components/Header/Header";
 import { OpenEntitiesContextProvider } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { MenuControlProvider } from "common/MenuContext";
 import MuiXLicense from "common/MuiXLicense";

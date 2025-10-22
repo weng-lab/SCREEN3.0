@@ -8,7 +8,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { useCcreData } from "common/hooks/useCcreData";
 import { RegistryBiosample, RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
-import ConfigureGBModal from "common/components/ConfigureGBModal";
+import BiosampleSelectModal from "common/components/BiosampleSelectModal";
 export type CcreGWASStudySNPsProps = {
   study_name: string;
   totalldblocks: number;
@@ -39,7 +39,7 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
       setVirtualAnchor(null);
     }
   };
-  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample | null>(null);
+  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
   const {
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
@@ -379,11 +379,12 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
           event.stopPropagation();
         }}
       >
-        <ConfigureGBModal
+        <BiosampleSelectModal
           assembly={"GRCh38"}
           open={Boolean(virtualAnchor)}
           setOpen={handleClickClose}
-          onBiosampleSelect={handleBiosampleSelected}
+          initialSelected={selectedBiosample ? [selectedBiosample] : []}
+          onChange={(selected) => handleBiosampleSelected(selected[0])}
         />
       </Box>
     </>
