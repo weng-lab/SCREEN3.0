@@ -1,7 +1,7 @@
 import { Box, Button, Dialog } from "@mui/material";
 import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 import { useState } from "react";
-import HighlightDialog from "./highlightDialog";
+import HighlightDialog from "./HighlightDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import HighlightIcon from "@mui/icons-material/Highlight";
 import { Assembly } from "types/globalTypes";

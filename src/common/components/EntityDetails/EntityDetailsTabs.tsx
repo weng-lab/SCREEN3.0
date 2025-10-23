@@ -7,7 +7,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Assembly } from "types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { AnyEntityType, getTabsForEntity } from "./entityTabsConfig";
+import { AnyEntityType, getTabsForEntity } from "../../entityTabsConfig";
 
 export type ElementDetailsTabsProps = {
   assembly: Assembly

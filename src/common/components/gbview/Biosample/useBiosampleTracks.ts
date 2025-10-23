@@ -3,8 +3,9 @@ import { BigBedConfig, BigWigConfig, DisplayMode, Rect, Track, TrackStoreInstanc
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { useEffect, useMemo } from "react";
 import { gql } from "types/generated";
-import { colors } from "../constants";
+import { CCRE_TRACK_COLOR } from "../constants";
 import { Assembly } from "types/globalTypes";
+import { ASSAY_COLORS } from "common/colors";
 
 const FETCH_RNASEQ_TRACKS = gql(`
   query fetchRNASeqData($assembly: String!, $biosample: [String]) {
@@ -68,7 +69,7 @@ export const useBiosampleTracks = (
           titleSize: 12,
           trackType: TrackType.BigBed,
           displayMode: DisplayMode.Dense,
-          color: colors.ccre,
+          color: CCRE_TRACK_COLOR,
           height: 20,
           url: bigBedUrl,
           onHover,
@@ -85,7 +86,7 @@ export const useBiosampleTracks = (
           titleSize: 12,
           trackType: TrackType.BigWig,
           displayMode: DisplayMode.Full,
-          color: colors.dnase,
+          color: ASSAY_COLORS.dnase,
           height: 50,
           url: `https://www.encodeproject.org/files/${biosample.dnase_signal}/@@download/${biosample.dnase_signal}.bigWig`,
         } as BigWigConfig);
@@ -98,7 +99,7 @@ export const useBiosampleTracks = (
           titleSize: 12,
           trackType: TrackType.BigWig,
           displayMode: DisplayMode.Full,
-          color: colors.h3k4me3,
+          color: ASSAY_COLORS.h3k4me3,
           height: 50,
           url: `https://www.encodeproject.org/files/${biosample.h3k4me3_signal}/@@download/${biosample.h3k4me3_signal}.bigWig`,
         } as BigWigConfig);
@@ -111,7 +112,7 @@ export const useBiosampleTracks = (
           titleSize: 12,
           trackType: TrackType.BigWig,
           displayMode: DisplayMode.Full,
-          color: colors.h3k27ac,
+          color: ASSAY_COLORS.h3k27ac,
           height: 50,
           url: `https://www.encodeproject.org/files/${biosample.h3k27ac_signal}/@@download/${biosample.h3k27ac_signal}.bigWig`,
         } as BigWigConfig);
@@ -124,7 +125,7 @@ export const useBiosampleTracks = (
           titleSize: 12,
           trackType: TrackType.BigWig,
           displayMode: DisplayMode.Full,
-          color: colors.ctcf,
+          color: ASSAY_COLORS.ctcf,
           height: 50,
           url: `https://www.encodeproject.org/files/${biosample.ctcf_signal}/@@download/${biosample.ctcf_signal}.bigWig`,
         } as BigWigConfig);

@@ -6,7 +6,7 @@ import RegionSearchHeader from "./RegionSearchHeader";
 import { parseGenomicRangeString } from "common/utility";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "types/globalTypes";
-import { AnyEntityType } from "./entityTabsConfig";
+import { AnyEntityType } from "../../entityTabsConfig";
 import { GwasStudyHeader } from "./GwasStudyHeader";
 
 export type EntityDetailsLayoutProps = {

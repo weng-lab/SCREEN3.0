@@ -14,6 +14,14 @@ export const CTCF_Bound = "#6495ED"
 export const LowDNase = "#e1e1e1"
 export const Unclassified = "#8c8c8c"
 
+export const ASSAY_COLORS = {
+  dnase: "#06da93",
+  h3k4me3: "#ff0000",
+  h3k27ac: "#ffcd00",
+  ctcf: "#00b0d0",
+  atac: "#02c7b9",
+};
+
 export const GROUP_COLOR_MAP: Map<string, string> = new Map([
   ["CA-CTCF", "Chromatin Accessible with CTCF:#00B0F0"],
   ["CA-TF", "Chromatin Accessible with TF:#be28e5"],

@@ -1,6 +1,6 @@
 import React from "react";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
-import Config from "../../../config.json";
+import Config from "config.json";
 import DownloadContentLayout from "./DownloadContentLayout";
 
 const geneLinkDownloads: DownloadButtonProps[] = [

@@ -4,7 +4,7 @@ import { formatPortal } from "common/utility";
 import { Assembly } from "types/globalTypes";
 import Grid from "@mui/material/Grid";
 import { LinkComponent } from "common/components/LinkComponent";
-import { AnyEntityType } from "./entityTabsConfig";
+import { AnyEntityType } from "../../entityTabsConfig";
 
 export type GwasStudyHeaderProps = {
   assembly: Assembly;

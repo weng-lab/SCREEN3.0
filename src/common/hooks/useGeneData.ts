@@ -1,5 +1,5 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "types/generated/gql";
 import { useMemo } from "react";
 import { GeneQuery } from "types/generated/graphql";

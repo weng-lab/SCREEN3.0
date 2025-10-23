@@ -3,7 +3,7 @@ import { Grid, Grow, Box, Stack, Typography, IconButton } from "@mui/material";
 import Link from "next/link";
 import DownloadIcon from '@mui/icons-material/Download';
 import { useTheme } from "@mui/material/styles";
-import Config from "../../config.json";
+import Config from "config.json";
 import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";

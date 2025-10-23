@@ -1,4 +1,4 @@
-import { EntityType } from 'common/EntityDetails/entityTabsConfig';
+import { EntityType } from 'common/entityTabsConfig';
 import { useEffect, useState } from 'react';
 
 interface Frequency {

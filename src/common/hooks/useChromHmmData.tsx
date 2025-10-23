@@ -7,6 +7,7 @@ import { useQuery } from "@apollo/client";
 import { BigBedData } from "bigwig-reader";
 import { gql } from "types/generated/gql";
 import { Assembly, GenomicRange } from "types/globalTypes";
+import Config from "config.json"
 
 export const BIG_QUERY = gql(`
   query BigRequests($bigRequests: [BigRequest!]!) {
@@ -226,7 +227,7 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
 }
 
 async function getTracks() {
-  const response = await fetch("https://downloads.wenglab.org/humanchromhmmchipseq.tsv");
+  const response = await fetch(Config.Downloads.HumanChromHMM);
   const text = await response.text();
 
   const chromHMMData: Record<string, ChromTrack[]> = {};

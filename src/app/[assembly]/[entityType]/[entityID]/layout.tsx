@@ -1,8 +1,8 @@
 "use client";
-import EntityDetailsLayout from "common/EntityDetails/EntityDetailsLayout";
+import EntityDetailsLayout from "common/components/EntityDetails/EntityDetailsLayout";
 import { isValidAssembly } from "types/globalTypes";
 import { use } from "react";
-import { isValidEntityType } from "common/EntityDetails/entityTabsConfig";
+import { isValidEntityType } from "common/entityTabsConfig";
 
 export default function Layout({
   children,

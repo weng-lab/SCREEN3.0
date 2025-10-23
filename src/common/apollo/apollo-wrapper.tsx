@@ -11,7 +11,7 @@ import {
   SSRMultipartLink,
   ApolloClient
 } from "@apollo/experimental-nextjs-app-support";
-import Config from "../../config.json"
+import Config from "config.json"
 
 // See https://www.apollographql.com/blog/using-apollo-client-with-next-js-13-releasing-an-official-library-to-support-the-app-router
 

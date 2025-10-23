@@ -2,7 +2,7 @@
 
 import { createContext, Dispatch, useReducer } from "react";
 import { Assembly, isValidAssembly } from "types/globalTypes";
-import { AnyEntityType, AnyTabRoute, EntityRoute, EntityType, isValidEntityType, isValidRouteForEntity } from "../entityTabsConfig";
+import { AnyEntityType, AnyTabRoute, EntityRoute, EntityType, isValidEntityType, isValidRouteForEntity } from "../../../entityTabsConfig";
 
 export type OpenEntity<A extends Assembly> = {
   assembly: A;

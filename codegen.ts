@@ -1,5 +1,5 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
-import Config from "./src/config.json"
+import Config from "config.json"
 
 const config: CodegenConfig = {
   schema: Config.API.CcreAPI,

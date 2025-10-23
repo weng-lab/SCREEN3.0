@@ -4,7 +4,7 @@ import { useSnpData, UseSnpDataReturn } from "./useSnpData";
 import { ApolloError } from "@apollo/client";
 import { parseGenomicRangeString } from "common/utility";
 import { useCcreData, UseCcreDataReturn } from "./useCcreData";
-import { AnyEntityType, EntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType, EntityType } from "common/entityTabsConfig";
 import { useGWASStudyData, UseGWASStudyDataReturn } from "./useGWASStudyData";
 
 type useEntityMetadataParams<T extends AnyEntityType> = {

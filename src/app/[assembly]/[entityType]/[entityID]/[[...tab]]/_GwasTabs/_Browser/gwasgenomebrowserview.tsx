@@ -22,16 +22,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 //import GenomeBrowserView from "common/gbview/genomebrowserview";
-import ControlButtons from "common/gbview/controls";
-import HighlightDialog from "common/gbview/highlightDialog";
-import { randomColor } from "common/gbview/utils";
+import ControlButtons from "common/components/gbview/ControlButtons";
+import HighlightDialog from "common/components/gbview/HighlightDialog";
+import { randomColor } from "common/components/gbview/utils";
 import { Exon } from "types/generated/graphql";
 import { useRouter } from "next/navigation";
-import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
-import CCRETooltip from "common/gbview/ccretooltip";
-import DomainDisplay from "common/gbview/domainDisplay";
-import GBButtons from "common/gbview/gbViewButtons";
-import { RegistryBiosample } from "common/components/BiosampleTables/types";
+import CCRETooltip from "common/components/gbview/CcreTooltip";
+import DomainDisplay from "common/components/gbview/DomainDisplay";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import SelectLdBlock from "./SelectLdBlock";
 import { gql, useQuery } from "@apollo/client";
@@ -44,15 +41,6 @@ interface Transcript {
   exons?: Exon[];
   color?: string;
 }
-
-const colors = {
-  ccre: "#D05F45",
-  dnase: "#06da93",
-  h3k4me3: "#ff0000",
-  h3k27ac: "#ffcd00",
-  ctcf: "#00b0d0",
-  atac: "#02c7b9",
-};
 
 function expandCoordinates(coordinates: GenomicRange) {
   let length = coordinates.end - coordinates.start;

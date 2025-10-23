@@ -1,13 +1,13 @@
 "use client";
 import { CircularProgress, Typography } from "@mui/material";
-import GenomeBrowserView from "common/gbview/genomebrowserview";
+import GenomeBrowserView from "common/components/gbview/GenomeBrowserView";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import { isValidAssembly } from "types/globalTypes";
 import {
   getComponentForEntity,
   isValidEntityType,
   isValidRouteForEntity,
-} from "common/EntityDetails/entityTabsConfig";
+} from "common/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
@@ -26,7 +26,7 @@ import BiosampleEnrichment from "./_GwasTabs/_BiosampleEnrichment/BiosampleEnric
 import {
   CandidateOpenEntity,
   isValidOpenEntity,
-} from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+} from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import GWASGenomeBrowserView from "./_GwasTabs/_Browser/gwasgenomebrowserview";
 import VariantLinkedCcres from "./_SnpTabs/_cCREs/VariantLinkedCcres";
 import TranscriptExpression from "./_GeneTabs/_Transcript/TranscriptExpression";

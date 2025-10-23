@@ -5,7 +5,7 @@ import { Table } from "@weng-lab/ui-components"
 import { Stack } from "@mui/material"
 import { gql } from "types/generated/gql"
 import { LinkComponent } from "common/components/LinkComponent"
-import { EntityViewComponentProps } from "common/EntityDetails/entityTabsConfig"
+import { EntityViewComponentProps } from "common/entityTabsConfig"
 import { useCcreData } from "common/hooks/useCcreData"
 import { GenomicRange } from "types/globalTypes"
 

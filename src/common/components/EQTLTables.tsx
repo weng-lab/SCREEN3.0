@@ -9,7 +9,7 @@ import {
   GridColDef,
   Table
 } from "@weng-lab/ui-components";
-import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
+import { AnyEntityType } from "common/entityTabsConfig";
 
 const EQTL_QUERY = gql(`
 query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {

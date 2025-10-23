@@ -1,8 +1,8 @@
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { Typography, TypographyOwnProps } from "@mui/material";
-import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
-import { AnyTabRoute, AnyEntityType, validEntityTypes, entityTabsConfig } from "./EntityDetails/entityTabsConfig";
+import { AnyTabRoute, AnyEntityType, validEntityTypes, entityTabsConfig } from "./entityTabsConfig";
 
 export function getClassDisplayname(input: string) {
   switch (input) {

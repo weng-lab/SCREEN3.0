@@ -1,6 +1,6 @@
 import { Assembly } from "types/globalTypes";
 import type { ReactElement } from "react";
-import { AnyOpenEntity } from "./OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity } from "./components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionalCharacterization/FunctionalCharacterization";

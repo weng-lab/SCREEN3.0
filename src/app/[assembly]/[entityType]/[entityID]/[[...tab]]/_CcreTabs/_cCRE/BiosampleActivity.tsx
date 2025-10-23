@@ -6,7 +6,7 @@ import { gql } from "types/generated";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import { CcreClass, GenomicRange } from "types/globalTypes";
 import { GROUP_COLOR_MAP } from "common/colors";
-import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";

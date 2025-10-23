@@ -1,4 +1,4 @@
-import { EntityViewComponentProps } from "common/EntityDetails/entityTabsConfig";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { GridColDef, Table } from "@weng-lab/ui-components";
@@ -10,7 +10,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { CHROM_HMM_STATES, getChromHmmStateDisplayname, useChromHMMData } from "common/hooks/useChromHmmData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
-import { chromHmmStateDetails } from "common/gbview/constants";
+import { chromHmmStateDetails } from "common/components/gbview/constants";
 
 const ENTEx_QUERY = gql(`
 query ENTEXQuery($accession: String!){

@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { GridColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { EntityViewComponentProps } from "common/EntityDetails/entityTabsConfig";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
 import { formatGenomicRange } from "common/utility";
 import { useMemo } from "react";

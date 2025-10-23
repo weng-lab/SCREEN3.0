@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import Config from "../../../config.json"
+import Config from "config.json"
 import { Assembly } from "./Annotations";
 
 

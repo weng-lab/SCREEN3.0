@@ -1,37 +1,32 @@
 "use client";
 import { Search } from "@mui/icons-material";
 import { Box, Button, IconButton, Stack } from "@mui/material";
-import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import {
-  BigBedConfig,
-  BigWigConfig,
   Browser,
   Chromosome,
   createBrowserStoreMemo,
-  createTrackStore,
   createTrackStoreMemo,
   DisplayMode,
   InitialBrowserState,
   Track,
-  TrackStoreInstance,
   TrackType,
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
-import ControlButtons from "./controls";
-import HighlightDialog from "./highlightDialog";
+import ControlButtons from "./ControlButtons";
+import HighlightDialog from "./HighlightDialog";
 import { randomColor } from "./utils";
 import { Exon } from "types/generated/graphql";
 import { useRouter } from "next/navigation";
-import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
-import CCRETooltip from "./ccretooltip";
-import DomainDisplay from "./domainDisplay";
-import GBButtons from "./gbViewButtons";
+import { AnyEntityType } from "common/entityTabsConfig";
+import CCRETooltip from "./CcreTooltip";
+import DomainDisplay from "./DomainDisplay";
+import GBButtons from "./GBButtons";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
-import { chromHmmStateDetails, humanDefaultTracks, mouseDefaultTracks } from "./constants";
+import { humanDefaultTracks, mouseDefaultTracks } from "./constants";
 import { useBiosampleTracks } from "./Biosample/useBiosampleTracks";
 import { useChromHmmTracks } from "./ChromHMM/useChromHmmTracks";
 import {

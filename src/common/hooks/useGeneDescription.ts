@@ -1,4 +1,4 @@
-import { AnyEntityType } from 'common/EntityDetails/entityTabsConfig';
+import { AnyEntityType } from 'common/entityTabsConfig';
 import { useEffect, useState } from 'react';
 
 export interface UseGeneDescriptionResult {

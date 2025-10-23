@@ -5,7 +5,7 @@ import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayou
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
-import { AnyOpenEntity } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
