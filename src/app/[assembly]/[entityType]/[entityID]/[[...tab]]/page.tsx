@@ -2,7 +2,7 @@
 import { CircularProgress, Typography } from "@mui/material";
 import GenomeBrowserView from "common/components/gbview/GenomeBrowserView";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import { isValidAssembly } from "types/globalTypes";
+import { isValidAssembly } from "common/types/globalTypes";
 import { getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";

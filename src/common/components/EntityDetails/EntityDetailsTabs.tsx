@@ -4,7 +4,7 @@ import { Tabs, Tab, Menu, MenuItem } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useMemo } from "react";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { AnyEntityType, getTabsForEntity } from "../../entityTabsConfig";

@@ -17,13 +17,13 @@ import {
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { GenomicRange } from "types/globalTypes";
+import { GenomicRange } from "common/types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 //import GenomeBrowserView from "common/gbview/genomebrowserview";
 import ControlButtons from "common/components/gbview/ControlButtons";
 import HighlightDialog from "common/components/gbview/HighlightDialog";
 import { randomColor } from "common/components/gbview/utils";
-import { Exon } from "types/generated/graphql";
+import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
 import CCRETooltip from "common/components/gbview/CcreTooltip";
 import DomainDisplay from "common/components/gbview/DomainDisplay";

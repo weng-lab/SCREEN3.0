@@ -1,7 +1,7 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { useMemo } from "react";
-import { gql } from "types/generated/gql";
-import { TssRampageQuery } from "types/generated/graphql";
+import { gql } from "common/types/generated/gql";
+import { TssRampageQuery } from "common/types/generated/graphql";
 
 const TSS_RAMPAGE_QUERY = gql(`
   query tssRampage($gene: String!) {

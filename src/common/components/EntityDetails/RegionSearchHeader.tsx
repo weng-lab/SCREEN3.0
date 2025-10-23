@@ -1,6 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 import { formatGenomicRange } from "common/utility";
-import { GenomicRange } from "types/globalTypes";
+import { GenomicRange } from "common/types/globalTypes";
 
 export type RegionSearchHeaderProps = {
   region: GenomicRange;

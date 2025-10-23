@@ -1,4 +1,4 @@
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { useGeneData, UseGeneDataReturn } from "./useGeneData";
 import { useSnpData, UseSnpDataReturn } from "./useSnpData";
 import { ApolloError } from "@apollo/client";

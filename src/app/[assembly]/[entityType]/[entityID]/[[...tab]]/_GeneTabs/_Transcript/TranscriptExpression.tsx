@@ -7,7 +7,7 @@ import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 
 export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 

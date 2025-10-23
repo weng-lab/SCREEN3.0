@@ -1,9 +1,9 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
-import { gql } from "types/generated/gql";
+import { gql } from "common/types/generated/gql";
 import { useMemo } from "react";
-import { GeneQuery } from "types/generated/graphql";
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { GeneQuery } from "common/types/generated/graphql";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 
 const GENE_Query = gql(`
   query Gene($chromosome: String, $start: Int, $end: Int, $name: [String], $assembly: String!, $version: Int) {

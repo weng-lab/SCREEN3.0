@@ -1,6 +1,6 @@
 "use client";
 import EntityDetailsLayout from "common/components/EntityDetails/EntityDetailsLayout";
-import { isValidAssembly } from "types/globalTypes";
+import { isValidAssembly } from "common/types/globalTypes";
 import { use } from "react";
 import { isValidEntityType } from "common/entityTabsConfig";
 

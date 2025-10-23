@@ -2,9 +2,9 @@
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { Stack, Tab, Tabs } from "@mui/material";
-import { gql } from "types/generated";
+import { gql } from "common/types/generated";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
-import { CcreClass, GenomicRange } from "types/globalTypes";
+import { CcreClass, GenomicRange } from "common/types/globalTypes";
 import { GROUP_COLOR_MAP } from "common/colors";
 import { AnyOpenEntity } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { useCcreData } from "common/hooks/useCcreData";

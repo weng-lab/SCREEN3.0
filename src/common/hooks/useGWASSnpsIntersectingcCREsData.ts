@@ -1,5 +1,5 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { gql } from "types/generated/gql";
+import { gql } from "common/types/generated/gql";
 
 export const BED_INTERSECT = gql(`
     query bedIntersectCCRE ($inp: [cCRE]!, $assembly: String!, $maxOutputLength: Int) {

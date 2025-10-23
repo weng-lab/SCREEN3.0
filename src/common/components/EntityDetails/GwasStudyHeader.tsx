@@ -1,7 +1,7 @@
 import { Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatPortal } from "common/utility";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import Grid from "@mui/material/Grid";
 import { LinkComponent } from "common/components/LinkComponent";
 import { AnyEntityType } from "../../entityTabsConfig";

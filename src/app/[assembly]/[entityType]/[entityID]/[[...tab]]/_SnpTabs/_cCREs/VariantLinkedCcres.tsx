@@ -5,7 +5,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import { UseSnpDataReturn } from "common/hooks/useSnpData";
 import { useMemo, useState } from "react";
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { DistanceSlider } from "./DistanceSlider";
 import { calcSignedDistRegionToRegion } from "common/utility";
 

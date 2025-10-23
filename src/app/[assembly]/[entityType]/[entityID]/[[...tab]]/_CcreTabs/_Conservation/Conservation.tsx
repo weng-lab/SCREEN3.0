@@ -3,7 +3,7 @@ import React from "react";
 import { useQuery } from "@apollo/client";
 import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { gql } from "types/generated";
+import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 
 type orthologRow = {

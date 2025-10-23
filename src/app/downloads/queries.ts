@@ -1,4 +1,4 @@
-import { gql } from "types/generated/gql";
+import { gql } from "common/types/generated/gql";
 export const UMAP_QUERY = gql(`
   query q_4($assembly: String!, $assay: [String!], $a: String!) {
     ccREBiosampleQuery(assay: $assay, assembly: $assembly) {

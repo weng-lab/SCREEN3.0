@@ -5,8 +5,8 @@ import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
 import { formatGenomicRange } from "common/utility";
 import { useMemo } from "react";
-import { gql } from "types/generated";
-import { Assembly } from "types/globalTypes";
+import { gql } from "common/types/generated";
+import { Assembly } from "common/types/globalTypes";
 
 export const GET_ORTHOLOG = gql(`
   query geneOrtholog($name: [String]!, $assembly: String!) {

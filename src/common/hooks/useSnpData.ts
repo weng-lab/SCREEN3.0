@@ -1,8 +1,8 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
-import { gql } from "types/generated/gql";
-import { SnpQuery } from "types/generated/graphql";
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { gql } from "common/types/generated/gql";
+import { SnpQuery } from "common/types/generated/graphql";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 
 const SNP_Query = gql(`
   query Snp($snpids: [String], $coordinates: [GenomicRangeInput], $assembly: String!) {

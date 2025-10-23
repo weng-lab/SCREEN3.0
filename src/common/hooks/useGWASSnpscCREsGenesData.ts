@@ -1,7 +1,7 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { gql } from "types/generated/gql";
-import { LinkedGenesQuery } from "../../types/generated/graphql";
-import { ComputationalGeneLinksQuery } from "../../types/generated/graphql";
+import { gql } from "common/types/generated/gql";
+import { LinkedGenesQuery } from "../types/generated/graphql";
+import { ComputationalGeneLinksQuery } from "../types/generated/graphql";
 export type LinkedGeneInfo = {
   p_val?: number | null;
   gene: string;

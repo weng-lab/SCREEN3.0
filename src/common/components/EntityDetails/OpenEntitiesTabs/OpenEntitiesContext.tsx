@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, Dispatch, useReducer } from "react";
-import { Assembly, isValidAssembly } from "types/globalTypes";
+import { Assembly, isValidAssembly } from "common/types/globalTypes";
 import {
   AnyEntityType,
   EntityRoute,

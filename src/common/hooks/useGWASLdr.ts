@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
-import { gql } from "types/generated";
-import { GetimmuneGwasLdrQuery } from "types/generated/graphql";
+import { gql } from "common/types/generated";
+import { GetimmuneGwasLdrQuery } from "common/types/generated/graphql";
 
 function useGWASLdr(icres?: string[], snps?: string[]) {
   const { loading, error, data } = useQuery(GWAS_LDR_QUERY, {

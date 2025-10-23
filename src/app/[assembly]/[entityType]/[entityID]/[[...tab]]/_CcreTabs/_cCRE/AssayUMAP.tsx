@@ -4,7 +4,7 @@ import { SharedAssayViewPlotProps } from "./AssayView";
 import { tissueColors } from "common/colors";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import { useCallback, useMemo, useState } from "react";
-import { gql } from "types/generated";
+import { gql } from "common/types/generated";
 import { useQuery } from "@apollo/client";
 import {
   FormControl,

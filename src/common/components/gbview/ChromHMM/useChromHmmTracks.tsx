@@ -5,7 +5,7 @@ import { capitalizeFirstLetter } from "common/utility";
 import { ChromHmmTooltip } from "./ChromHmmTooltip";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import { useChromHMMData } from "common/hooks/useChromHmmData";
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 
 type ChromHmmTracksData = Record<string, Array<{ displayName: string; url: string }>>;
 

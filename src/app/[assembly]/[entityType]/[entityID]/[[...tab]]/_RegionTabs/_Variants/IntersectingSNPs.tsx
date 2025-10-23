@@ -1,6 +1,6 @@
 "use client";
 import { Typography } from "@mui/material";
-import { GenomicRange } from "types/globalTypes";
+import { GenomicRange } from "common/types/globalTypes";
 import { useSnpData } from "common/hooks/useSnpData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";

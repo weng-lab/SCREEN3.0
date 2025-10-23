@@ -1,7 +1,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { Transcript } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/DistanceLinkedCcres";
 import { useMemo } from "react";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import { UseGeneDataReturn } from "./useGeneData";
 
 const CCRE_ICRE_QUERY = gql(`query cCREAutocompleteQuery(

@@ -1,4 +1,4 @@
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import type { ReactElement } from "react";
 import { AnyOpenEntity } from "./components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";

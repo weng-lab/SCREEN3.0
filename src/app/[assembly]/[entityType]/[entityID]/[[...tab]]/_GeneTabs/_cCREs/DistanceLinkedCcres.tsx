@@ -7,7 +7,7 @@ import { Table, GridColDef } from "@weng-lab/ui-components";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import React, { useState } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { calcDistCcreToTSS } from "common/utility";
 import { ccreClassDescriptions } from "common/consts";

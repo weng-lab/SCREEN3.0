@@ -10,9 +10,9 @@ import {
 } from "@weng-lab/genomebrowser";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { useEffect, useMemo } from "react";
-import { gql } from "types/generated";
+import { gql } from "common/types/generated";
 import { CCRE_TRACK_COLOR } from "../constants";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import { ASSAY_COLORS } from "common/colors";
 
 const FETCH_RNASEQ_TRACKS = gql(`

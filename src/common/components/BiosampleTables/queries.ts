@@ -1,4 +1,4 @@
-import { gql } from "types/generated/gql";
+import { gql } from "common/types/generated/gql";
 
 export const RNA_SEQ_QUERY = gql(`
   query RNASeqQuery($assembly: String!){

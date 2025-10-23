@@ -4,7 +4,7 @@ import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from ".
 import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { usePathname } from "next/navigation";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 

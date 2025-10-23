@@ -2,7 +2,7 @@ import { Stack } from "@mui/material";
 import { useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import GWASLdr from "./GWASLdr";
 import EQTLs from "common/components/EQTLTables";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import IntersectingSNPs from "../../_RegionTabs/_Variants/IntersectingSNPs";
 
 const CcreVariantsTab = ({ CcreData, assembly }: { CcreData: useEntityMetadataReturn<"ccre">; assembly: Assembly }) => {

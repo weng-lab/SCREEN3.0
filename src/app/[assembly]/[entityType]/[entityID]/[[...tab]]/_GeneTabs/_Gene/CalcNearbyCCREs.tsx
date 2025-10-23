@@ -12,7 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 
 interface CalculateNearbyCCREsPopperProps {
   open: boolean;

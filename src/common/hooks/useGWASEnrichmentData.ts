@@ -1,5 +1,5 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { gql } from "types/generated/gql";
+import { gql } from "common/types/generated/gql";
 
 const CCRE_BIOSAMPLE_QUERY = gql(`
   query GetcCreBiosampleMetadataQuery($assembly: String!) {

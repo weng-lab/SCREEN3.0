@@ -14,12 +14,12 @@ import {
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import ControlButtons from "./ControlButtons";
 import HighlightDialog from "./HighlightDialog";
 import { randomColor } from "./utils";
-import { Exon } from "types/generated/graphql";
+import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
 import { AnyEntityType } from "common/entityTabsConfig";
 import CCRETooltip from "./CcreTooltip";

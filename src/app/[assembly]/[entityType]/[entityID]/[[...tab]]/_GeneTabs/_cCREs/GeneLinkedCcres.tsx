@@ -2,7 +2,7 @@ import { Stack } from "@mui/material";
 import ComputationalLinkedCcres from "./ComputationalLinkedCcres";
 import DistanceLinkedCcres from "./DistanceLinkedCcres";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 
 const GeneLinkedIcres = ({
   geneData,

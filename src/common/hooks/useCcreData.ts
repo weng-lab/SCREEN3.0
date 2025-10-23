@@ -1,8 +1,8 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
-import { gql } from "types/generated/gql";
-import { CCrescreenSearchQueryQuery } from "types/generated/graphql";
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { gql } from "common/types/generated/gql";
+import { CCrescreenSearchQueryQuery } from "common/types/generated/graphql";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 
 type CcreWithIsicre = CCrescreenSearchQueryQuery["cCRESCREENSearch"][number] & {
   isicre: boolean;

@@ -7,7 +7,7 @@ import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGene
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 import VersionFallback from "./GeneVersionFallback";
 

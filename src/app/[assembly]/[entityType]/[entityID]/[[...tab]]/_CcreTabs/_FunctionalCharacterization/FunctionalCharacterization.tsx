@@ -3,11 +3,11 @@ import React from "react";
 import { useQuery } from "@apollo/client";
 import { Table } from "@weng-lab/ui-components";
 import { Stack } from "@mui/material";
-import { gql } from "types/generated/gql";
+import { gql } from "common/types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcreData } from "common/hooks/useCcreData";
-import { GenomicRange } from "types/globalTypes";
+import { GenomicRange } from "common/types/globalTypes";
 
 export const FUNCTIONAL_DATA_QUERY = gql(`
 query functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {

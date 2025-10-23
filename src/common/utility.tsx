@@ -1,4 +1,4 @@
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { Typography, TypographyOwnProps } from "@mui/material";
 import {
   AnyOpenEntity,

@@ -4,7 +4,7 @@ import { useState } from "react";
 import HighlightDialog from "./HighlightDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import HighlightIcon from "@mui/icons-material/Highlight";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { ChromHmmDialog } from "./ChromHMM/ChromHmmDialog";
 import BiosampleSelectModal from "common/components/BiosampleSelectModal";

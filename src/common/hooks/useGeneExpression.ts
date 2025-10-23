@@ -1,8 +1,8 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { useMemo } from "react";
-import { gql } from "types/generated/gql";
-import { GeneexpressionQuery } from "types/generated/graphql";
-import { Assembly } from "types/globalTypes";
+import { gql } from "common/types/generated/gql";
+import { GeneexpressionQuery } from "common/types/generated/graphql";
+import { Assembly } from "common/types/globalTypes";
 import { human_RNA_map, mouse_RNA_map } from "./consts";
 
 const GET_GENE_EXPRESSION = gql(`
