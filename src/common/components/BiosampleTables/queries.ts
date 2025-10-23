@@ -6,7 +6,7 @@ export const RNA_SEQ_QUERY = gql(`
       biosample
     }
   }
-`)
+`);
 
 export const BIOSAMPLE_QUERY = gql(`
   query biosamples_1($assembly: String!, $assays: [String!]) {
@@ -30,4 +30,4 @@ export const BIOSAMPLE_QUERY = gql(`
       }
     }
   }
-`)
+`);

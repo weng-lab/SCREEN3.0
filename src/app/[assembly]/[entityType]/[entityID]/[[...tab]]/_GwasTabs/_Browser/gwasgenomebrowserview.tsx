@@ -5,8 +5,6 @@ import Grid from "@mui/material/Grid";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTheme } from "@mui/material/styles";
 import {
-  BigBedConfig,
-  BigWigConfig,
   Browser,
   Chromosome,
   createBrowserStore,
@@ -19,7 +17,7 @@ import {
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { GenomicRange } from "types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 //import GenomeBrowserView from "common/gbview/genomebrowserview";
 import ControlButtons from "common/components/gbview/ControlButtons";
@@ -113,7 +111,7 @@ export default function GWASGenomeBrowserView({ study_name }: { study_name: stri
     }
   }, [ldblockStats, selectedLdBlock]);
 
-  let coordinates = selectedLdBlock
+  const coordinates = selectedLdBlock
     ? { chromosome: selectedLdBlock.chromosome, start: selectedLdBlock.start, end: selectedLdBlock.end }
     : { chromosome: "chr1", start: 52000, end: 53000 };
 

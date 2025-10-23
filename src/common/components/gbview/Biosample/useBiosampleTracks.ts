@@ -1,5 +1,13 @@
 import { useQuery } from "@apollo/client";
-import { BigBedConfig, BigWigConfig, DisplayMode, Rect, Track, TrackStoreInstance, TrackType } from "@weng-lab/genomebrowser";
+import {
+  BigBedConfig,
+  BigWigConfig,
+  DisplayMode,
+  Rect,
+  Track,
+  TrackStoreInstance,
+  TrackType,
+} from "@weng-lab/genomebrowser";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { useEffect, useMemo } from "react";
 import { gql } from "types/generated";
@@ -19,15 +27,13 @@ const FETCH_RNASEQ_TRACKS = gql(`
   }
 `);
 
-
-
 export const useBiosampleTracks = (
   assembly: Assembly,
   selectedBiosamples: RegistryBiosamplePlusRNA[] | null,
   trackStore: TrackStoreInstance,
   onHover: (item: Rect) => void,
   onLeave: (item: Rect) => void,
-  onClick: (item: Rect) => void,
+  onClick: (item: Rect) => void
 ) => {
   const insertTrack = trackStore((state) => state.insertTrack);
   const currentTracks = trackStore((state) => state.tracks);
@@ -139,11 +145,11 @@ export const useBiosampleTracks = (
     const tracks: Track[] = [];
     data.rnaSeqQuery.forEach((entry: any) => {
       const { expid, biosample, posfileid, negfileid, unstrandedfileid } = entry;
-      
+
       const makeTrack = (expid: string, fileId: string, strand: string, color: string) => {
         return {
           id: `rnaseq_${expid}-${fileId}-${strand}`,
-          title: `RNA-seq ${strand} strand signal of unique reads rep 1 ${expid} ${fileId} in ${selectedBiosamples.find(b=>b.name===biosample).displayname}`,
+          title: `RNA-seq ${strand} strand signal of unique reads rep 1 ${expid} ${fileId} in ${selectedBiosamples.find((b) => b.name === biosample).displayname}`,
           height: 50,
           titleSize: 12,
           trackType: TrackType.BigWig,
@@ -177,4 +183,4 @@ export const useBiosampleTracks = (
       }
     });
   }, [rnaTracks, tracks, insertTrack, removeTrack, currentTracks]);
-}
+};

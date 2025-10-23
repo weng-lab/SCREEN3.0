@@ -8,7 +8,7 @@ export type AssayWheelProps = {
   /**
    * The value of the assay should be the experiment accession if the assay exists for that sample
    */
-  row: { [key in Assay]: string | null }
+  row: { [key in Assay]: string | null };
 };
 
 /**
@@ -19,7 +19,7 @@ export type AssayWheelProps = {
 export const AssayWheel = ({ row }: AssayWheelProps) => {
   const [hoveredAssay, setHoveredAssay] = useState<Assay>(null);
 
-  const height = 36
+  const height = 36;
 
   //Constants used for sizing svg elements
   const radius = 8;
@@ -39,10 +39,7 @@ export const AssayWheel = ({ row }: AssayWheelProps) => {
         id: "dnase",
         accession: row.dnase, //Used to provide link to ENCODE for that experiment
         color: row.dnase ? assayColors.DNase : "transparent", //Only color slice if the biosample has data in that assay
-        dashArray:
-          hoveredAssay === "dnase"
-            ? `${fifthHovered} ${fifthHovered * 4}`
-            : `${fifth} ${fifth * 4}`, //Use dasharray to create a single slice of 1/5th of the circle.
+        dashArray: hoveredAssay === "dnase" ? `${fifthHovered} ${fifthHovered * 4}` : `${fifth} ${fifth * 4}`, //Use dasharray to create a single slice of 1/5th of the circle.
         radius: hoveredAssay === "dnase" ? radiusHovered : radius,
       },
       {
@@ -79,23 +76,11 @@ export const AssayWheel = ({ row }: AssayWheelProps) => {
         id: "atac",
         accession: row.atac,
         color: row.atac ? assayColors.ATAC : "transparent",
-        dashArray:
-          hoveredAssay === "atac"
-            ? `0 ${fifthHovered * 4} ${fifthHovered}`
-            : `0 ${fifth * 4} ${fifth}`,
+        dashArray: hoveredAssay === "atac" ? `0 ${fifthHovered * 4} ${fifthHovered}` : `0 ${fifth * 4} ${fifth}`,
         radius: hoveredAssay === "atac" ? radiusHovered : radius,
       },
     ];
-  }, [
-    row.dnase,
-    row.h3k27ac,
-    row.h3k4me3,
-    row.ctcf,
-    row.atac,
-    hoveredAssay,
-    fifthHovered,
-    fifth,
-  ]);
+  }, [row.dnase, row.h3k27ac, row.h3k4me3, row.ctcf, row.atac, hoveredAssay, fifthHovered, fifth]);
 
   return (
     <Tooltip
@@ -112,13 +97,9 @@ export const AssayWheel = ({ row }: AssayWheelProps) => {
           </Typography>
           {hoveredAssay && (
             <>
-              <Typography variant="body2">
-                Click to view {hoveredAssay} experiment:
-              </Typography>
+              <Typography variant="body2">Click to view {hoveredAssay} experiment:</Typography>
               <Stack direction="row" alignItems={"baseline"}>
-                <Typography variant="body2">
-                  {row[hoveredAssay.toLowerCase()]}
-                </Typography>
+                <Typography variant="body2">{row[hoveredAssay.toLowerCase()]}</Typography>
                 <Launch fontSize="inherit" sx={{ ml: 0.5 }} />
               </Stack>
             </>
@@ -128,11 +109,7 @@ export const AssayWheel = ({ row }: AssayWheelProps) => {
       arrow
       placement="right"
     >
-      <svg
-        height={height}
-        width={height}
-        viewBox={`0 0 ${height} ${height}`}
-      >
+      <svg height={height} width={height} viewBox={`0 0 ${height} ${height}`}>
         {/* Provides outline */}
         <circle
           r={2 * radius + 0.125}
@@ -142,44 +119,32 @@ export const AssayWheel = ({ row }: AssayWheelProps) => {
           stroke="black"
           strokeWidth={0.25}
         />
-        {assays.map(
-          (assay) =>
-            (
-              <circle
-                key={assay.id}
-                cursor={"pointer"}
-                pointerEvents={"auto"}
-                r={assay.radius}
-                cx={height / 2}
-                cy={height / 2}
-                fill="transparent"
-                stroke={assay.color}
-                strokeWidth={
-                  hoveredAssay === assay.id ? 2 * radiusHovered : 2 * radius
-                }
-                strokeDasharray={assay.dashArray}
-                onMouseEnter={() => setHoveredAssay(assay.id)}
-                onMouseLeave={() => setHoveredAssay(null)}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  window.open(
-                    `https://www.encodeproject.org/experiments/${assay.accession}/`,
-                    "_blank",
-                    "noopener,noreferrer"
-                  );
-                }}
-              />
-            )
-        )}
+        {assays.map((assay) => (
+          <circle
+            key={assay.id}
+            cursor={"pointer"}
+            pointerEvents={"auto"}
+            r={assay.radius}
+            cx={height / 2}
+            cy={height / 2}
+            fill="transparent"
+            stroke={assay.color}
+            strokeWidth={hoveredAssay === assay.id ? 2 * radiusHovered : 2 * radius}
+            strokeDasharray={assay.dashArray}
+            onMouseEnter={() => setHoveredAssay(assay.id)}
+            onMouseLeave={() => setHoveredAssay(null)}
+            onClick={(event) => {
+              event.stopPropagation();
+              window.open(
+                `https://www.encodeproject.org/experiments/${assay.accession}/`,
+                "_blank",
+                "noopener,noreferrer"
+              );
+            }}
+          />
+        ))}
         {/* Provides dead zone in middle to prevent ATAC wheel from capturing mouse events in center due to it being topmost element */}
-        <circle
-          r={radius}
-          cx={height / 2}
-          cy={height / 2}
-          fill="white"
-          stroke="black"
-          strokeWidth={0.25}
-        />
+        <circle r={radius} cx={height / 2} cy={height / 2} fill="white" stroke="black" strokeWidth={0.25} />
       </svg>
     </Tooltip>
   );

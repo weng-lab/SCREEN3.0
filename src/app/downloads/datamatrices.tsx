@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from "react"
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   Button,
   Divider,
@@ -12,45 +12,45 @@ import {
   SelectChangeEvent,
   IconButton,
   Paper,
-} from "@mui/material"
-import { useQuery } from "@apollo/client"
-import Grid from "@mui/material/Grid"
-import { Download, Visibility, CancelRounded } from "@mui/icons-material"
-import Image from "next/image"
-import humanTransparentIcon from "../../../public/Transparent_HumanIcon.png"
-import mouseTransparentIcon from "../../../public/Transparent_MouseIcon.png"
-import { DataTable, DataTableColumn } from "@weng-lab/ui-components"
-import { ScatterPlot, Point } from "@weng-lab/visualization"
-import Config from "config.json"
-import { BiosampleUMAP, PointMetaData } from "./types"
-import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/colors"
-import { UMAP_QUERY } from "./queries"
-import BiosampleTables from "../../common/components/BiosampleTables/BiosampleTables"
+} from "@mui/material";
+import { useQuery } from "@apollo/client";
+import Grid from "@mui/material/Grid";
+import { Download, Visibility, CancelRounded } from "@mui/icons-material";
+import Image from "next/image";
+import humanTransparentIcon from "../../../public/Transparent_HumanIcon.png";
+import mouseTransparentIcon from "../../../public/Transparent_MouseIcon.png";
+import { DataTable, DataTableColumn } from "@weng-lab/ui-components";
+import { ScatterPlot, Point } from "@weng-lab/visualization";
+import Config from "config.json";
+import { BiosampleUMAP, PointMetaData } from "./types";
+import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/colors";
+import { UMAP_QUERY } from "./queries";
+import BiosampleTables from "../../common/components/BiosampleTables/BiosampleTables";
 
 type Selected = {
-  assembly: "Human" | "Mouse"
-  assay: "DNase" | "H3K4me3" | "H3K27ac" | "CTCF"
-}
+  assembly: "Human" | "Mouse";
+  assay: "DNase" | "H3K4me3" | "H3K27ac" | "CTCF";
+};
 
 // Direct copy from old SCREEN but changed low to be optional
 function nearest5(x, low?) {
-  if (low) return Math.floor(x) - (x > 0 ? Math.floor(x) % 5 : 5 + (Math.floor(x) % 5))
-  return Math.ceil(x) + (x > 0 ? Math.ceil(x) % 5 : 5 + (Math.ceil(x) % 5))
+  if (low) return Math.floor(x) - (x > 0 ? Math.floor(x) % 5 : 5 + (Math.floor(x) % 5));
+  return Math.ceil(x) + (x > 0 ? Math.ceil(x) % 5 : 5 + (Math.ceil(x) % 5));
 }
 
 // Direct copy from old SCREEN
 function colorMap(strings) {
-  const counts = {}
+  const counts = {};
   //Count the occurences of each tissue/sample
-  strings.forEach((x) => (counts[x] = counts[x] ? counts[x] + 1 : 1))
+  strings.forEach((x) => (counts[x] = counts[x] ? counts[x] + 1 : 1));
   //Removes duplicate elements in the array
-  strings = [...new Set(strings)]
-  const colors = {}
+  strings = [...new Set(strings)];
+  const colors = {};
   //For each tissue/sample type
   strings.forEach((x) => {
-    colors[x] = tissueColors[x] ?? tissueColors.missing
-  })
-  return [colors, counts]
+    colors[x] = tissueColors[x] ?? tissueColors.missing;
+  });
+  return [colors, counts];
 }
 
 // Styling for selected biosamples modal
@@ -61,7 +61,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: "80%",
   boxShadow: 24,
-}
+};
 
 // Styling for download modal
 const downloadStyle = {
@@ -77,18 +77,22 @@ const downloadStyle = {
 };
 
 export function DataMatrices() {
-  const [selectedAssay, setSelectedAssay] = useState<Selected>({ assembly: "Human", assay: "DNase" })
+  const [selectedAssay, setSelectedAssay] = useState<Selected>({ assembly: "Human", assay: "DNase" });
 
   const { data: umapData, loading: umapLoading } = useQuery(UMAP_QUERY, {
-    variables: { assembly: selectedAssay.assembly === "Human" ? "grch38" : "mm10", assay: selectedAssay.assay, a: selectedAssay.assay.toLowerCase() },
+    variables: {
+      assembly: selectedAssay.assembly === "Human" ? "grch38" : "mm10",
+      assay: selectedAssay.assay,
+      a: selectedAssay.assay.toLowerCase(),
+    },
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
-  })
-  const [bounds, setBounds] = useState(undefined)
-  const [lifeStage, setLifeStage] = useState("all")
-  const [colorBy, setColorBy] = useState<"ontology" | "sampleType">("ontology")
-  const [searched, setSearched] = useState<string>(null)
-  const [biosamples, setBiosamples] = useState<BiosampleUMAP[]>([])
+  });
+  const [bounds, setBounds] = useState(undefined);
+  const [lifeStage, setLifeStage] = useState("all");
+  const [colorBy, setColorBy] = useState<"ontology" | "sampleType">("ontology");
+  const [searched, setSearched] = useState<string>(null);
+  const [biosamples, setBiosamples] = useState<BiosampleUMAP[]>([]);
   const [openModalType, setOpenModalType] = useState<null | "biosamples" | "download">(null);
   const graphContainerRef = useRef(null);
 
@@ -100,18 +104,18 @@ export function DataMatrices() {
       event.preventDefault();
     };
     if (graphElement) {
-      graphElement.addEventListener('wheel', handleWheel, { passive: false });
+      graphElement.addEventListener("wheel", handleWheel, { passive: false });
     }
     return () => {
       if (graphElement) {
-        graphElement.removeEventListener('wheel', handleWheel);
+        graphElement.removeEventListener("wheel", handleWheel);
       }
     };
   }, []);
 
   const handleSetSelectedSample = (selected) => {
-    setSearched(selected.displayname)
-  }
+    setSearched(selected.displayname);
+  };
 
   const handleOpenModal = () => {
     if (biosamples.length !== 0) {
@@ -127,13 +131,13 @@ export function DataMatrices() {
     setOpenModalType(null);
   };
 
-  useEffect(() => setBiosamples([]), [selectedAssay])
+  useEffect(() => setBiosamples([]), [selectedAssay]);
 
   const map = {
     position: {
       right: 50,
       bottom: 50,
-    }
+    },
   };
 
   const fData = useMemo(() => {
@@ -141,64 +145,82 @@ export function DataMatrices() {
       umapData &&
       umapData.ccREBiosampleQuery.biosamples
         .filter((x) => x.umap_coordinates)
-        .filter((x) => (lifeStage === "all" || lifeStage === x.lifeStage))
-    )
-  }, [umapData, lifeStage])
+        .filter((x) => lifeStage === "all" || lifeStage === x.lifeStage)
+    );
+  }, [umapData, lifeStage]);
 
   const xMin = useMemo(
-    () => (bounds ? Math.floor(bounds.x.start) : nearest5(Math.min(...((fData && fData.map((x) => x.umap_coordinates[0])) || [0])), true)),
+    () =>
+      bounds
+        ? Math.floor(bounds.x.start)
+        : nearest5(Math.min(...((fData && fData.map((x) => x.umap_coordinates[0])) || [0])), true),
     [fData, bounds]
-  )
+  );
   const yMin = useMemo(
-    () => (bounds ? Math.floor(bounds.y.start) : nearest5(Math.min(...((fData && fData.map((x) => x.umap_coordinates[1])) || [0])), true)),
+    () =>
+      bounds
+        ? Math.floor(bounds.y.start)
+        : nearest5(Math.min(...((fData && fData.map((x) => x.umap_coordinates[1])) || [0])), true),
     [fData, bounds]
-  )
+  );
   const xMax = useMemo(
-    () => (bounds ? Math.ceil(bounds.x.end) : nearest5(Math.max(...((fData && fData.map((x) => x.umap_coordinates[0])) || [0])))),
+    () =>
+      bounds
+        ? Math.ceil(bounds.x.end)
+        : nearest5(Math.max(...((fData && fData.map((x) => x.umap_coordinates[0])) || [0]))),
     [fData, bounds]
-  )
+  );
   const yMax = useMemo(
-    () => (bounds ? Math.ceil(bounds.y.end) : nearest5(Math.max(...((fData && fData.map((x) => x.umap_coordinates[1])) || [0])))),
+    () =>
+      bounds
+        ? Math.ceil(bounds.y.end)
+        : nearest5(Math.max(...((fData && fData.map((x) => x.umap_coordinates[1])) || [0]))),
     [fData, bounds]
-  )
+  );
 
-  const isInbounds = useCallback((x) => {
-    return (
-      xMin <= x.umap_coordinates[0] &&
-      x.umap_coordinates[0] <= xMax &&
-      yMin <= x.umap_coordinates[1] &&
-      x.umap_coordinates[1] <= yMax
-    )
-  }, [xMax, xMin, yMax, yMin])
+  const isInbounds = useCallback(
+    (x) => {
+      return (
+        xMin <= x.umap_coordinates[0] &&
+        x.umap_coordinates[0] <= xMax &&
+        yMin <= x.umap_coordinates[1] &&
+        x.umap_coordinates[1] <= yMax
+      );
+    },
+    [xMax, xMin, yMax, yMin]
+  );
 
   const [sampleTypeColors] = useMemo(
     () =>
       colorMap(
-        (umapData && umapData.ccREBiosampleQuery &&
-          umapData.ccREBiosampleQuery.biosamples.filter((x) => x.umap_coordinates && isInbounds(x)).map((x) => x.sampleType)) ||
-        []
+        (umapData &&
+          umapData.ccREBiosampleQuery &&
+          umapData.ccREBiosampleQuery.biosamples
+            .filter((x) => x.umap_coordinates && isInbounds(x))
+            .map((x) => x.sampleType)) ||
+          []
       ),
     [umapData, isInbounds]
-  )
+  );
   const [ontologyColors] = useMemo(
     () =>
       colorMap(
-        (umapData && umapData.ccREBiosampleQuery &&
+        (umapData &&
+          umapData.ccREBiosampleQuery &&
           //Check if umap coordinates exist, then map each entry to it's ontology (tissue type). This array of strings is passed to colorMap
-          umapData.ccREBiosampleQuery.biosamples.filter((x) => x.umap_coordinates && isInbounds(x)).map((x) => x.ontology)) ||
-        []
+          umapData.ccREBiosampleQuery.biosamples
+            .filter((x) => x.umap_coordinates && isInbounds(x))
+            .map((x) => x.ontology)) ||
+          []
       ),
     [umapData, isInbounds]
-  )
+  );
 
   const handleSelectionChange = (selectedPoints) => {
-    const selected = selectedPoints.map(point => point.x);
+    const selected = selectedPoints.map((point) => point.x);
     const selectedBiosamples = fData
-      .filter(biosample =>
-        selected.includes(biosample.umap_coordinates[0]) &&
-        biosample.umap_coordinates
-      )
-      .map(biosample => ({
+      .filter((biosample) => selected.includes(biosample.umap_coordinates[0]) && biosample.umap_coordinates)
+      .map((biosample) => ({
         name: biosample.name,
         displayname: biosample.displayname,
         ontology: biosample.ontology,
@@ -212,7 +234,7 @@ export function DataMatrices() {
 
   const scatterData: Point<PointMetaData>[] = useMemo(() => {
     if (!fData) return [];
-    const biosampleIds = biosamples.map(sample => sample.umap_coordinates);
+    const biosampleIds = biosamples.map((sample) => sample.umap_coordinates);
 
     return fData.map((x) => {
       const isInBiosample = biosampleIds.includes(x.umap_coordinates);
@@ -221,36 +243,41 @@ export function DataMatrices() {
         x: x.umap_coordinates![0],
         y: x.umap_coordinates![1],
         r: searched && x.displayname === searched ? 5 : 2,
-        color: searched === null || x.displayname === searched
-          ? (colorBy === "sampleType" ? sampleTypeColors : ontologyColors)[x[colorBy]]
-          : "#aaaaaa",
-        opacity: biosampleIds.length === 0 ? 1 : (isInBiosample ? 1 : 0.1),
+        color:
+          searched === null || x.displayname === searched
+            ? (colorBy === "sampleType" ? sampleTypeColors : ontologyColors)[x[colorBy]]
+            : "#aaaaaa",
+        opacity: biosampleIds.length === 0 ? 1 : isInBiosample ? 1 : 0.1,
         shape: "circle",
         metaData: {
           name: x.displayname,
-          accession: x.experimentAccession
-        }
+          accession: x.experimentAccession,
+        },
       };
     });
   }, [fData, searched, colorBy, sampleTypeColors, ontologyColors, biosamples]);
 
   const legendEntries = useMemo(() => {
     // Create a color-count map based on scatterData
-    const colorCounts = scatterData.reduce((acc, point) => {
-      const color = point.color;
-      acc[color] = (acc[color] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const colorCounts = scatterData.reduce(
+      (acc, point) => {
+        const color = point.color;
+        acc[color] = (acc[color] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
     const colorMapping = colorBy === "sampleType" ? sampleTypeColors : ontologyColors;
 
     // Map the color counts to the same format as before: label, color, and value
-    return Object.entries(colorCounts).map(([color, count]) => ({
-      label: Object.keys(colorMapping).find(key => colorMapping[key] === color) || color,
-      color,
-      value: count
-    })).sort((a, b) => b.value - a.value);
+    return Object.entries(colorCounts)
+      .map(([color, count]) => ({
+        label: Object.keys(colorMapping).find((key) => colorMapping[key] === color) || color,
+        color,
+        value: count,
+      }))
+      .sort((a, b) => b.value - a.value);
   }, [scatterData, colorBy, sampleTypeColors, ontologyColors]);
-
 
   /**
    * @param assay an assay
@@ -259,13 +286,13 @@ export function DataMatrices() {
   function borderColor(assay: Selected["assay"]) {
     switch (assay) {
       case "DNase":
-        return DNase_seq
+        return DNase_seq;
       case "H3K4me3":
-        return H3K4me3
+        return H3K4me3;
       case "H3K27ac":
-        return H3K27ac
+        return H3K27ac;
       case "CTCF":
-        return CA_CTCF
+        return CA_CTCF;
     }
   }
 
@@ -276,8 +303,8 @@ export function DataMatrices() {
         variant="text"
         fullWidth
         onClick={() => {
-          setBounds(undefined)
-          setSelectedAssay(variant)
+          setBounds(undefined);
+          setSelectedAssay(variant);
         }}
         sx={{
           mb: 1,
@@ -286,18 +313,18 @@ export function DataMatrices() {
           borderLeft: `0.40rem solid ${borderColor(variant.assay)}`,
           borderRight: `0.40rem solid ${selectedAssay && selectedAssay.assembly === variant.assembly && selectedAssay.assay === variant.assay ? borderColor(variant.assay) : "white"}`,
           color: `${selectedAssay && selectedAssay.assembly === variant.assembly && selectedAssay.assay === variant.assay && selectedAssay.assay === "H3K4me3" ? "white" : "initial"}`,
-          boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.25)',
+          boxShadow: "0px 5px 5px rgba(0, 0, 0, 0.25)",
           "&:hover": {
-            transform: 'translateY(-0.75px)',
-            boxShadow: '0px 8px 12px rgba(0, 0, 0, 0.35)',
+            transform: "translateY(-0.75px)",
+            boxShadow: "0px 8px 12px rgba(0, 0, 0, 0.35)",
             backgroundColor: `${selectedAssay && selectedAssay.assembly === variant.assembly && selectedAssay.assay === variant.assay ? borderColor(variant.assay) : "initial"}`,
           },
         }}
       >
         {`${variant.assay}`}
       </Button>
-    )
-  }
+    );
+  };
 
   /**
    *
@@ -335,9 +362,9 @@ export function DataMatrices() {
           CTCF: Config.Downloads.MouseCTCFZScoreMatrix,
         },
       },
-    }
-    return matrices[selectedAssay.assembly][variant][selectedAssay.assay]
-  }
+    };
+    return matrices[selectedAssay.assembly][variant][selectedAssay.assay];
+  };
 
   // Columns for selected biosample modal
   const modalCols: DataTableColumn<BiosampleUMAP>[] = [
@@ -353,27 +380,34 @@ export function DataMatrices() {
       header: "Tissue",
       value: (row: BiosampleUMAP) => row.ontology ?? "",
     },
-  ]
+  ];
 
   return (
     <Grid container mt={1} direction="column" sx={{ paddingX: 5 }}>
       <Stack direction="row" spacing={10}>
         <Stack direction="column" spacing={2}>
           <Stack direction="row" spacing={20}>
-
             {/* human section */}
             <Stack direction="column" spacing={1}>
               <Grid container direction="row" alignItems="flex-start" spacing={2}>
                 <Grid>
-                  <Image src={humanTransparentIcon} alt={"Human Icon"} style={{ maxWidth: '75px', maxHeight: '75px', }} />
+                  <Image
+                    src={humanTransparentIcon}
+                    alt={"Human Icon"}
+                    style={{ maxWidth: "75px", maxHeight: "75px" }}
+                  />
                 </Grid>
                 <Grid size="grow">
                   <Stack direction="column" spacing={1}>
                     <Typography variant="h5">Human</Typography>
                     <Divider />
                     <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="subtitle2"><b>2,348,854</b> cCREs</Typography>
-                      <Typography variant="subtitle2"><b>1,678</b> cell types</Typography>
+                      <Typography variant="subtitle2">
+                        <b>2,348,854</b> cCREs
+                      </Typography>
+                      <Typography variant="subtitle2">
+                        <b>1,678</b> cell types
+                      </Typography>
                     </Stack>
                   </Stack>
                 </Grid>
@@ -425,15 +459,23 @@ export function DataMatrices() {
             <Stack direction="column" spacing={1}>
               <Grid container direction="row" alignItems="flex-start" spacing={2}>
                 <Grid>
-                  <Image src={mouseTransparentIcon} alt={"Mouse Icon"} style={{ maxWidth: '75px', maxHeight: '75px' }} />
+                  <Image
+                    src={mouseTransparentIcon}
+                    alt={"Mouse Icon"}
+                    style={{ maxWidth: "75px", maxHeight: "75px" }}
+                  />
                 </Grid>
                 <Grid size="grow">
                   <Stack direction="column" spacing={1}>
                     <Typography variant="h5">Mouse</Typography>
                     <Divider />
                     <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="subtitle2"><b>926,843</b> cCREs</Typography>
-                      <Typography variant="subtitle2"><b>366</b> cell types</Typography>
+                      <Typography variant="subtitle2">
+                        <b>926,843</b> cCREs
+                      </Typography>
+                      <Typography variant="subtitle2">
+                        <b>366</b> cell types
+                      </Typography>
                     </Stack>
                   </Stack>
                 </Grid>
@@ -446,16 +488,37 @@ export function DataMatrices() {
               </Stack>
               <Grid container justifyContent="flex-end">
                 <Grid size={{ xs: 5.75 }} mt={1}>
-                  <InputLabel sx={{ color: 'white' }} id="download-label">Download</InputLabel>
-                  <Button sx={{ height: '40px', lineHeight: '20px', textTransform: 'none' }} size="medium" variant="contained" fullWidth endIcon={<Download />} onClick={handleOpenDownloadModal}>Download Data</Button>
+                  <InputLabel sx={{ color: "white" }} id="download-label">
+                    Download
+                  </InputLabel>
+                  <Button
+                    sx={{ height: "40px", lineHeight: "20px", textTransform: "none" }}
+                    size="medium"
+                    variant="contained"
+                    fullWidth
+                    endIcon={<Download />}
+                    onClick={handleOpenDownloadModal}
+                  >
+                    Download Data
+                  </Button>
                 </Grid>
               </Grid>
             </Stack>
           </Stack>
 
           {/* graph section */}
-          <Stack height={"57vh"} width={"auto"} padding={1} sx={{ border: '2px solid', borderColor: 'grey.400', borderRadius: '8px'}}>
-            <Stack direction="row" justifyContent="space-between" mt={1} sx={{ backgroundColor: '#dbdefc', borderRadius: '8px', zIndex: 10 }}>
+          <Stack
+            height={"57vh"}
+            width={"auto"}
+            padding={1}
+            sx={{ border: "2px solid", borderColor: "grey.400", borderRadius: "8px" }}
+          >
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              mt={1}
+              sx={{ backgroundColor: "#dbdefc", borderRadius: "8px", zIndex: 10 }}
+            >
               <Button endIcon={biosamples.length !== 0 && <Visibility />} onClick={handleOpenModal}>
                 {`${biosamples.length} Experiments Selected`}
               </Button>
@@ -469,27 +532,33 @@ export function DataMatrices() {
               miniMap={map}
               leftAxisLabel="UMAP-2"
               bottomAxisLabel="UMAP-1"
-              initialState={
-                {
-                  minimap: {
-                    open: true,
-                  },
-                  controls: {
-                    selectionType: "pan"
-                  }
-                }
-              }
+              initialState={{
+                minimap: {
+                  open: true,
+                },
+                controls: {
+                  selectionType: "pan",
+                },
+              }}
             />
           </Stack>
         </Stack>
 
         {/* biosample table*/}
-        <Grid paddingBottom={0} sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <Grid paddingBottom={0} sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
           {searched && (
             <Paper sx={{ mb: 1 }}>
-              <Stack borderRadius={1} direction={"row"} spacing={3} sx={{ backgroundColor: theme => theme.palette.secondary.light }} alignItems={"center"}>
-                <Typography flexGrow={1} sx={{ color: "#2C5BA0", pl: 1 }}>{searched}</Typography>
-                <IconButton onClick={() => setSearched(null)} sx={{ m: 'auto', flexGrow: 0 }}>
+              <Stack
+                borderRadius={1}
+                direction={"row"}
+                spacing={3}
+                sx={{ backgroundColor: (theme) => theme.palette.secondary.light }}
+                alignItems={"center"}
+              >
+                <Typography flexGrow={1} sx={{ color: "#2C5BA0", pl: 1 }}>
+                  {searched}
+                </Typography>
+                <IconButton onClick={() => setSearched(null)} sx={{ m: "auto", flexGrow: 0 }}>
                   <CancelRounded />
                 </IconButton>
               </Stack>
@@ -497,30 +566,45 @@ export function DataMatrices() {
           )}
           <BiosampleTables
             assembly={selectedAssay?.assembly === "Human" ? "GRCh38" : "mm10"}
-            fetchBiosamplesWith={[selectedAssay.assay.toLowerCase() as ("dnase" | "h3k4me3" | "h3k27ac" | "ctcf")]}
+            fetchBiosamplesWith={[selectedAssay.assay.toLowerCase() as "dnase" | "h3k4me3" | "h3k27ac" | "ctcf"]}
             onChange={handleSetSelectedSample}
             slotProps={{
-              paperStack: { overflow: 'hidden', flexGrow: 1 }
+              paperStack: { overflow: "hidden", flexGrow: 1 },
             }}
           />
         </Grid>
       </Stack>
 
       {/* legend section */}
-      <Box mt={2} mb={5} sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography mb={1}><b>Legend</b></Typography>
-        <Box sx={{ display: 'flex', justifyContent: legendEntries.length / 6 >= 3 ? "space-between" : "flex-start", gap: legendEntries.length / 6 >= 4 ? 0 : 10 }}>
+      <Box mt={2} mb={5} sx={{ display: "flex", flexDirection: "column" }}>
+        <Typography mb={1}>
+          <b>Legend</b>
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: legendEntries.length / 6 >= 3 ? "space-between" : "flex-start",
+            gap: legendEntries.length / 6 >= 4 ? 0 : 10,
+          }}
+        >
           {Array.from({ length: Math.ceil(legendEntries.length / 6) }, (_, colIndex) => (
             <Box key={colIndex} sx={{ marginRight: 2 }}>
               {legendEntries.slice(colIndex * 6, colIndex * 6 + 6).map((element, index) => (
-                <Box key={index} sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-                  <Box sx={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: element.color, marginRight: 1 }} />
+                <Box key={index} sx={{ display: "flex", alignItems: "center", marginBottom: 1 }}>
+                  <Box
+                    sx={{
+                      width: "12px",
+                      height: "12px",
+                      borderRadius: "50%",
+                      backgroundColor: element.color,
+                      marginRight: 1,
+                    }}
+                  />
                   <Typography>
                     {`${element.label
-                      .split(' ')
-                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ')
-                      }: ${element.value}`}
+                      .split(" ")
+                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(" ")}: ${element.value}`}
                   </Typography>
                 </Box>
               ))}
@@ -530,7 +614,12 @@ export function DataMatrices() {
       </Box>
 
       {/* modals */}
-      <Modal open={openModalType === "biosamples"} onClose={handleCloseModal} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+      <Modal
+        open={openModalType === "biosamples"}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
         <Box sx={style}>
           <DataTable
             sortDescending
@@ -569,7 +658,9 @@ export function DataMatrices() {
                   <Download />
                 </IconButton>
                 <Typography>
-                  {selectedAssay.assay === "DNase" ? "Read-Depth Normalized Signal Matrix" : "Fold-Change Signal Matrix"}
+                  {selectedAssay.assay === "DNase"
+                    ? "Read-Depth Normalized Signal Matrix"
+                    : "Fold-Change Signal Matrix"}
                 </Typography>
               </Stack>
             </Stack>
@@ -589,10 +680,12 @@ export function DataMatrices() {
             </Stack>
           </Stack>
           <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-            <Button sx={{ textTransform: 'none' }} onClick={handleCloseModal}>Cancel</Button>
+            <Button sx={{ textTransform: "none" }} onClick={handleCloseModal}>
+              Cancel
+            </Button>
           </Stack>
         </Box>
       </Modal>
     </Grid>
-  )
+  );
 }

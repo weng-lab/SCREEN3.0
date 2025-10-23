@@ -1,8 +1,8 @@
 export type MainQueryData = {
   data: {
-    cCRESCREENSearch: SCREENSearchResult[]
-  }
-}
+    cCRESCREENSearch: SCREENSearchResult[];
+  };
+};
 
 type SCREENCellTypeSpecificResponse = {
   __typename: "SCREENCellTypeSpecificResponse";
@@ -42,5 +42,5 @@ export type SCREENSearchResult = {
   atac_zscore: number;
   ctspecific: SCREENCellTypeSpecificResponse;
   info: CCREInfo;
-  nearestgenes: NearestGene[]
+  nearestgenes: NearestGene[];
 };

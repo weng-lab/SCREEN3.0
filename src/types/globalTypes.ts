@@ -10,10 +10,9 @@ export interface GenomicRange {
   end: number;
 }
 
-export type Assembly = "GRCh38" | "mm10"
+export type Assembly = "GRCh38" | "mm10";
 
-export type CcreClass = typeof CCRE_CLASSES[number];
+export type CcreClass = (typeof CCRE_CLASSES)[number];
 
 // Generate type guards
-export const isValidAssembly = (value: string): value is Assembly => 
-  value === "GRCh38" || value === "mm10";
+export const isValidAssembly = (value: string): value is Assembly => value === "GRCh38" || value === "mm10";

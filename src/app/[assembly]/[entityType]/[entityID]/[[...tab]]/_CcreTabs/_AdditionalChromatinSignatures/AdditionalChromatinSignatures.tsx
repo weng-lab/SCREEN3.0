@@ -147,7 +147,7 @@ const entexActiveCols: GridColDef[] = [
 ];
 
 export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentProps) => {
-  const [tab, setTab] = useState<number>(1)
+  const [tab, setTab] = useState<number>(1);
 
   const {
     data: dataCcre,
@@ -161,13 +161,21 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
     end: dataCcre?.start + dataCcre?.len,
   };
 
-  const { data: dataEntex, loading: loadingEntex, error: errorEntex } = useQuery(ENTEx_QUERY, {
+  const {
+    data: dataEntex,
+    loading: loadingEntex,
+    error: errorEntex,
+  } = useQuery(ENTEx_QUERY, {
     variables: { accession: entity.entityID },
   });
 
-  const { data: dataAnnotations, loading: loadingAnnotations, error: errorAnnotations } = useQuery(ENTEx_Active_Annotations_QUERY, {
+  const {
+    data: dataAnnotations,
+    loading: loadingAnnotations,
+    error: errorAnnotations,
+  } = useQuery(ENTEx_Active_Annotations_QUERY, {
     variables: { coordinates },
-    skip: !coordinates
+    skip: !coordinates,
   });
 
   const { tracks, processedTableData, loading, error } = useChromHMMData(coordinates);

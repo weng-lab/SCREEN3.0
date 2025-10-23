@@ -126,7 +126,7 @@ export const useGWASSnpscCREsGenesData = ({
     skip: !study || study.length === 0,
   });
 
-  let snpsRegions =
+  const snpsRegions =
     gwasstudySNPs &&
     gwasstudySNPs.getSNPsforGWASStudies.map((g) => {
       return [
@@ -159,7 +159,7 @@ export const useGWASSnpscCREsGenesData = ({
       snpsRegions.length === 0,
   });
 
-  let studycCREs =
+  const studycCREs =
     cCREIntersections &&
     cCREIntersections.intersection.map((g) => {
       return g[4];
@@ -181,7 +181,7 @@ export const useGWASSnpscCREsGenesData = ({
     nextFetchPolicy: "cache-first",
     skip: !uniqueAccessions || uniqueAccessions.length === 0,
   });
-  
+
   const {
     data: studyCompuLinkedGenes,
     loading: studyCompuLinkedGenesLoading,

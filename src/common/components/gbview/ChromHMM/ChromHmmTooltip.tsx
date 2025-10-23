@@ -20,4 +20,4 @@ export const ChromHmmTooltip = (rect: Rect, tissue: string, displayName: string)
       </text>
     </g>
   );
-}
+};

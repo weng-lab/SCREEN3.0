@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export function useGrowOnScroll(length: number) {
-  const [visible, setVisible] = useState<boolean[]>(() =>
-    Array(length).fill(false)
-  );
+  const [visible, setVisible] = useState<boolean[]>(() => Array(length).fill(false));
   const refs = useRef<(HTMLDivElement | HTMLAnchorElement | null)[]>([]);
 
   useEffect(() => {

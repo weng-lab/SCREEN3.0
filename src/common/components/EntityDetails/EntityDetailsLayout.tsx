@@ -16,8 +16,8 @@ export type EntityDetailsLayoutProps = {
 } & { children: React.ReactNode };
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
-  const verticalTabsWidth = 100
-  
+  const verticalTabsWidth = 100;
+
   return (
     // Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/. Children wrapped in <TabPanel>
     <OpenEntityTabs>
@@ -26,10 +26,16 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
         {/* View tabs, shown only on desktop */}
         <Box sx={{ display: { xs: "none", md: "initial", height: "100%" } }} id="element-details-desktop-tabs">
           <Box sx={{ position: "fixed", height: "100%" }}>
-            <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" verticalTabsWidth={verticalTabsWidth} />
+            <EntityDetailsTabs
+              assembly={assembly}
+              entityType={entityType}
+              entityID={entityID}
+              orientation="vertical"
+              verticalTabsWidth={verticalTabsWidth}
+            />
           </Box>
           {/* Needed to bump over the rest of the content since above is using position="fixed" */}
-          <div style={{ width: verticalTabsWidth }} /> 
+          <div style={{ width: verticalTabsWidth }} />
         </Box>
         <Stack
           width={"100%"}
@@ -44,7 +50,9 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
         >
           {entityType === "region" ? (
             <RegionSearchHeader region={parseGenomicRangeString(entityID)} />
-          ) :  entityType === "gwas" ? <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} /> :(
+          ) : entityType === "gwas" ? (
+            <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} />
+          ) : (
             <EntityDetailsHeader assembly={assembly} entityType={entityType} entityID={entityID} />
           )}
           {/* View tabs, shown only on mobile */}
@@ -52,7 +60,12 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
             sx={{ display: { xs: "initial", md: "none" }, borderBottom: 1, borderColor: "divider" }}
             id="element-details-desktop-tabs"
           >
-            <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="horizontal" />
+            <EntityDetailsTabs
+              assembly={assembly}
+              entityType={entityType}
+              entityID={entityID}
+              orientation="horizontal"
+            />
           </Box>
           {children}
         </Stack>

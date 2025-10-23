@@ -40,10 +40,10 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
       entityID: pathname.split("/")[3],
       tab: pathname.split("/")[4] ?? "",
     };
-  }, [pathname]); 
+  }, [pathname]);
 
-  if (!isValidOpenEntity(urlOpenEntity)){
-    throw new Error(`Incorrect entity configuration: ` + JSON.stringify(urlOpenEntity))
+  if (!isValidOpenEntity(urlOpenEntity)) {
+    throw new Error(`Incorrect entity configuration: ` + JSON.stringify(urlOpenEntity));
   }
 
   const currentEntityState = openEntities.find((el) => isSameEntity(urlOpenEntity, el));
@@ -150,12 +150,15 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     (elToClose: AnyOpenEntity) => {
       if (openEntities.length > 1) {
         // only need to navigate if you're closing the tab that you're on
-        const needToNavigate = elToClose.entityID === urlOpenEntity.entityID && elToClose.assembly === urlOpenEntity.assembly;
+        const needToNavigate =
+          elToClose.entityID === urlOpenEntity.entityID && elToClose.assembly === urlOpenEntity.assembly;
         if (needToNavigate) {
           /**
            * @todo can this be changed to simply openEntities.findIndex((openEl) => openEl === elToClose)? Is there reference equality?
            */
-          const toCloseIndex = openEntities.findIndex((openEl) => openEl.entityID === elToClose.entityID && openEl.assembly && elToClose.assembly);
+          const toCloseIndex = openEntities.findIndex(
+            (openEl) => openEl.entityID === elToClose.entityID && openEl.assembly && elToClose.assembly
+          );
 
           //if elToClose is last tab, go to the tab on left. Else, go to the tab on the right
           const elToNavTo =

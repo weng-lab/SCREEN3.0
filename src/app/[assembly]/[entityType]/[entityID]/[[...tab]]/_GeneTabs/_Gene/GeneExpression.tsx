@@ -14,7 +14,7 @@ import VersionFallback from "./GeneVersionFallback";
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
 export type GeneExpressionProps = {
-  geneData: UseGeneDataReturn<{ name: string, assembly: Assembly }>;
+  geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
   assembly: Assembly;
 };
 
@@ -40,10 +40,12 @@ export type SharedGeneExpressionPlotProps = GeneExpressionProps & {
 const GeneExpression = (props: GeneExpressionProps) => {
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
-  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM")
-  const [replicates, setReplicates] = useState<"mean" | "all">("mean")
-  const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM")
-  const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">(props.assembly === "GRCh38" ? "total RNA-seq" : "all")
+  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM");
+  const [replicates, setReplicates] = useState<"mean" | "all">("mean");
+  const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM");
+  const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">(
+    props.assembly === "GRCh38" ? "total RNA-seq" : "all"
+  );
 
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
@@ -60,19 +62,18 @@ const GeneExpression = (props: GeneExpressionProps) => {
   const rows: PointMetadata[] = useMemo(() => {
     if (!geneExpressionData?.data?.length || isV40) return [];
 
-    const filteredData = geneExpressionData.data.filter(d => RNAtype === "all" || d.assay_term_name === RNAtype)
+    const filteredData = geneExpressionData.data.filter((d) => RNAtype === "all" || d.assay_term_name === RNAtype);
 
-    let result: PointMetadata[] = filteredData.flatMap((entry) => {
+    const result: PointMetadata[] = filteredData.flatMap((entry) => {
       const files = entry.gene_quantification_files?.filter(Boolean) ?? [];
 
       if (replicates === "all") {
         return files.flatMap((file, i) => {
           const quants = file.quantifications?.filter(Boolean) ?? [];
-          const quant = quants[0]
+          const quant = quants[0];
 
           const rawTPM = quant?.tpm;
-          const scaledTPM =
-            scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
+          const scaledTPM = scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
 
           const repLabel = file.biorep != null ? ` rep. ${file.biorep}` : "";
           const modifiedAccession = `${entry.accession}${repLabel}`;
@@ -95,16 +96,12 @@ const GeneExpression = (props: GeneExpressionProps) => {
         });
       } else {
         // replicates === "mean"
-        const allQuants = files.flatMap(
-          (file) => file.quantifications?.filter(Boolean) ?? []
-        );
+        const allQuants = files.flatMap((file) => file.quantifications?.filter(Boolean) ?? []);
         if (!allQuants.length) return [];
 
-        const avgTPM =
-          allQuants.reduce((sum, q) => sum + q?.tpm, 0) / allQuants.length;
+        const avgTPM = allQuants.reduce((sum, q) => sum + q?.tpm, 0) / allQuants.length;
 
-        const scaledTPM =
-          scale === "logTPM" ? Math.log10(avgTPM + 1) : avgTPM;
+        const scaledTPM = scale === "logTPM" ? Math.log10(avgTPM + 1) : avgTPM;
 
         return [
           {
@@ -154,40 +151,33 @@ const GeneExpression = (props: GeneExpressionProps) => {
 
   return (
     <>
-    {isV40 && <VersionFallback gene={props.geneData.data.name} />}
-    <TwoPaneLayout
-      TableComponent={<GeneExpressionTable {...SharedGeneExpressionPlotProps} />}
-      plots={[
-        {
-          tabTitle: "Bar Plot",
-          icon: <BarChart />,
-          plotComponent: (
-            <GeneExpressionBarPlot ref={barRef} {...SharedGeneExpressionPlotProps} isV40={isV40} />
-          ),
-          ref: barRef,
-        },
-        {
-          tabTitle: "Violin Plot",
-          icon: <CandlestickChart />,
-          plotComponent: (
-            <GeneExpressionViolinPlot ref={violinRef} {...SharedGeneExpressionPlotProps} />
-          ),
-          ref: violinRef,
-        },
-        {
-          tabTitle: "UMAP",
-          icon: <ScatterPlot />,
-          plotComponent: (
-            <GeneExpressionUMAP ref={scatterRef} {...SharedGeneExpressionPlotProps} />
-          ),
-          ref: scatterRef,
-        },
-      ]}
-      isV40={isV40}
-    />
+      {isV40 && <VersionFallback gene={props.geneData.data.name} />}
+      <TwoPaneLayout
+        TableComponent={<GeneExpressionTable {...SharedGeneExpressionPlotProps} />}
+        plots={[
+          {
+            tabTitle: "Bar Plot",
+            icon: <BarChart />,
+            plotComponent: <GeneExpressionBarPlot ref={barRef} {...SharedGeneExpressionPlotProps} isV40={isV40} />,
+            ref: barRef,
+          },
+          {
+            tabTitle: "Violin Plot",
+            icon: <CandlestickChart />,
+            plotComponent: <GeneExpressionViolinPlot ref={violinRef} {...SharedGeneExpressionPlotProps} />,
+            ref: violinRef,
+          },
+          {
+            tabTitle: "UMAP",
+            icon: <ScatterPlot />,
+            plotComponent: <GeneExpressionUMAP ref={scatterRef} {...SharedGeneExpressionPlotProps} />,
+            ref: scatterRef,
+          },
+        ]}
+        isV40={isV40}
+      />
     </>
   );
-
 };
 
 export default GeneExpression;

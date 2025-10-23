@@ -17,7 +17,6 @@ export const metadata = {
   description: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
 };
 
-
 if (process.env.NODE_ENV !== "production") {
   loadDevMessages();
   loadErrorMessages();

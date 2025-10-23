@@ -1,17 +1,17 @@
-"use client"
-import React from "react"
-import { useQuery } from "@apollo/client"
-import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components"
-import { EntityViewComponentProps } from "common/entityTabsConfig"
-import { gql } from "types/generated"
-import { LinkComponent } from "common/components/LinkComponent"
+"use client";
+import React from "react";
+import { useQuery } from "@apollo/client";
+import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { gql } from "types/generated";
+import { LinkComponent } from "common/components/LinkComponent";
 
 type orthologRow = {
-  accession: string
-  chrom: string
-  start: number
-  stop: number
-}
+  accession: string;
+  chrom: string;
+  start: number;
+  stop: number;
+};
 
 export const ORTHOLOG_QUERY = gql(`
   query orthologTab($assembly: String!, $accession: [String!]) {
@@ -26,7 +26,7 @@ export const ORTHOLOG_QUERY = gql(`
       }
     }
   }
-`)
+`);
 
 export const Conservation = ({ entity }: EntityViewComponentProps) => {
   const { loading, error, data } = useQuery(ORTHOLOG_QUERY, {
@@ -36,9 +36,9 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     },
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
-  })
+  });
 
-  const ortholog: orthologRow[] = []
+  const ortholog: orthologRow[] = [];
   if (data && data.orthologQuery.length > 0) {
     for (const ccre of data.orthologQuery[0].ortholog) {
       ortholog.push({
@@ -46,7 +46,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
         chrom: ccre.chromosome,
         start: ccre.start,
         stop: ccre.stop,
-      })
+      });
     }
   }
 
@@ -55,24 +55,22 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       headerName: "Accession",
       field: "accession",
       renderCell: (params: GridRenderCellParams) => (
-        <LinkComponent
-          href={`/${entity.assembly == "GRCh38" ? "mm10" : "GRCh38"}/ccre/${params.row.accession}`}
-        >
+        <LinkComponent href={`/${entity.assembly == "GRCh38" ? "mm10" : "GRCh38"}/ccre/${params.row.accession}`}>
           {params.value}
         </LinkComponent>
       ),
     },
     {
       headerName: "Chromosome",
-      field: "chrom"
+      field: "chrom",
     },
     {
       headerName: "Start",
-      field: "start"
+      field: "start",
     },
     {
       headerName: "Stop",
-      field: "stop"
+      field: "stop",
     },
   ];
 
@@ -86,4 +84,4 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       emptyTableFallback={"No Orthologous cCREs found"}
     />
   );
-}
+};

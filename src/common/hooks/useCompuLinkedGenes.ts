@@ -31,7 +31,6 @@ export type useCompuLinkedGenesReturn = {
 };
 
 export const useCompuLinkedGenes = ({ accessions, method }: useCompuLinkedGenesParams): useCompuLinkedGenesReturn => {
-  
   const {
     data: studyCompuLinkedGenes,
     loading: studyCompuLinkedGenesLoading,

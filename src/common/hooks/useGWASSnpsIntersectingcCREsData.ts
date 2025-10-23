@@ -59,7 +59,7 @@ export const useGWASSnpsIntersectingcCREsData = ({
     skip: !study || study.length === 0,
   });
 
-  let snpsRegions =
+  const snpsRegions =
     gwasstudySNPs &&
     gwasstudySNPs.getSNPsforGWASStudies.map((g) => {
       return [

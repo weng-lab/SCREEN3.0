@@ -1,5 +1,5 @@
-import { AnyEntityType } from 'common/entityTabsConfig';
-import { useEffect, useState } from 'react';
+import { AnyEntityType } from "common/entityTabsConfig";
+import { useEffect, useState } from "react";
 
 export interface UseGeneDescriptionResult {
   description: string | null;
@@ -13,8 +13,7 @@ export function useGeneDescription(name: string, entityType: AnyEntityType = "ge
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    
-    if ((entityType !== undefined) && entityType !== 'gene') return;
+    if (entityType !== undefined && entityType !== "gene") return;
     if (!name) return;
 
     const fetchDescription = async () => {
@@ -30,12 +29,11 @@ export function useGeneDescription(name: string, entityType: AnyEntityType = "ge
         }
 
         const data = await response.json();
-        const matches =
-          data[3]?.filter((x: string[]) => x[3] === name.toUpperCase());
+        const matches = data[3]?.filter((x: string[]) => x[3] === name.toUpperCase());
 
         setDescription(matches?.length ? matches[0][4] : null);
       } catch (err: any) {
-        setError(err.message || 'Unknown error');
+        setError(err.message || "Unknown error");
         setDescription(null);
       } finally {
         setLoading(false);

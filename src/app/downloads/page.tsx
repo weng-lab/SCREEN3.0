@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Tabs, Tab, Divider, Stack, Box} from "@mui/material"
-import { DataMatrices } from "./datamatrices"
-import { useState } from "react"
-import { DownloadRange } from "./DownloadRange/downloadrange"
-import Annotations from "./Annotations/Annotations"
+import * as React from "react";
+import { Tabs, Tab, Divider, Stack, Box } from "@mui/material";
+import { DataMatrices } from "./datamatrices";
+import { useState } from "react";
+import { DownloadRange } from "./DownloadRange/downloadrange";
+import Annotations from "./Annotations/Annotations";
 
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
-  }
+  };
 }
 
 export default function Downloads() {
-  const [page, setPage] = useState(0)
-  
-  const handleChange = (_, newValue: number) => {    
-    setPage(newValue)
-  }
+  const [page, setPage] = useState(0);
+
+  const handleChange = (_, newValue: number) => {
+    setPage(newValue);
+  };
 
   return (
-    <Stack sx={{ marginX: "5%", marginY: 2, height: '100%' }} gap={2}>
+    <Stack sx={{ marginX: "5%", marginY: 2, height: "100%" }} gap={2}>
       <Box>
         <Tabs
           value={page}

@@ -9,7 +9,6 @@ import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { AnyEntityType } from "../../entityTabsConfig";
 
-
 export type EntityDetailsHeaderProps = {
   assembly: Assembly;
   entityType: AnyEntityType;
@@ -19,7 +18,15 @@ export type EntityDetailsHeaderProps = {
 export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
-  const c = entityMetadata?.__typename !== "GwasStudies" && (entityMetadata?.__typename === "SCREENSearchResult" ? {chromosome: entityMetadata?.chrom, start: entityMetadata?.start, end: entityMetadata?.start + entityMetadata?.len } : entityMetadata?.coordinates);
+  const c =
+    entityMetadata?.__typename !== "GwasStudies" &&
+    (entityMetadata?.__typename === "SCREENSearchResult"
+      ? {
+          chromosome: entityMetadata?.chrom,
+          start: entityMetadata?.start,
+          end: entityMetadata?.start + entityMetadata?.len,
+        }
+      : entityMetadata?.coordinates);
   const coordinatesDisplay = c && formatGenomicRange(c);
 
   const description = useGeneDescription(entityID, entityType).description;
@@ -33,22 +40,19 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
   const alt =
     entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.alt : "";
 
-/**
- * @todo this should be put in a utils file
- */
+  /**
+   * @todo this should be put in a utils file
+   */
   //map descriptions to the class
-  
 
   const subtitle =
     entityType === "gene" ? (
       geneID
     ) : entityType === "ccre" ? (
-      <>
-        {ccreClassDescriptions[ccreClass] ?? ""}
-      </>
+      <>{ccreClassDescriptions[ccreClass] ?? ""}</>
     ) : entityType === "variant" ? (
       !ref ? (
-          <Skeleton width={215} />
+        <Skeleton width={215} />
       ) : (
         <>
           <strong>Reference Allele:</strong> {ref} <strong>Alternate Allele:</strong> {alt}
@@ -84,11 +88,9 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           <Typography>{loading ? <Skeleton width={215} /> : subtitle}</Typography>
         </Stack>
       </Grid>
-      {
-        /**
-         * @todo this layout is too complicated, simplify
-         */
-      }
+      {/**
+       * @todo this layout is too complicated, simplify
+       */}
       <Grid size={{ xs: 12, sm: 3 }}>
         <Grid container direction="column" spacing={1} sx={{ height: "100%" }} textAlign={"right"}>
           <Grid container spacing={1} sx={{ flexGrow: 1 }} order={{ xs: 2, sm: 1 }} justifyContent={"flex-end"}>

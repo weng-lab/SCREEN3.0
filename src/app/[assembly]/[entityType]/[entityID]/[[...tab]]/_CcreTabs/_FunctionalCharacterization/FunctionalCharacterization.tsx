@@ -1,13 +1,13 @@
-"use client"
-import React from "react"
-import { useQuery } from "@apollo/client"
-import { Table } from "@weng-lab/ui-components"
-import { Stack } from "@mui/material"
-import { gql } from "types/generated/gql"
-import { LinkComponent } from "common/components/LinkComponent"
-import { EntityViewComponentProps } from "common/entityTabsConfig"
-import { useCcreData } from "common/hooks/useCcreData"
-import { GenomicRange } from "types/globalTypes"
+"use client";
+import React from "react";
+import { useQuery } from "@apollo/client";
+import { Table } from "@weng-lab/ui-components";
+import { Stack } from "@mui/material";
+import { gql } from "types/generated/gql";
+import { LinkComponent } from "common/components/LinkComponent";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { useCcreData } from "common/hooks/useCcreData";
+import { GenomicRange } from "types/globalTypes";
 
 export const FUNCTIONAL_DATA_QUERY = gql(`
 query functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {
@@ -20,7 +20,7 @@ query functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assemb
     start
   }
 }
-`)
+`);
 
 export const MPRA_FUNCTIONAL_DATA_QUERY = gql(`
 query MPRA_FCC($coordinates: [GenomicRangeInput!]) {
@@ -38,7 +38,7 @@ query MPRA_FCC($coordinates: [GenomicRangeInput!]) {
     barcode_location
   }
 }
-`)
+`);
 
 export const CRISPR_FUNCTIONAL_DATA_QUERY = gql(`
   query crisprFccQuery($accession: [String]!) {
@@ -50,7 +50,7 @@ export const CRISPR_FUNCTIONAL_DATA_QUERY = gql(`
       experiment
     }
   }
-`)
+`);
 
 export const CAPRA_SOLO_FUNCTIONAL_DATA_QUERY = gql(`
 query capraFccSoloQuery($accession: [String]!) {
@@ -66,7 +66,7 @@ query capraFccSoloQuery($accession: [String]!) {
     experiment
   }
 }
-`)
+`);
 
 export const CAPRA_DOUBLE_FUNCTIONAL_DATA_QUERY = gql(`
 query capraFccDoubleQuery($accession: [String]!) {
@@ -83,7 +83,7 @@ query capraFccDoubleQuery($accession: [String]!) {
     experiment
   }
 }
-`)
+`);
 
 export const CCRE_RDHS_QUERY = gql(`
 query rdhs($rDHS: [String!],$assembly: String!) {
@@ -91,7 +91,7 @@ query rdhs($rDHS: [String!],$assembly: String!) {
     accession
   }
 }
-`)
+`);
 
 type CAPRA_ExperimentInfo = {
   lab: string;
@@ -106,39 +106,71 @@ type CRISPR_ExperimentInfo = {
 
 // Define the map where experiment is the key
 const capra_experimentMap: Record<string, CAPRA_ExperimentInfo> = {
-  "ENCSR064KUD": { lab: "Kevin White, UChicago", cellType: "HCT116" },
-  "ENCSR135NXN": { lab: "Kevin White, UChicago", cellType: "HepG2" },
-  "ENCSR547SBZ": { lab: "Kevin White, UChicago", cellType: "MCF-7" },
-  "ENCSR661FOW": { lab: "Tim Reddy, Duke", cellType: "K562" },
-  "ENCSR858MPS": { lab: "Kevin White, UChicago", cellType: "K562" },
-  "ENCSR895FDL": { lab: "Kevin White, UChicago",  cellType: "A549" },
-  "ENCSR983SZZ": { lab: "Kevin White, UChicago", cellType: "SH-SY5Y" }
+  ENCSR064KUD: { lab: "Kevin White, UChicago", cellType: "HCT116" },
+  ENCSR135NXN: { lab: "Kevin White, UChicago", cellType: "HepG2" },
+  ENCSR547SBZ: { lab: "Kevin White, UChicago", cellType: "MCF-7" },
+  ENCSR661FOW: { lab: "Tim Reddy, Duke", cellType: "K562" },
+  ENCSR858MPS: { lab: "Kevin White, UChicago", cellType: "K562" },
+  ENCSR895FDL: { lab: "Kevin White, UChicago", cellType: "A549" },
+  ENCSR983SZZ: { lab: "Kevin White, UChicago", cellType: "SH-SY5Y" },
 };
 
 const crispr_experimentMap: Record<string, CRISPR_ExperimentInfo> = {
-  "ENCSR179FSH": { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "OCI-AML2" },
-  "ENCSR274OEB": { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "K562" },
-  "ENCSR295VER": { design: "proliferation CRISPRi screen (dCas9-KRAB-WSR7EEE)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
-  "ENCSR369UFO": { design: "proliferation CRISPRi screen (dCas9-RYBP)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
-  "ENCSR372CKT": { design: "proliferation CRISPRi screen (dCas9-ZNF705-KRAB)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
-  "ENCSR381RDB": { design: "proliferation CRISPRi screen (dCas9-RYBP)", lab: "Will Greenleaf, Stanford",  cellType: "K562" },
-  "ENCSR386FFV": { design: "proliferation CRISPRi screen (dCas9-KRAB-WSR7EEE)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
-  "ENCSR427OCU": { design: "proliferation CRISPRi screen (dCas9-KRAB-MGA1-MGA2)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
-  "ENCSR446RYW": { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
-  "ENCSR690DTG": { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "K562" },
-  "ENCSR997ZOY": { design: "proliferation CRISPRi screen (dCas)", lab: "Will Greenleaf, Stanford", cellType: "K562" }
+  ENCSR179FSH: { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "OCI-AML2" },
+  ENCSR274OEB: { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "K562" },
+  ENCSR295VER: {
+    design: "proliferation CRISPRi screen (dCas9-KRAB-WSR7EEE)",
+    lab: "Will Greenleaf, Stanford",
+    cellType: "K562",
+  },
+  ENCSR369UFO: {
+    design: "proliferation CRISPRi screen (dCas9-RYBP)",
+    lab: "Will Greenleaf, Stanford",
+    cellType: "K562",
+  },
+  ENCSR372CKT: {
+    design: "proliferation CRISPRi screen (dCas9-ZNF705-KRAB)",
+    lab: "Will Greenleaf, Stanford",
+    cellType: "K562",
+  },
+  ENCSR381RDB: {
+    design: "proliferation CRISPRi screen (dCas9-RYBP)",
+    lab: "Will Greenleaf, Stanford",
+    cellType: "K562",
+  },
+  ENCSR386FFV: {
+    design: "proliferation CRISPRi screen (dCas9-KRAB-WSR7EEE)",
+    lab: "Will Greenleaf, Stanford",
+    cellType: "K562",
+  },
+  ENCSR427OCU: {
+    design: "proliferation CRISPRi screen (dCas9-KRAB-MGA1-MGA2)",
+    lab: "Will Greenleaf, Stanford",
+    cellType: "K562",
+  },
+  ENCSR446RYW: {
+    design: "proliferation CRISPRi screen (dCas9-KRAB)",
+    lab: "Will Greenleaf, Stanford",
+    cellType: "K562",
+  },
+  ENCSR690DTG: { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "K562" },
+  ENCSR997ZOY: { design: "proliferation CRISPRi screen (dCas)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
 };
 
 export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps) => {
-  const {data: dataCcre, loading: loadingCcre, error: errorCcre} = useCcreData({assembly: entity.assembly, accession: entity.entityID})
+  const {
+    data: dataCcre,
+    loading: loadingCcre,
+    error: errorCcre,
+  } = useCcreData({ assembly: entity.assembly, accession: entity.entityID });
 
   const coordinates: GenomicRange = dataCcre && {
     chromosome: dataCcre?.chrom,
     start: dataCcre?.start,
-    end: dataCcre?.start + dataCcre?.len
-  }
+    end: dataCcre?.start + dataCcre?.len,
+  };
 
-  const isMouse = entity.assembly === "mm10"
+  const isMouse = entity.assembly === "mm10";
 
   const {
     loading: loadingMouseTransgenic,

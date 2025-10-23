@@ -17,9 +17,7 @@ const AssayBarPlot = ({
   viewBy,
   ref,
   setViewBy,
-
 }: SharedAssayViewPlotProps) => {
-
   const plotData: BarData<BiosampleRow>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((row) => {
@@ -31,7 +29,9 @@ const AssayBarPlot = ({
         category: capitalizeFirstLetter(row.ontology),
         label: truncateString(capitalizeFirstLetter(row.displayname), 25),
         color:
-          (anySelected && isSelected) || !anySelected ? tissueColors[row.ontology] ?? tissueColors.missing : "#CCCCCC",
+          (anySelected && isSelected) || !anySelected
+            ? (tissueColors[row.ontology] ?? tissueColors.missing)
+            : "#CCCCCC",
         metadata: row,
       };
     });
@@ -53,16 +53,14 @@ const AssayBarPlot = ({
           <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.ontology)}
         </Typography>
         <Typography variant="body2">
-          <b>Classification:</b>{" "}
-          {capitalizeFirstLetter(bar.metadata.class)}
+          <b>Classification:</b> {capitalizeFirstLetter(bar.metadata.class)}
         </Typography>
         <Typography variant="body2">
-          <b>Z-Score</b>{" "}
-          {bar.value.toFixed(2)}
+          <b>Z-Score</b> {bar.value.toFixed(2)}
         </Typography>
       </Box>
     );
-  }
+  };
 
   return (
     <Box
@@ -72,10 +70,7 @@ const AssayBarPlot = ({
       padding={1}
       sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
     >
-      <AssayPlotControls
-        viewBy={viewBy}
-        setViewBy={setViewBy}
-      />
+      <AssayPlotControls viewBy={viewBy} setViewBy={setViewBy} />
       <BarPlot
         data={plotData}
         topAxisLabel={`${entity.entityID} ${formatAssay(assay)} z-scores`}

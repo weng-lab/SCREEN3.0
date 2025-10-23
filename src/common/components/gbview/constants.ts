@@ -1,7 +1,7 @@
 import { BigWigConfig, DisplayMode, Track, TrackType } from "@weng-lab/genomebrowser";
 import { ASSAY_COLORS } from "common/colors";
 
-export const CCRE_TRACK_COLOR = "#D05F45"
+export const CCRE_TRACK_COLOR = "#D05F45";
 
 export const humanDefaultTracks: Track[] = [
   {

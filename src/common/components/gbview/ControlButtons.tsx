@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Stack, Typography, ButtonGroup as MuiButtonGroup } from "@mui/material"
+import { Box, Button, Divider, Stack, Typography, ButtonGroup as MuiButtonGroup } from "@mui/material";
 import { useCallback } from "react";
 import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 
@@ -47,14 +47,10 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
     [domain, setDomain]
   );
 
-  type ButtonConfig =  { label: string, onClick: (value: number) => void, value: number }
+  type ButtonConfig = { label: string; onClick: (value: number) => void; value: number };
 
   // Reusable button group component
-  const ButtonGroup = ({
-    buttons,
-  }: {
-    buttons: ButtonConfig[];
-  }) => (
+  const ButtonGroup = ({ buttons }: { buttons: ButtonConfig[] }) => (
     <MuiButtonGroup>
       {buttons.map((btn, index) => {
         return (
@@ -86,9 +82,7 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
     label: string;
   }) => (
     <Stack alignItems={"center"}>
-      <Typography variant="body2">
-        {label}
-      </Typography>
+      <Typography variant="body2">{label}</Typography>
       <Stack direction={"row"} spacing={0.5}>
         <ButtonGroup buttons={leftButtons} />
         <Divider orientation="vertical" flexItem />
@@ -100,23 +94,23 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
   const width = domain.end - domain.start;
 
   const buttonGroups = {
-    "moveLeft": [
+    moveLeft: [
       { label: "◄◄◄", onClick: shift, value: -width },
       { label: "◄◄", onClick: shift, value: -Math.round(width / 2) },
       { label: "◄", onClick: shift, value: -Math.round(width / 4) },
     ],
-    "moveRight": [
+    moveRight: [
       { label: "►", onClick: shift, value: Math.round(width / 4) },
       { label: "►►", onClick: shift, value: Math.round(width / 2) },
       { label: "►►►", onClick: shift, value: width },
     ],
-    "zoomOut": [
+    zoomOut: [
       { label: "-100x", onClick: zoom, value: 100 },
       { label: "-10x", onClick: zoom, value: 10 },
       { label: "-3x", onClick: zoom, value: 3 },
       { label: "-1.5x", onClick: zoom, value: 1.5 },
     ],
-    "zoomIn": [
+    zoomIn: [
       { label: "+1.5x", onClick: zoom, value: 1 / 1.5 },
       { label: "+3x", onClick: zoom, value: 1 / 3 },
       { label: "+10x", onClick: zoom, value: 1 / 10 },

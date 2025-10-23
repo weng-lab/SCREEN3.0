@@ -19,9 +19,7 @@ const RegionSearchHeader = ({ region }: RegionSearchHeaderProps) => {
       justifyContent={"space-between"}
     >
       <Typography variant="subtitle1">Region Search</Typography>
-      <Typography variant="h4">
-        {formatGenomicRange(region)}
-      </Typography>
+      <Typography variant="h4">{formatGenomicRange(region)}</Typography>
     </Stack>
   );
 };

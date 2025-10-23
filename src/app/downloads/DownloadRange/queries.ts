@@ -1,8 +1,8 @@
 /**
  * Send the request to our Server from a server component
  */
-'use server'
-import { ApolloQueryResult, gql } from "@apollo/client"
+"use server";
+import { ApolloQueryResult, gql } from "@apollo/client";
 import { getClient } from "common/apollo/client";
 
 const cCRE_QUERY = gql`
@@ -99,10 +99,18 @@ const cCRE_QUERY = gql`
       }
     }
   }
-`
+`;
 
-function cCRE_QUERY_VARIABLES(assembly: string, coordinates: {chromosome: string, start: number, end: number}[], biosample: string, nearbygenesdistancethreshold: number, nearbygeneslimit: number, accessions: string[], noLimit?: boolean) {
-  let vars = {
+function cCRE_QUERY_VARIABLES(
+  assembly: string,
+  coordinates: { chromosome: string; start: number; end: number }[],
+  biosample: string,
+  nearbygenesdistancethreshold: number,
+  nearbygeneslimit: number,
+  accessions: string[],
+  noLimit?: boolean
+) {
+  const vars = {
     uuid: null,
     assembly: assembly,
     gene_all_start: 0,
@@ -123,19 +131,18 @@ function cCRE_QUERY_VARIABLES(assembly: string, coordinates: {chromosome: string
     element_type: null,
     limit: noLimit ? null : 25000,
     nearbygenesdistancethreshold: nearbygenesdistancethreshold,
-    nearbygeneslimit: nearbygeneslimit
-  }
+    nearbygeneslimit: nearbygeneslimit,
+  };
   //Can't just null out accessions field if not using due to API functionality as of writing this, so push to vars only if using
   if (accessions) {
-    vars["accessions"] = accessions
+    vars["accessions"] = accessions;
   }
   if (coordinates) {
-    vars["coordinates"] = coordinates
+    vars["coordinates"] = coordinates;
   }
 
-  return vars
+  return vars;
 }
-
 
 /**
  *
@@ -149,20 +156,37 @@ function cCRE_QUERY_VARIABLES(assembly: string, coordinates: {chromosome: string
  * @param accessions a list of accessions to fetch information on. Set chromosome, start, end to "undefined" if using so they're set to null
  * @returns cCREs matching the search
  */
-export async function MainQuery(assembly: string = null, chromosome: string = null, start: number = null, end: number = null, biosample: string = null, nearbygenesdistancethreshold: number, nearbygeneslimit: number, accessions: string[] = null, noLimit?: boolean) {
-  let data: ApolloQueryResult<any>
+export async function MainQuery(
+  assembly: string = null,
+  chromosome: string = null,
+  start: number = null,
+  end: number = null,
+  biosample: string = null,
+  nearbygenesdistancethreshold: number,
+  nearbygeneslimit: number,
+  accessions: string[] = null,
+  noLimit?: boolean
+) {
+  let data: ApolloQueryResult<any>;
   try {
     data = await getClient().query({
       query: cCRE_QUERY,
-      variables: cCRE_QUERY_VARIABLES(assembly, chromosome ? [{chromosome, start, end}] : null, biosample, nearbygenesdistancethreshold, nearbygeneslimit, accessions, noLimit),
+      variables: cCRE_QUERY_VARIABLES(
+        assembly,
+        chromosome ? [{ chromosome, start, end }] : null,
+        biosample,
+        nearbygenesdistancethreshold,
+        nearbygeneslimit,
+        accessions,
+        noLimit
+      ),
       //Telling it to not cache, next js caches also and for things that exceed the 2mb cache limit it slows down substantially for some reason
       fetchPolicy: "no-cache",
-    })
+    });
   } catch (error) {
-    console.error(error)
-    throw error
+    console.error(error);
+    throw error;
   }
-  
-  return data
-}
 
+  return data;
+}

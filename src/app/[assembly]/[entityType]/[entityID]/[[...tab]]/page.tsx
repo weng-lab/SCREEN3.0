@@ -3,11 +3,7 @@ import { CircularProgress, Typography } from "@mui/material";
 import GenomeBrowserView from "common/components/gbview/GenomeBrowserView";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import { isValidAssembly } from "types/globalTypes";
-import {
-  getComponentForEntity,
-  isValidEntityType,
-  isValidRouteForEntity,
-} from "common/entityTabsConfig";
+import { getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
@@ -100,10 +96,10 @@ export default function DetailsPage({
           data.__typename === "Gene"
             ? data.name
             : data.__typename === "SCREENSearchResult"
-            ? data.info.accession
-            : data.__typename === "SNP"
-            ? data.id
-            : null
+              ? data.info.accession
+              : data.__typename === "SNP"
+                ? data.id
+                : null
         }
         type={entityType}
         assembly={assembly}
@@ -142,15 +138,16 @@ export default function DetailsPage({
       const geneData = { data, loading, error } as useEntityMetadataReturn<"gene">;
 
       switch (tab) {
-        case "conservation": return <ComponentToRender entity={entity} />
+        case "conservation":
+          return <ComponentToRender entity={entity} />;
         case "":
           return <GeneExpression geneData={geneData} assembly={assembly} />;
         case "ccres":
-          return <GeneLinkedCcres geneData={geneData} assembly={assembly}/>;
+          return <GeneLinkedCcres geneData={geneData} assembly={assembly} />;
         case "variants":
           return <EQTLs data={geneData.data} entityType="gene" assembly={assembly} />;
         case "transcript-expression":
-          return <TranscriptExpression geneData={geneData}/>
+          return <TranscriptExpression geneData={geneData} />;
       }
       break;
     }

@@ -34,16 +34,11 @@ const geneTypeCol: GridColDef = {
   valueGetter: (value, row: LinkedGeneInfo) => GeneTypeFormatter(value, row),
 };
 
-
 const experimentCol: GridColDef = {
   field: "experiment_accession",
   headerName: "Experiment ID",
   renderCell: (params: GridRenderCellParams) => (
-    <LinkComponent
-      href={`https://www.encodeproject.org/experiments/${params.value}`}
-      openInNewTab
-      showExternalIcon
-    >
+    <LinkComponent href={`https://www.encodeproject.org/experiments/${params.value}`} openInNewTab showExternalIcon>
       {params.value}
     </LinkComponent>
   ),
@@ -115,38 +110,38 @@ const slopeCol: GridColDef = {
  */
 export const IntactHiCLoopsCols: GridColDef[] = [
   geneNameCol,
-  {...geneTypeCol, minWidth: 65},
+  { ...geneTypeCol, minWidth: 65 },
   experimentCol,
-  {...displayNameCol, minWidth: 85},
+  { ...displayNameCol, minWidth: 85 },
   scoreCol,
-  {...pValCol, minWidth: 85},
+  { ...pValCol, minWidth: 85 },
 ];
 
 export const ChIAPETCols: GridColDef[] = [
   geneNameCol,
-  {...geneTypeCol, minWidth: 65},
-  {...assayCol, minWidth: 85},
+  { ...geneTypeCol, minWidth: 65 },
+  { ...assayCol, minWidth: 85 },
   experimentCol,
-  {...displayNameCol, minWidth: 85},
+  { ...displayNameCol, minWidth: 85 },
   scoreCol,
 ];
 
 export const CrisprFlowFISHCols: GridColDef[] = [
   geneNameCol,
-  {...geneTypeCol, minWidth: 65},
+  { ...geneTypeCol, minWidth: 65 },
   gRNACol,
   { ...experimentCol, flex: 1.25 },
-  {...displayNameCol, minWidth: 85},
+  { ...displayNameCol, minWidth: 85 },
   effectSizeCol,
   pValCol,
 ];
 
 export const eQTLCols: GridColDef[] = [
   geneNameCol,
-  {...geneTypeCol, minWidth: 100},
-  {...variantIDCol, minWidth: 140},
-  {...sourceCol, minWidth: 75},
-  {...tissueCol, minWidth: 85},
+  { ...geneTypeCol, minWidth: 100 },
+  { ...variantIDCol, minWidth: 140 },
+  { ...sourceCol, minWidth: 75 },
+  { ...tissueCol, minWidth: 85 },
   slopeCol,
-  {...pValCol, minWidth: 85},
+  { ...pValCol, minWidth: 85 },
 ];

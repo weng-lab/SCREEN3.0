@@ -1,41 +1,32 @@
 "use client";
 import * as React from "react";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Menu,
-  MenuItem,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { AppBar, Box, Toolbar, Menu, MenuItem, IconButton, Stack, Typography } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Link from "next/link";
 import Image from "next/image";
 import AutoComplete from "../autocomplete";
 import { Search } from "@mui/icons-material";
-import MenuIcon from "@mui/icons-material/Menu"
+import MenuIcon from "@mui/icons-material/Menu";
 import { useRef, useState } from "react";
 import MobileMenu from "./MobileMenu";
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { LinkComponent } from "../LinkComponent";
 import { useMenuControl } from "common/MenuContext";
-import HumanIcon from 'common/components/HumanIcon';
-import MouseIcon from 'common/components/MouseIcon';
-import { usePathname } from "next/navigation"
+import HumanIcon from "common/components/HumanIcon";
+import MouseIcon from "common/components/MouseIcon";
+import { usePathname } from "next/navigation";
 
 export type PageInfo = {
-  pageName: string,
-  link: string,
-  dropdownID?: number,
-  subPages?: { pageName: string, link: string }[]
-}
+  pageName: string;
+  link: string;
+  dropdownID?: number;
+  subPages?: { pageName: string; link: string }[];
+};
 
 const pageLinks: PageInfo[] = [
   {
     pageName: "Downloads",
-    link: "/downloads"
+    link: "/downloads",
   },
   {
     pageName: "About",
@@ -48,7 +39,7 @@ const pageLinks: PageInfo[] = [
   },
   {
     pageName: "Help",
-    link: "/about#contact-us"
+    link: "/about#contact-us",
   },
 ];
 
@@ -58,13 +49,13 @@ type ResponsiveAppBarProps = {
 
 function Header({ maintenance }: ResponsiveAppBarProps) {
   const { openMenu } = useMenuControl();
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const isHomePage = pathname === "/";
 
   // Hover dropdowns, deals with setting its position
-  const [anchorDropdown0, setAnchorDropdown0] = useState<null | HTMLElement>(null)
-  const [anchorDropdown1, setAnchorDropdown1] = useState<null | HTMLElement>(null)
+  const [anchorDropdown0, setAnchorDropdown0] = useState<null | HTMLElement>(null);
+  const [anchorDropdown1, setAnchorDropdown1] = useState<null | HTMLElement>(null);
 
   const [assembly, setAssembly] = React.useState<"GRCh38" | "mm10">("GRCh38");
   const [iconMenuAnchor, setIconMenuAnchor] = React.useState<null | HTMLElement>(null);
@@ -76,14 +67,17 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
     const headerEl = document.getElementById("header-helix");
     if (!searchEl) return;
 
-    const observer = new IntersectionObserver(([entry], obs) => {
-      if (entry.isIntersecting) {
-        searchEl.focus();
-        obs.disconnect();
+    const observer = new IntersectionObserver(
+      ([entry], obs) => {
+        if (entry.isIntersecting) {
+          searchEl.focus();
+          obs.disconnect();
+        }
+      },
+      {
+        threshold: 1.0,
       }
-    }, {
-      threshold: 1.0
-    });
+    );
 
     observer.observe(headerEl);
 
@@ -109,45 +103,45 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   // Open Dropdown
   const handleOpenDropdown = (event: React.MouseEvent<HTMLElement>, dropdownID: number) => {
     if (dropdownID === 0) {
-      setAnchorDropdown0(event.currentTarget)
+      setAnchorDropdown0(event.currentTarget);
     } else if (dropdownID === 1) {
-      setAnchorDropdown1(event.currentTarget)
+      setAnchorDropdown1(event.currentTarget);
     }
-  }
+  };
 
   // Close Dropdown
   const handleCloseDropdown = (dropdownID: number) => {
     if (dropdownID === 0) {
-      setAnchorDropdown0(null)
+      setAnchorDropdown0(null);
     } else if (dropdownID === 1) {
-      setAnchorDropdown1(null)
+      setAnchorDropdown1(null);
     }
-  }
+  };
 
   const handleMouseMoveLink = (event: React.MouseEvent<HTMLElement>, page: PageInfo) => {
-    if (page?.subPages && 'dropdownID' in page) {
-      handleOpenDropdown(event, page.dropdownID)
+    if (page?.subPages && "dropdownID" in page) {
+      handleOpenDropdown(event, page.dropdownID);
     }
-  }
+  };
 
   const handleMouseLeaveLink = (event: React.MouseEvent<HTMLElement>, page: PageInfo) => {
-    if (page?.subPages && 'dropdownID' in page) {
+    if (page?.subPages && "dropdownID" in page) {
       switch (page.dropdownID) {
         case 0: {
           if (anchorDropdown0) {
-            handleCloseDropdown(0)
+            handleCloseDropdown(0);
           }
           break;
         }
         case 1: {
           if (anchorDropdown1) {
-            handleCloseDropdown(1)
+            handleCloseDropdown(1);
           }
           break;
         }
       }
     }
-  }
+  };
 
   return (
     <Box position={"sticky"} top={0} zIndex={1}>
@@ -195,7 +189,13 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   id="LinkBox"
                   sx={{ mr: 2 }}
                 >
-                  <LinkComponent id="Link" display={"flex"} color="primary.contrastText" href={page.link} underline="none">
+                  <LinkComponent
+                    id="Link"
+                    display={"flex"}
+                    color="primary.contrastText"
+                    href={page.link}
+                    underline="none"
+                  >
                     {page.pageName}
                     {page.subPages && <ArrowDropDownIcon />}
                   </LinkComponent>
@@ -248,13 +248,13 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   </IconButton>
                 )}
                 <IconButton
-                ref={dropdownRef}
+                  ref={dropdownRef}
                   onClick={handleIconMenuOpen}
                   size="small"
                   sx={{ color: "white" }}
-                  aria-controls={Boolean(iconMenuAnchor) ? "icon-menu" : undefined}
+                  aria-controls={iconMenuAnchor ? "icon-menu" : undefined}
                   aria-haspopup="true"
-                  aria-expanded={Boolean(iconMenuAnchor) ? "true" : undefined}
+                  aria-expanded={iconMenuAnchor ? "true" : undefined}
                 >
                   <ArrowDropDownIcon />
                 </IconButton>
@@ -265,12 +265,12 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                   onClose={handleIconMenuClose}
                   PaperProps={{ sx: { minWidth: 120, mt: 1 } }}
                   anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
+                    vertical: "bottom",
+                    horizontal: "right",
                   }}
                   transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
+                    vertical: "top",
+                    horizontal: "right",
                   }}
                 >
                   <MenuItem selected={assembly === "GRCh38"} onClick={() => handleIconSelect("GRCh38")}>
@@ -320,11 +320,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
           )}
           {/* mobile view */}
           <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
-            <IconButton
-              size="large"
-              onClick={openMenu}
-              color="inherit"
-            >
+            <IconButton size="large" onClick={openMenu} color="inherit">
               <MenuIcon />
             </IconButton>
           </Box>
@@ -333,5 +329,5 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
       </AppBar>
     </Box>
   );
-};
+}
 export default Header;

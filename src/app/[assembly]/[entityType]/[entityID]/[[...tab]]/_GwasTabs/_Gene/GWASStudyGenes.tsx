@@ -1,4 +1,3 @@
-import { useGWASSnpscCREsGenesData } from "common/hooks/useGWASSnpscCREsGenesData";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip, Typography } from "@mui/material";
@@ -140,16 +139,14 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
           <p>Gene Type</p>
         </strong>
       ),
-      valueGetter: (_, row) =>  row.genetype === "lncRNA"
-      ? row.genetype
-      : row.genetype
-          .replaceAll("_", " ")
-          .split(" ")
-          .map(
-            (word) => word.charAt(0).toUpperCase() + word.slice(1)
-          )
-          .join(" "),
-    
+      valueGetter: (_, row) =>
+        row.genetype === "lncRNA"
+          ? row.genetype
+          : row.genetype
+              .replaceAll("_", " ")
+              .split(" ")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" "),
     },
     //
     {
@@ -177,14 +174,12 @@ export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
           <p>Biosample</p>
         </strong>
       ),
-      valueGetter: (_, row) =>  row.celltype
-        .replaceAll("_", " ")
-        .split(" ")
-        .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1)
-        )
-        .join(" "),
-     
+      valueGetter: (_, row) =>
+        row.celltype
+          .replaceAll("_", " ")
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
     },
     {
       field: "score",

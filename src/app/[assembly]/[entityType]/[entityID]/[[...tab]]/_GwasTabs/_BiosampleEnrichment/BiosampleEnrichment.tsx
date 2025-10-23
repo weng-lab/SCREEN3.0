@@ -60,7 +60,7 @@ const BiosampleEnrichment = ({ study_name }: BiosampleEnrichmentProps) => {
               ) : (
                 <></>
               ),
-              ref: lollipopRef
+            ref: lollipopRef,
           },
         ]}
       />

@@ -8,14 +8,13 @@ import {
   DialogTitle,
   IconButton,
   Stack,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { Close, CloseOutlined } from "@mui/icons-material";
 import BiosampleTables from "common/components/BiosampleTables/BiosampleTables";
 import { RegistryBiosamplePlusRNA } from "./BiosampleTables/types";
 
-interface BiosampleSelectModalProps{
+interface BiosampleSelectModalProps {
   assembly: "GRCh38" | "mm10";
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -28,7 +27,7 @@ interface BiosampleSelectModalProps{
 /**
  * @todo do some work on the typing here. If multiselect is true, selectedBiosamples should be array. If false then should be single obect.
  * Deselecting doesn't work!
- * 
+ *
  */
 
 const BiosampleSelectModal = ({
@@ -38,9 +37,9 @@ const BiosampleSelectModal = ({
   onChange,
   multiSelect = false,
   multiSelectLimit = 10,
-  initialSelected = []
+  initialSelected = [],
 }: BiosampleSelectModalProps) => {
-  const [selected, setSelected] = useState<RegistryBiosamplePlusRNA[] | null>(initialSelected)
+  const [selected, setSelected] = useState<RegistryBiosamplePlusRNA[] | null>(initialSelected);
 
   useEffect(() => {
     if (open) setSelected(initialSelected);
@@ -57,7 +56,7 @@ const BiosampleSelectModal = ({
   const handleClose = () => setOpen(false);
 
   const handleSubmit = () => {
-    onChange(selected)
+    onChange(selected);
     handleClose();
   };
 
@@ -92,7 +91,7 @@ const BiosampleSelectModal = ({
                 return (
                   <Stack minWidth={"350px"} mt={1} direction="row" alignItems={"center"} key={i}>
                     <IconButton
-                      onClick={() => setSelected(prev => prev.filter((x) => x.displayname !== biosample.displayname))}
+                      onClick={() => setSelected((prev) => prev.filter((x) => x.displayname !== biosample.displayname))}
                     >
                       <Close />
                     </IconButton>

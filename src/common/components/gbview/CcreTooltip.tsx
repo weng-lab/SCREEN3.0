@@ -45,25 +45,14 @@ const MAXZ_QUERY = gql(`
   }
 `);
 
-const biosampleExperiments = (x) =>
-  [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac].filter((xx) => !!xx);
+const biosampleExperiments = (x) => [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac].filter((xx) => !!xx);
 
 const MARKS = ["DNase", "H3K4me3", "H3K27ac", "CTCF", "ATAC"];
-const marks = (x) =>
-  [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac]
-    .map((x, i) => x && MARKS[i])
-    .filter((xx) => !!xx);
+const marks = (x) => [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac].map((x, i) => x && MARKS[i]).filter((xx) => !!xx);
 
-const CCRETooltip: React.FC<CCRETooltipProps> = ({
-  assembly,
-  name,
-  biosample,
-}) => {
+const CCRETooltip: React.FC<CCRETooltipProps> = ({ assembly, name, biosample }) => {
   const experiments = useMemo(
-    () =>
-      biosample
-        ? biosampleExperiments(biosample)
-        : ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"],
+    () => (biosample ? biosampleExperiments(biosample) : ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"]),
     [biosample]
   );
 
@@ -84,15 +73,7 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({
   return (
     <svg width={width} height={height}>
       {/* Background rectangle with nice border */}
-      <rect
-        width={width}
-        height={height}
-        fill="#ffffff"
-        stroke="#000000"
-        strokeWidth="2"
-        rx="4"
-        ry="4"
-      />
+      <rect width={width} height={height} fill="#ffffff" stroke="#000000" strokeWidth="2" rx="4" ry="4" />
 
       {loading || !data?.cCREQuery?.[0] ? (
         <g>
@@ -124,42 +105,21 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({
             y={padding + 3}
             width={10}
             height={10}
-            fill={
-              GROUP_COLOR_MAP.get(data.cCREQuery[0].group)?.split(":")[1] ||
-              "#8c8c8c"
-            }
+            fill={GROUP_COLOR_MAP.get(data.cCREQuery[0].group)?.split(":")[1] || "#8c8c8c"}
           />
 
           {/* cCRE name */}
-          <text
-            x={padding + 16}
-            y={padding + 12}
-            fontSize="24"
-            fontFamily="Arial, sans-serif"
-            fill="#000000"
-          >
+          <text x={padding + 16} y={padding + 12} fontSize="24" fontFamily="Arial, sans-serif" fill="#000000">
             {name}
           </text>
 
           {/* cCRE group type */}
-          <text
-            x={padding}
-            y={startY}
-            fontSize="21"
-            fontFamily="Arial, sans-serif"
-            fill="#000000"
-          >
+          <text x={padding} y={startY} fontSize="21" fontFamily="Arial, sans-serif" fill="#000000">
             {GROUP_COLOR_MAP.get(data.cCREQuery[0].group)?.split(":")[0]}
           </text>
 
           {/* Click instruction */}
-          <text
-            x={padding}
-            y={startY + lineHeight}
-            fontSize="19"
-            fontFamily="Arial, sans-serif"
-            fill="#666666"
-          >
+          <text x={padding} y={startY + lineHeight} fontSize="19" fontFamily="Arial, sans-serif" fill="#666666">
             Click for details about this cCRE
           </text>
 
@@ -172,39 +132,22 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({
             fontWeight="bold"
             fill="#000000"
           >
-            {biosample
-              ? "Z-scores in " + biosample.displayname
-              : "Max Z-scores across all biosamples:"}
+            {biosample ? "Z-scores in " + biosample.displayname : "Max Z-scores across all biosamples:"}
           </text>
 
           {/* Z-scores data */}
           {(biosample ? marks(biosample) : MARKS).map((mark, i) => {
             const y = startY + lineHeight * (3.5 + i);
             const score = biosample
-              ? data.cCREQuery[0].zScores
-                  .find((xx) => xx.experiment === experiments[i])
-                  ?.score.toFixed(2)
+              ? data.cCREQuery[0].zScores.find((xx) => xx.experiment === experiments[i])?.score.toFixed(2)
               : data.cCREQuery[0][experiments[i]]?.toFixed(2);
 
             return (
               <g key={i}>
-                <text
-                  x={padding}
-                  y={y}
-                  fontSize="19"
-                  fontFamily="Arial, sans-serif"
-                  fontWeight="bold"
-                  fill="#000000"
-                >
+                <text x={padding} y={y} fontSize="19" fontFamily="Arial, sans-serif" fontWeight="bold" fill="#000000">
                   {mark}:
                 </text>
-                <text
-                  x={padding + 120}
-                  y={y}
-                  fontSize="19"
-                  fontFamily="Arial, sans-serif"
-                  fill="#000000"
-                >
+                <text x={padding + 120} y={y} fontSize="19" fontFamily="Arial, sans-serif" fill="#000000">
                   {score}
                 </text>
               </g>

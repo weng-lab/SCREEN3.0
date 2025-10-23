@@ -20,8 +20,7 @@ export const defaultHumanResults: Result[] = [
   },
   {
     title: "SP1",
-    description:
-      "Sp1 Transcription Factor\nENSG00000185591.10\nchr12:53380176-53416446",
+    description: "Sp1 Transcription Factor\nENSG00000185591.10\nchr12:53380176-53416446",
     domain: {
       chromosome: "chr12",
       start: 53380176,
@@ -70,8 +69,7 @@ export const defaultMouseResults: Result[] = [
   },
   {
     title: "Sp1",
-    description:
-      "Sp1 Transcription Factor\nENSMUSG00000001280.13\nchr15:102406143-102436404",
+    description: "Sp1 Transcription Factor\nENSMUSG00000001280.13\nchr15:102406143-102436404",
     domain: {
       chromosome: "chr15",
       start: 102406143,
@@ -131,7 +129,7 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
     } else return defaultMouseResults;
   }, [props.assembly]);
 
-  const geneVersion = props.assembly === "GRCh38" ? [29, 40] : 25
+  const geneVersion = props.assembly === "GRCh38" ? [29, 40] : 25;
 
   return (
     <GenomeSearch

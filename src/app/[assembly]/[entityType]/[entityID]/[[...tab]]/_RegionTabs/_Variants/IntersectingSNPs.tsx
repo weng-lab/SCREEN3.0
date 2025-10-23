@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { GenomicRange } from "types/globalTypes";
 import { useSnpData } from "common/hooks/useSnpData";
 import { LinkComponent } from "common/components/LinkComponent";
-import { Table, GridColDef } from  "@weng-lab/ui-components";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 
 const IntersectingSNPs = ({ region }: { region: GenomicRange }) => {
   const {
@@ -42,14 +42,14 @@ const IntersectingSNPs = ({ region }: { region: GenomicRange }) => {
     <Typography>Error Fetching SNPs</Typography>
   ) : (
     <Table
-    showToolbar
-    rows={dataSnps || []}
-    columns={columns}
-    loading={loadingSnps}     
-    label={`Intersecting SNPs`}      
-    emptyTableFallback={"No intersecting SNPs found in this region"}
-    divHeight={{maxHeight: "400px"}}
-  />
+      showToolbar
+      rows={dataSnps || []}
+      columns={columns}
+      loading={loadingSnps}
+      label={`Intersecting SNPs`}
+      emptyTableFallback={"No intersecting SNPs found in this region"}
+      divHeight={{ maxHeight: "400px" }}
+    />
   );
 };
 

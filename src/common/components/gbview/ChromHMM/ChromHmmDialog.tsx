@@ -1,5 +1,5 @@
 import { Add, Close } from "@mui/icons-material";
-import { Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import { ChromHmmTissues } from "common/hooks/useChromHmmData";
 import { capitalizeFirstLetter } from "common/utility";
 import { SetStateAction } from "react";
@@ -15,7 +15,7 @@ export const ChromHmmDialog = ({
   selectedChromHmmTissues: string[];
   setSelectedChromHmmTissues: (value: SetStateAction<string[]>) => void;
 }) => {
-  const notSelected = ChromHmmTissues.filter(tissue => !selectedChromHmmTissues.includes(tissue))
+  const notSelected = ChromHmmTissues.filter((tissue) => !selectedChromHmmTissues.includes(tissue));
 
   return (
     <Dialog
@@ -28,27 +28,29 @@ export const ChromHmmDialog = ({
       <DialogContent>
         <div>
           <Typography mt={2}>Selected:</Typography>
-          {selectedChromHmmTissues.length ? selectedChromHmmTissues?.map((tissue, i) => {
-            return (
-              <Stack mt={1} direction="row" alignItems={"center"} key={i}>
-                <IconButton
-                  onClick={() => setSelectedChromHmmTissues(selectedChromHmmTissues.filter((x) => x !== tissue))}
-                >
-                  <Close />
-                </IconButton>
-                <Typography>{capitalizeFirstLetter(tissue)}</Typography>
-              </Stack>
-            );
-          }) : <Typography>None</Typography>}
+          {selectedChromHmmTissues.length ? (
+            selectedChromHmmTissues?.map((tissue, i) => {
+              return (
+                <Stack mt={1} direction="row" alignItems={"center"} key={i}>
+                  <IconButton
+                    onClick={() => setSelectedChromHmmTissues(selectedChromHmmTissues.filter((x) => x !== tissue))}
+                  >
+                    <Close />
+                  </IconButton>
+                  <Typography>{capitalizeFirstLetter(tissue)}</Typography>
+                </Stack>
+              );
+            })
+          ) : (
+            <Typography>None</Typography>
+          )}
         </div>
         <div>
           <Typography mt={2}>Available:</Typography>
           {notSelected?.map((tissue, i) => {
             return (
               <Stack mt={1} direction="row" alignItems={"center"} key={i}>
-                <IconButton
-                  onClick={() => setSelectedChromHmmTissues(prev => [...prev, tissue])}
-                >
+                <IconButton onClick={() => setSelectedChromHmmTissues((prev) => [...prev, tissue])}>
                   <Add />
                 </IconButton>
                 <Typography>{capitalizeFirstLetter(tissue)}</Typography>

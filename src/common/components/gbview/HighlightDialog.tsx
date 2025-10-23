@@ -98,7 +98,7 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
     handleInputChange("chromosome", currentDomain.chromosome);
     handleInputChange("start", currentDomain.start.toString());
     handleInputChange("end", currentDomain.end.toString());
-  }
+  };
 
   const handleAddHighlight = () => {
     // Validate all fields
@@ -235,11 +235,7 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={handleSetCurrentDomain}
-            >
+            <Button variant="contained" fullWidth onClick={handleSetCurrentDomain}>
               Use Current Region
             </Button>
           </Grid>

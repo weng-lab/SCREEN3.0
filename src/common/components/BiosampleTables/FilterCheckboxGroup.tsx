@@ -1,20 +1,24 @@
-import { FormControl, FormLabel, FormControlLabel, FormGroup, Checkbox } from "@mui/material"
-import { Dispatch, SetStateAction } from "react"
-import { Checkboxes } from "./types"
+import { FormControl, FormLabel, FormControlLabel, FormGroup, Checkbox } from "@mui/material";
+import { Dispatch, SetStateAction } from "react";
+import { Checkboxes } from "./types";
 
 export type FilterCheckboxGroupProps<T extends Checkboxes> = {
-  groupLabel: string
-  controlsState: T,
-  setState: Dispatch<SetStateAction<T>>
-}
+  groupLabel: string;
+  controlsState: T;
+  setState: Dispatch<SetStateAction<T>>;
+};
 
 /**
-   * Takes in the state variable checkboxes should control, and makes checkboxes with a select all
-   */
-export const FilterCheckboxGroup = <T extends Checkboxes>({groupLabel, controlsState, setState}: FilterCheckboxGroupProps<T>) => {
-  const allTrue = Object.values(controlsState).every(val => val === true)
-  const allFalse = Object.values(controlsState).every(val => val === false)
-  const isIndeterminate = !allTrue && !allFalse
+ * Takes in the state variable checkboxes should control, and makes checkboxes with a select all
+ */
+export const FilterCheckboxGroup = <T extends Checkboxes>({
+  groupLabel,
+  controlsState,
+  setState,
+}: FilterCheckboxGroupProps<T>) => {
+  const allTrue = Object.values(controlsState).every((val) => val === true);
+  const allFalse = Object.values(controlsState).every((val) => val === false);
+  const isIndeterminate = !allTrue && !allFalse;
 
   return (
     <FormControl component="fieldset" variant="standard">
@@ -27,9 +31,9 @@ export const FilterCheckboxGroup = <T extends Checkboxes>({groupLabel, controlsS
               checked={allTrue}
               indeterminate={isIndeterminate}
               //sets all values to true/false
-              onChange={e => setState(Object.fromEntries(
-                Object.keys(controlsState).map(key => [key, e.target.checked])
-              ) as T)} //why do i need to do as T?
+              onChange={(e) =>
+                setState(Object.fromEntries(Object.keys(controlsState).map((key) => [key, e.target.checked])) as T)
+              } //why do i need to do as T?
             />
           }
         />
@@ -38,17 +42,14 @@ export const FilterCheckboxGroup = <T extends Checkboxes>({groupLabel, controlsS
             <FormControlLabel
               label={key}
               key={key}
-              sx={{ml: 1}}
+              sx={{ ml: 1 }}
               control={
-                <Checkbox
-                  checked={checked}
-                  onChange={e => setState({ ...controlsState, [key]: e.target.checked })}
-                />
+                <Checkbox checked={checked} onChange={(e) => setState({ ...controlsState, [key]: e.target.checked })} />
               }
             />
-          )
+          );
         })}
       </FormGroup>
     </FormControl>
-  )
-}
+  );
+};

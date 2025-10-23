@@ -1,5 +1,5 @@
-'use client'
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+"use client";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type MenuContextType = {
   isMenuOpen: boolean;
@@ -26,11 +26,11 @@ export const MenuControlProvider = ({ children }: { children: ReactNode }) => {
   // MobileMenu controls this. Set to true only on mobile
   const [menuCanBeOpened, setMenuCanBeOpen] = useState(false);
   // MobileMenu controls this. Set to true by Drawer onEntered
-  const [isMenuMounted, setIsMenuMounted] = useState(false)
+  const [isMenuMounted, setIsMenuMounted] = useState(false);
 
   const openMenu = () => setIsMenuOpen(true);
   const closeMenu = () => setIsMenuOpen(false);
-  const toggleMenu = () => setIsMenuOpen(prev => !prev);
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
   return (
     <MenuContext.Provider

@@ -48,9 +48,7 @@ interface AnnotationsFunctional {
   assembly: Assembly;
 }
 
-const AnnotationsFunctional: React.FC<AnnotationsFunctional> = ({
-  assembly,
-}) => {
+const AnnotationsFunctional: React.FC<AnnotationsFunctional> = ({ assembly }) => {
   return (
     <DownloadContentLayout title="Functional Characterization">
       {classDownloads[assembly].map((item) => (

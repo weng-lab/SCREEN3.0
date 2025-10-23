@@ -2,7 +2,7 @@ import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } fro
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
-import { tissueColors } from "common/colors"
+import { tissueColors } from "common/colors";
 import { theme } from "app/theme";
 import { scaleLinear } from "@visx/scale";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
@@ -10,14 +10,14 @@ import { Stack } from "@mui/system";
 import UMAPLegend from "../../../../../../../common/components/UMAPLegend";
 
 //generate the domain for the gradient based on the max number
-   export const generateDomain = (max: number, steps: number) => {
-    return Array.from({ length: steps }, (_, i) => (i / (steps - 1)) * max);
-  };
+export const generateDomain = (max: number, steps: number) => {
+  return Array.from({ length: steps }, (_, i) => (i / (steps - 1)) * max);
+};
 
 export type GeneExpressionUmapProps<
   T,
   S extends boolean | undefined,
-  Z extends boolean | undefined
+  Z extends boolean | undefined,
 > = GeneExpressionProps & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
 
 const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends boolean | undefined>({
@@ -28,7 +28,6 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   ref,
   ...rest
 }: GeneExpressionUmapProps<T, S, Z>) => {
-
   const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue">("expression");
 
   const { data, loading } = geneExpressionData;
@@ -69,30 +68,31 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
 
     const isHighlighted = (x: PointMetadata) => selected.some((y) => y.accession === x.accession);
 
-    return data
-      .map((x) => {
-        const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.gene_quantification_files[0].quantifications[0]?.tpm)));
+    return data.map((x) => {
+      const gradientColor = interpolateYlOrRd(
+        colorScale(logTransform(x.gene_quantification_files[0].quantifications[0]?.tpm))
+      );
 
-        const getColor = () => {
-          if (isHighlighted(x) || selected.length === 0) {
-            if (colorScheme === "expression") {
-              return gradientColor;
-            } else return tissueColors[x.tissue];
-          } else return "#CCCCCC";
-        };
+      const getColor = () => {
+        if (isHighlighted(x) || selected.length === 0) {
+          if (colorScheme === "expression") {
+            return gradientColor;
+          } else return tissueColors[x.tissue];
+        } else return "#CCCCCC";
+      };
 
-        return {
-          x: x.umap_1,
-          y: x.umap_2,
-          r: isHighlighted(x) ? 6 : 4,
-          color: getColor(),
-          metaData: x,
-        };
-      })
+      return {
+        x: x.umap_1,
+        y: x.umap_2,
+        r: isHighlighted(x) ? 6 : 4,
+        color: getColor(),
+        metaData: x,
+      };
+    });
   }, [data, selected, colorScale, colorScheme]);
 
   const handlePointsSelected = (selectedPoints: Point<PointMetadata>[]) => {
-    setSelected([...selected, ...selectedPoints.map(point => point.metaData)]);
+    setSelected([...selected, ...selectedPoints.map((point) => point.metaData)]);
   };
 
   const TooltipBody = (point: Point<PointMetadata>) => {
@@ -100,7 +100,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
       const files = point.metaData.gene_quantification_files || [];
       const tpms: number[] = [];
 
-      files.forEach(file => {
+      files.forEach((file) => {
         if (file.quantifications && file.quantifications.length > 0) {
           const firstTPM = file.quantifications[0]?.tpm;
           if (firstTPM !== undefined && firstTPM !== null) {
@@ -149,7 +149,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
       </FormControl>
     );
   };
-  
+
   return (
     <>
       <Stack
@@ -158,35 +158,40 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         padding={1}
         sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
       >
-        {scatterData && scatterData.length>0 && scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm!==undefined ?
-        <>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" >
-          <ColorBySelect />
-          <UMAPLegend
-            colorScheme={colorScheme}
-            scatterData={scatterData}
-            maxValue={maxValue}
-            colorScale={colorScale}
-          />
-        </Stack>
-        <Box sx={{ flexGrow: 1 }}>
-          <ScatterPlot
-            {...rest}
-            onSelectionChange={handlePointsSelected}
-            controlsHighlight={theme.palette.primary.light}
-            pointData={scatterData}
-            selectable
-            loading={loading}
-            miniMap={map}
-            groupPointsAnchor="accession"
-            tooltipBody={(point) => <TooltipBody {...point} />}
-            leftAxisLabel="UMAP-2"
-            bottomAxisLabel="UMAP-1"
-            ref={ref}
-            downloadFileName={`${geneData.data.name}_expression_UMAP`}
-          />
-        </Box>
-        </> : <></>}
+        {scatterData &&
+        scatterData.length > 0 &&
+        scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm !== undefined ? (
+          <>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <ColorBySelect />
+              <UMAPLegend
+                colorScheme={colorScheme}
+                scatterData={scatterData}
+                maxValue={maxValue}
+                colorScale={colorScale}
+              />
+            </Stack>
+            <Box sx={{ flexGrow: 1 }}>
+              <ScatterPlot
+                {...rest}
+                onSelectionChange={handlePointsSelected}
+                controlsHighlight={theme.palette.primary.light}
+                pointData={scatterData}
+                selectable
+                loading={loading}
+                miniMap={map}
+                groupPointsAnchor="accession"
+                tooltipBody={(point) => <TooltipBody {...point} />}
+                leftAxisLabel="UMAP-2"
+                bottomAxisLabel="UMAP-1"
+                ref={ref}
+                downloadFileName={`${geneData.data.name}_expression_UMAP`}
+              />
+            </Box>
+          </>
+        ) : (
+          <></>
+        )}
       </Stack>
     </>
   );

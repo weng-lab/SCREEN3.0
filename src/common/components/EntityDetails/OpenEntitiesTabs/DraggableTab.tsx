@@ -1,11 +1,11 @@
 import { Draggable } from "@hello-pangea/dnd";
 import { Close } from "@mui/icons-material";
 import { styled, SxProps, Tab, TabProps, Theme, Tooltip } from "@mui/material";
-import { AnyOpenEntity, OpenEntitiesContext, OpenEntity } from "./OpenEntitiesContext";
+import { AnyOpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { useCallback, useContext, useMemo, useState } from "react";
-import HumanIcon from 'common/components/HumanIcon';
-import MouseIcon from 'common/components/MouseIcon';
+import HumanIcon from "common/components/HumanIcon";
+import MouseIcon from "common/components/MouseIcon";
 import { theme } from "app/theme";
 
 export type DraggableTabProps = TabProps & {
@@ -40,13 +40,13 @@ export const DraggableTab = ({
       if (entity.assembly === "GRCh38") {
         return (
           <IconWrapper>
-            <HumanIcon size={16} halo={false} color={isSelected ? theme.palette.primary.main : "grey"}/>
+            <HumanIcon size={16} halo={false} color={isSelected ? theme.palette.primary.main : "grey"} />
           </IconWrapper>
         );
       } else
         return (
           <IconWrapper>
-            <MouseIcon size={16} color={isSelected ? theme.palette.primary.main : "grey"}/>
+            <MouseIcon size={16} color={isSelected ? theme.palette.primary.main : "grey"} />
           </IconWrapper>
         );
     }
@@ -70,25 +70,27 @@ export const DraggableTab = ({
               borderTop: (theme) => `2px solid transparent`,
             }
           : {};
-        const label = formatEntityID(entity);        
-        return (
-          entity.entityType === "gwas" && (label as string).length > 20 ? (<Tooltip title={label} arrow>
+        const label = formatEntityID(entity);
+        return entity.entityType === "gwas" && (label as string).length > 20 ? (
+          <Tooltip title={label} arrow>
+            <Tab
+              value={index}
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
+              label={(label as string).slice(0, 20) + "..."}
+              onClick={() => handleTabClick(entity)}
+              iconPosition="end"
+              icon={<Icon />}
+              sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              {...props}
+            />
+          </Tooltip>
+        ) : (
           <Tab
-            value={index}
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            role="tab" //dragHandleProps sets role to "button" which breaks keyboard navigation. Revert back
-            label={(label as string).slice(0, 20) + "..."}
-            onClick={() => handleTabClick(entity)}
-            iconPosition="end"
-            icon={<Icon />}
-            sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            {...props}
-          />
-          </Tooltip>): (<Tab
             value={index}
             ref={provided.innerRef}
             {...provided.draggableProps}
@@ -102,7 +104,7 @@ export const DraggableTab = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             {...props}
-          />)
+          />
         );
       }}
     </Draggable>
@@ -116,16 +118,15 @@ const formatEntityID = (entity: AnyOpenEntity) => {
   } else if (entity.entityType === "gene") {
     return <i>{entity.entityID}</i>;
   } else {
-    if(entity.entityType === "gwas")
-    {
-      const g = entity.entityID.split("-")
-      let study_name = g[g.length-1].replaceAll("_"," ");
-     
+    if (entity.entityType === "gwas") {
+      const g = entity.entityID.split("-");
+      const study_name = g[g.length - 1].replaceAll("_", " ");
+
       return study_name;
     }
     return entity.entityID;
   }
-  
+
   //else return entity.entityID;
 };
 

@@ -1,4 +1,15 @@
-export const CCRE_CLASSES = ["PLS", "pELS", "dELS", "CA-H3K4me3", "CA-CTCF", "CA-TF", "CA", "TF", "InActive", "noclass"] as const;
+export const CCRE_CLASSES = [
+  "PLS",
+  "pELS",
+  "dELS",
+  "CA-H3K4me3",
+  "CA-CTCF",
+  "CA-TF",
+  "CA",
+  "TF",
+  "InActive",
+  "noclass",
+] as const;
 
 export const ccreClassDescriptions: Record<string, string> = {
   PLS: "Promoter",

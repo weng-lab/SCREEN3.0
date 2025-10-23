@@ -1,6 +1,6 @@
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client"
-import { registerApolloClient } from "@apollo/experimental-nextjs-app-support"
-import Config from "config.json"
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { registerApolloClient } from "@apollo/experimental-nextjs-app-support";
+import Config from "config.json";
 /**
  * @returns an ApolloClient instance scoped for the current request
  */
@@ -15,5 +15,5 @@ export const { getClient } = registerApolloClient(() => {
       // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
       // fetchOptions: { cache: "no-store" },
     }),
-  })
-})
+  });
+});

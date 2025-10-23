@@ -52,6 +52,8 @@ export default defineConfig([{
         },
     },
 
+    ignores: ['node_modules', '.next', '.vscode', '.yarn'],
+
     settings: {
         react: {
             version: "detect",
@@ -66,5 +68,6 @@ export default defineConfig([{
             argsIgnorePattern: "^_",
             varsIgnorePattern: "^_",
         }],
+        "react/react-in-jsx-scope": "off"
     },
 }]);

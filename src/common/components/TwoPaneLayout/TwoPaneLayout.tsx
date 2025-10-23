@@ -1,8 +1,19 @@
-import { CloseFullscreenRounded, TableChartRounded } from "@mui/icons-material"
-import { Stack, Box, Typography, Tabs, Tab, TabOwnProps, IconButton, Tooltip, Button, useMediaQuery } from "@mui/material"
-import DownloadIcon from '@mui/icons-material/Download';
+import { CloseFullscreenRounded, TableChartRounded } from "@mui/icons-material";
+import {
+  Stack,
+  Box,
+  Typography,
+  Tabs,
+  Tab,
+  TabOwnProps,
+  IconButton,
+  Tooltip,
+  Button,
+  useMediaQuery,
+} from "@mui/material";
+import DownloadIcon from "@mui/icons-material/Download";
 import { theme } from "app/theme";
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react";
 import DownloadModal from "./DownloadModal";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 
@@ -10,18 +21,18 @@ export type TwoPanePlotConfig = {
   tabTitle: string;
   icon?: TabOwnProps["icon"];
   plotComponent: React.ReactNode;
-  ref?: React.RefObject<DownloadPlotHandle>
+  ref?: React.RefObject<DownloadPlotHandle>;
 };
 
 export type TwoPaneLayoutProps = {
-  TableComponent: React.ReactNode
-  plots: TwoPanePlotConfig[]
+  TableComponent: React.ReactNode;
+  plots: TwoPanePlotConfig[];
   isV40?: boolean;
-}
+};
 
 const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutProps) => {
-  const [tab, setTab] = useState<number>(0)
-  const [tableOpen, setTableOpen] = useState(true)
+  const [tab, setTab] = useState<number>(0);
+  const [tableOpen, setTableOpen] = useState(true);
   const tableRef = useRef<HTMLDivElement>(null);
   const [tableHeight, setTableHeight] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -33,7 +44,7 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
     if (!tableRef.current) return;
 
     const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
+      for (const entry of entries) {
         if (entry.contentRect) {
           if (entry.contentRect.height > 0) {
             setTableHeight(entry.contentRect.height);
@@ -48,16 +59,16 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
   }, []);
 
   const handleSetTab = (_, newTab: number) => {
-    setTab(newTab)
-  }
+    setTab(newTab);
+  };
 
   const handleToggleTable = () => {
-    setTableOpen(!tableOpen)
-  }
+    setTableOpen(!tableOpen);
+  };
 
   const plotTabs = useMemo(() => plots.map((x) => ({ tabTitle: x.tabTitle, icon: x.icon })), [plots]);
   const figures = useMemo(() => plots.map((x) => ({ title: x.tabTitle, component: x.plotComponent })), [plots]);
-  
+
   const TableIconButton = () => {
     return (
       <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
@@ -66,30 +77,19 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
           <TableChartRounded color="primary" />
         </IconButton>
       </Tooltip>
-    )
-  }
+    );
+  };
 
   const DownloadButton = () => {
     const onClick = () => {
       setModalOpen(true);
-    }
+    };
     return isXs ? (
-      <IconButton
-        color="primary"
-        aria-label="download"
-        size="small"
-        onClick={onClick}
-        disabled={isV40}
-      >
+      <IconButton color="primary" aria-label="download" size="small" onClick={onClick} disabled={isV40}>
         <DownloadIcon />
       </IconButton>
     ) : (
-      <Button
-        variant="outlined"
-        startIcon={<DownloadIcon />}
-        onClick={onClick}
-        disabled={isV40}
-      >
+      <Button variant="outlined" startIcon={<DownloadIcon />} onClick={onClick} disabled={isV40}>
         Download
       </Button>
     );
@@ -102,48 +102,59 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
     }
   }, [plots, tab]);
 
-  const tabValue = tab > plots.length - 1 ? plots.length - 1 : tab
+  const tabValue = tab > plots.length - 1 ? plots.length - 1 : tab;
 
   return (
     <Stack spacing={2} direction={{ xs: "column", lg: "row" }} id="two-pane-layout">
-        <Box flexGrow={0} width={{ xs: '100%', lg: tableOpen ? '35%' : 'initial' }} id="table-container" display={tableOpen ? "initial" : "none"}>
-          <Stack direction={"row"} alignItems={"center"} gap={1} mb={2}>
-            <TableIconButton />
-            <Typography variant="h5" sx={{ flexGrow: 1 }}>
-              Table View
-            </Typography>
-            <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
-              {/* Using negative margin instead of 'edge' prop since, edge gives -12px padding instead of needed -8px for actual alignment */}
-              <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
-                <CloseFullscreenRounded color="primary" />
-              </IconButton>
-            </Tooltip>
-            {/* Used to force this container to have the same height as the below tabs. Prevents layout shift when closing the table */}
-            <Tab sx={{visibility: "hidden", minWidth: 0, px: 0}}/>
-          </Stack>
-          <div ref={tableRef} style={{ height: "60vh"}}>
-            {TableComponent}
-          </div>
-        </Box>
+      <Box
+        flexGrow={0}
+        width={{ xs: "100%", lg: tableOpen ? "35%" : "initial" }}
+        id="table-container"
+        display={tableOpen ? "initial" : "none"}
+      >
+        <Stack direction={"row"} alignItems={"center"} gap={1} mb={2}>
+          <TableIconButton />
+          <Typography variant="h5" sx={{ flexGrow: 1 }}>
+            Table View
+          </Typography>
+          <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
+            {/* Using negative margin instead of 'edge' prop since, edge gives -12px padding instead of needed -8px for actual alignment */}
+            <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
+              <CloseFullscreenRounded color="primary" />
+            </IconButton>
+          </Tooltip>
+          {/* Used to force this container to have the same height as the below tabs. Prevents layout shift when closing the table */}
+          <Tab sx={{ visibility: "hidden", minWidth: 0, px: 0 }} />
+        </Stack>
+        <div ref={tableRef} style={{ height: "60vh" }}>
+          {TableComponent}
+        </div>
+      </Box>
       <Box flex="1 1 0" minWidth={0} id="tabs_figure_container">
         <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
           <Stack direction={"row"} alignItems={"center"} mb={2} gap={2}>
-            {!tableOpen &&
-              <TableIconButton />
-            }
+            {!tableOpen && <TableIconButton />}
             <Tabs value={tabValue} onChange={handleSetTab} id="plot_tabs">
-              {plotTabs.map((tab, i) =>
+              {plotTabs.map((tab, i) => (
                 // minHeight: 48px is initial value for tabs without icon. With icon it's 72 which is way too tall
-                <Tab label={isXs ? "" : tab.tabTitle} key={i} icon={tab.icon} iconPosition="start" sx={{ minHeight: '48px' }} disabled={isV40}/>)
-              }
+                <Tab
+                  label={isXs ? "" : tab.tabTitle}
+                  key={i}
+                  icon={tab.icon}
+                  iconPosition="start"
+                  sx={{ minHeight: "48px" }}
+                  disabled={isV40}
+                />
+              ))}
             </Tabs>
           </Stack>
           <DownloadButton />
         </Stack>
-        {figures.map((Figure, i) =>
-          <Box 
-            display={tabValue === i ? "block" : "none"} 
-            key={i} id={"figure_container"}
+        {figures.map((Figure, i) => (
+          <Box
+            display={tabValue === i ? "block" : "none"}
+            key={i}
+            id={"figure_container"}
             //use table height unless its not open, then set px height for umap so it doesnt slowly resize
             height={tableOpen ? tableHeight : Figure.title === "UMAP" ? "700px" : "100%"}
             maxHeight={Figure.title !== "Bar Plot" ? "700px" : "none"}
@@ -151,7 +162,7 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
           >
             {Figure.component}
           </Box>
-        )}
+        ))}
         {modalOpen && (
           <DownloadModal
             open={modalOpen}
@@ -162,7 +173,7 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
         )}
       </Box>
     </Stack>
-  )
-}
+  );
+};
 
-export default TwoPaneLayout
+export default TwoPaneLayout;

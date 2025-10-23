@@ -1,4 +1,4 @@
-import { Box, Button, Dialog } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 import { useState } from "react";
 import HighlightDialog from "./HighlightDialog";
@@ -15,18 +15,18 @@ export default function GBButtons({
   onBiosampleSelected,
   selectedBiosamples,
   selectedChromHmmTissues,
-  setSelectedChromHmmTissues
+  setSelectedChromHmmTissues,
 }: {
   browserStore: BrowserStoreInstance;
   assembly: string;
   onBiosampleSelected: (biosample: RegistryBiosamplePlusRNA[] | null) => void;
   selectedBiosamples?: RegistryBiosamplePlusRNA[] | null;
   selectedChromHmmTissues: string[];
-  setSelectedChromHmmTissues: (newTissues: string[]) => void
+  setSelectedChromHmmTissues: (newTissues: string[]) => void;
 }) {
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
   const [biosampleOpen, setBiosampleOpen] = useState(false);
-  const [chromHmmDialogOpen, setChromHmmDialogOpen] = useState(false)
+  const [chromHmmDialogOpen, setChromHmmDialogOpen] = useState(false);
 
   const handleSelectBiosampleClick = () => {
     setBiosampleOpen(!biosampleOpen);

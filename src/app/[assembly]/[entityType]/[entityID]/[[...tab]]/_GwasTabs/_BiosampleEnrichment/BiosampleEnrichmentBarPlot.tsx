@@ -1,6 +1,6 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
 //import VerticalBarPlot, { BarData, BarPlotProps } from "common/components/VerticalBarPlot";
-import { BarPlot, BarData, BarPlotProps, DownloadPlotHandle } from "@weng-lab/visualization";
+import { BarPlot, BarData, DownloadPlotHandle } from "@weng-lab/visualization";
 import { Box } from "@mui/material";
 import { capitalizeFirstLetter } from "common/utility";
 import { tissueColors } from "common/colors";
@@ -43,7 +43,7 @@ const BiosampleEnrichmentBarPlot = ({
         label: makeLabel(x.fc, x.displayname, x.accession),
         value: x.fc, //indexing into 0th position, only one gene so quantifications should always be length 1
         color:
-          (anySelected && isSelected) || !anySelected ? tissueColors[x.ontology] ?? tissueColors.missing : "#CCCCCC",
+          (anySelected && isSelected) || !anySelected ? (tissueColors[x.ontology] ?? tissueColors.missing) : "#CCCCCC",
         id: i.toString(),
         metadata: x,
         lollipopValue: x.fdr,

@@ -3,7 +3,6 @@ import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "types/generated/gql";
 import { GetGwasStudiesQuery } from "types/generated/graphql";
 
-
 const GWAS_STUDY_Query = gql(`
   query getGWASStudies($study: [String]){  
     getAllGwasStudies(study: $study)  

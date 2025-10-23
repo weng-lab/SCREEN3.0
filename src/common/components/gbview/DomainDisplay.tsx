@@ -15,7 +15,13 @@ export default function DomainDisplay({
         {currentDomain.chromosome}:{currentDomain.start.toLocaleString()}-{currentDomain.end.toLocaleString()}
       </Typography>
       <Box minHeight={20} flexGrow={1} display={"flex"}>
-        <svg width="100%" height={20} preserveAspectRatio="xMidYMid meet" viewBox={`0 0 700 20`} style={{alignSelf: "flex-end"}}>
+        <svg
+          width="100%"
+          height={20}
+          preserveAspectRatio="xMidYMid meet"
+          viewBox={`0 0 700 20`}
+          style={{ alignSelf: "flex-end" }}
+        >
           <Cytobands assembly={assembly === "GRCh38" ? "hg38" : "mm10"} currentDomain={currentDomain} />
         </svg>
       </Box>

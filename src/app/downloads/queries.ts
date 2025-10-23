@@ -13,4 +13,4 @@ export const UMAP_QUERY = gql(`
       }
     }
   }
-`)
+`);

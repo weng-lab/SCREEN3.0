@@ -24,7 +24,13 @@ const AnnotationsContactUs: React.FC = () => (
         Let us know what you need — we’re here to help you!
       </Typography>
     </Box>
-    <Button variant="outlined" size="small" LinkComponent={Link} href="/about#contact-us" sx={{backgroundColor: 'white'}}>
+    <Button
+      variant="outlined"
+      size="small"
+      LinkComponent={Link}
+      href="/about#contact-us"
+      sx={{ backgroundColor: "white" }}
+    >
       Contact Us
     </Button>
   </Box>

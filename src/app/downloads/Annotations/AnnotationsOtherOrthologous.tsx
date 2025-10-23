@@ -9,7 +9,7 @@ const orthologousDownloads: DownloadButtonProps[] = [
     label: "Human/Mouse Orthologous cCREs (.tsv)",
     fileSize: "13.3 MB",
     bordercolor: "gray",
-  }
+  },
 ];
 
 const AnnotationsOtherOrthologous: React.FC = () => {

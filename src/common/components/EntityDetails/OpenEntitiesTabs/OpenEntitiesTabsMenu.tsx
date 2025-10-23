@@ -41,7 +41,7 @@ const OpenEntitiesTabsMenu = (props: OpenEntitiesTabsMenuProps) => {
       <Box sx={{ justifyContent: "flex-start", alignContent: "center" }}>
         <Tooltip title="Manage Tabs" placement="left">
           <IconButton onClick={handleOpenMenu}>
-            <MoreVertIcon fontSize="small"/>
+            <MoreVertIcon fontSize="small" />
           </IconButton>
         </Tooltip>
       </Box>

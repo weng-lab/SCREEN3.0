@@ -27,7 +27,6 @@ export function trackColor(lineage: string) {
   }
 }
 
-
 export function lineageName(lineage: string) {
   switch (lineage) {
     case "Bcells":

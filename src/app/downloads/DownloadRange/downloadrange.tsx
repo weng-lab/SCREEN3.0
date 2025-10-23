@@ -1,16 +1,29 @@
-import { SetStateAction, useState } from "react"
-import Grid from "@mui/material/Grid"
-import { Box, Button, Checkbox, CircularProgress, CircularProgressProps, FormControl, FormControlLabel, FormLabel, IconButton, Radio, RadioGroup, Stack, TextField, Typography } from "@mui/material"
-import { Close, Download } from "@mui/icons-material"
-import BiosampleTables from "common/components/BiosampleTables/BiosampleTables"
-import { RegistryBiosample } from "common/components/BiosampleTables/types"
-import { downloadBED, parseGenomicRegion } from "app/downloads/DownloadRange/downloadRangeHelpers"
+import { SetStateAction, useState } from "react";
+import Grid from "@mui/material/Grid";
+import {
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
+  CircularProgressProps,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  IconButton,
+  Radio,
+  RadioGroup,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Close, Download } from "@mui/icons-material";
+import BiosampleTables from "common/components/BiosampleTables/BiosampleTables";
+import { RegistryBiosample } from "common/components/BiosampleTables/types";
+import { downloadBED, parseGenomicRegion } from "app/downloads/DownloadRange/downloadRangeHelpers";
 
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
+function CircularProgressWithLabel(props: CircularProgressProps & { value: number }) {
   return (
-    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+    <Box sx={{ position: "relative", display: "inline-flex" }}>
       <CircularProgress variant="determinate" {...props} />
       <Box
         sx={{
@@ -18,10 +31,10 @@ function CircularProgressWithLabel(
           left: 0,
           bottom: 0,
           right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Typography
@@ -42,65 +55,76 @@ function CircularProgressWithLabel(
  * @todo allow changing the distance of linked genes searched
  */
 export const DownloadRange: React.FC = () => {
-  const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38")
-  const [inputValue, setInputValue] = useState<string>('chr12:53380176-53416446')
-  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample>(null)
-  const [bedLoadingPercent, setBedLoadingPercent] = useState<number>(null)
+  const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38");
+  const [inputValue, setInputValue] = useState<string>("chr12:53380176-53416446");
+  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosample>(null);
+  const [bedLoadingPercent, setBedLoadingPercent] = useState<number>(null);
   //Used to disable assay checkboxes
-  const [availableAssays, setAvailableAssays] = useState<{ atac: boolean, ctcf: boolean, dnase: boolean, h3k27ac: boolean, h3k4me3: boolean }>({ atac: true, ctcf: true, dnase: true, h3k27ac: true, h3k4me3: true })
+  const [availableAssays, setAvailableAssays] = useState<{
+    atac: boolean;
+    ctcf: boolean;
+    dnase: boolean;
+    h3k27ac: boolean;
+    h3k4me3: boolean;
+  }>({ atac: true, ctcf: true, dnase: true, h3k27ac: true, h3k4me3: true });
   //Checkboxes
-  const [selectedAssays, setSelectedAssays] = useState<{ atac: boolean, ctcf: boolean, dnase: boolean, h3k27ac: boolean, h3k4me3: boolean }>({ atac: true, ctcf: true, dnase: true, h3k27ac: true, h3k4me3: true })
-  const [selectedConservation, setSelectedConservation] = useState<{ primate: boolean, mammal: boolean, vertebrate: boolean }>({ primate: true, mammal: true, vertebrate: true })
+  const [selectedAssays, setSelectedAssays] = useState<{
+    atac: boolean;
+    ctcf: boolean;
+    dnase: boolean;
+    h3k27ac: boolean;
+    h3k4me3: boolean;
+  }>({ atac: true, ctcf: true, dnase: true, h3k27ac: true, h3k4me3: true });
+  const [selectedConservation, setSelectedConservation] = useState<{
+    primate: boolean;
+    mammal: boolean;
+    vertebrate: boolean;
+  }>({ primate: true, mammal: true, vertebrate: true });
   // const [linkedGenes, setLinkedGenes] = useState<{ distancePC: boolean, distanceAll: boolean, ctcfChiaPet: boolean, rnapiiChiaPet: boolean }>({ distancePC: true, distanceAll: true, ctcfChiaPet: true, rnapiiChiaPet: true })
 
   const handleChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setInputValue(event.target.value)
-  }
+    setInputValue(event.target.value);
+  };
 
   const handleSetAssembly = (value: string) => {
     if (value === "mm10") {
-      setSelectedConservation({ primate: null, mammal: null, vertebrate: null })
+      setSelectedConservation({ primate: null, mammal: null, vertebrate: null });
       // setLinkedGenes({ ...linkedGenes, ctcfChiaPet: null, rnapiiChiaPet: null })
     } else {
-      setSelectedConservation({ primate: true, mammal: true, vertebrate: true })
+      setSelectedConservation({ primate: true, mammal: true, vertebrate: true });
       // setLinkedGenes({ distancePC: true, distanceAll: true, ctcfChiaPet: true, rnapiiChiaPet: true })
     }
     handleSetSelectedBiosample(null);
     if (value === "GRCh38" || value === "mm10") {
-      setAssembly(value)
+      setAssembly(value);
     }
-  }
+  };
 
   const handleSetSelectedBiosample = (biosample: RegistryBiosample) => {
-    setSelectedBiosample(biosample)
+    setSelectedBiosample(biosample);
     if (biosample) {
-      
-      setSelectedAssays(
-        {
-          atac: !!biosample.atac,
-          ctcf: !!biosample.ctcf,
-          dnase: !!biosample.dnase,
-          h3k27ac: !!biosample.h3k27ac,
-          h3k4me3: !!biosample.h3k4me3
-        }
-      )
-      setAvailableAssays(
-        {
-          atac: biosample.atac !== null,
-          ctcf: biosample.ctcf !== null,
-          dnase: biosample.dnase !== null,
-          h3k27ac: biosample.h3k27ac !== null,
-          h3k4me3: biosample.h3k4me3 !== null
-        }
-      )
+      setSelectedAssays({
+        atac: !!biosample.atac,
+        ctcf: !!biosample.ctcf,
+        dnase: !!biosample.dnase,
+        h3k27ac: !!biosample.h3k27ac,
+        h3k4me3: !!biosample.h3k4me3,
+      });
+      setAvailableAssays({
+        atac: biosample.atac !== null,
+        ctcf: biosample.ctcf !== null,
+        dnase: biosample.dnase !== null,
+        h3k27ac: biosample.h3k27ac !== null,
+        h3k4me3: biosample.h3k4me3 !== null,
+      });
     } else {
-      setSelectedAssays({ atac: true, ctcf: true, dnase: true, h3k27ac: true, h3k4me3: true })
-      setAvailableAssays({ atac: true, ctcf: true, dnase: true, h3k27ac: true, h3k4me3: true })
+      setSelectedAssays({ atac: true, ctcf: true, dnase: true, h3k27ac: true, h3k4me3: true });
+      setAvailableAssays({ atac: true, ctcf: true, dnase: true, h3k27ac: true, h3k4me3: true });
     }
-  }
+  };
 
   const handleDownloadBed = () => {
-    const region = parseGenomicRegion(inputValue)
+    const region = parseGenomicRegion(inputValue);
 
     /**
      * @todo make sure this works
@@ -116,8 +140,8 @@ export const DownloadRange: React.FC = () => {
       selectedAssays,
       selectedConservation,
       setBedLoadingPercent
-    )
-  }
+    );
+  };
 
   return (
     <Grid container spacing={3} paddingX={6}>
@@ -131,18 +155,14 @@ export const DownloadRange: React.FC = () => {
       <Grid size={{ xs: 6 }} flexGrow={1}>
         <FormControl sx={{ mb: 1 }}>
           <FormLabel id="demo-row-radio-buttons-group-label">Assembly</FormLabel>
-          <RadioGroup
-            row
-            value={assembly}
-            onChange={(_, value: string) => handleSetAssembly(value)}
-          >
+          <RadioGroup row value={assembly} onChange={(_, value: string) => handleSetAssembly(value)}>
             <FormControlLabel value="GRCh38" control={<Radio />} label="GRCh38" />
             <FormControlLabel value="mm10" control={<Radio />} label="mm10" />
           </RadioGroup>
         </FormControl>
         <TextField
           variant="outlined"
-          slotProps={{inputLabel: {shrink: true}}}
+          slotProps={{ inputLabel: { shrink: true } }}
           label="Enter a genomic region"
           placeholder={`chr12:${(53380176).toLocaleString()}-${(53416446).toLocaleString()}`}
           value={inputValue}
@@ -151,11 +171,11 @@ export const DownloadRange: React.FC = () => {
         />
         <Stack mt={1} direction="row" alignItems={"center"}>
           <Typography>{`Selected Biosample: ${selectedBiosample ? selectedBiosample.displayname : "none"}`}</Typography>
-          {selectedBiosample &&
+          {selectedBiosample && (
             <IconButton onClick={() => handleSetSelectedBiosample(null)}>
               <Close />
             </IconButton>
-          }
+          )}
         </Stack>
         <Stack direction="row" flexWrap={"wrap"}>
           <div>
@@ -164,24 +184,31 @@ export const DownloadRange: React.FC = () => {
               control={
                 <Checkbox
                   //For every available assay, check to make sure it's selected
-                  checked={Object.entries(availableAssays).every((assay: [string, boolean]) => !assay[1] || selectedAssays[assay[0]])} 
+                  checked={Object.entries(availableAssays).every(
+                    (assay: [string, boolean]) => !assay[1] || selectedAssays[assay[0]]
+                  )}
                   indeterminate={
                     //True if all available assays are not either true/false at the same time
-                    !Object.entries(availableAssays).every((assay: [string, boolean]) => !assay[1] || selectedAssays[assay[0]])
-                    && !Object.entries(availableAssays).every((assay: [string, boolean]) => !assay[1] || !selectedAssays[assay[0]])
+                    !Object.entries(availableAssays).every(
+                      (assay: [string, boolean]) => !assay[1] || selectedAssays[assay[0]]
+                    ) &&
+                    !Object.entries(availableAssays).every(
+                      (assay: [string, boolean]) => !assay[1] || !selectedAssays[assay[0]]
+                    )
                   }
-                  onChange={(_, checked: boolean) => setSelectedAssays(
-                    {
+                  onChange={(_, checked: boolean) =>
+                    setSelectedAssays({
                       atac: availableAssays.atac ? checked : false,
                       ctcf: availableAssays.ctcf ? checked : false,
                       dnase: availableAssays.dnase ? checked : false,
                       h3k27ac: availableAssays.h3k27ac ? checked : false,
-                      h3k4me3: availableAssays.h3k4me3 ? checked : false
-                    }
-                  )}
+                      h3k4me3: availableAssays.h3k4me3 ? checked : false,
+                    })
+                  }
                 />
-              } />
-            <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
+              }
+            />
+            <Box sx={{ display: "flex", flexDirection: "column", ml: 3 }}>
               <FormControlLabel
                 checked={selectedAssays.dnase}
                 onChange={(_, checked: boolean) => setSelectedAssays({ ...selectedAssays, dnase: checked })}
@@ -224,42 +251,51 @@ export const DownloadRange: React.FC = () => {
               label="Conservation"
               control={
                 <Checkbox
-                  checked={Object.values(selectedConservation).every(x => x || x === null) && assembly !== "mm10"}
+                  checked={Object.values(selectedConservation).every((x) => x || x === null) && assembly !== "mm10"}
                   disabled={assembly === "mm10"}
                   indeterminate={
                     !(
                       //If every value is not true/null
-                      (Object.values(selectedConservation).every(x => x || x === null) || //Or every value is not false/null
-                      Object.values(selectedConservation).every(x => !x || x === null))
+                      (
+                        Object.values(selectedConservation).every((x) => x || x === null) || //Or every value is not false/null
+                        Object.values(selectedConservation).every((x) => !x || x === null)
+                      )
                     )
                   }
-                  onChange={(_, checked: boolean) => setSelectedConservation(
-                    {
+                  onChange={(_, checked: boolean) =>
+                    setSelectedConservation({
                       primate: selectedConservation.primate === null ? null : checked,
                       mammal: selectedConservation.mammal === null ? null : checked,
-                      vertebrate: selectedConservation.vertebrate === null ? null : checked
-                    }
-                  )}
+                      vertebrate: selectedConservation.vertebrate === null ? null : checked,
+                    })
+                  }
                 />
-              } />
-            <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
+              }
+            />
+            <Box sx={{ display: "flex", flexDirection: "column", ml: 3 }}>
               <FormControlLabel
                 checked={selectedConservation.primate}
-                onChange={(_, checked: boolean) => setSelectedConservation({ ...selectedConservation, primate: checked })}
+                onChange={(_, checked: boolean) =>
+                  setSelectedConservation({ ...selectedConservation, primate: checked })
+                }
                 control={<Checkbox />}
                 label={"Primate"}
                 disabled={selectedConservation.primate === null || assembly === "mm10"}
               />
               <FormControlLabel
                 checked={selectedConservation.mammal}
-                onChange={(_, checked: boolean) => setSelectedConservation({ ...selectedConservation, mammal: checked })}
+                onChange={(_, checked: boolean) =>
+                  setSelectedConservation({ ...selectedConservation, mammal: checked })
+                }
                 control={<Checkbox />}
                 label={"Mammal"}
                 disabled={selectedConservation.mammal === null || assembly === "mm10"}
               />
               <FormControlLabel
                 checked={selectedConservation.vertebrate}
-                onChange={(_, checked: boolean) => setSelectedConservation({ ...selectedConservation, vertebrate: checked })}
+                onChange={(_, checked: boolean) =>
+                  setSelectedConservation({ ...selectedConservation, vertebrate: checked })
+                }
                 control={<Checkbox />}
                 label={"Vertebrate"}
                 disabled={selectedConservation.vertebrate === null || assembly === "mm10"}
@@ -326,7 +362,7 @@ export const DownloadRange: React.FC = () => {
           <Button
             disabled={typeof bedLoadingPercent === "number" || !inputValue}
             variant="outlined"
-            sx={{ textTransform: 'none' }}
+            sx={{ textTransform: "none" }}
             onClick={handleDownloadBed}
             endIcon={<Download />}
             fullWidth
@@ -338,4 +374,4 @@ export const DownloadRange: React.FC = () => {
       </Grid>
     </Grid>
   );
-}
+};

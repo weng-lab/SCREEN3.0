@@ -23,7 +23,6 @@ const CCRE_ICRE_QUERY = gql(`query cCREAutocompleteQuery(
   }
 }`);
 
-
 const CCRE_QUERY = gql(`
   query cCRESCREENSearchQuery(
     $accessions: [String!]
@@ -71,40 +70,71 @@ const CCRE_QUERY = gql(`
  * I suppose the advantage is that there can potentially be a mapping between the entityType and assembly (soon wiht biosample), but the issue is that that type specification means that I need to needlessly pass the assembly as a type to this function which is not at all used in the return (just for blocking)
  */
 
+type UseCcreDataParams =
+  | {
+      assembly: Assembly;
+      accession?: string | string[];
+      coordinates?: never;
+      entityType?: AnyEntityType;
+      nearbygeneslimit?: number;
+      cellType?: string;
+    }
+  | {
+      assembly: Assembly;
+      coordinates: GenomicRange | GenomicRange[];
+      accession?: never;
+      entityType?: AnyEntityType;
+      nearbygeneslimit?: number;
+      cellType?: string;
+    };
 
-type UseCcreDataParams = 
-| { assembly: Assembly, accession?: string | string[]; coordinates?: never; entityType?: AnyEntityType, nearbygeneslimit?: number, cellType?: string }
-| { assembly: Assembly, coordinates: GenomicRange | GenomicRange[]; accession?: never; entityType?: AnyEntityType, nearbygeneslimit?: number, cellType?: string }
+export type UseCcreDataReturn<T extends UseCcreDataParams> = T extends
+  | { coordinates: GenomicRange | GenomicRange[] }
+  | { accession: string[] }
+  ? {
+      data: (CCrescreenSearchQueryQuery["cCRESCREENSearch"][number] & { isicre?: boolean })[] | undefined;
+      loading: boolean;
+      error: ApolloError;
+    }
+  : {
+      data: (CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] & { isicre?: boolean }) | undefined;
+      loading: boolean;
+      error: ApolloError;
+    };
 
-export type UseCcreDataReturn<T extends UseCcreDataParams> =
-T extends ({ coordinates: GenomicRange | GenomicRange[] } | { accession: string[] })
-? { data: (CCrescreenSearchQueryQuery["cCRESCREENSearch"][number] & { isicre?: boolean })[] | undefined; loading: boolean; error: ApolloError }
-: { data: (CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] & { isicre?: boolean }) | undefined; loading: boolean; error: ApolloError };
-
-export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates, entityType, assembly, nearbygeneslimit, cellType}: T): UseCcreDataReturn<T> => {
-  
+export const useCcreData = <T extends UseCcreDataParams>({
+  accession,
+  coordinates,
+  entityType,
+  assembly,
+  nearbygeneslimit,
+  cellType,
+}: T): UseCcreDataReturn<T> => {
   const { data, loading, error } = useQuery(CCRE_QUERY, {
-    variables: { 
-      coordinates: coordinates ? Array.isArray(coordinates) ? coordinates: [coordinates]: coordinates,
-      accessions: accession ? Array.isArray(accession) ? accession: [accession] : undefined,
+    variables: {
+      coordinates: coordinates ? (Array.isArray(coordinates) ? coordinates : [coordinates]) : coordinates,
+      accessions: accession ? (Array.isArray(accession) ? accession : [accession]) : undefined,
       assembly: assembly,
       nearbygeneslimit: nearbygeneslimit || 3,
-      cellType: cellType
+      cellType: cellType,
     },
-    skip: ((entityType !== undefined) && entityType !== 'ccre') ||
-    (
-      (!accession || (Array.isArray(accession) && accession.length === 0)) &&
-      (!coordinates || (Array.isArray(coordinates) && coordinates.length === 0))
-    )
+    skip:
+      (entityType !== undefined && entityType !== "ccre") ||
+      ((!accession || (Array.isArray(accession) && accession.length === 0)) &&
+        (!coordinates || (Array.isArray(coordinates) && coordinates.length === 0))),
   });
-  
+
   const {
     data: ccredata,
     loading: ccreloading,
     error: ccreerror,
   } = useQuery(CCRE_ICRE_QUERY, {
-    variables: { assembly: "grch38", includeiCREs: true, accession: data?.cCRESCREENSearch.map(d=>d.info.accession) },
-    skip: loading || !data || (data && data.cCRESCREENSearch.length === 0 ) || assembly!=="GRCh38",
+    variables: {
+      assembly: "grch38",
+      includeiCREs: true,
+      accession: data?.cCRESCREENSearch.map((d) => d.info.accession),
+    },
+    skip: loading || !data || (data && data.cCRESCREENSearch.length === 0) || assembly !== "GRCh38",
   });
   const cCREDetails: { [key: string]: boolean } = {};
   if (ccredata && ccredata.cCREAutocompleteQuery.length > 0) {
@@ -115,13 +145,20 @@ export const useCcreData = <T extends UseCcreDataParams>({accession, coordinates
   return {
     /**
      * return either whole array or just first item depending on input
-    */
-    data: (coordinates || typeof accession === "object")
-    ? data?.cCRESCREENSearch.map(item => ({ ...item, isicre: cCREDetails && cCREDetails[item.info.accession] })) as CcreWithIsicre[]
-    : data?.cCRESCREENSearch[0]
-      ? ({ ...data.cCRESCREENSearch[0], isicre: cCREDetails && cCREDetails[data.cCRESCREENSearch[0].info.accession]  } as CcreWithIsicre)
-      : undefined,
-   loading,
-   error,
-  } as UseCcreDataReturn<T>
-}
+     */
+    data:
+      coordinates || typeof accession === "object"
+        ? (data?.cCRESCREENSearch.map((item) => ({
+            ...item,
+            isicre: cCREDetails && cCREDetails[item.info.accession],
+          })) as CcreWithIsicre[])
+        : data?.cCRESCREENSearch[0]
+          ? ({
+              ...data.cCRESCREENSearch[0],
+              isicre: cCREDetails && cCREDetails[data.cCRESCREENSearch[0].info.accession],
+            } as CcreWithIsicre)
+          : undefined,
+    loading,
+    error,
+  } as UseCcreDataReturn<T>;
+};

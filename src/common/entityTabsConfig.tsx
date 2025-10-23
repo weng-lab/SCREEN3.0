@@ -46,7 +46,6 @@ export type EntityViewComponentProps = {
   entity: AnyOpenEntity;
 };
 
-
 type ExtractRoutes<T extends readonly { route: string }[]> = T[number]["route"];
 
 // Individual route types for each entity
@@ -62,43 +61,43 @@ type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
 type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>;
 
 export type AnyTabRoute =
-| HumanVariantRoutes
-| HumanGeneRoutes
-| HumanCcreRoutes
-| HumanRegionRoutes
-| HumanGwasRoutes
-| MouseVariantRoutes
-| MouseGeneRoutes
-| MouseCcreRoutes
-| MouseRegionRoutes;
+  | HumanVariantRoutes
+  | HumanGeneRoutes
+  | HumanCcreRoutes
+  | HumanRegionRoutes
+  | HumanGwasRoutes
+  | MouseVariantRoutes
+  | MouseGeneRoutes
+  | MouseCcreRoutes
+  | MouseRegionRoutes;
 
 // Generic type to get routes for any assembly/entity combination
 export type EntityRoute<A extends Assembly, E extends EntityType<A>> = E extends keyof (typeof entityTabsConfig)[A]
-? ExtractRoutes<(typeof entityTabsConfig)[A][E]>
-: never;
+  ? ExtractRoutes<(typeof entityTabsConfig)[A][E]>
+  : never;
 
 /**
  * TabList type takes in assembly and EntityType and returns corresponding string literal union
  * The prettier auto-formatting on this is pretty horrendous, apologies
-*/
+ */
 
 type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
-? E extends "ccre"
-? readonly TabConfig<HumanCcreRoutes>[]
-: E extends "gene"
-? readonly TabConfig<HumanGeneRoutes>[]
-: E extends "variant"
-? readonly TabConfig<HumanVariantRoutes>[]
-: E extends "gwas"
-? readonly TabConfig<HumanGwasRoutes>[]
-: readonly TabConfig<HumanRegionRoutes>[]
-: E extends "ccre"
-? readonly TabConfig<MouseCcreRoutes>[]
-: E extends "gene"
-? readonly TabConfig<MouseGeneRoutes>[]
-: E extends "variant"
-? readonly TabConfig<MouseVariantRoutes>[]
-: readonly TabConfig<MouseRegionRoutes>[];
+  ? E extends "ccre"
+    ? readonly TabConfig<HumanCcreRoutes>[]
+    : E extends "gene"
+      ? readonly TabConfig<HumanGeneRoutes>[]
+      : E extends "variant"
+        ? readonly TabConfig<HumanVariantRoutes>[]
+        : E extends "gwas"
+          ? readonly TabConfig<HumanGwasRoutes>[]
+          : readonly TabConfig<HumanRegionRoutes>[]
+  : E extends "ccre"
+    ? readonly TabConfig<MouseCcreRoutes>[]
+    : E extends "gene"
+      ? readonly TabConfig<MouseGeneRoutes>[]
+      : E extends "variant"
+        ? readonly TabConfig<MouseVariantRoutes>[]
+        : readonly TabConfig<MouseRegionRoutes>[];
 
 type EntityTabsConfig = {
   readonly [A in Assembly]: {
@@ -150,7 +149,9 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
   },
 ] as const;
 
-const humanGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "conservation" | "transcript-expression" | "browser">[] = [
+const humanGeneTabs: readonly TabConfig<
+  "" | "ccres" | "variants" | "conservation" | "transcript-expression" | "browser"
+>[] = [
   {
     route: "",
     label: "Gene",
@@ -204,7 +205,7 @@ const humanGwasTabs: readonly TabConfig<"biosample_enrichment" | "variants" | "c
     label: "Variant",
     iconPath: VariantIconPath,
     component: () => <p>GWAS variants</p>,
-  },  
+  },
   {
     route: "ccres",
     label: "cCREs",
@@ -216,7 +217,13 @@ const humanGwasTabs: readonly TabConfig<"biosample_enrichment" | "variants" | "c
 ] as const;
 
 const humanCcreTabs: readonly TabConfig<
-  "" | "genes" | "variants" | "conservation" | "functional-characterization" | "browser" | "additional-chromatin-signatures"
+  | ""
+  | "genes"
+  | "variants"
+  | "conservation"
+  | "functional-characterization"
+  | "browser"
+  | "additional-chromatin-signatures"
 >[] = [
   {
     route: "",
@@ -260,8 +267,8 @@ const humanCcreTabs: readonly TabConfig<
   {
     route: "additional-chromatin-signatures",
     label: "Additional Chromatin Signatures",
-    component: AdditionalChromatinSignatures
-  }
+    component: AdditionalChromatinSignatures,
+  },
 ] as const;
 
 const humanRegionTabs: readonly TabConfig<"ccres" | "genes" | "variants" | "browser">[] = [
@@ -340,7 +347,7 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "conservatio
   //   // component: EQTLs,
   //   component: null,
   // },
-    {
+  {
     route: "conservation",
     label: "Conservation",
     iconPath: ConservationIconPath,
@@ -355,7 +362,9 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "conservatio
   },
 ] as const;
 
-const mouseCcreTabs: readonly TabConfig<"" | "genes" | "variants" | "browser" | "conservation" | "functional-characterization">[] = [
+const mouseCcreTabs: readonly TabConfig<
+  "" | "genes" | "variants" | "browser" | "conservation" | "functional-characterization"
+>[] = [
   {
     route: "",
     label: "cCRE",
@@ -431,7 +440,7 @@ export const entityTabsConfig: EntityTabsConfig = {
     gene: humanGeneTabs,
     ccre: humanCcreTabs,
     region: humanRegionTabs,
-    gwas: humanGwasTabs
+    gwas: humanGwasTabs,
   },
   mm10: {
     variant: mouseVariantTabs,
@@ -445,12 +454,17 @@ export const isValidRouteForEntity = <A extends Assembly>(
   assembly: A,
   entityType: EntityType<A>,
   route: string
-): route is A extends "GRCh38" ? EntityRoute<"GRCh38", EntityType<"GRCh38">> : EntityRoute<"mm10", EntityType<"mm10">> => {
+): route is A extends "GRCh38"
+  ? EntityRoute<"GRCh38", EntityType<"GRCh38">>
+  : EntityRoute<"mm10", EntityType<"mm10">> => {
   return entityTabsConfig[assembly][entityType].some((x: TabConfig) => x.route === route);
 };
 
 // Helper to generate tab array for EntityDetailsTabs
-export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(assembly: A, entityType: E): readonly TabConfig[] => {
+export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(
+  assembly: A,
+  entityType: E
+): readonly TabConfig[] => {
   return entityTabsConfig[assembly][entityType];
 };
 
@@ -458,7 +472,9 @@ export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(as
 export const getComponentForEntity = (openEntity: AnyOpenEntity) => {
   switch (openEntity.assembly) {
     // Can't do entityTabsConfig[assembly][openEntity.entityType] since TS compiler can't assert that the entity type and assembly match which allows safe indexing
-    case ("GRCh38"): return entityTabsConfig.GRCh38[openEntity.entityType].find(x => x.route === openEntity.tab).component
-    case ("mm10"): return entityTabsConfig.mm10[openEntity.entityType].find(x => x.route === openEntity.tab).component
+    case "GRCh38":
+      return entityTabsConfig.GRCh38[openEntity.entityType].find((x) => x.route === openEntity.tab).component;
+    case "mm10":
+      return entityTabsConfig.mm10[openEntity.entityType].find((x) => x.route === openEntity.tab).component;
   }
-}
+};

@@ -10,7 +10,7 @@ export default function SnpGWASLdr({ snpid }: { snpid: string }) {
   const ref = snpAlleles.data && snpAlleles.data[snpid]?.ref;
   const alt = snpAlleles.data && snpAlleles.data[snpid]?.alt;
 
-  let gwasnps = data?.map((d) => {
+  const gwasnps = data?.map((d) => {
     let zscore = d.zscore;
     //reverse zscore
     if (d.effect_allele === alt && d.ref_allele === ref) {
@@ -70,7 +70,7 @@ export default function SnpGWASLdr({ snpid }: { snpid: string }) {
         <Skeleton variant="rounded" width={"100%"} height={100} />
       ) : (
         <Table
-          rows={gwasnps.filter(g=>g.disease !== "" && g.study_source !== "")}
+          rows={gwasnps.filter((g) => g.disease !== "" && g.study_source !== "")}
           columns={cols}
           initialState={{
             sorting: {

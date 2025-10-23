@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image"
+import Image from "next/image";
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { Assembly, GenomicRange } from "types/globalTypes";
 import { useCcreData } from "common/hooks/useCcreData";
@@ -23,7 +23,6 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
     nearbygeneslimit: 1,
     cellType: selectedBiosample ? selectedBiosample.name : undefined,
   });
-
 
   //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
   //setting the anchorEl to the button
@@ -69,12 +68,9 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
       ),
       valueGetter: (_, row) => row.info.accession,
       renderCell: (params) => (
-        
         <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
           <i>{params.value}</i>
         </LinkComponent>
-        
-                  
       ),
     },
     {
@@ -120,59 +116,86 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
       valueGetter: (_, row) => (row.start + row.len).toLocaleString(),
       sortComparator: (v1, v2) => v1 - v2,
     },
-    ...(showDNase ? [{
-      field: selectedBiosample && selectedBiosample.dnase ? "ctspecific.dnase_zscore" : "dnase_zscore",
-      renderHeader: () => (
-        <strong>
-          <p>DNase</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => selectedBiosample && selectedBiosample.dnase ? row.ctspecific.dnase_zscore.toFixed(2) : row.dnase_zscore.toFixed(2),
-    }] : []),
+    ...(showDNase
+      ? [
+          {
+            field: selectedBiosample && selectedBiosample.dnase ? "ctspecific.dnase_zscore" : "dnase_zscore",
+            renderHeader: () => (
+              <strong>
+                <p>DNase</p>
+              </strong>
+            ),
+            valueGetter: (_, row) =>
+              selectedBiosample && selectedBiosample.dnase
+                ? row.ctspecific.dnase_zscore.toFixed(2)
+                : row.dnase_zscore.toFixed(2),
+          },
+        ]
+      : []),
     ...(showAtac
       ? [
-        {
-          field: selectedBiosample && selectedBiosample.atac ? "ctspecific.atac_zscore" : "atac_zscore",
-          renderHeader: () => (
-            <strong>
-              <p>ATAC</p>
-            </strong>
-          ),
-          valueGetter: (_, row) => selectedBiosample && selectedBiosample.atac ? row.ctspecific.atac_zscore.toFixed(2) : row.atac_zscore.toFixed(2),
-        },
-      ]
+          {
+            field: selectedBiosample && selectedBiosample.atac ? "ctspecific.atac_zscore" : "atac_zscore",
+            renderHeader: () => (
+              <strong>
+                <p>ATAC</p>
+              </strong>
+            ),
+            valueGetter: (_, row) =>
+              selectedBiosample && selectedBiosample.atac
+                ? row.ctspecific.atac_zscore.toFixed(2)
+                : row.atac_zscore.toFixed(2),
+          },
+        ]
       : []),
     ...(showCTCF
       ? [
-        {
-          field: selectedBiosample && selectedBiosample.ctcf ? "ctspecific.ctcf_zscore" : "ctcf_zscore",
-          renderHeader: () => (
-            <strong>
-              <p>CTCF</p>
-            </strong>
-          ),
-          valueGetter: (_, row) => selectedBiosample && selectedBiosample.ctcf ? row.ctspecific.ctcf_zscore.toFixed(2) : row.ctcf_zscore.toFixed(2),
-        },
-      ]
+          {
+            field: selectedBiosample && selectedBiosample.ctcf ? "ctspecific.ctcf_zscore" : "ctcf_zscore",
+            renderHeader: () => (
+              <strong>
+                <p>CTCF</p>
+              </strong>
+            ),
+            valueGetter: (_, row) =>
+              selectedBiosample && selectedBiosample.ctcf
+                ? row.ctspecific.ctcf_zscore.toFixed(2)
+                : row.ctcf_zscore.toFixed(2),
+          },
+        ]
       : []),
-    ...(showH3k27ac ? [{
-      field: selectedBiosample && selectedBiosample.h3k27ac ? "ctspecific.h3k27ac_zscore" : "enhancer_zscore",
-      renderHeader: () => (
-        <strong>
-          <p>H3K27ac</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => selectedBiosample && selectedBiosample.h3k27ac ? row.ctspecific.h3k27ac_zscore.toFixed(2) : row.enhancer_zscore.toFixed(2),
-    }] : []),
-    ...(showH3k4me3 ? [{
-      field: selectedBiosample && selectedBiosample.h3k4me3 ? "ctspecific.h3k4me3_zscore" : "promoter_zscore",
-      renderHeader: () => (
-        <strong>
-          <p>H3K4me3</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => selectedBiosample && selectedBiosample.h3k4me3 ? row.ctspecific.h3k4me3_zscore.toFixed(2) : row.promoter_zscore.toFixed(2),
-    }] : []),
+    ...(showH3k27ac
+      ? [
+          {
+            field: selectedBiosample && selectedBiosample.h3k27ac ? "ctspecific.h3k27ac_zscore" : "enhancer_zscore",
+            renderHeader: () => (
+              <strong>
+                <p>H3K27ac</p>
+              </strong>
+            ),
+            valueGetter: (_, row) =>
+              selectedBiosample && selectedBiosample.h3k27ac
+                ? row.ctspecific.h3k27ac_zscore.toFixed(2)
+                : row.enhancer_zscore.toFixed(2),
+          },
+        ]
+      : []),
+    ...(showH3k4me3
+      ? [
+          {
+            field: selectedBiosample && selectedBiosample.h3k4me3 ? "ctspecific.h3k4me3_zscore" : "promoter_zscore",
+            renderHeader: () => (
+              <strong>
+                <p>H3K4me3</p>
+              </strong>
+            ),
+            valueGetter: (_, row) =>
+              selectedBiosample && selectedBiosample.h3k4me3
+                ? row.ctspecific.h3k4me3_zscore.toFixed(2)
+                : row.promoter_zscore.toFixed(2),
+          },
+        ]
+      : []),
     {
       field: "nearestgene",
       renderHeader: () => (
@@ -189,7 +212,6 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
           &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
         </span>
       ),
-
     },
     {
       field: "isicre",
@@ -201,10 +223,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
       valueGetter: (_, row) => row.isicre,
       renderCell: (params) => {
         return params.row.isicre ? (
-          <LinkComponent
-            href={`https://igscreen.vercel.app/icre/${params.row.info.accession}`}
-            openInNewTab
-          >
+          <LinkComponent href={`https://igscreen.vercel.app/icre/${params.row.info.accession}`} openInNewTab>
             <Image
               src="/igSCREEN_icon.png"
               alt="igSCREEN Helix"
@@ -216,37 +235,32 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
         ) : (
           <></>
         );
-      }
+      },
     },
-   
   ];
 
   return errorCcres ? (
     <Typography>Error Fetching Ccres</Typography>
   ) : (
     <>
-
       {selectedBiosample && (
         <Stack
           borderRadius={1}
           direction={"row"}
           justifyContent={"space-between"}
-          sx={{ backgroundColor: theme => theme.palette.secondary.light }}
+          sx={{ backgroundColor: (theme) => theme.palette.secondary.light }}
           alignItems={"center"}
           width={"fit-content"}
         >
-          <Typography
-            sx={{ color: "#2C5BA0", pl: 1 }}
-          >
+          <Typography sx={{ color: "#2C5BA0", pl: 1 }}>
             <b>Selected Biosample: </b>
-            {" " + selectedBiosample.ontology.charAt(0).toUpperCase() +
+            {" " +
+              selectedBiosample.ontology.charAt(0).toUpperCase() +
               selectedBiosample.ontology.slice(1) +
               " - " +
               selectedBiosample.displayname}
           </Typography>
-          <IconButton
-            onClick={() => handleBiosampleSelected(null)}
-          >
+          <IconButton onClick={() => handleBiosampleSelected(null)}>
             <CancelRounded />
           </IconButton>
         </Stack>
@@ -265,14 +279,13 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
             </Button>
           </Tooltip>
         }
-        divHeight={{maxHeight: "600px"}}
+        divHeight={{ maxHeight: "600px" }}
       />
       <Box
         onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
           event.stopPropagation();
         }}
       >
-
         <BiosampleSelectModal
           assembly={assembly as Assembly}
           open={Boolean(virtualAnchor)}

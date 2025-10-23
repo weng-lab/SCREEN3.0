@@ -11,7 +11,6 @@ export default function Layout({
   children: React.ReactNode;
   params: Promise<{ assembly: string; entityType: string; entityID: string }>;
 }) {
-  
   const { assembly, entityType, entityID } = use(params);
 
   if (!isValidAssembly(assembly)) {
