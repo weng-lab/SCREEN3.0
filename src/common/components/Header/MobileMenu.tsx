@@ -20,7 +20,7 @@ import AutoComplete from "../autocomplete";
 import Link from "next/link";
 import { PageInfo } from "./Header";
 import CloseIcon from "@mui/icons-material/Close";
-import { useMenuControl } from "common/MenuContext";
+import { useMenuControl } from "common/components/MenuContext";
 import { useEffect, useState } from "react";
 
 export type MobileMenuProps = {

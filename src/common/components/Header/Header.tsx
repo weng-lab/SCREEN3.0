@@ -11,7 +11,7 @@ import { useRef, useState } from "react";
 import MobileMenu from "./MobileMenu";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { LinkComponent } from "../LinkComponent";
-import { useMenuControl } from "common/MenuContext";
+import { useMenuControl } from "common/components/MenuContext";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 import { usePathname } from "next/navigation";

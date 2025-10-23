@@ -8,7 +8,7 @@ import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
-import { useMenuControl } from "common/MenuContext";
+import { useMenuControl } from "common/components/MenuContext";
 import { OpenTabs } from "./OpenEntitiesTabs";
 
 const isSameEntity = (urlOpenEntity: AnyOpenEntity, openEntity: AnyOpenEntity) => {
