@@ -1,28 +1,56 @@
-import Link from 'next/link';
+"use client";
+import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
+import { Stack } from '@mui/system';
+import HumanIcon from 'common/components/HumanIcon';
+import { Assembly } from 'common/types/globalTypes';
+import { useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import MouseIcon from 'common/components/MouseIcon';
+import { usePathname } from 'next/navigation';
+import BiosampleLandingHeader from './BiosampleLandingHeader';
 
-type Props = {
-    params: {
-        assembly: string;
+export default function BiosampleLandingPage() {
+    const pathname = usePathname();
+    const assembly = pathname.split("/")[1];
+
+    const [tab, setTab] = useState<Assembly>(assembly as Assembly);
+
+    const handleChange = (_, newValue: Assembly) => {
+        setTab(newValue);
     };
-};
 
-export default function Page({ params }: Props) {
-    const { assembly } = params;
-    const renderedAt = new Date().toLocaleString();
+    const theme = useTheme();
 
     return (
-        <main style={{ padding: 24, fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial' }}>
-            <h1>Sample Assembly Page</h1>
-            <p>
-                <strong>assembly:</strong> {assembly}
-            </p>
-            <p>
-                <strong>Rendered at:</strong> {renderedAt}
-            </p>
-            <p>This is a minimal example of a dynamic route page using Next.js App Router.</p>
-            <p>
-                <Link href="/">← Back to home</Link>
-            </p>
-        </main>
+        <Box sx={{ marginX: "5%", marginY: 2, height: "100%" }}>
+            <BiosampleLandingHeader assembly={tab as Assembly}/>
+            <Tabs
+                value={tab}
+                onChange={handleChange}
+                aria-label="basic tabs example"
+                variant="scrollable"
+                allowScrollButtonsMobile
+            >
+                <Tab
+                    value="GRCh38"
+                    label={
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            <HumanIcon color={tab === "GRCh38" ? theme.palette.primary.main : "grey"} size={25} />
+                            <Typography>Human</Typography>
+                        </Stack>
+                    }
+                />
+                <Tab
+                    value="mm10"
+                    label={
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            <MouseIcon color={tab === "mm10" ? theme.palette.primary.main : "grey"} size={25} />
+                            <Typography>Mouse</Typography>
+                        </Stack>
+                    }
+                />
+            </Tabs>
+            <Divider />
+        </Box>
     );
 }
