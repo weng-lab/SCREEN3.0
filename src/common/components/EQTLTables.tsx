@@ -1,15 +1,12 @@
 import { useQuery } from "@apollo/client";
 import { Grid, Skeleton, Stack, Box } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";
-import { gql } from "types/generated";
+import { gql } from "common/types/generated";
 import { useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
 import { LinkComponent } from "./LinkComponent";
-import {
-  GridColDef,
-  Table
-} from "@weng-lab/ui-components";
-import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
+import { GridColDef, Table } from "@weng-lab/ui-components";
+import { AnyEntityType } from "common/entityTabsConfig";
 
 const EQTL_QUERY = gql(`
 query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
@@ -152,7 +149,9 @@ export default function EQTLs<T extends AnyEntityType>({
       {
         field: "rsid",
         headerName: "rsID",
-        renderCell: (params) => <LinkComponent href={`/${assembly}/variant/${params.value}`}>{params.value}</LinkComponent>,
+        renderCell: (params) => (
+          <LinkComponent href={`/${assembly}/variant/${params.value}`}>{params.value}</LinkComponent>
+        ),
       },
       {
         field: "chromosome",
@@ -248,7 +247,7 @@ export default function EQTLs<T extends AnyEntityType>({
             },
           }}
           emptyTableFallback={"No GTEX whole-blood eQTLs found"}
-          divHeight={{maxHeight: "400px"}}
+          divHeight={{ maxHeight: "400px" }}
         />
       </Box>
       <Box sx={{ flex: "1 1 auto" }}>
@@ -262,7 +261,7 @@ export default function EQTLs<T extends AnyEntityType>({
             },
           }}
           emptyTableFallback={"No OneK1K eQTLs found"}
-          divHeight={{maxHeight: "400px"}}
+          divHeight={{ maxHeight: "400px" }}
         />
       </Box>
     </Stack>

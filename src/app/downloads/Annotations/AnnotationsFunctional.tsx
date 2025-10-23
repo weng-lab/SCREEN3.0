@@ -1,5 +1,5 @@
 import React from "react";
-import Config from "../../../config.json";
+import Config from "common/config.json";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
 import DownloadContentLayout from "./DownloadContentLayout";
 import { Assembly } from "./Annotations";
@@ -48,9 +48,7 @@ interface AnnotationsFunctional {
   assembly: Assembly;
 }
 
-const AnnotationsFunctional: React.FC<AnnotationsFunctional> = ({
-  assembly,
-}) => {
+const AnnotationsFunctional: React.FC<AnnotationsFunctional> = ({ assembly }) => {
   return (
     <DownloadContentLayout title="Functional Characterization">
       {classDownloads[assembly].map((item) => (

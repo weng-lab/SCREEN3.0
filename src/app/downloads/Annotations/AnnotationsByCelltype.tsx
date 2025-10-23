@@ -7,16 +7,14 @@ interface NewAnnotationsByCelltypeProps {
   assembly: Assembly;
 }
 
-const AnnotationsByCelltype: React.FC<NewAnnotationsByCelltypeProps> = ({
-  assembly,
-}) => {
+const AnnotationsByCelltype: React.FC<NewAnnotationsByCelltypeProps> = ({ assembly }) => {
   return (
     <DownloadContentLayout title="cCREs by Cell and Tissue Type">
       <BiosampleTables
         assembly={assembly as "GRCh38" | "mm10"}
         showDownloads
         slotProps={{
-          paperStack: { overflow: "auto", flexGrow: 1, height:'auto' },
+          paperStack: { overflow: "auto", flexGrow: 1, height: "auto" },
         }}
       />
     </DownloadContentLayout>

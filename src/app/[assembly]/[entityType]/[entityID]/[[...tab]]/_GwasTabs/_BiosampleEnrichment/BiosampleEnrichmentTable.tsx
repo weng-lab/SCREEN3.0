@@ -142,25 +142,22 @@ const BiosampleEnrichmentTable = ({
     },
   ];
 
-  const tooltip = useMemo(() => (
-    <Tooltip
-      title="Suggested Biosamples: Suggested biosamples to investigate based on cCRE enrichment as calculated by the Variant Enrichment and Sample Prioritization Analysis (VESPA) pipeline"
-    >
-      <InfoOutlinedIcon fontSize="inherit" />
-    </Tooltip>
-  ), []);
+  const tooltip = useMemo(
+    () => (
+      <Tooltip title="Suggested Biosamples: Suggested biosamples to investigate based on cCRE enrichment as calculated by the Variant Enrichment and Sample Prioritization Analysis (VESPA) pipeline">
+        <InfoOutlinedIcon fontSize="inherit" />
+      </Tooltip>
+    ),
+    []
+  );
 
-  const initialSort: GridSortModel = useMemo(() =>
-    [{ field: "fc", sort: "desc" as GridSortDirection }],
-    []);
+  const initialSort: GridSortModel = useMemo(() => [{ field: "fc", sort: "desc" as GridSortDirection }], []);
 
   const AutoSortToolbar = useMemo(() => {
-    return (
-      <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />
-    )
-  }, [autoSort])
+    return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
+  }, [autoSort]);
 
-  // handle auto sorting 
+  // handle auto sorting
   useEffect(() => {
     const api = apiRef?.current;
     if (!api) return;
@@ -171,7 +168,7 @@ const BiosampleEnrichmentTable = ({
     }
 
     //sort by checkboxes if some selected, otherwise sort by tpm
-    api.setSortModel(selected?.length > 0 ? [{ field:  "__check__", sort: "desc" }] : initialSort);
+    api.setSortModel(selected?.length > 0 ? [{ field: "__check__", sort: "desc" }] : initialSort);
   }, [apiRef, autoSort, initialSort, selected]);
 
   return error ? (

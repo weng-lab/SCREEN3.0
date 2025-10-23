@@ -2,7 +2,7 @@ import { Box } from "@mui/system";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { SharedAssayViewPlotProps } from "./AssayView";
 import { capitalizeFirstLetter } from "common/utility";
-import { tissueColors } from "common/lib/colors";
+import { tissueColors } from "common/colors";
 import { BiosampleRow, formatAssay } from "./BiosampleActivity";
 import { useMemo, useState } from "react";
 import AssayPlotControls from "./AssayPlotControls";
@@ -15,43 +15,39 @@ const AssayViolinPlot = ({
   setSelected,
   viewBy,
   setViewBy,
-  ref
+  ref,
 }: SharedAssayViewPlotProps) => {
-  const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max")
+  const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
   const violinData: Distribution<BiosampleRow>[] = useMemo(() => {
     if (!rows) return [];
 
-    const tissueGroups = rows.reduce((acc, item) => {
-      const key = item.ontology;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(item);
-      return acc;
-    }, {} as Record<string, BiosampleRow[]>);
+    const tissueGroups = rows.reduce(
+      (acc, item) => {
+        const key = item.ontology;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(item);
+        return acc;
+      },
+      {} as Record<string, BiosampleRow[]>
+    );
 
-    let distributions = Object.entries(tissueGroups).map(([tissue, group]) => {
+    const distributions = Object.entries(tissueGroups).map(([tissue, group]) => {
       const label = capitalizeFirstLetter(tissue);
 
-      const isHighlighted = (x: BiosampleRow) =>
-        selected.some((y) => y.name === x.name);
+      const isHighlighted = (x: BiosampleRow) => selected.some((y) => y.name === x.name);
 
       const noneSelected = selected.length === 0;
-      const allInViolinSelected = group.every((d) =>
-        selected.some((s) => s.name === d.name)
-      );
+      const allInViolinSelected = group.every((d) => selected.some((s) => s.name === d.name));
 
       const violinColor =
-        noneSelected || allInViolinSelected
-          ? tissueColors[tissue] ?? tissueColors.missing
-          : "#CCCCCC";
+        noneSelected || allInViolinSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
 
       const data: ViolinPoint<BiosampleRow>[] = group
         .map((sample) => {
           const pointColor =
-            noneSelected || isHighlighted(sample)
-              ? tissueColors[tissue] ?? tissueColors.missing
-              : "#CCCCCC";
+            noneSelected || isHighlighted(sample) ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
           const pointRadius = isHighlighted(sample) ? 4 : 2;
 
           return {
@@ -76,20 +72,12 @@ const AssayViolinPlot = ({
         const median = (arr: number[]) => {
           const sorted = [...arr].sort((x, y) => x - y);
           const mid = Math.floor(sorted.length / 2);
-          return sorted.length % 2 !== 0
-            ? sorted[mid]
-            : (sorted[mid - 1] + sorted[mid]) / 2;
+          return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
         };
-        return (
-          median(b.data.map((d) => d.value)) -
-          median(a.data.map((d) => d.value))
-        );
+        return median(b.data.map((d) => d.value)) - median(a.data.map((d) => d.value));
       }
       if (sortBy === "max") {
-        return (
-          Math.max(...b.data.map((d) => d.value)) -
-          Math.max(...a.data.map((d) => d.value))
-        );
+        return Math.max(...b.data.map((d) => d.value)) - Math.max(...a.data.map((d) => d.value));
       }
       return 0;
     });
@@ -97,11 +85,10 @@ const AssayViolinPlot = ({
     return distributions;
   }, [assay, selected, rows, sortBy]);
 
-
   const onViolinClicked = (distribution: Distribution<BiosampleRow>) => {
     const rowsForDistribution = distribution.data.map((point) => point.metadata);
 
-    const allInDistributionSelected = rowsForDistribution.every(row => selected.some(x => x.name === row.name))
+    const allInDistributionSelected = rowsForDistribution.every((row) => selected.some((x) => x.name === row.name));
 
     if (allInDistributionSelected) {
       setSelected((prev) => prev.filter((row) => !rowsForDistribution.some((x) => x.name === row.name)));

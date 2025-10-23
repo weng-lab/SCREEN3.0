@@ -2,7 +2,7 @@ import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } fro
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
-import { tissueColors } from "common/lib/colors"
+import { tissueColors } from "common/colors";
 import GenePlotControls from "./GenePlotControls";
 
 export type GeneExpressionViolinPlotProps = GeneExpressionProps &
@@ -29,34 +29,31 @@ const GeneExpressionBarPlot = ({
   rows,
   ...rest
 }: GeneExpressionViolinPlotProps) => {
-  const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max")
+  const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
   const violinData: Distribution<PointMetadata>[] = useMemo(() => {
     if (!rows) return [];
 
-    const grouped = rows.reduce((acc, item) => {
-      const key = item.tissue;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(item);
-      return acc;
-    }, {} as Record<string, PointMetadata[]>);
+    const grouped = rows.reduce(
+      (acc, item) => {
+        const key = item.tissue;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(item);
+        return acc;
+      },
+      {} as Record<string, PointMetadata[]>
+    );
 
-    let distributions = Object.entries(grouped).map(([tissue, group]) => {
-      const values = group.map(
-        (d) => d.gene_quantification_files[0].quantifications[0]?.tpm
-      );
+    const distributions = Object.entries(grouped).map(([tissue, group]) => {
+      const values = group.map((d) => d.gene_quantification_files[0].quantifications[0]?.tpm);
       const label = tissue;
       const violinColor =
         selected.length === 0 ||
-          group.every((d) =>
-            selected.some(
-              (s) =>
-                s.gene_quantification_files[0].accession ===
-                d.gene_quantification_files[0].accession
-            )
-          )
-          ? tissueColors[tissue] ?? tissueColors.missing
+        group.every((d) =>
+          selected.some((s) => s.gene_quantification_files[0].accession === d.gene_quantification_files[0].accession)
+        )
+          ? (tissueColors[tissue] ?? tissueColors.missing)
           : "#CCCCCC";
 
       const data: ViolinPoint<PointMetadata>[] = values.map((value, i) => {
@@ -64,24 +61,20 @@ const GeneExpressionBarPlot = ({
         const isSelected =
           selected.length === 0 ||
           selected.some(
-            (s) =>
-              s.gene_quantification_files[0].accession ===
-              metadata.gene_quantification_files[0].accession
+            (s) => s.gene_quantification_files[0].accession === metadata.gene_quantification_files[0].accession
           );
-        const pointColor = isSelected
-          ? tissueColors[tissue] ?? tissueColors.missing
-          : "#CCCCCC";
+        const pointColor = isSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 
         return values.length < 3
           ? { value, radius: pointRadius, tissue, metadata, color: pointColor }
           : {
-            value,
-            radius: selected.length === 0 ? 2 : pointRadius,
-            tissue,
-            metadata,
-            color: pointColor,
-          };
+              value,
+              radius: selected.length === 0 ? 2 : pointRadius,
+              tissue,
+              metadata,
+              color: pointColor,
+            };
       });
 
       return { label, data, violinColor };
@@ -96,20 +89,12 @@ const GeneExpressionBarPlot = ({
         const median = (arr: number[]) => {
           const sorted = [...arr].sort((x, y) => x - y);
           const mid = Math.floor(sorted.length / 2);
-          return sorted.length % 2 !== 0
-            ? sorted[mid]
-            : (sorted[mid - 1] + sorted[mid]) / 2;
+          return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
         };
-        return (
-          median(b.data.map((d) => d.value)) -
-          median(a.data.map((d) => d.value))
-        );
+        return median(b.data.map((d) => d.value)) - median(a.data.map((d) => d.value));
       }
       if (sortBy === "max") {
-        return (
-          Math.max(...b.data.map((d) => d.value)) -
-          Math.max(...a.data.map((d) => d.value))
-        );
+        return Math.max(...b.data.map((d) => d.value)) - Math.max(...a.data.map((d) => d.value));
       }
       return 0;
     });
@@ -117,11 +102,12 @@ const GeneExpressionBarPlot = ({
     return distributions;
   }, [selected, rows, sortBy]);
 
-
   const onViolinClicked = (violin: Distribution<PointMetadata>) => {
     const rowsForDistribution = violin.data.map((point) => point.metadata);
 
-    const allInDistributionSelected = rowsForDistribution.every(row => selected.some(x => x.accession === row.accession))
+    const allInDistributionSelected = rowsForDistribution.every((row) =>
+      selected.some((x) => x.accession === row.accession)
+    );
 
     if (allInDistributionSelected) {
       setSelected(selected.filter((row) => !rowsForDistribution.some((x) => x.accession === row.accession)));
@@ -192,18 +178,26 @@ const GeneExpressionBarPlot = ({
           downloadFileName={`${geneData.data.name}_expression_violin_plot`}
           pointTooltipBody={(point) => {
             const rawTPM = point.metadata?.gene_quantification_files[0].quantifications[0]?.tpm ?? 0;
-            const displayTPM =
-              scale === "linearTPM" ? rawTPM : Math.log10(rawTPM + 1);
+            const displayTPM = scale === "linearTPM" ? rawTPM : Math.log10(rawTPM + 1);
 
             return (
               <Box maxWidth={300}>
-                {point.outlier && <div><strong>Outlier</strong></div>}
-                <div><strong>Accession:</strong> {point.metadata?.accession}</div>
-                <div><strong>Biosample:</strong> {point.metadata?.biosample}</div>
-                <div><strong>Tissue:</strong> {point.metadata?.tissue}</div>
+                {point.outlier && (
+                  <div>
+                    <strong>Outlier</strong>
+                  </div>
+                )}
                 <div>
-                  <strong>{scale === "linearTPM" ? "TPM" : "Log₁₀(TPM + 1)"}:</strong>{" "}
-                  {displayTPM.toFixed(2)}
+                  <strong>Accession:</strong> {point.metadata?.accession}
+                </div>
+                <div>
+                  <strong>Biosample:</strong> {point.metadata?.biosample}
+                </div>
+                <div>
+                  <strong>Tissue:</strong> {point.metadata?.tissue}
+                </div>
+                <div>
+                  <strong>{scale === "linearTPM" ? "TPM" : "Log₁₀(TPM + 1)"}:</strong> {displayTPM.toFixed(2)}
                 </div>
               </Box>
             );

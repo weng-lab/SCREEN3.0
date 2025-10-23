@@ -1,7 +1,7 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { gql } from "types/generated/gql";
+import { gql } from "common/types/generated/gql";
 
-import { ComputationalGeneLinksQuery } from "../../types/generated/graphql";
+import { ComputationalGeneLinksQuery } from "../types/generated/graphql";
 
 export const ComputationalGeneLinks_Query = gql(`
   query ComputationalGeneLinks($accession: [String]!, $method: [String]){
@@ -31,7 +31,6 @@ export type useCompuLinkedGenesReturn = {
 };
 
 export const useCompuLinkedGenes = ({ accessions, method }: useCompuLinkedGenesParams): useCompuLinkedGenesReturn => {
-  
   const {
     data: studyCompuLinkedGenes,
     loading: studyCompuLinkedGenesLoading,

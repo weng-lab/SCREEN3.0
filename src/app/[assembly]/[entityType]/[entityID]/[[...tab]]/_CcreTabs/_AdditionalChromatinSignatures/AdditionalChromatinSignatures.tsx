@@ -1,16 +1,16 @@
-import { EntityViewComponentProps } from "common/EntityDetails/entityTabsConfig";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { GridColDef, Table } from "@weng-lab/ui-components";
 import { Box, Stack, Tab } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
-import { GenomicRange } from "types/globalTypes";
-import { gql } from "types/generated/gql";
+import { GenomicRange } from "common/types/globalTypes";
+import { gql } from "common/types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
 import { CHROM_HMM_STATES, getChromHmmStateDisplayname, useChromHMMData } from "common/hooks/useChromHmmData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { ProportionsBar, getProportionsFromArray } from "common/components/ProportionsBar";
-import { chromHmmStateDetails } from "common/gbview/constants";
+import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
+import { chromHmmStateDetails } from "common/components/gbview/constants";
 
 const ENTEx_QUERY = gql(`
 query ENTEXQuery($accession: String!){
@@ -147,7 +147,7 @@ const entexActiveCols: GridColDef[] = [
 ];
 
 export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentProps) => {
-  const [tab, setTab] = useState<number>(1)
+  const [tab, setTab] = useState<number>(1);
 
   const {
     data: dataCcre,
@@ -161,13 +161,21 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
     end: dataCcre?.start + dataCcre?.len,
   };
 
-  const { data: dataEntex, loading: loadingEntex, error: errorEntex } = useQuery(ENTEx_QUERY, {
+  const {
+    data: dataEntex,
+    loading: loadingEntex,
+    error: errorEntex,
+  } = useQuery(ENTEx_QUERY, {
     variables: { accession: entity.entityID },
   });
 
-  const { data: dataAnnotations, loading: loadingAnnotations, error: errorAnnotations } = useQuery(ENTEx_Active_Annotations_QUERY, {
+  const {
+    data: dataAnnotations,
+    loading: loadingAnnotations,
+    error: errorAnnotations,
+  } = useQuery(ENTEx_Active_Annotations_QUERY, {
     variables: { coordinates },
-    skip: !coordinates
+    skip: !coordinates,
   });
 
   const { tracks, processedTableData, loading, error } = useChromHMMData(coordinates);

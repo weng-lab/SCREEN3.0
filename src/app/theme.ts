@@ -1,13 +1,13 @@
-'use client'
-import { createTheme } from '@mui/material/styles';
+"use client";
+import { createTheme } from "@mui/material/styles";
 
 export const theme = createTheme({
   palette: {
-    mode: 'light',
+    mode: "light",
     primary: {
       main: "#0c184a",
       light: "#100e98",
-      contrastText: "#FFFFFF"
+      contrastText: "#FFFFFF",
     },
     secondary: {
       main: "#00063D",
@@ -19,8 +19,8 @@ export const theme = createTheme({
     MuiAlert: {
       styleOverrides: {
         root: ({ ownerState }) => ({
-          ...(ownerState.severity === 'info' && {
-            backgroundColor: '#60a5fa',
+          ...(ownerState.severity === "info" && {
+            backgroundColor: "#60a5fa",
           }),
         }),
       },
@@ -29,15 +29,15 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "none",
-        }
-      }
+        },
+      },
     },
     MuiTab: {
       styleOverrides: {
         root: {
-          textTransform: "none"
-        }
-      }
-    }
+          textTransform: "none",
+        },
+      },
+    },
   },
 });

@@ -3,23 +3,23 @@
 import { Box, Button, Grid, Link, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { theme } from "./theme";
-import { alpha } from '@mui/material/styles';
-import Image from "next/image"
+import { alpha } from "@mui/material/styles";
+import Image from "next/image";
 import MainSearch from "./landing/mainSearch";
 import PopularSearches from "./landing/popularSearches";
 import TrendingDatasets from "./landing/trendingDatasets";
 
 export default function Home() {
-  const [assembly, setAssembly] = useState<"GRCh38" | "mm10">('GRCh38');
+  const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38");
   const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
 
   const handleAssemblyChange = (asmb: "GRCh38" | "mm10") => {
     setAssembly(asmb);
-  }
+  };
 
   const toggleMultipleRegionSearchVisible = () => {
     setMultipleRegionSearchVisible(!multipleRegionSearchVisible);
-  }
+  };
 
   //@todo: Add actual download links and desired popular searches
   return (
@@ -33,14 +33,14 @@ export default function Home() {
             linear-gradient(${alpha(theme.palette.secondary.main, 0.9)}, ${alpha(theme.palette.secondary.main, 0.75)}),
             url("/backgroundHelix.png")
           `,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          backgroundAttachment: 'fixed'
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          backgroundAttachment: "fixed",
         }}
       >
         <Stack
@@ -105,12 +105,19 @@ export default function Home() {
           <MultipleRegionSearch assembly={assembly} toggleMultipleRegionSearchVisible={toggleMultipleRegionSearchVisible} />
         </Collapse> */}
       </Box>
-      <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
+      <Box
+        width={"100%"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        display={"flex"}
+        flexDirection={"column"}
+        sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}
+      >
         <Typography
           sx={{
             fontWeight: 550,
-            fontSize: '34px',
-            textAlign: 'center',
+            fontSize: "34px",
+            textAlign: "center",
           }}
         >
           Where to start?
@@ -118,27 +125,31 @@ export default function Home() {
         <Typography
           variant="body1"
           sx={{
-            textAlign: 'center',
-            maxWidth: '600px',
+            textAlign: "center",
+            maxWidth: "600px",
           }}
         >
-          Browse these example searches to get started with SCREEN. You can search for genes, cCREs, variants, a specific loci, or a study from the GWAS catalog.
-          Change the assembly above to see different examples.
+          Browse these example searches to get started with SCREEN. You can search for genes, cCREs, variants, a
+          specific loci, or a study from the GWAS catalog. Change the assembly above to see different examples.
         </Typography>
         <PopularSearches assembly={assembly} />
       </Box>
-      <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
-        <Grid
-          container
-          width="100%"
-          justifyContent="space-around"
-        >
+      <Box
+        width={"100%"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        display={"flex"}
+        flexDirection={"column"}
+        sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}
+      >
+        <Grid container width="100%" justifyContent="space-around">
           <Grid size={6} width={"auto"}>
             <Typography variant="h4" sx={{ fontWeight: 550, mb: 2 }}>
               Access SCREEN Data Instantly!
             </Typography>
             <Typography variant="body1" maxWidth={500}>
-              Download comprehensive datasets of candidate cis-Regulatory Elements (cCREs) from ENCODE for in-depth analysis.
+              Download comprehensive datasets of candidate cis-Regulatory Elements (cCREs) from ENCODE for in-depth
+              analysis.
             </Typography>
           </Grid>
           <Grid size={6} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }} width={"auto"}>
@@ -146,9 +157,15 @@ export default function Home() {
               <Typography variant="h6" sx={{ fontWeight: 550 }} gutterBottom>
                 Available Downloads
               </Typography>
-              <Typography variant="body1" gutterBottom>✅ cCRE Annotations</Typography>
-              <Typography variant="body1" gutterBottom>✅ Data Matrices across multiple assays</Typography>
-              <Typography variant="body1" marginBottom={2}>✅ cCREs downloads by Genomic Region</Typography>
+              <Typography variant="body1" gutterBottom>
+                ✅ cCRE Annotations
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                ✅ Data Matrices across multiple assays
+              </Typography>
+              <Typography variant="body1" marginBottom={2}>
+                ✅ cCREs downloads by Genomic Region
+              </Typography>
               <Button
                 variant="contained"
                 LinkComponent={Link}
@@ -161,8 +178,16 @@ export default function Home() {
           </Grid>
         </Grid>
       </Box>
-      <Box width={"100%"} justifyContent={"flex-start"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
-        <Typography variant="h6" sx={{ fontWeight: 550 }}>📈 Trending Datasets</Typography>
+      <Box
+        width={"100%"}
+        justifyContent={"flex-start"}
+        display={"flex"}
+        flexDirection={"column"}
+        sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: 550 }}>
+          📈 Trending Datasets
+        </Typography>
         <TrendingDatasets />
       </Box>
     </div>

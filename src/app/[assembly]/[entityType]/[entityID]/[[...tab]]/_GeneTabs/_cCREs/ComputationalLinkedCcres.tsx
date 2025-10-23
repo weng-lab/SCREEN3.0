@@ -2,20 +2,28 @@ import { Box, Grid, Skeleton } from "@mui/material";
 import useLinkedICREs, { LinkedICREInfo } from "common/hooks/useLinkedICREs";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "../../_CcreTabs/_Genes/columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
-import { accessionCol } from "common/components/linkedElements/columns";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { usePathname } from "next/navigation";
-import { Assembly } from "types/globalTypes";
+import { Assembly } from "common/types/globalTypes";
+import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
+import { LinkComponent } from "common/components/LinkComponent";
 
+export const accessionCol = (assembly: string): GridColDef => ({
+  field: "accession",
+  headerName: "Accession",
+  renderCell: (params: GridRenderCellParams) => (
+    <LinkComponent href={`/${assembly}/ccre/${params.value}`}>{params.value}</LinkComponent>
+  ),
+});
 
 export default function ComputationalLinkedCcres({
   geneData,
 }: {
-  geneData: UseGeneDataReturn<{ name: string, assembly: Assembly }>;
+  geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
 }) {
   const { data, loading, error } = useLinkedICREs(geneData?.data.id);
-  const pathname = usePathname()
-  const assembly = pathname.split("/")[1]
+  const pathname = usePathname();
+  const assembly = pathname.split("/")[1];
 
   if (geneData.loading || loading) {
     return (
@@ -47,9 +55,7 @@ export default function ComputationalLinkedCcres({
       id: index.toString(),
     }));
   const ChIAPETLinked = data
-    .filter(
-      (x: LinkedICREInfo) => (x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
-    )
+    .filter((x: LinkedICREInfo) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
     .map((x: LinkedICREInfo, index: number) => ({
       ...x,
       id: index.toString(),
@@ -74,7 +80,7 @@ export default function ComputationalLinkedCcres({
       columns: [accessionCol(assembly), ...IntactHiCLoopsCols.slice(2)],
       sortColumn: "p_val",
       sortDirection: "asc",
-      emptyTableFallback: `No intact Hi-C loops overlap a cCRE and the promoter of this gene`
+      emptyTableFallback: `No intact Hi-C loops overlap a cCRE and the promoter of this gene`,
     },
     {
       label: "ChIA-PET",

@@ -1,9 +1,8 @@
 import React from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import Config from "../../../config.json"
+import Config from "common/config.json";
 import { Assembly } from "./Annotations";
-
 
 const ASSEMBLY_CONFIG = {
   GRCh38: {
@@ -30,16 +29,24 @@ const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
   const config = ASSEMBLY_CONFIG[assembly];
 
   return (
-    <Stack direction={"row"} border={(theme) => `1px solid ${theme.palette.divider}`} borderRadius={2} flexWrap={"wrap"} display="flex" alignItems="center" gap={2} p={1}>
-      <Box
-        component="img"
-        src={config.img}
-        alt={config.title}
-        sx={{ width: 72, height: 72 }}
-      />
+    <Stack
+      direction={"row"}
+      border={(theme) => `1px solid ${theme.palette.divider}`}
+      borderRadius={2}
+      flexWrap={"wrap"}
+      display="flex"
+      alignItems="center"
+      gap={2}
+      p={1}
+    >
+      <Box component="img" src={config.img} alt={config.title} sx={{ width: 72, height: 72 }} />
       <Stack flexGrow={1} spacing={0.5} minWidth={0}>
-        <Typography variant="subtitle1" fontWeight={600} noWrap>{config.title}</Typography>
-        <Typography variant="body2" color="text.secondary" noWrap>{config.subtitle}</Typography>
+        <Typography variant="subtitle1" fontWeight={600} noWrap>
+          {config.title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" noWrap>
+          {config.subtitle}
+        </Typography>
       </Stack>
       <Button
         variant="contained"
@@ -47,7 +54,7 @@ const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
         href={config.downloadUrl}
         endIcon={<DownloadIcon />}
         download
-        sx={{ whiteSpace: 'nowrap' }}
+        sx={{ whiteSpace: "nowrap" }}
       >
         {config.buttonLabel}
       </Button>
