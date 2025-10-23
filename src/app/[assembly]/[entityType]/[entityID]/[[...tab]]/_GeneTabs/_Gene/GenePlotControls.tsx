@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Stack,
-  FormControl,
-  FormLabel,
-  ToggleButtonGroup,
-  ToggleButton,
-  Tooltip,
-} from "@mui/material";
+import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
 
 interface ControlProps {
   assembly: string;
@@ -14,10 +7,10 @@ interface ControlProps {
   scale: string;
   viewBy: string;
   replicates: string;
-  setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void
-  setScale: (newScale: "linearTPM" | "logTPM") => void
-  setViewBy: (newView: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM") => void
-  setReplicates: (newReplicates: "mean" | "all") => void
+  setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void;
+  setScale: (newScale: "linearTPM" | "logTPM") => void;
+  setViewBy: (newView: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM") => void;
+  setReplicates: (newReplicates: "mean" | "all") => void;
   setSortBy?: (sortBy: "median" | "max" | "tissue") => void;
   sortBy?: "median" | "max" | "tissue";
   setShowPoints?: (showPoints: boolean) => void;
@@ -36,12 +29,12 @@ const GenePlotControls: React.FC<ControlProps> = ({
   setScale,
   setViewBy,
   setReplicates,
-  setSortBy = () => { },
+  setSortBy = () => {},
   sortBy = "median",
-  setShowPoints = () => { },
+  setShowPoints = () => {},
   showPoints = true,
   violin = false,
-  disabled = false
+  disabled = false,
 }) => {
   return (
     <Stack direction="row" spacing={2} mb={2} flexWrap="wrap">
@@ -75,11 +68,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
           </Tooltip>
           <Tooltip title={assembly === "GRCh38" && "Only available in mm10"}>
             <div>
-              <ToggleButton
-                disabled={assembly === "GRCh38" || disabled}
-                sx={{ textTransform: "none" }}
-                value="all"
-              >
+              <ToggleButton disabled={assembly === "GRCh38" || disabled} sx={{ textTransform: "none" }} value="all">
                 All
               </ToggleButton>
             </div>

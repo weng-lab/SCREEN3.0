@@ -1,5 +1,5 @@
 "use client";
-import { Typography, Box, Grid, Link as MuiLink, Stack, Divider } from "@mui/material";
+import { Typography, Box, Grid, Link as MuiLink, Stack } from "@mui/material";
 import Image from "next/image";
 import { LinkComponent } from "./LinkComponent";
 
@@ -52,14 +52,13 @@ export default function Footer() {
         zIndex: (theme) => theme.zIndex.appBar,
         color: "#fff",
         paddingX: 6,
-
       }}
     >
       <Grid container spacing={6} my={3}>
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={1} alignItems="flex-start">
             <Image src={"/on-dark.svg"} alt="Logo" width={120} height={60} />
-            <Typography variant="body1" sx={{textAlign: "left" }}>
+            <Typography variant="body1" sx={{ textAlign: "left" }}>
               Search Candidate Regulatory Elements by ENCODE
             </Typography>
             <Typography variant="body2">
@@ -75,11 +74,7 @@ export default function Footer() {
             </Typography>
             <Typography variant="body2" color={"#b2bcf0"}>
               How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN: <br />
-              <MuiLink
-                href="https://www.nature.com/articles/s41586-020-2493-4"
-                color={"#b2bcf0"}
-                underline="always"
-              >
+              <MuiLink href="https://www.nature.com/articles/s41586-020-2493-4" color={"#b2bcf0"} underline="always">
                 &quot;ENCODE Project Consortium, et al. Nature 2020.&quot;
               </MuiLink>
             </Typography>
@@ -94,7 +89,14 @@ export default function Footer() {
                 </Typography>
                 <Stack spacing={0.5}>
                   {section.links.map((link) => (
-                    <LinkComponent href={link.href} key={link.name} underline="none" color="inherit" width={"fit-content"} variant="subtitle2">
+                    <LinkComponent
+                      href={link.href}
+                      key={link.name}
+                      underline="none"
+                      color="inherit"
+                      width={"fit-content"}
+                      variant="subtitle2"
+                    >
                       {link.name}
                     </LinkComponent>
                   ))}

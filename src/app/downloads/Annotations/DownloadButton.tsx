@@ -11,20 +11,20 @@ export type DownloadButtonProps = {
 
 // Download button for class/gene links files
 export const DownloadButton = (props: DownloadButtonProps) => {
-  const [isHovered, setIsHovered] = useState<boolean>(false)
-  
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+
   return (
     <Button
       sx={{
         textTransform: "none",
-        borderLeftWidth: props.bordercolor && (isHovered ? '0.65rem' : '0.375rem'),
-        borderLeftStyle: 'solid',
+        borderLeftWidth: props.bordercolor && (isHovered ? "0.65rem" : "0.375rem"),
+        borderLeftStyle: "solid",
         borderLeftColor: props.bordercolor,
-        transition: 'all 0.1s',
+        transition: "all 0.1s",
         justifyContent: "space-between",
         backgroundColor: "white",
         color: "black",
-        textAlign: "left"
+        textAlign: "left",
       }}
       variant="contained"
       endIcon={<Download />}

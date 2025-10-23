@@ -59,7 +59,7 @@ const AssayTable = ({
   const transformedData: BiosampleRow[] = useMemo(() => {
     if (!rows) return [];
 
-    let filteredData = rows
+    let filteredData = rows;
 
     switch (viewBy) {
       case "value": {
@@ -105,7 +105,7 @@ const AssayTable = ({
       }
     }
 
-    return [...filteredData]
+    return [...filteredData];
   }, [rows, viewBy, assay]);
 
   const apiRef = useGridApiRef();
@@ -125,7 +125,8 @@ const AssayTable = ({
       const newIds = Array.from(newRowSelectionModel.ids);
       const selectedRows = newIds.map((id) => rows.find((row) => row.name === id));
       setSelected(selectedRows);
-    } else { // if type is exclude, it's always with 0 ids (aka select all)
+    } else {
+      // if type is exclude, it's always with 0 ids (aka select all)
       setSelected(rows);
     }
   };
@@ -151,16 +152,12 @@ const AssayTable = ({
   }, [apiRef, assay]);
 
   const AutoSortToolbar = useMemo(() => {
-    return (
-      <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />
-    )
-  }, [autoSort])
+    return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
+  }, [autoSort]);
 
-  const initialSort: GridSortModel = useMemo(() =>
-    [{ field: assay, sort: "desc" as GridSortDirection }],
-    [assay]);
+  const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" as GridSortDirection }], [assay]);
 
-  // handle auto sorting 
+  // handle auto sorting
   useEffect(() => {
     const api = apiRef?.current;
     if (!api) return;

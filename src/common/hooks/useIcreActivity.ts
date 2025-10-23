@@ -1,6 +1,6 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { gql } from "types/generated/gql";
-import { IcresZscoresQuery } from "types/generated/graphql";
+import { gql } from "common/types/generated/gql";
+import { IcresZscoresQuery } from "common/types/generated/graphql";
 
 const GET_ICRE_ACTIVITY = gql(`
   query IcresZscores($accession: [String]!) {
@@ -29,33 +29,29 @@ const GET_ICRE_ACTIVITY = gql(`
       accession
     }
   }
-`)
+`);
 
 export type UseIcreActivityParams = {
-  accession: string | string[],
-}
+  accession: string | string[];
+};
 
 export type UseIcreActivityReturn = {
   data: IcresZscoresQuery["immuneiCREsUmapQuery"] | undefined;
   loading: boolean;
-  error: ApolloError
-}
+  error: ApolloError;
+};
 
 export const useIcreActivity = ({ accession }: UseIcreActivityParams): UseIcreActivityReturn => {
-
-  const { data, loading, error } = useQuery(
-    GET_ICRE_ACTIVITY,
-    {
-      variables: {
-        accession
-      },
-      skip: !accession || accession.length === 0
+  const { data, loading, error } = useQuery(GET_ICRE_ACTIVITY, {
+    variables: {
+      accession,
     },
-  );
+    skip: !accession || accession.length === 0,
+  });
 
   return {
     data: data?.immuneiCREsUmapQuery,
     loading,
     error,
-  }
-}
+  };
+};

@@ -1,15 +1,12 @@
 import { Stack } from "@mui/material";
 import { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { LinkedICREInfo } from "common/hooks/useLinkedICREs";
-import { Table, TableProps, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableProps } from "@weng-lab/ui-components";
 
 export type TableDef<T extends LinkedGeneInfo | LinkedICREInfo> = TableProps & {
   sortColumn: keyof T & string; // Constrain to string keys
   sortDirection: "asc" | "desc";
-}
-
-// Combined types for GridColDef and GridRenderCellParams for linkedGenes and linkedICREs
-export type colDef = GridColDef<LinkedGeneInfo> | GridColDef<LinkedICREInfo>;
+};
 
 export default function LinkedElements<T extends LinkedGeneInfo | LinkedICREInfo>({
   tables,
@@ -27,7 +24,7 @@ export default function LinkedElements<T extends LinkedGeneInfo | LinkedICREInfo
             },
           }}
           {...table}
-          divHeight={{height: "400px"}}
+          divHeight={{ height: "400px" }}
         />
       ))}
     </Stack>

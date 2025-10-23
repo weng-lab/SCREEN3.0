@@ -1,18 +1,7 @@
 import React from "react";
-import Config from "../../../config.json";
+import Config from "common/config.json";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
-import {
-  CA_CTCF,
-  CA_H3K4me3,
-  CA_TF,
-  CA_only,
-  PLS,
-  TF_only,
-  dELS,
-  pELS,
-  CTCF_Bound,
-  ELS,
-} from "../../../common/lib/colors";
+import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS, pELS, CTCF_Bound, ELS } from "../../../common/colors";
 import DownloadContentLayout from "./DownloadContentLayout";
 import { Assembly } from "./Annotations";
 
@@ -85,8 +74,8 @@ const classDownloads: {
       href: Config.Downloads.HumanSilencers,
       label: "Silencer Sets (.tar.gz)",
       fileSize: "14.3 MB (unzipped)",
-      bordercolor: "gray"
-    }
+      bordercolor: "gray",
+    },
   ],
   mm10: [
     {
@@ -156,9 +145,7 @@ interface NewAnnotationsByClassProps {
   assembly: Assembly;
 }
 
-const AnnotationsByClass: React.FC<NewAnnotationsByClassProps> = ({
-  assembly,
-}) => {
+const AnnotationsByClass: React.FC<NewAnnotationsByClassProps> = ({ assembly }) => {
   return (
     <DownloadContentLayout title="cCREs by Class (.bed)">
       {classDownloads[assembly].map((item) => (

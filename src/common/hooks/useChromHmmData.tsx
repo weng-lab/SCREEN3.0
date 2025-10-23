@@ -1,12 +1,13 @@
-"use client"
+"use client";
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 /**
  * @todo we are relying on this transient dependency that is only present because of umms-gb. If we remove umms-gb this will break
  */
 import { BigBedData } from "bigwig-reader";
-import { gql } from "types/generated/gql";
-import { Assembly, GenomicRange } from "types/globalTypes";
+import { gql } from "common/types/generated/gql";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
+import Config from "common/config.json";
 
 export const BIG_QUERY = gql(`
   query BigRequests($bigRequests: [BigRequest!]!) {
@@ -44,7 +45,7 @@ export const CHROM_HMM_STATES = [
   "Tx",
 ] as const;
 
-export type ChromHmmState = typeof CHROM_HMM_STATES[number]
+export type ChromHmmState = (typeof CHROM_HMM_STATES)[number];
 
 export const stateDetails: Record<ChromHmmState, { description: string; stateno: string; color: string }> = {
   ["TssFlnk"]: { description: "Flanking TSS", stateno: "E1", color: "#FF4500" },
@@ -92,43 +93,43 @@ export const stateDetails: Record<ChromHmmState, { description: string; stateno:
   ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
 };
 
-export function getChromHmmStateDisplayname(state: ChromHmmState){
+export function getChromHmmStateDisplayname(state: ChromHmmState) {
   return stateDetails[state].description + " (" + stateDetails[state].stateno + ")";
 }
 
 export const ChromHmmTissues = [
-    "adipose",
-    "adrenal gland",
-    "blood",
-    "blood vessel",
-    "bone",
-    "bone marrow",
-    "brain",
-    "breast",
-    "connective tissue",
-    "embryo",
-    "esophagus",
-    "heart",
-    "large intestine",
-    "liver",
-    "lung",
-    "muscle",
-    "nerve",
-    "ovary",
-    "pancreas",
-    "paraythroid gland",
-    "penis",
-    "placenta",
-    "prostate",
-    "skin",
-    "small intestine",
-    "spleen",
-    "stomach",
-    "testis",
-    "thymus",
-    "thyroid",
-    "uterus",
-    "vagina"
+  "adipose",
+  "adrenal gland",
+  "blood",
+  "blood vessel",
+  "bone",
+  "bone marrow",
+  "brain",
+  "breast",
+  "connective tissue",
+  "embryo",
+  "esophagus",
+  "heart",
+  "large intestine",
+  "liver",
+  "lung",
+  "muscle",
+  "nerve",
+  "ovary",
+  "pancreas",
+  "paraythroid gland",
+  "penis",
+  "placenta",
+  "prostate",
+  "skin",
+  "small intestine",
+  "spleen",
+  "stomach",
+  "testis",
+  "thymus",
+  "thyroid",
+  "uterus",
+  "vagina",
 ];
 
 export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = "GRCh38") {
@@ -173,7 +174,7 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
         setChromhmmTracksWithTissue(flatTracks);
       } catch (error) {
         console.error("Error fetching ChromHMM data:", error);
-        setError(true)
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -183,25 +184,27 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
   }, [assembly]);
 
   // BigQuery for the table data
-  const { data: bigQueryData, loading: bigQueryLoading, error: bigQueryError } =
-    useQuery(BIG_QUERY, {
-      variables: {
-        bigRequests:
-          chromHmmTracksWithTissue?.map((track) => ({
-            chr1: coordinates.chromosome!,
-            start: coordinates.start,
-            end: coordinates.end,
-            preRenderedWidth: 1400,
-            url: track.url,
-          })) || [],
-      },
-      skip: !chromHmmTracksWithTissue || assembly !== "GRCh38",
-    });
+  const {
+    data: bigQueryData,
+    loading: bigQueryLoading,
+    error: bigQueryError,
+  } = useQuery(BIG_QUERY, {
+    variables: {
+      bigRequests:
+        chromHmmTracksWithTissue?.map((track) => ({
+          chr1: coordinates.chromosome!,
+          start: coordinates.start,
+          end: coordinates.end,
+          preRenderedWidth: 1400,
+          url: track.url,
+        })) || [],
+    },
+    skip: !chromHmmTracksWithTissue || assembly !== "GRCh38",
+  });
 
   // Process the data for the table view
   const processedTableData = useMemo(() => {
-    if (!bigQueryData || !chromHmmTracksWithTissue || bigQueryLoading)
-      return undefined;
+    if (!bigQueryData || !chromHmmTracksWithTissue || bigQueryLoading) return undefined;
 
     return bigQueryData.bigRequests.map((b, i) => {
       const f = b.data[0] as BigBedData;
@@ -221,12 +224,12 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
     tracks,
     processedTableData,
     loading: loading || bigQueryLoading,
-    error: error || bigQueryError
+    error: error || bigQueryError,
   };
 }
 
 async function getTracks() {
-  const response = await fetch("https://downloads.wenglab.org/humanchromhmmchipseq.tsv");
+  const response = await fetch(Config.Downloads.HumanChromHMM);
   const text = await response.text();
 
   const chromHMMData: Record<string, ChromTrack[]> = {};

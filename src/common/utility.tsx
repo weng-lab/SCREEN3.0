@@ -1,10 +1,12 @@
-import { Assembly, GenomicRange } from "types/globalTypes";
-import { cellCategoryColors, cellCategoryDisplaynames, studyLinks } from "./consts";
-import { Typography, TypographyOwnProps, Link, LinkProps } from "@mui/material";
-import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "./EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
+import { Typography, TypographyOwnProps } from "@mui/material";
+import {
+  AnyOpenEntity,
+  CandidateOpenEntity,
+  isValidOpenEntity,
+} from "./components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
-import { Launch } from "@mui/icons-material";
-import { AnyTabRoute, AnyEntityType, EntityRoute, EntityType, validEntityTypes, entityTabsConfig, isValidRouteForEntity } from "./EntityDetails/entityTabsConfig";
+import { AnyTabRoute, AnyEntityType, validEntityTypes, entityTabsConfig } from "./entityTabsConfig";
 
 export function getClassDisplayname(input: string) {
   switch (input) {
@@ -33,16 +35,16 @@ export function getClassDisplayname(input: string) {
 
 export const capitalizeFirstLetter = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
+};
 
 export function capitalizeWords(input: string): string {
-  return input.replace(/\b\w/g, char => char.toUpperCase());
+  return input.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 export const truncateString = (input: string, maxLength: number) => {
   if (input.length <= maxLength) return input;
-  return input.slice(0, maxLength - 3) + '...';
-}
+  return input.slice(0, maxLength - 3) + "...";
+};
 
 /**
  * Very dumb parser for genomic range. No input checking. Assumes proper formatting and no commas in values.
@@ -82,46 +84,19 @@ export function formatPortal(subpath: string): string {
     case "region":
       return "Region";
     case "gwas":
-        return "GWAS Study";
+      return "GWAS Study";
     default:
       return null;
   }
 }
 
 /**
- * 
+ *
  * @param region GenomicRange
  * @returns formatted string representing the range
  */
-export function formatGenomicRange(region: GenomicRange){
+export function formatGenomicRange(region: GenomicRange) {
   return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
-}
-
-/**
- *
- * @param cell use ```lineage``` field of return data
- * @returns the corresponding color for that cell category, or black if not found
- */
-export function getCellCategoryColor(cell: string): string {
-  return cellCategoryColors[cell] || "#000000";
-}
-
-/**
- *
- * @param cell use ```lineage``` field of return data
- * @returns the corresponding celltype display name for the category, or "Unknown Celltype if not found"
- */
-export function getCellCategoryDisplayname(cell: string) {
-  return cellCategoryDisplaynames[cell] || "Unknown Celltype";
-}
-
-/**
- *
- * @param study use ```study``` field of return data
- * @returns The corresponding DOI link for the study, or "Unknown Study" if not found
- */
-export function getStudyLink(study: string) {
-  return studyLinks[study] || "Unknown Study";
 }
 
 /**
@@ -129,13 +104,13 @@ export function getStudyLink(study: string) {
  */
 export function toScientificNotation(num: number, sigFigs?: number) {
   // Convert the number to scientific notation using toExponential
-  let scientific = num.toExponential(sigFigs ?? undefined);
+  const scientific = num.toExponential(sigFigs ?? undefined);
 
   // Split the scientific notation into the coefficient and exponent parts
   let [coefficient, exponent] = scientific.split("e");
 
   // Format the exponent part
-  let expSign = exponent[0];
+  const expSign = exponent[0];
   exponent = exponent.slice(1);
 
   // Convert the exponent to a superscript string
@@ -153,8 +128,8 @@ export function toScientificNotation(num: number, sigFigs?: number) {
 
 /**
  * @param num Number to convert to Sci Notation
- * @param variant MUI Typography Variant to be used
  * @param sigFigs Number of desired significant figures
+ * @param typographyProps Props spread onto Typography element
  * @returns
  */
 export function toScientificNotationElement(num: number, sigFigs: number, typographyProps?: TypographyOwnProps) {
@@ -163,8 +138,8 @@ export function toScientificNotationElement(num: number, sigFigs: number, typogr
   }
 
   // Convert the number to scientific notation using toExponential
-  let scientific = num.toExponential(sigFigs);
-  let [coefficient, exponent] = scientific.split("e");
+  const scientific = num.toExponential(sigFigs);
+  const [coefficient, exponent] = scientific.split("e");
 
   return (
     <Typography {...typographyProps}>
@@ -203,9 +178,7 @@ export function calcDistCcreToTSS(
     };
   });
 
-  return results.reduce((closest, curr) =>
-    curr.distance < closest.distance ? curr : closest
-  );
+  return results.reduce((closest, curr) => (curr.distance < closest.distance ? curr : closest));
 }
 
 export function ccreOverlapsTSS(
@@ -214,10 +187,10 @@ export function ccreOverlapsTSS(
   strand: "+" | "-"
 ): boolean {
   const distances: number[] = transcripts.map((transcript) => {
-    const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end
-    return calcDistRegionToRegion(region, {start: tss, end: tss})
-  })
-  
+    const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end;
+    return calcDistRegionToRegion(region, { start: tss, end: tss });
+  });
+
   return distances.includes(0);
 }
 
@@ -271,7 +244,6 @@ export function calcSignedDistRegionToRegion(
   }
 }
 
-
 /**
  *
  * @param coord1
@@ -291,8 +263,8 @@ export function calcDistRegionToRegion(
   }
 }
 
-const openEntityListDelimiter = ','
-const openEntityDelimiter = '/'
+const openEntityListDelimiter = ",";
+const openEntityDelimiter = "/";
 
 /**
  *
@@ -310,9 +282,9 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): A
         entityID,
         tab: decodeTabRoute(encodedTab),
       };
-      if (isValidOpenEntity(decodedEntity)){
-        return decodedEntity
-      } else return null
+      if (isValidOpenEntity(decodedEntity)) {
+        return decodedEntity;
+      } else return null;
     })
     .filter((x) => x !== null && x.entityID); // filter out any invalid
 }
@@ -325,47 +297,46 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): A
 export function compressOpenEntitiesToURL(openEntities: AnyOpenEntity[]): string {
   return compressToEncodedURIComponent(
     openEntities
-      .map((x) => [assemblyEncoding[x.assembly], encodeEntityType(x.entityType), x.entityID,  encodeTabRoute(x.tab)].join(openEntityDelimiter))
+      .map((x) =>
+        [assemblyEncoding[x.assembly], encodeEntityType(x.entityType), x.entityID, encodeTabRoute(x.tab)].join(
+          openEntityDelimiter
+        )
+      )
       .join(openEntityListDelimiter)
   );
 }
 
 const encodeEntityType = (entity: AnyEntityType): string => {
-  const allEntityTypes = [...new Set(Object.values(validEntityTypes).flat())]
-  return String(allEntityTypes.indexOf(entity))
-}
+  const allEntityTypes = [...new Set(Object.values(validEntityTypes).flat())];
+  return String(allEntityTypes.indexOf(entity));
+};
 
 const decodeEntityType = (key: string): AnyEntityType => {
-  const allEntityTypes = [...new Set(Object.values(validEntityTypes).flat())]
-  return allEntityTypes[+key]
-}
+  const allEntityTypes = [...new Set(Object.values(validEntityTypes).flat())];
+  return allEntityTypes[+key];
+};
 
 const encodeTabRoute = (tab: AnyTabRoute): string => {
-  const allTabRoutes: AnyTabRoute[] = Object.values(entityTabsConfig).map(assemblyConfig => Object.values(assemblyConfig)).flat(2).map(x => x.route)
-  return String(allTabRoutes.indexOf(tab))
-}
+  const allTabRoutes: AnyTabRoute[] = Object.values(entityTabsConfig)
+    .map((assemblyConfig) => Object.values(assemblyConfig))
+    .flat(2)
+    .map((x) => x.route);
+  return String(allTabRoutes.indexOf(tab));
+};
 
 const decodeTabRoute = (key: string): AnyTabRoute => {
-  const allTabRoutes: AnyTabRoute[] = Object.values(entityTabsConfig).map(assemblyConfig => Object.values(assemblyConfig)).flat(2).map(x => x.route)
-  return allTabRoutes[+key]
-}
+  const allTabRoutes: AnyTabRoute[] = Object.values(entityTabsConfig)
+    .map((assemblyConfig) => Object.values(assemblyConfig))
+    .flat(2)
+    .map((x) => x.route);
+  return allTabRoutes[+key];
+};
 
-const assemblyEncoding: {[key in Assembly]: string} = {
-  'GRCh38': 'h',
-  'mm10': 'm'
-}
+const assemblyEncoding: { [key in Assembly]: string } = {
+  GRCh38: "h",
+  mm10: "m",
+};
 
-const assemblyDecoding: {[key: string]: Assembly} = Object.fromEntries(
+const assemblyDecoding: { [key: string]: Assembly } = Object.fromEntries(
   Object.entries(assemblyEncoding).map(([entity, encoding]: [Assembly, string]) => [encoding, entity])
 );
-
-export const ccreClassDescriptions: Record<string, string> = {
-  PLS: "Promoter",
-  pELS: "Proximal Enhancer",
-  dELS: "Distal Enhancer",
-  "CA-H3K4me3": "CA-H3K4me3",
-  "CA-CTCF": "CA-CTCF",
-  "CA-TF": "CA-TF",
-  CA: "CA",
-  TF: "TF",
-};

@@ -1,8 +1,7 @@
 import { ApolloError, useQuery } from "@apollo/client";
-import { AnyEntityType } from "common/EntityDetails/entityTabsConfig";
-import { gql } from "types/generated/gql";
-import { GetGwasStudiesQuery } from "types/generated/graphql";
-
+import { AnyEntityType } from "common/entityTabsConfig";
+import { gql } from "common/types/generated/gql";
+import { GetGwasStudiesQuery } from "common/types/generated/graphql";
 
 const GWAS_STUDY_Query = gql(`
   query getGWASStudies($study: [String]){  

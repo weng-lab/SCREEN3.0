@@ -7,17 +7,16 @@ import {
   GridColDef,
   Table,
   GRID_CHECKBOX_SELECTION_COL_DEF,
-  GridSortModel, 
-  GridSortDirection
+  GridSortModel,
+  GridSortDirection,
 } from "@weng-lab/ui-components";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
-import { capitalizeFirstLetter } from "common/utility"
+import { capitalizeFirstLetter } from "common/utility";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 
-export type GeneExpressionTableProps = GeneExpressionProps &
-  SharedGeneExpressionPlotProps
+export type GeneExpressionTableProps = GeneExpressionProps & SharedGeneExpressionPlotProps;
 
 const GeneExpressionTable = ({
   geneData,
@@ -38,18 +37,14 @@ const GeneExpressionTable = ({
   const transformedData: PointMetadata[] = useMemo(() => {
     if (!rows.length) return [];
     const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
-    const getTPM = (d: PointMetadata) =>
-      d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
+    const getTPM = (d: PointMetadata) => d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
 
     let result = rows;
 
     // Sort based on viewBy
     switch (viewBy) {
       case "byExperimentTPM": {
-        result.sort((a, b) =>
-          (getTPM(b)) -
-          (getTPM(a))
-        );
+        result.sort((a, b) => getTPM(b) - getTPM(a));
         break;
       }
 
@@ -66,18 +61,20 @@ const GeneExpressionTable = ({
           const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
           if (maxDiff !== 0) return maxDiff;
           return getTPM(b) - getTPM(a);
-        })
+        });
         break;
       }
 
       case "byTissueMaxTPM": {
-
-        const maxValuesByTissue: Record<string, number> = result.reduce((acc, item) => {
-          const tissue = getTissue(item);
-          const tpm = getTPM(item);
-          acc[tissue] = Math.max(acc[tissue] || -Infinity, tpm);
-          return acc;
-        }, {} as Record<string, number>);
+        const maxValuesByTissue: Record<string, number> = result.reduce(
+          (acc, item) => {
+            const tissue = getTissue(item);
+            const tpm = getTPM(item);
+            acc[tissue] = Math.max(acc[tissue] || -Infinity, tpm);
+            return acc;
+          },
+          {} as Record<string, number>
+        );
 
         result = result.filter((item) => {
           const tpm = getTPM(item);
@@ -153,7 +150,7 @@ const GeneExpressionTable = ({
       sortable: false,
       disableColumnMenu: true,
       valueGetter: (_, row) => {
-        return (row.accession.split(" ")[0])
+        return row.accession.split(" ")[0];
       },
       renderCell: (params) => {
         return (
@@ -167,7 +164,9 @@ const GeneExpressionTable = ({
 
   const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
     const newIds = Array.from(ids.ids);
-    const selectedRows = newIds.map((id) => transformedData.find((row) => row.gene_quantification_files[0].accession === id));
+    const selectedRows = newIds.map((id) =>
+      transformedData.find((row) => row.gene_quantification_files[0].accession === id)
+    );
     setSelected(selectedRows);
   };
 
@@ -199,16 +198,12 @@ const GeneExpressionTable = ({
   };
 
   const AutoSortToolbar = useMemo(() => {
-    return (
-      <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort}/>
-    )
-  }, [autoSort])
+    return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
+  }, [autoSort]);
 
-  const initialSort: GridSortModel = useMemo(() =>
-    [{ field: "tpm", sort: "desc" as GridSortDirection }],
-    []);
+  const initialSort: GridSortModel = useMemo(() => [{ field: "tpm", sort: "desc" as GridSortDirection }], []);
 
-  // handle auto sorting 
+  // handle auto sorting
   useEffect(() => {
     const api = apiRef?.current;
     if (!api) return;
@@ -254,7 +249,10 @@ const GeneExpressionTable = ({
         checkboxSelection
         getRowId={(row) => row.gene_quantification_files[0].accession} //needed to match up data with the ids returned by onRowSelectionModelChange
         onRowSelectionModelChange={handleRowSelectionModelChange}
-        rowSelectionModel={{ type: 'include', ids: new Set(selected.map((x) => x.gene_quantification_files[0].accession)) }}
+        rowSelectionModel={{
+          type: "include",
+          ids: new Set(selected.map((x) => x.gene_quantification_files[0].accession)),
+        }}
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         // -- End Selection Props --
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger

@@ -1,22 +1,29 @@
-
-
-import { Dialog, DialogTitle, DialogContent, RadioGroup, FormControlLabel, Radio, IconButton, DialogActions, Button, Stack, Typography } from "@mui/material";
-import { Close, CloseOutlined } from "@mui/icons-material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  IconButton,
+  DialogActions,
+  Button,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { CloseOutlined } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
 interface Props {
-  ldblock: { ldblock: number, chromosome: string, start: number, end: number };
-  ldblockList: { ldblock: number, chromosome: string, start: number, end: number }[];
+  ldblock: { ldblock: number; chromosome: string; start: number; end: number };
+  ldblockList: { ldblock: number; chromosome: string; start: number; end: number }[];
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onLdBlockSelect: (ldblock: { ldblock: number, chromosome: string, start: number, end: number }) => void;
-
+  onLdBlockSelect: (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => void;
 }
 
 const SelectLdBlock: React.FC<Props> = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }) => {
-  console.log("ldblock",ldblock)  
-  const [selectedldblock, setSelectedLdBlock] = useState(JSON.stringify(ldblock));   
-
+  const [selectedldblock, setSelectedLdBlock] = useState(JSON.stringify(ldblock));
 
   useEffect(() => {
     if (open && ldblock) {
@@ -24,22 +31,20 @@ const SelectLdBlock: React.FC<Props> = ({ ldblock, ldblockList, open, setOpen, o
     }
   }, [open, ldblock]);
 
-    const handleSubmit = () => {
-        onLdBlockSelect(JSON.parse(selectedldblock)); // send to parent
-        setOpen(false) // close dialog
-      };      
-    return (
+  const handleSubmit = () => {
+    onLdBlockSelect(JSON.parse(selectedldblock)); // send to parent
+    setOpen(false); // close dialog
+  };
+  return (
     <Dialog open={open} onClose={() => setOpen(false)} disableRestoreFocus>
       <Stack direction={"row"} justifyContent={"space-between"}>
-      <DialogTitle>Select LD Block</DialogTitle>    
-      <IconButton size="large" onClick={() => setOpen(false)} sx={{ mr: 1 }}>
-        <CloseOutlined fontSize="inherit" />
-      </IconButton>     
-      </Stack>   
+        <DialogTitle>Select LD Block</DialogTitle>
+        <IconButton size="large" onClick={() => setOpen(false)} sx={{ mr: 1 }}>
+          <CloseOutlined fontSize="inherit" />
+        </IconButton>
+      </Stack>
       <DialogContent>
-        <RadioGroup
-          value={(selectedldblock)}
-          onChange={(e) => setSelectedLdBlock((e.target.value))}        >
+        <RadioGroup value={selectedldblock} onChange={(e) => setSelectedLdBlock(e.target.value)}>
           {ldblockList.map((m) => (
             <FormControlLabel
               key={m.ldblock}
@@ -57,13 +62,8 @@ const SelectLdBlock: React.FC<Props> = ({ ldblock, ldblockList, open, setOpen, o
           ))}
         </RadioGroup>
       </DialogContent>
-      <DialogActions >
-        <Button
-          sx={{ textTransform: "none" }}
-          variant="contained"
-          
-          onClick={handleSubmit}
-        >
+      <DialogActions>
+        <Button sx={{ textTransform: "none" }} variant="contained" onClick={handleSubmit}>
           Submit
         </Button>
       </DialogActions>

@@ -1,5 +1,5 @@
-import { EntityType } from 'common/EntityDetails/entityTabsConfig';
-import { useEffect, useState } from 'react';
+import { EntityType } from "common/entityTabsConfig";
+import { useEffect, useState } from "react";
 
 interface Frequency {
   population: string;
@@ -18,14 +18,17 @@ export interface UseSnpFrequenciesResult {
   error: string | null;
 }
 
-export function useSnpFrequencies(rsids: string[], entityType: EntityType<"GRCh38"> = "variant"): UseSnpFrequenciesResult {
+export function useSnpFrequencies(
+  rsids: string[],
+  entityType: EntityType<"GRCh38"> = "variant"
+): UseSnpFrequenciesResult {
   const [data, setData] = useState<{ [rsid: string]: SnpFrequencies | null }>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if ((entityType !== undefined) && entityType !== 'variant') return;
-    
+    if (entityType !== undefined && entityType !== "variant") return;
+
     if (data || loading || !rsids || rsids.length === 0) return; // Avoid fetching if no rsids are provided
 
     // Prevent multiple fetch calls for the same rsid
@@ -81,7 +84,7 @@ export function useSnpFrequencies(rsids: string[], entityType: EntityType<"GRCh3
 
         setData(results); // Update state with new results
       } catch (err: any) {
-        setError(err.message || 'Unknown error');
+        setError(err.message || "Unknown error");
         setData({});
       } finally {
         setLoading(false);

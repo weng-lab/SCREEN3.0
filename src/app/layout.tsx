@@ -4,10 +4,10 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Analytics } from "@vercel/analytics/next";
 import { ApolloWrapper } from "common/apollo/apollo-wrapper";
 import Footer from "common/components/Footer";
-import Header from "common/components/Header";
-import { OpenEntitiesContextProvider } from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
-import { MenuControlProvider } from "common/MenuContext";
-import MuiXLicense from "common/MuiXLicense";
+import Header from "common/components/Header/Header";
+import { OpenEntitiesContextProvider } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { MenuControlProvider } from "common/components/MenuContext";
+import MuiXLicense from "common/components/MuiXLicense";
 import { Suspense } from "react";
 import { theme } from "./theme";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
@@ -16,7 +16,6 @@ export const metadata = {
   title: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
   description: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
 };
-
 
 if (process.env.NODE_ENV !== "production") {
   loadDevMessages();

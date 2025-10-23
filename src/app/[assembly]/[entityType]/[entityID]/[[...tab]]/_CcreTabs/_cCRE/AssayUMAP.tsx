@@ -1,10 +1,10 @@
 import { Box, Stack } from "@mui/system";
 import { Point, ScatterPlot } from "@weng-lab/visualization";
 import { SharedAssayViewPlotProps } from "./AssayView";
-import { tissueColors } from "common/lib/colors";
+import { tissueColors } from "common/colors";
 import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
-import {  useCallback, useMemo, useState } from "react";
-import { gql } from "types/generated";
+import { useCallback, useMemo, useState } from "react";
+import { gql } from "common/types/generated";
 import { useQuery } from "@apollo/client";
 import {
   FormControl,
@@ -18,9 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { LinearScaleConfig, scaleLinear } from "@visx/scale";
-import {
-  interpolateRdYlBu,
-} from "d3-scale-chromatic";
+import { interpolateRdYlBu } from "d3-scale-chromatic";
 import UMAPLegend from "../../../../../../../common/components/UMAPLegend";
 
 const BIOSAMPLE_UMAP = gql(`
@@ -53,23 +51,16 @@ const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: Assay
   );
 };
 
-const AssayUMAP = ({
-  entity,
-  rows,
-  assay,
-  selected,
-  setSelected,
-  ref
-}: SharedAssayViewPlotProps) => {
+const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAssayViewPlotProps) => {
   const [colorScheme, setColorScheme] = useState<"score" | "organ/tissue" | "sampleType">("score");
-  const [scoreColorMode, setScoreColorMode] = useState<"active"| "all">("active")
+  const [scoreColorMode, setScoreColorMode] = useState<"active" | "all">("active");
 
   const handleColorSchemeChange = (e: SelectChangeEvent<"score" | "organ/tissue" | "sampleType">) => {
     setColorScheme(e.target.value);
   };
 
   const handleScoreColorModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setScoreColorMode(e.target.value as "active"| "all");
+    setScoreColorMode(e.target.value as "active" | "all");
   };
 
   const {
@@ -84,7 +75,7 @@ const AssayUMAP = ({
   });
 
   const colorScale = useMemo(() => {
-    let scaleConfig: Partial<Omit<LinearScaleConfig<string>, "type">>
+    let scaleConfig: Partial<Omit<LinearScaleConfig<string>, "type">>;
     switch (scoreColorMode) {
       case "active":
         scaleConfig = {
@@ -169,11 +160,7 @@ const AssayUMAP = ({
           </FormControl>
           {colorScheme === "score" && (
             <FormControl>
-              <RadioGroup
-                value={scoreColorMode}
-                onChange={handleScoreColorModeChange}
-                row
-              >
+              <RadioGroup value={scoreColorMode} onChange={handleScoreColorModeChange} row>
                 <FormControlLabel value="active" control={<Radio />} label="Active Only" />
                 <FormControlLabel value="all" control={<Radio />} label="All" />
               </RadioGroup>

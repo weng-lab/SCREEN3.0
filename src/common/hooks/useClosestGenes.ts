@@ -86,7 +86,8 @@ export default function useClosestgenes(accession: string, assembly: string) {
         type:
           g && g.gene_type === "lncRNA"
             ? g.gene_type
-            : g && g.gene_type
+            : g &&
+              g.gene_type
                 .replaceAll("_", " ")
                 .split(" ")
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

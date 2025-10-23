@@ -17,7 +17,7 @@ const CCRE_ICRE_QUERY = gql(`query cCREAutocompleteQuery(
 export default function useLinkedICREs(geneid: string) {
   const { data, loading, error } = useQuery(LINKED_ICRE_QUERY, {
     variables: { geneid: [geneid.split(".")[0]], assembly: "grch38" },
-    skip: !geneid
+    skip: !geneid,
   });
 
   /**
@@ -29,8 +29,12 @@ export default function useLinkedICREs(geneid: string) {
     loading: ccreloading,
     error: ccreerror,
   } = useQuery(CCRE_ICRE_QUERY, {
-    variables: { assembly: "grch38", includeiCREs: true, accession: [...new Set(data?.linkedcCREs.map((l) => l.accession))]  },
-    skip: loading || !data || (data && data.linkedcCREs.length === 0 ),
+    variables: {
+      assembly: "grch38",
+      includeiCREs: true,
+      accession: [...new Set(data?.linkedcCREs.map((l) => l.accession))],
+    },
+    skip: loading || !data || (data && data.linkedcCREs.length === 0),
   });
 
   const cCREDetails: { [key: string]: boolean } = {};
@@ -39,12 +43,16 @@ export default function useLinkedICREs(geneid: string) {
       cCREDetails[c.accession] = c.isiCRE;
     });
   }
-  return { data: data?.linkedcCREs.map(l=>{
-    return {
-      ...l,
-      isiCRE: cCREDetails && cCREDetails[l.accession]
-    }
-  }) as LinkedICREInfo[], loading, error };
+  return {
+    data: data?.linkedcCREs.map((l) => {
+      return {
+        ...l,
+        isiCRE: cCREDetails && cCREDetails[l.accession],
+      };
+    }) as LinkedICREInfo[],
+    loading,
+    error,
+  };
 }
 
 /**

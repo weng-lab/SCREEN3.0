@@ -1,32 +1,28 @@
 "use client";
 import { CircularProgress, Typography } from "@mui/material";
-import GenomeBrowserView from "common/gbview/genomebrowserview";
+import GenomeBrowserView from "common/components/gbview/GenomeBrowserView";
 import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import { isValidAssembly } from "types/globalTypes";
-import {
-  getComponentForEntity,
-  isValidEntityType,
-  isValidRouteForEntity,
-} from "common/EntityDetails/entityTabsConfig";
+import { isValidAssembly } from "common/types/globalTypes";
+import { getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
 import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
 import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
 import GeneLinkedCcres from "./_GeneTabs/_cCREs/GeneLinkedCcres";
 import VariantInfo from "./_SnpTabs/_Variant/Variant";
-import IntersectingGenes from "common/components/IntersectingGenes";
-import IntersectingSNPs from "common/components/IntersectingSNPs";
+import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
+import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
-import IntersectingCcres from "common/components/IntersectingCcres";
+import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
 import EQTLs from "common/components/EQTLTables";
-import CcreGWASStudySNPs from "./_GwasTabs/_Ccre/CcreGWASStudySNPs";
+import CcreGWASStudySNPs from "./_GwasTabs/_Ccre/GWASStudyCcres";
 import { GWASStudyGenes } from "./_GwasTabs/_Gene/GWASStudyGenes";
 import { GWASStudySNPs } from "./_GwasTabs/_Variant/GWASStudySNPs";
 import BiosampleEnrichment from "./_GwasTabs/_BiosampleEnrichment/BiosampleEnrichment";
 import {
   CandidateOpenEntity,
   isValidOpenEntity,
-} from "common/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+} from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import GWASGenomeBrowserView from "./_GwasTabs/_Browser/gwasgenomebrowserview";
 import VariantLinkedCcres from "./_SnpTabs/_cCREs/VariantLinkedCcres";
 import TranscriptExpression from "./_GeneTabs/_Transcript/TranscriptExpression";
@@ -100,10 +96,10 @@ export default function DetailsPage({
           data.__typename === "Gene"
             ? data.name
             : data.__typename === "SCREENSearchResult"
-            ? data.info.accession
-            : data.__typename === "SNP"
-            ? data.id
-            : null
+              ? data.info.accession
+              : data.__typename === "SNP"
+                ? data.id
+                : null
         }
         type={entityType}
         assembly={assembly}
@@ -142,15 +138,16 @@ export default function DetailsPage({
       const geneData = { data, loading, error } as useEntityMetadataReturn<"gene">;
 
       switch (tab) {
-        case "conservation": return <ComponentToRender entity={entity} />
+        case "conservation":
+          return <ComponentToRender entity={entity} />;
         case "":
           return <GeneExpression geneData={geneData} assembly={assembly} />;
         case "ccres":
-          return <GeneLinkedCcres geneData={geneData} assembly={assembly}/>;
+          return <GeneLinkedCcres geneData={geneData} assembly={assembly} />;
         case "variants":
           return <EQTLs data={geneData.data} entityType="gene" assembly={assembly} />;
         case "transcript-expression":
-          return <TranscriptExpression geneData={geneData}/>
+          return <TranscriptExpression geneData={geneData} />;
       }
       break;
     }

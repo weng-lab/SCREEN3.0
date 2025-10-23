@@ -1,8 +1,8 @@
 "use client";
-import EntityDetailsLayout from "common/EntityDetails/EntityDetailsLayout";
-import { isValidAssembly } from "types/globalTypes";
+import EntityDetailsLayout from "common/components/EntityDetails/EntityDetailsLayout";
+import { isValidAssembly } from "common/types/globalTypes";
 import { use } from "react";
-import { isValidEntityType } from "common/EntityDetails/entityTabsConfig";
+import { isValidEntityType } from "common/entityTabsConfig";
 
 export default function Layout({
   children,
@@ -11,7 +11,6 @@ export default function Layout({
   children: React.ReactNode;
   params: Promise<{ assembly: string; entityType: string; entityID: string }>;
 }) {
-  
   const { assembly, entityType, entityID } = use(params);
 
   if (!isValidAssembly(assembly)) {

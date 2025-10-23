@@ -1,17 +1,17 @@
-import { CodegenConfig } from '@graphql-codegen/cli';
-import Config from "./src/config.json"
+import { CodegenConfig } from "@graphql-codegen/cli";
+import Config from "./src/common/config.json";
 
 const config: CodegenConfig = {
   schema: Config.API.CcreAPI,
-  documents: ['src/**/*.{ts,tsx}'],
+  documents: ["src/**/*.{ts,tsx}"],
   generates: {
-    './src/types/generated/': {
-      preset: 'client',
+    "./src/common/types/generated/": {
+      preset: "client",
       plugins: [],
       presetConfig: {
-        gqlTagName: 'gql',
-      }
-    }
+        gqlTagName: "gql",
+      },
+    },
   },
   ignoreNoDocuments: true,
 };
