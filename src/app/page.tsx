@@ -8,6 +8,7 @@ import Image from "next/image"
 import MainSearch from "./landing/mainSearch";
 import PopularSearches from "./landing/popularSearches";
 import TrendingDatasets from "./landing/trendingDatasets";
+import ExploreBiosamples from "./landing/ExploreBiosamples";
 
 export default function Home() {
   const [assembly, setAssembly] = useState<"GRCh38" | "mm10">('GRCh38');
@@ -126,6 +127,12 @@ export default function Home() {
           Change the assembly above to see different examples.
         </Typography>
         <PopularSearches assembly={assembly} />
+      </Box>
+      <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
+        <Typography variant="h4" sx={{ fontWeight: 550, mb: 2 }}>
+          Explore Biosamples
+        </Typography>
+        <ExploreBiosamples />
       </Box>
       <Box width={"100%"} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"} sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}>
         <Grid
