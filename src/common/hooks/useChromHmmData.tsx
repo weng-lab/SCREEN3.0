@@ -7,7 +7,7 @@ import { useQuery } from "@apollo/client";
 import { BigBedData } from "bigwig-reader";
 import { gql } from "common/types/generated/gql";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
-import Config from "config.json";
+import Config from "common/config.json";
 
 export const BIG_QUERY = gql(`
   query BigRequests($bigRequests: [BigRequest!]!) {
