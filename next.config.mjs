@@ -13,18 +13,14 @@ const nextConfig = {
         destination: "/:assembly/gwas/:study/biosample_enrichment",
         permanent: false,
       },
-      //redirect /:entityType was redirect static files, like the images in public
-      //Now excludes routes that look like files from the redirect
-      // {
-      //   source: '/:entityType((?!.*\\..*).+)',
-      //   destination: '/',
-      //   permanent: false
-      // }
     ];
   },
+  images: {
+    remotePatterns: [new URL("https://www.ncbi.nlm.nih.gov/**"), new URL("https://geneanalytics.genecards.org/**")],
+  },
   eslint: {
-    ignoreDuringBuilds: true
-  }
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;

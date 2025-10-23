@@ -1,58 +1,48 @@
-import { Grid, Skeleton, Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
-import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
-import { GenomicRange } from "common/types/globalTypes";
+import LinkedElements, { TableDef } from "common/components/linkedElements";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import useClosestgenes from "common/hooks/useClosestGenes";
+import useClosestGenes from "common/hooks/useClosestGenes";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-export default function CcreLinkedGenes({ accession, coordinates }: { accession: string; coordinates: GenomicRange }) {
-  const { data: linkedGenes, loading, error } = useLinkedGenes([accession]);
+export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
+  const isHuman = entity.assembly === "GRCh38";
+
   const {
-    data: closestGenes,
-    loading: closestGeneLoading,
-    error: closestGeneError,
-  } = useClosestgenes(accession, "GRCh38");
+    data: linkedGenes,
+    loading: loadingLinkedGenes,
+    error: errorLinkedGenes,
+  } = useLinkedGenes([entity.entityID], !isHuman);
 
-  if (loading || closestGeneLoading) {
-    const NUM_TABLES = 5;
-    return (
-      <Grid container spacing={2}>
-        {[...Array(NUM_TABLES)].map((_, i) => (
-          <Grid size={12} key={i}>
-            <Skeleton variant="rounded" width="100%" height={100} />
-          </Grid>
-        ))}
-      </Grid>
-    );
-  }
-
-  if (error || closestGeneError) {
-    return <Typography>Error: {error?.message || closestGeneError?.message}</Typography>;
-  }
+  const {
+    data: dataClosest,
+    loading: loadingClosest,
+    error: errorClosest,
+  } = useClosestGenes(entity.entityID, entity.assembly);
 
   // make types for the data
   const HiCLinked = linkedGenes
-    .filter((x: LinkedGeneInfo) => x.assay === "Intact-HiC")
+    ?.filter((x: LinkedGeneInfo) => x.assay === "Intact-HiC")
     .map((x: LinkedGeneInfo, index: number) => ({
       ...x,
       id: index.toString(),
     }));
   const ChIAPETLinked = linkedGenes
-    .filter((x: LinkedGeneInfo) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
+    ?.filter((x: LinkedGeneInfo) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
     .map((x: LinkedGeneInfo, index: number) => ({
       ...x,
       id: index.toString(),
     }));
   const crisprLinked = linkedGenes
-    .filter((x: LinkedGeneInfo) => x.method === "CRISPR")
+    ?.filter((x: LinkedGeneInfo) => x.method === "CRISPR")
     .map((x: LinkedGeneInfo, index: number) => ({
       ...x,
       id: index.toString(),
     }));
   const eqtlLinked = linkedGenes
-    .filter((x: LinkedGeneInfo) => x.method === "eQTLs")
+    ?.filter((x: LinkedGeneInfo) => x.method === "eQTLs")
     .map((x: LinkedGeneInfo, index: number) => ({
       ...x,
       id: index.toString(),
@@ -66,6 +56,8 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: "No intact Hi-C loops overlap this cCRE and the promoter of a gene",
+      loading: loadingLinkedGenes,
+      error: !!errorLinkedGenes,
     },
     {
       label: "ChIA-PET Interactions",
@@ -74,6 +66,8 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       sortColumn: "score",
       sortDirection: "desc",
       emptyTableFallback: "No ChIA-PET interactions overlap this cCRE and the promoter of a gene",
+      loading: loadingLinkedGenes,
+      error: !!errorLinkedGenes,
     },
     {
       label: "CRISPRi-FlowFISH",
@@ -82,6 +76,8 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: "This cCRE was not targeted in a CRISPRi-FlowFISH experiment",
+      loading: loadingLinkedGenes,
+      error: !!errorLinkedGenes,
     },
     {
       label: "eQTLs",
@@ -90,6 +86,8 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: "This cCRE does not overlap a variant associated with significant changes in gene expression",
+      loading: loadingLinkedGenes,
+      error: !!errorLinkedGenes,
     },
   ];
 
@@ -117,12 +115,14 @@ export default function CcreLinkedGenes({ accession, coordinates }: { accession:
   return (
     <Stack spacing={2}>
       <Table
-        rows={closestGenes}
+        rows={dataClosest}
         columns={closestGenesCols}
         label="Closest Genes"
         emptyTableFallback={"No closest genes found"}
+        loading={loadingClosest}
+        error={!!errorClosest}
       />
-      <LinkedElements tables={tables} />
+      {isHuman && <LinkedElements tables={tables} />}
     </Stack>
   );
 }

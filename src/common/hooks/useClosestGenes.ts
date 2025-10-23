@@ -44,7 +44,7 @@ query geneDataQuery($assembly: String!,$name: [String], $version: Int) {
  
 `);
 
-export default function useClosestgenes(accession: string, assembly: string) {
+export default function useClosestGenes(accession: string, assembly: string) {
   const {
     data: closestGeneData,
     loading: closestGeneLoading,
@@ -63,7 +63,7 @@ export default function useClosestgenes(accession: string, assembly: string) {
   } = useQuery(GENES_DATA_QUERY, {
     variables: {
       name: closestGeneData && closestGeneData.cCRESCREENSearch[0].nearestgenes.map((item: any) => item.gene),
-      version: 40,
+      version: assembly == "GRCh38" ? 40 : 25,
       assembly: assembly,
     },
     skip: closestGeneLoading || !closestGeneData || (closestGeneData && closestGeneData.cCRESCREENSearch.length === 0),

@@ -6,6 +6,7 @@ import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/
 import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionalCharacterization/FunctionalCharacterization";
 import { AdditionalChromatinSignatures } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_AdditionalChromatinSignatures/AdditionalChromatinSignatures";
 import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Convservation/GeneConservation";
+import CcreLinkedGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Genes/CcreLinkedGenes";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -235,8 +236,7 @@ const humanCcreTabs: readonly TabConfig<
     route: "genes",
     label: "Genes",
     iconPath: GeneIconPath,
-    //  component: CcreLinkedGenes ,
-    component: null,
+    component: CcreLinkedGenes,
   },
   {
     route: "variants",
@@ -371,12 +371,12 @@ const mouseCcreTabs: readonly TabConfig<
     iconPath: CcreIconPath,
     component: BiosampleActivity,
   },
-  // {
-  //   route: "genes",
-  //   label: "Genes",
-  //   iconPath: GeneIconPath,
-  //   component: () => <p>This should have Linked Genes for Mouse cCREs</p>,
-  // },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    component: CcreLinkedGenes,
+  },
   // {
   //   route: "variants",
   //   label: "Variant",

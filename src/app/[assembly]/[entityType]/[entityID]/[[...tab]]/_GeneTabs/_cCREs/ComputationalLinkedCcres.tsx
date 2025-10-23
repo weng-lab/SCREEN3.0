@@ -1,7 +1,7 @@
 import { Box, Grid, Skeleton } from "@mui/material";
 import useLinkedICREs, { LinkedICREInfo } from "common/hooks/useLinkedICREs";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "../../_CcreTabs/_Genes/columns";
-import LinkedElements, { TableDef } from "common/components/linkedElements/linkedElements";
+import LinkedElements, { TableDef } from "common/components/linkedElements";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { usePathname } from "next/navigation";
 import { Assembly } from "common/types/globalTypes";
