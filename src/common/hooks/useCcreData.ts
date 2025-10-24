@@ -66,10 +66,6 @@ const CCRE_QUERY = gql(`
   }
 `);
 
-/**
- * I suppose the advantage is that there can potentially be a mapping between the entityType and assembly (soon wiht biosample), but the issue is that that type specification means that I need to needlessly pass the assembly as a type to this function which is not at all used in the return (just for blocking)
- */
-
 type UseCcreDataParams =
   | {
       assembly: Assembly;

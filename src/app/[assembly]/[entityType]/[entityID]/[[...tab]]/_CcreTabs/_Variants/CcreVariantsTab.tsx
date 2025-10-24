@@ -1,22 +1,28 @@
 import { Stack } from "@mui/material";
-import { useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import ImmuneGWASLdr from "./ImmuneGWASLdr";
 import EQTLs from "common/components/EQTLTables";
-import { Assembly } from "common/types/globalTypes";
+import { GenomicRange } from "common/types/globalTypes";
 import IntersectingSNPs from "../../_RegionTabs/_Variants/IntersectingSNPs";
+import { useCcreData } from "common/hooks/useCcreData";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-const CcreVariantsTab = ({ CcreData, assembly }: { CcreData: useEntityMetadataReturn<"ccre">; assembly: Assembly }) => {
+const CcreVariantsTab = ({ entity }: EntityViewComponentProps) => {
+  const {assembly, entityID: accession} = entity
+  const { data, loading, error } = useCcreData({ assembly, accession });
+
+  const coordinates: GenomicRange = {
+    chromosome: data?.chrom,
+    start: data?.start,
+    end: data?.start + data?.len
+  }
+
   return (
     <Stack spacing={2}>
       <IntersectingSNPs
-        region={{
-          chromosome: CcreData.data.chrom,
-          start: CcreData.data.start,
-          end: CcreData.data.start + CcreData.data.len,
-        }}
+        region={coordinates}
       />
-      <ImmuneGWASLdr accession={CcreData.data.info.accession} />
-      <EQTLs data={CcreData.data} entityType="ccre" assembly={assembly} />
+      {entity.assembly === "GRCh38" && <ImmuneGWASLdr accession={accession} />}
+      {entity.assembly === "GRCh38" && <EQTLs entity={entity} />}
     </Stack>
   );
 };

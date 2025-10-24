@@ -129,7 +129,7 @@ export default function DetailsPage({
             />
           );
         case "genes":
-          return <EQTLs data={variantData.data} entityType="variant" assembly={assembly} />;
+          return <EQTLs entity={entity} />;
       }
       break;
     }
@@ -145,7 +145,7 @@ export default function DetailsPage({
         case "ccres":
           return <GeneLinkedCcres geneData={geneData} assembly={assembly} />;
         case "variants":
-          return <EQTLs data={geneData.data} entityType="gene" assembly={assembly} />;
+          return <EQTLs entity={entity} />;
         case "transcript-expression":
           return <TranscriptExpression geneData={geneData} />;
       }
@@ -153,21 +153,14 @@ export default function DetailsPage({
     }
 
     case "ccre": {
-      const CcreData = { data, loading, error } as useEntityMetadataReturn<"ccre">;
-
       switch (tab) {
         case "":
         case "conservation":
         case "functional-characterization":
         case "additional-chromatin-signatures":
         case "genes":
-          return <ComponentToRender entity={entity} />;
         case "variants":
-          return assembly === "GRCh38" ? (
-            <CcreVariantsTab CcreData={CcreData} assembly={assembly} />
-          ) : (
-            <p> Variants for mouse cCREs </p>
-          );
+          return <ComponentToRender entity={entity} />;
       }
       break;
     }

@@ -98,7 +98,7 @@ export default function ImmuneGWASLdr({ accession }: { accession: string }) {
       }}
       label={`Immune GWAS Variants intersecting ${accession}`}
       emptyTableFallback={
-        "This cCRE does not intersect a variant associated with significant changes in immune-related phenotypes"
+        "This cCRE does not intersect any variants associated with significant changes in immune-related phenotypes"
       }
       divHeight={{ maxHeight: "400px" }}
     />

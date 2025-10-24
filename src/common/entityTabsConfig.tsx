@@ -7,6 +7,7 @@ import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityI
 import { AdditionalChromatinSignatures } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_AdditionalChromatinSignatures/AdditionalChromatinSignatures";
 import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Convservation/GeneConservation";
 import CcreLinkedGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Genes/CcreLinkedGenes";
+import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Variants/CcreVariantsTab";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -242,8 +243,7 @@ const humanCcreTabs: readonly TabConfig<
     route: "variants",
     label: "Variant",
     iconPath: VariantIconPath,
-    // component: CcreVariantsTab,
-    component: null,
+    component: CcreVariantsTab,
   },
   {
     route: "conservation",
