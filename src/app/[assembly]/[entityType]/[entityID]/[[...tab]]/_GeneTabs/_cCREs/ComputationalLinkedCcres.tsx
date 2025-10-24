@@ -1,5 +1,5 @@
 import { Box, Grid, Skeleton } from "@mui/material";
-import useLinkedICREs, { LinkedICREInfo } from "common/hooks/useLinkedICREs";
+import { useLinkedCcres, useLinkedCcresReturn } from "common/hooks/useLinkedCcres";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "../../_CcreTabs/_Genes/columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
@@ -21,7 +21,8 @@ export default function ComputationalLinkedCcres({
 }: {
   geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
 }) {
-  const { data, loading, error } = useLinkedICREs(geneData?.data.id);
+  const { data, loading, error } = useLinkedCcres({geneid: geneData?.data.id});
+
   const pathname = usePathname();
   const assembly = pathname.split("/")[1];
 
@@ -49,31 +50,31 @@ export default function ComputationalLinkedCcres({
   }
 
   const HiCLinked = data
-    .filter((x: LinkedICREInfo) => x.assay === "Intact-HiC")
-    .map((x: LinkedICREInfo, index: number) => ({
+    .filter((x) => x.assay === "Intact-HiC")
+    .map((x, index: number) => ({
       ...x,
       id: index.toString(),
     }));
   const ChIAPETLinked = data
-    .filter((x: LinkedICREInfo) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
-    .map((x: LinkedICREInfo, index: number) => ({
+    .filter((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
+    .map((x, index: number) => ({
       ...x,
       id: index.toString(),
     }));
   const crisprLinked = data
-    .filter((x: LinkedICREInfo) => x.method === "CRISPR")
-    .map((x: LinkedICREInfo, index: number) => ({
+    .filter((x) => x.method === "CRISPR")
+    .map((x, index: number) => ({
       ...x,
       id: index.toString(),
     }));
   const eqtlLinked = data
-    .filter((x: LinkedICREInfo) => x.method === "eQTLs")
-    .map((x: LinkedICREInfo, index: number) => ({
+    .filter((x) => x.method === "eQTLs")
+    .map((x, index: number) => ({
       ...x,
       id: index.toString(),
     }));
 
-  const tables: TableDef<LinkedICREInfo>[] = [
+  const tables: TableDef<useLinkedCcresReturn["data"][number]>[] = [
     {
       label: "Intact Hi-C Loops",
       rows: HiCLinked,
@@ -109,8 +110,6 @@ export default function ComputationalLinkedCcres({
   ];
 
   return (
-    <Box width={"100%"}>
-      <LinkedElements tables={tables} />
-    </Box>
+    <LinkedElements tables={tables} />
   );
 }

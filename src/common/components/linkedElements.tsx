@@ -1,14 +1,14 @@
 import { Stack } from "@mui/material";
 import { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
-import { LinkedICREInfo } from "common/hooks/useLinkedICREs";
+import { useLinkedCcresReturn } from "common/hooks/useLinkedCcres";
 import { Table, TableProps } from "@weng-lab/ui-components";
 
-export type TableDef<T extends LinkedGeneInfo | LinkedICREInfo> = TableProps & {
+export type TableDef<T extends LinkedGeneInfo | useLinkedCcresReturn["data"][number]> = TableProps & {
   sortColumn: keyof T & string; // Constrain to string keys
   sortDirection: "asc" | "desc";
 };
 
-export default function LinkedElements<T extends LinkedGeneInfo | LinkedICREInfo>({
+export default function LinkedElements<T extends LinkedGeneInfo | useLinkedCcresReturn["data"][number]>({
   tables,
 }: {
   tables: TableDef<T>[];

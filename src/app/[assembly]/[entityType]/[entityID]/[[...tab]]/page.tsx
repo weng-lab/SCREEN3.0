@@ -141,6 +141,7 @@ export default function DetailsPage({
         case "conservation":
           return <ComponentToRender entity={entity} />;
         case "":
+          //Gene data is used here to extract the gene ID (which is not kept as part of the entity...) can replace with useGeneData
           return <GeneExpression geneData={geneData} assembly={assembly} />;
         case "ccres":
           return <GeneLinkedCcres geneData={geneData} assembly={assembly} />;

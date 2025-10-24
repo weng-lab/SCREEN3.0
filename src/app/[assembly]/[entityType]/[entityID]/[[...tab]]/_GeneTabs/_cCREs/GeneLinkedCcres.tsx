@@ -13,7 +13,9 @@ const GeneLinkedIcres = ({
 }) => {
   return (
     <Stack spacing={2}>
+      {/* This uses geneData id and transcripts. use useGeneData instead */}
       <DistanceLinkedCcres geneData={geneData} assembly={assembly} />
+      
       {assembly === "GRCh38" && <ComputationalLinkedCcres geneData={geneData} />}
     </Stack>
   );
