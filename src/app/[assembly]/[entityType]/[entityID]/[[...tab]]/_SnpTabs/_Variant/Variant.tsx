@@ -1,12 +1,12 @@
 import { Stack } from "@mui/material";
-import SnpGWASLdr from "./SnpGWASLdr";
+import SnpImmuneGWASLdr from "./SnpImmuneGWASLdr";
 import SnpFrequencies from "./SnpFrequencies";
 
 const VariantInfo = ({ snpid }: { snpid: string }) => {
   return (
     <Stack spacing={2}>
       <SnpFrequencies snpid={snpid} />
-      <SnpGWASLdr snpid={snpid} />
+      <SnpImmuneGWASLdr snpid={snpid} />
     </Stack>
   );
 };

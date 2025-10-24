@@ -8,31 +8,6 @@ import {
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { AnyTabRoute, AnyEntityType, validEntityTypes, entityTabsConfig } from "./entityTabsConfig";
 
-export function getClassDisplayname(input: string) {
-  switch (input) {
-    case "PLS":
-      return "Promoter";
-    case "pELS":
-      return "Proximal Enhancer";
-    case "dELS":
-      return "Distal Enhancer";
-    case "CA-H3K4me3":
-      return "Chromatin Accessible with H3K4me3";
-    case "CA-TF":
-      return "Chromatin Accessible with TF";
-    case "CA-CTCF":
-      return "Chromatin Accessible with CTCF";
-    case "CA":
-      return "Chromatin Accessible";
-    case "TF":
-      return "Transcription Factor";
-    case "InActive":
-      return "Inactive";
-    default:
-      return "No Class Found";
-  }
-}
-
 export const capitalizeFirstLetter = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
