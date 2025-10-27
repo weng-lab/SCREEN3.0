@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useMemo } from "react";
+import { SvgElement } from "./types";
 
 interface BodyListMap {
   [organ: string]: string[];

@@ -1,18 +1,18 @@
-export type SvgElementPropsBase = {
+type SvgElementPropsBase = {
   className: string;
 };
 
-export type PathProps = SvgElementPropsBase & {
+type PathProps = SvgElementPropsBase & {
   d: string;
 };
 
-export type CircleProps = SvgElementPropsBase & {
+type CircleProps = SvgElementPropsBase & {
   cx: string;
   cy: string;
   r: string;
 };
 
-export type EllipseProps = SvgElementPropsBase & {
+type EllipseProps = SvgElementPropsBase & {
   cx: string;
   cy: string;
   rx: string;
@@ -20,8 +20,17 @@ export type EllipseProps = SvgElementPropsBase & {
   transform?: string;
 };
 
-export type PolygonProps = SvgElementPropsBase & {
+type PolygonProps = SvgElementPropsBase & {
   points: string;
 };
 
-export type SvgElement = { tag: string; props: PathProps | CircleProps | EllipseProps | PolygonProps };
+type RectProps = SvgElementPropsBase & {
+  x: string;
+  y: string;
+  width: string;
+  height: string;
+  rx?: string;
+  ry?: string;
+};
+
+export type SvgElement = { tag: string; props: PathProps | CircleProps | EllipseProps | PolygonProps | RectProps };

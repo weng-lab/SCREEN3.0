@@ -1,4 +1,6 @@
-export const humanPaths = [
+import { SvgElement } from "../types";
+
+export const humanPaths: SvgElement[] = [
   {
     tag: "path",
     props: {
