@@ -3,47 +3,47 @@ import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 
 type BiosampleLandingHeaderProps = {
-    assembly: Assembly;
+  assembly: Assembly;
 };
 
 const BiosampleLandingHeader = ({ assembly }: BiosampleLandingHeaderProps) => {
+  const link =
+    assembly === "GRCh38"
+      ? `https://www.encodeproject.org/reference-epigenome-matrix/?type=Experiment&control_type!=*&related_series.@type=ReferenceEpigenome&status=released&replicates.library.biosample.donor.organism.scientific_name=Homo+sapiens`
+      : `https://www.encodeproject.org/reference-epigenome-matrix/?type=Experiment&control_type!=*&related_series.@type=ReferenceEpigenome&status=released&replicates.library.biosample.donor.organism.scientific_name=Mus+musculus`;
 
-    const link = assembly === "GRCh38"
-        ? `https://www.encodeproject.org/reference-epigenome-matrix/?type=Experiment&control_type!=*&related_series.@type=ReferenceEpigenome&status=released&replicates.library.biosample.donor.organism.scientific_name=Homo+sapiens`
-        : `https://www.encodeproject.org/reference-epigenome-matrix/?type=Experiment&control_type!=*&related_series.@type=ReferenceEpigenome&status=released&replicates.library.biosample.donor.organism.scientific_name=Mus+musculus`
-
-    return (
-        <Stack
-            sx={{ p: 1, mb: 2 }}
-            border={(theme) => `1px solid ${theme.palette.divider}`}
-            borderRadius={1}
-            justifyContent={"space-between"}
-            direction={"row"}
-        >
-            <Stack>
-                <Typography variant="h4">
-                    <strong>Explore Biosample Data</strong>
-                </Typography>
-                <Typography variant="body1">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna.
-                </Typography>
-            </Stack>
-            <Button
-                variant="contained"
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ width: "240px", height: 60, backgroundColor: "white" }}
-            >
-                <Image
-                    style={{ objectFit: "contain" }}
-                    src={"https://www.genome.gov/sites/default/files/media/images/2019-03/ENCODE_color_white-01.png"}
-                    fill
-                    alt="genecard-snpcard-button"
-                />
-            </Button>
-        </Stack>
-    );
+  return (
+    <Stack
+      sx={{ p: 1, mb: 2 }}
+      border={(theme) => `1px solid ${theme.palette.divider}`}
+      borderRadius={1}
+      justifyContent={"space-between"}
+      direction={"row"}
+    >
+      <Stack>
+        <Typography variant="h4">
+          <strong>Explore Biosample Data</strong>
+        </Typography>
+        <Typography variant="body1">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna.
+        </Typography>
+      </Stack>
+      <Button
+        variant="contained"
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        sx={{ width: "240px", height: 60, backgroundColor: "white" }}
+      >
+        <Image
+          style={{ objectFit: "contain" }}
+          src={"https://www.genome.gov/sites/default/files/media/images/2019-03/ENCODE_color_white-01.png"}
+          fill
+          alt="genecard-snpcard-button"
+        />
+      </Button>
+    </Stack>
+  );
 };
 
 export default BiosampleLandingHeader;
