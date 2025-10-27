@@ -14,60 +14,67 @@ import { FlatCompat } from "@eslint/eslintrc";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
 });
 
-export default defineConfig([{
-    extends: fixupConfigRules(compat.extends(
+export default defineConfig([
+  {
+    extends: fixupConfigRules(
+      compat.extends(
         "next/core-web-vitals",
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:react/recommended",
         "plugin:react-hooks/recommended",
         "plugin:prettier/recommended",
-        "prettier",
-    )),
+        "prettier"
+      )
+    ),
 
     plugins: {
-        react: fixupPluginRules(react),
-        "react-hooks": fixupPluginRules(reactHooks),
-        "@typescript-eslint": fixupPluginRules(typescriptEslint),
-        "unused-imports": unusedImports,
-        prettier: fixupPluginRules(prettier),
+      react: fixupPluginRules(react),
+      "react-hooks": fixupPluginRules(reactHooks),
+      "@typescript-eslint": fixupPluginRules(typescriptEslint),
+      "unused-imports": unusedImports,
+      prettier: fixupPluginRules(prettier),
     },
 
     languageOptions: {
-        parser: tsParser,
-        ecmaVersion: 2020,
-        sourceType: "module",
+      parser: tsParser,
+      ecmaVersion: 2020,
+      sourceType: "module",
 
-        parserOptions: {
-            ecmaFeatures: {
-                jsx: true,
-            },
-
-            project: "./tsconfig.json",
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
         },
+
+        project: "./tsconfig.json",
+      },
     },
 
-    ignores: ['node_modules', '.next', '.vscode', '.yarn'],
+    ignores: ["node_modules", ".next", ".vscode", ".yarn"],
 
     settings: {
-        react: {
-            version: "detect",
-        },
+      react: {
+        version: "detect",
+      },
     },
 
     rules: {
-        "prettier/prettier": "warn",
-        "unused-imports/no-unused-imports": "error",
+      "prettier/prettier": "warn",
+      "unused-imports/no-unused-imports": "error",
 
-        "@typescript-eslint/no-unused-vars": ["warn", {
-            argsIgnorePattern: "^_",
-            varsIgnorePattern: "^_",
-        }],
-        "react/react-in-jsx-scope": "off"
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      "react/react-in-jsx-scope": "off",
     },
-}]);
+  },
+]);

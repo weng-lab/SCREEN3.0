@@ -84,7 +84,7 @@ export default function SVGMap({ BodyList, ColorMap, paths, viewBox, width, heig
       {paths.map((el, i) => {
         const tag = el.tag;
         const props = el.props;
-        const cls = props.className ?? "";
+        const cls = props.className;
         const style = getStyle(cls);
 
         // skip rendering if no BodyList match or no fill
