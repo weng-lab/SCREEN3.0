@@ -1,18 +1,13 @@
 import {
   TranscriptMetadata,
   SharedTranscriptExpressionPlotProps,
-  TranscriptExpressionProps,
 } from "./TranscriptExpression";
 import { useMemo } from "react";
 import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility";
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
-import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
+import { BarPlot, BarData } from "@weng-lab/visualization";
 import TranscriptPlotControls from "./TranscriptPlotControls";
-
-export type TranscriptExpressionBarPlotProps = TranscriptExpressionProps &
-  SharedTranscriptExpressionPlotProps &
-  Partial<BarPlotProps<TranscriptMetadata>>;
 
 const TranscriptExpressionBarPlot = ({
   setPeak,
@@ -20,7 +15,7 @@ const TranscriptExpressionBarPlot = ({
   setScale,
   scale,
   viewBy,
-  geneData,
+  entity,
   transcriptExpressionData,
   selected,
   setSelected,
@@ -28,7 +23,7 @@ const TranscriptExpressionBarPlot = ({
   sortedFilteredData,
   ref,
   ...rest
-}: TranscriptExpressionBarPlotProps) => {
+}: SharedTranscriptExpressionPlotProps) => {
   const plotData: BarData<TranscriptMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((x, i) => {
@@ -89,13 +84,12 @@ const TranscriptExpressionBarPlot = ({
         selectedPeak={selectedPeak}
       />
       <BarPlot
-        {...rest}
         onBarClicked={onBarClicked}
         data={plotData}
-        topAxisLabel={`TSS Expression at ${selectedPeak} of ${geneData.data.name} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
+        topAxisLabel={`TSS Expression at ${selectedPeak} of ${entity.entityID} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
         TooltipContents={PlotTooltip}
         ref={ref}
-        downloadFileName={`${geneData.data.name}_TSS_bar_plot`}
+        downloadFileName={`${entity.entityID}_TSS_bar_plot`}
       />
     </Box>
   );

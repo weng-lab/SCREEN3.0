@@ -148,7 +148,7 @@ export default function DetailsPage({
         case "variants":
           return <EQTLs entity={entity} />;
         case "transcript-expression":
-          return <TranscriptExpression geneData={geneData} />;
+          return <TranscriptExpression entity={entity} />;
       }
       break;
     }

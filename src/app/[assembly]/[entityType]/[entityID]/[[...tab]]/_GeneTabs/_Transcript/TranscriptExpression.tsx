@@ -1,21 +1,16 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
-import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
 import { useEffect, useState, useMemo, useRef } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
-import { Assembly } from "common/types/globalTypes";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 
-export type TranscriptExpressionProps = {
-  geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
-};
-
-export type SharedTranscriptExpressionPlotProps = TranscriptExpressionProps & {
+export type SharedTranscriptExpressionPlotProps = EntityViewComponentProps & {
   rows: TranscriptMetadata[];
   selected: TranscriptMetadata[];
   setSelected: (selected: TranscriptMetadata[]) => void;
@@ -31,7 +26,7 @@ export type SharedTranscriptExpressionPlotProps = TranscriptExpressionProps & {
   ref?: React.RefObject<DownloadPlotHandle>;
 };
 
-const TranscriptExpression = (props: TranscriptExpressionProps) => {
+const TranscriptExpression = ({entity}: EntityViewComponentProps) => {
   const [selected, setSelected] = useState<TranscriptMetadata[]>([]);
   const [peak, setPeak] = useState<string>("");
   const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value");
@@ -41,7 +36,7 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
 
-  const transcriptExpressionData = useTranscriptExpression({ gene: props.geneData?.data.name });
+  const transcriptExpressionData = useTranscriptExpression({ gene: entity.entityID });
 
   useEffect(() => {
     if (transcriptExpressionData && peak === "") {
@@ -78,7 +73,7 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
       setPeak,
       setViewBy,
       setScale,
-      ...props,
+      entity,
     }),
     [
       rows,
@@ -93,7 +88,7 @@ const TranscriptExpression = (props: TranscriptExpressionProps) => {
       setPeak,
       setViewBy,
       setScale,
-      props,
+      entity,
     ]
   );
 

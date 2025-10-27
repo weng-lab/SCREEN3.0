@@ -15,12 +15,9 @@ import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
 import {
   SharedTranscriptExpressionPlotProps,
-  TranscriptExpressionProps,
   TranscriptMetadata,
 } from "./TranscriptExpression";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
-
-export type TranscriptExpressionTableProps = TranscriptExpressionProps & SharedTranscriptExpressionPlotProps;
 
 const TranscriptExpressionTable = ({
   selected,
@@ -33,7 +30,8 @@ const TranscriptExpressionTable = ({
   viewBy,
   rows,
   scale,
-}: TranscriptExpressionTableProps) => {
+  ...rest
+}: SharedTranscriptExpressionPlotProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
   const { data, loading, error } = transcriptExpressionData;
   const theme = useTheme();
