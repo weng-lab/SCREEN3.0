@@ -9,6 +9,7 @@ import MouseIcon from "common/components/MouseIcon";
 import { usePathname } from "next/navigation";
 import BiosampleLandingHeader from "./BiosampleLandingHeader";
 import HumanBodyMap from "./bodyMaps/human/HumanBodyMap";
+import MouseBodyMap from "./bodyMaps/mouse/MouseBodyMap";
 
 export default function BiosampleLandingPage() {
   const pathname = usePathname();
@@ -52,7 +53,7 @@ export default function BiosampleLandingPage() {
         />
       </Tabs>
       <Divider />
-      <HumanBodyMap />
+      {tab === "mm10" ? <MouseBodyMap /> : <HumanBodyMap />}
     </Box>
   );
 }

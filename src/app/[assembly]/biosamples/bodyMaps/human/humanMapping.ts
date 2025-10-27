@@ -59,10 +59,9 @@ export const HumanColorMap: Record<
     opacity?: number;
   }
 > = {
-  "cls-nervebackground": { opacity: 0 },
+  "cls-nervebackground": { fill: "none", opacity: 0 },
   "cls-1": { fill: "url(#linear-gradient)" },
   "cls-2": { fill: "url(#linear-gradient-2)" },
-  "cls-3": { fill: "none" },
   "cls-4": { fill: "none", stroke: "#4b7da7", activeStroke: "#764134" },
   "cls-5": { fill: "#c7d9e7", activeFill: "#d6a371", outlineOnly: true },
   "cls-limb-skin": { fill: "#dee8f1", activeFill: "#d6a371", outlineOnly: true },
@@ -74,7 +73,6 @@ export const HumanColorMap: Record<
   "cls-stomach": { fill: "#3f77a5", opacity: 0.75, activeFill: "#ec621c" },
   "cls-vein": { fill: "#4d85b2", activeFill: "#63326e" },
   "cls-11": { fill: "#2e70a5", activeFill: "#e90006" },
-  "cls-16": { fill: "#71a1c7", activeFill: "#a63128" },
   "cls-31": { fill: "#71a1c7", activeFill: "#a63128" },
   "cls-21": { fill: "#fbfbfb", activeStroke: "#77120b" },
   "cls-23": { fill: "#9cbfdc", activeFill: "#f2c57c", activeStroke: "#efef5f" },
@@ -138,4 +136,5 @@ export const HumanColorMap: Record<
   "cls-testis": { fill: "#6fa3cc", activeFill: "#ffa092" },
   "cls-lg-intestine": { fill: "#1f659e", activeFill: "#c10000" },
   "cls-epiglottis": { fill: "#3a709c", activeFill: "#f55f66" },
+  "cls-breast": { fill: "#c7d9e7", activeFill: "#c77f37" },
 };

@@ -1,4 +1,6 @@
-export const mousePaths = [
+import { SvgElement } from "../types";
+
+export const mousePaths: SvgElement[] = [
   {
     tag: "path",
     props: {

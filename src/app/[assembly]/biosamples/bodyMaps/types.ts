@@ -33,4 +33,14 @@ type RectProps = SvgElementPropsBase & {
   ry?: string;
 };
 
-export type SvgElement = { tag: string; props: PathProps | CircleProps | EllipseProps | PolygonProps | RectProps };
+type LineProps = SvgElementPropsBase & {
+  x1: string;
+  y1: string;
+  x2: string;
+  y2: string;
+};
+
+export type SvgElement = {
+  tag: string;
+  props: PathProps | CircleProps | EllipseProps | PolygonProps | RectProps | LineProps;
+};

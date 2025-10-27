@@ -21,11 +21,14 @@ interface SvgMapProps {
   BodyList: BodyListMap;
   ColorMap: ColorMap;
   paths: SvgElement[];
+  viewBox?: string;
+  width?: string;
+  height?: string;
 }
 
-export default function SVGMap({ BodyList, ColorMap, paths }: SvgMapProps) {
+export default function SVGMap({ BodyList, ColorMap, paths, viewBox, width, height }: SvgMapProps) {
   const [activeOrgan, setActiveOrgan] = useState<string | null>(null);
-  const [hoveredCls, setHoveredCls] = useState<string | null>(null);
+  const [hoveredOrgan, setHoveredOrgan] = useState<string | null>(null);
 
   const classToOrgan = useMemo(() => {
     const map: Record<string, string> = {};
@@ -44,7 +47,9 @@ export default function SVGMap({ BodyList, ColorMap, paths }: SvgMapProps) {
   };
 
   const handleHover = (cls: string | null) => {
-    setHoveredCls(cls);
+    const organ = classToOrgan[cls];
+    if (!organ) setHoveredOrgan(null);
+    setHoveredOrgan(organ);
   };
 
   const getStyle = (cls: string) => {
@@ -52,12 +57,12 @@ export default function SVGMap({ BodyList, ColorMap, paths }: SvgMapProps) {
     if (!path) return {};
 
     const isActive = activeOrgan && BodyList[activeOrgan]?.includes(cls);
-    const isHovered = hoveredCls === cls;
+    const isHovered = hoveredOrgan && BodyList[hoveredOrgan]?.includes(cls);
 
     if (path.outlineOnly) {
       return {
         fill: path.fill,
-        stroke: isActive ? (path.activeFill ?? path.fill) : isHovered ? "#63326eaa" : "none",
+        stroke: isActive ? (path.activeFill ?? path.fill) : isHovered ? "#63326e79" : "none",
         opacity: path.opacity ?? 1,
         strokeWidth: 1.5,
         cursor: "pointer",
@@ -66,8 +71,8 @@ export default function SVGMap({ BodyList, ColorMap, paths }: SvgMapProps) {
     }
 
     return {
-      fill: isActive ? (path.activeFill ?? path.fill) : isHovered ? "#63326eaa" : path.fill,
-      stroke: isActive ? (path.activeStroke ?? "none") : (path.stroke ?? "none"),
+      fill: isActive ? (path.activeFill ?? path.fill) : isHovered ? "#63326e79" : path.fill,
+      stroke: isActive ? (path.activeStroke ?? "none") : isHovered ? "#63326eff" : (path.stroke ?? "none"),
       opacity: path.opacity ?? 1,
       transition: "fill 0.2s ease",
       cursor: "pointer",
@@ -75,7 +80,7 @@ export default function SVGMap({ BodyList, ColorMap, paths }: SvgMapProps) {
   };
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" style={{ width: "500px", height: "650px" }}>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} style={{ width: width, height: height }}>
       {paths.map((el, i) => {
         const tag = el.tag;
         const props = el.props;
@@ -84,7 +89,7 @@ export default function SVGMap({ BodyList, ColorMap, paths }: SvgMapProps) {
 
         // skip rendering if no BodyList match or no fill
         const colorData = ColorMap[cls];
-        if (!classToOrgan[cls] || !colorData?.fill) return null;
+        if (!colorData?.fill) return null;
 
         return React.createElement(tag, {
           key: `${tag}-${i}-${cls}`,
@@ -99,24 +104,3 @@ export default function SVGMap({ BodyList, ColorMap, paths }: SvgMapProps) {
     </svg>
   );
 }
-
-// {paths.map((p, i) => {
-//         const cls = p.className;
-//         const organ = classToOrgan[cls];
-//         const color = ColorMap[cls];
-
-//         // Skip rendering if no organ match or no fill
-//         if (!organ && (!color || !color.fill)) return null;
-
-//         return (
-//           <path
-//             key={i}
-//             className={cls}
-//             d={p.d}
-//             style={getStyle(cls)}
-//             onClick={() => handleClick(cls)}
-//             onMouseEnter={() => handleHover(cls)}
-//             onMouseLeave={() => handleHover(null)}
-//           />
-//         );
-//       })}
