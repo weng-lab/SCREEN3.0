@@ -142,9 +142,9 @@ export default function DetailsPage({
           return <ComponentToRender entity={entity} />;
         case "":
           //Gene data is used here to extract the gene ID (which is not kept as part of the entity...) can replace with useGeneData
-          return <GeneExpression geneData={geneData} assembly={assembly} />;
+          return <GeneExpression entity={entity} />;
         case "ccres":
-          return <GeneLinkedCcres geneData={geneData} assembly={assembly} />;
+          return <GeneLinkedCcres entity={entity} />;
         case "variants":
           return <EQTLs entity={entity} />;
         case "transcript-expression":

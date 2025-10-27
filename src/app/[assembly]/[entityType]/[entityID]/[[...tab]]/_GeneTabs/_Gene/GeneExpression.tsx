@@ -1,24 +1,21 @@
-import TwoPaneLayout from "../../../../../../../common/components/TwoPaneLayout/TwoPaneLayout";
+import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { useMemo, useRef, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
 import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
-import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
-import { Assembly } from "common/types/globalTypes";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 import VersionFallback from "./GeneVersionFallback";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { useGeneData } from "common/hooks/useGeneData";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
-export type GeneExpressionProps = {
-  geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
-  assembly: Assembly;
-};
+export interface GeneExpressionProps extends EntityViewComponentProps {}
 
-export type SharedGeneExpressionPlotProps = GeneExpressionProps & {
+export type SharedGeneExpressionPlotProps = EntityViewComponentProps & {
   rows: PointMetadata[];
   selected: PointMetadata[];
   setSelected: (selected: PointMetadata[]) => void;
@@ -37,21 +34,23 @@ export type SharedGeneExpressionPlotProps = GeneExpressionProps & {
   isV40?: boolean;
 };
 
-const GeneExpression = (props: GeneExpressionProps) => {
+const GeneExpression = ({entity}: GeneExpressionProps) => {
+  const geneData = useGeneData({ name: entity.entityID, assembly: entity.assembly });
+
   const [selected, setSelected] = useState<PointMetadata[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
   const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM");
   const [replicates, setReplicates] = useState<"mean" | "all">("mean");
   const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM");
   const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">(
-    props.assembly === "GRCh38" ? "total RNA-seq" : "all"
+    entity.assembly === "GRCh38" ? "total RNA-seq" : "all"
   );
 
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
   const scatterRef = useRef<DownloadPlotHandle>(null);
 
-  const geneExpressionData = useGeneExpression({ id: props.geneData?.data.id, assembly: props.assembly });
+  const geneExpressionData = useGeneExpression({ id: geneData?.data.id, assembly: entity.assembly });
 
   const isV40 = useMemo(() => {
     const files = geneExpressionData?.data?.[0]?.gene_quantification_files?.[0];
@@ -144,14 +143,14 @@ const GeneExpression = (props: GeneExpressionProps) => {
       RNAtype,
       setRNAType,
       geneExpressionData,
-      ...props,
+      entity,
     }),
-    [rows, selected, sortedFilteredData, scale, replicates, viewBy, RNAtype, geneExpressionData, props]
+    [rows, selected, sortedFilteredData, scale, replicates, viewBy, RNAtype, geneExpressionData, entity]
   );
 
   return (
     <>
-      {isV40 && <VersionFallback gene={props.geneData.data.name} />}
+      {isV40 && <VersionFallback gene={entity.entityID} />}
       <TwoPaneLayout
         TableComponent={<GeneExpressionTable {...SharedGeneExpressionPlotProps} />}
         plots={[

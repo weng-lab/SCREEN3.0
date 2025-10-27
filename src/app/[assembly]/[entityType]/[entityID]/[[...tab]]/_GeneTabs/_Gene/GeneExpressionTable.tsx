@@ -19,7 +19,6 @@ import AutoSortSwitch from "common/components/AutoSortSwitch";
 export type GeneExpressionTableProps = GeneExpressionProps & SharedGeneExpressionPlotProps;
 
 const GeneExpressionTable = ({
-  geneData,
   rows,
   selected,
   setSelected,
@@ -27,9 +26,10 @@ const GeneExpressionTable = ({
   setSortedFilteredData,
   sortedFilteredData,
   viewBy,
+  entity
 }: GeneExpressionTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
-  const { data, loading, error } = geneExpressionData;
+  const { loading } = geneExpressionData;
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -235,7 +235,7 @@ const GeneExpressionTable = ({
     <>
       <Table
         apiRef={apiRef}
-        label={`${geneData?.data.name} Expression`}
+        label={`${entity.entityID} Expression`}
         rows={transformedData}
         columns={columns}
         loading={loading}

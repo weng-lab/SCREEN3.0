@@ -141,6 +141,10 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
     } else setSelected([...selected, point.metaData]);
   };
 
+  const handleLassoSelect = (points: Point<BiosampleRow>[]) => {
+    setSelected(prev => [...prev, ...points.map(x => x.metaData)])
+  }
+
   return (
     <Stack
       width={"100%"}
@@ -179,6 +183,7 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
         <ScatterPlot
           pointData={scatterData}
           onPointClicked={handlePointClick}
+          onSelectionChange={handleLassoSelect}
           leftAxisLabel="UMAP-2"
           bottomAxisLabel="UMAP-1"
           selectable

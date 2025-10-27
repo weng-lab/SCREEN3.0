@@ -21,7 +21,7 @@ export function useLinkedCcres({ geneid }: useLinkedCcresParams) {
   });
 
   return {
-    data: data.linkedcCREs,
+    data: data?.linkedcCREs,
     loading,
     error,
   } as useLinkedCcresReturn;
