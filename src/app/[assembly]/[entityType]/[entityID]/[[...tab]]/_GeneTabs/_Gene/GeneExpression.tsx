@@ -46,6 +46,11 @@ const GeneExpression = ({entity}: GeneExpressionProps) => {
     entity.assembly === "GRCh38" ? "total RNA-seq" : "all"
   );
 
+  const handleSetReplicates = (newReplicates: "mean" | "all") => {
+    setSelected([])
+    setReplicates(newReplicates)
+  }
+
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
   const scatterRef = useRef<DownloadPlotHandle>(null);
@@ -74,7 +79,7 @@ const GeneExpression = ({entity}: GeneExpressionProps) => {
           const rawTPM = quant?.tpm;
           const scaledTPM = scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
 
-          const repLabel = file.biorep != null ? ` rep. ${file.biorep}` : "";
+          const repLabel = files.length > 1 ? ` rep. ${i + 1}` : "";
           const modifiedAccession = `${entry.accession}${repLabel}`;
 
           return {
@@ -111,12 +116,10 @@ const GeneExpression = ({entity}: GeneExpressionProps) => {
                 biorep: null,
                 quantifications: [
                   {
-                    __typename: "GeneQuantification",
                     file_accession: "average",
                     tpm: scaledTPM,
                   },
                 ],
-                __typename: "GeneQuantificationFile",
               },
             ],
           },
@@ -137,7 +140,7 @@ const GeneExpression = ({entity}: GeneExpressionProps) => {
       scale,
       setScale,
       replicates,
-      setReplicates,
+      setReplicates: handleSetReplicates,
       viewBy,
       setViewBy,
       RNAtype,

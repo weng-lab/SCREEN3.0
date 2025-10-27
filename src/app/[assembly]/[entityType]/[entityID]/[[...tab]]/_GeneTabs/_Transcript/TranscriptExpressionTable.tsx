@@ -126,8 +126,8 @@ const TranscriptExpressionTable = ({
       ),
     },
     {
-      field: "rpm" as any, //Workaround for typing issue -- find better solution
-      headerName: `${scale === "log" ? "RPM(log10)" : "RPM"}`,
+      field: " ",
+      headerName: `${scale === "linear" ? "RPM" : "Log10(RPM + 1)"}`,
       type: "number",
       sortable: viewBy !== "tissue",
       valueGetter: (_, row) => {
@@ -166,10 +166,15 @@ const TranscriptExpressionTable = ({
     },
   ];
 
-  const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
-    const newIds = Array.from(ids.ids);
-    const selectedRows = newIds.map((id) => rows.find((row) => row.expAccession === id));
-    setSelected(selectedRows);
+  const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
+    if (newRowSelectionModel.type === "include") {
+      const newIds = Array.from(newRowSelectionModel.ids);
+      const selectedRows = newIds.map((id) => rows.find((row) => row.expAccession === id));
+      setSelected(selectedRows);
+    } else {
+      // if type is exclude, it's always with 0 ids (aka select all)
+      setSelected(rows);
+    }
   };
 
   const apiRef = useGridApiRef();
@@ -271,7 +276,7 @@ const TranscriptExpressionTable = ({
         downloadFileName={"TSS Expression at " + selectedPeak}
         // -- Selection Props --
         checkboxSelection
-        getRowId={(row) => row.expAccession} //needed to match up data with the ids returned by onRowSelectionModelChange
+        getRowId={(row: typeof transformedData[number]) => row.expAccession} //needed to match up data with the ids returned by onRowSelectionModelChange
         onRowSelectionModelChange={handleRowSelectionModelChange}
         rowSelectionModel={{ type: "include", ids: new Set(selected.map((x) => x.expAccession)) }}
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters

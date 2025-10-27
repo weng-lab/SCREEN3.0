@@ -41,9 +41,9 @@ const TranscriptExpressionBarPlot = ({
     });
   }, [sortedFilteredData, selected]);
 
-  const onBarClicked = (bar: BarData<TranscriptMetadata>) => {
-    if (selected.includes(bar.metadata)) {
-      setSelected(selected.filter((x) => x !== bar.metadata));
+  const handleBarClick = (bar: BarData<TranscriptMetadata>) => {
+    if (selected.some(x => x.expAccession === bar.metadata.expAccession)) {
+      setSelected(selected.filter((x) => x.expAccession !== bar.metadata.expAccession));
     } else setSelected([...selected, bar.metadata]);
   };
 
@@ -84,9 +84,9 @@ const TranscriptExpressionBarPlot = ({
         selectedPeak={selectedPeak}
       />
       <BarPlot
-        onBarClicked={onBarClicked}
+        onBarClicked={handleBarClick}
         data={plotData}
-        topAxisLabel={`TSS Expression at ${selectedPeak} of ${entity.entityID} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
+        topAxisLabel={`TSS Expression at ${selectedPeak} of ${entity.entityID} - ${scale === "log" ? "log₁₀(RPM + 1)" : "RPM"}`}
         TooltipContents={PlotTooltip}
         ref={ref}
         downloadFileName={`${entity.entityID}_TSS_bar_plot`}

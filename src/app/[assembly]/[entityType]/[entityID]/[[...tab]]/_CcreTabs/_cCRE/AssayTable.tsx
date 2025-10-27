@@ -110,16 +110,6 @@ const AssayTable = ({
 
   const apiRef = useGridApiRef();
 
-  // const tableCols = useMemo(() => {
-  //   const displaynameCol = columns.find((x) => x.field === "displayname");
-  //   const assayCols = columns.filter((x) => assays.includes(x.field as Assay));
-  //   const tfCol = columns.find((x) => x.field === "tf");
-  //   const restCols = columns.filter(
-  //     (x) => x.field !== "displayname" && x.field !== "tf" && !assays.includes(x.field as Assay)
-  //   );
-  //   return [displaynameCol, ...assayCols, tfCol, ...restCols];
-  // }, [columns]);
-
   const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
     if (newRowSelectionModel.type === "include") {
       const newIds = Array.from(newRowSelectionModel.ids);
@@ -135,9 +125,7 @@ const AssayTable = ({
     if (!apiRef.current) return;
     const rows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as BiosampleRow[];
     if (!arraysAreEqual(sortedFilteredData, rows)) {
-      //It's breaking when this is called
       setSortedFilteredData(rows);
-      // setSortedFilteredData((prev) => [...prev]);
     }
   }, [apiRef, setSortedFilteredData, sortedFilteredData]);
 

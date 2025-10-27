@@ -135,8 +135,6 @@ export default function DetailsPage({
     }
 
     case "gene": {
-      const geneData = { data, loading, error } as useEntityMetadataReturn<"gene">;
-
       switch (tab) {
         case "conservation":
           return <ComponentToRender entity={entity} />;

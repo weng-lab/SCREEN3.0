@@ -59,8 +59,8 @@ const GeneExpressionBarPlot = ({
   }, [sortedFilteredData, selected]);
 
   const handleBarClick = (bar: BarData<PointMetadata>) => {
-    if (selected.includes(bar.metadata)) {
-      setSelected(selected.filter((x) => x !== bar.metadata));
+    if (selected.some(x => x.accession === bar.metadata.accession)) {
+      setSelected(selected.filter((x) => x.accession !== bar.metadata.accession));
     } else setSelected([...selected, bar.metadata]);
   };
 
@@ -125,7 +125,7 @@ const GeneExpressionBarPlot = ({
           topAxisLabel={
             scale === "linearTPM"
               ? `${entity.entityID} Expression - TPM`
-              : `${entity.entityID} Expression - Log\u2081\u2080(TPM + 1)`
+              : `${entity.entityID} Expression - log\u2081\u2080(TPM + 1)`
           }
           TooltipContents={PlotTooltip}
           ref={ref}
