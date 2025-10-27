@@ -134,34 +134,12 @@ export default function DetailsPage({
       break;
     }
 
-    case "gene": {
-      switch (tab) {
-        case "conservation":
-          return <ComponentToRender entity={entity} />;
-        case "":
-          //Gene data is used here to extract the gene ID (which is not kept as part of the entity...) can replace with useGeneData
-          return <GeneExpression entity={entity} />;
-        case "ccres":
-          return <GeneLinkedCcres entity={entity} />;
-        case "variants":
-          return <EQTLs entity={entity} />;
-        case "transcript-expression":
-          return <TranscriptExpression entity={entity} />;
-      }
-      break;
+    case ("gene"): {
+      return <ComponentToRender entity={entity} />
     }
 
     case "ccre": {
-      switch (tab) {
-        case "":
-        case "conservation":
-        case "functional-characterization":
-        case "additional-chromatin-signatures":
-        case "genes":
-        case "variants":
-          return <ComponentToRender entity={entity} />;
-      }
-      break;
+      return <ComponentToRender entity={entity} />
     }
 
     case "gwas": {

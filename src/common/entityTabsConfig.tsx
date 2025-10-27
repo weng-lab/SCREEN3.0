@@ -8,6 +8,10 @@ import { AdditionalChromatinSignatures } from "app/[assembly]/[entityType]/[enti
 import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Convservation/GeneConservation";
 import CcreLinkedGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Variants/CcreVariantsTab";
+import GeneExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
+import GeneLinkedCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/GeneLinkedCcres";
+import EQTLs from "./components/EQTLTables";
+import TranscriptExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Transcript/TranscriptExpression";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -158,22 +162,19 @@ const humanGeneTabs: readonly TabConfig<
     route: "",
     label: "Gene",
     iconPath: GeneIconPath,
-    // component: GeneExpression,
-    component: null,
+    component: GeneExpression,
   },
   {
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,
-    // component: GeneLinkedIcres,
-    component: null,
+    component: GeneLinkedCcres,
   },
   {
     route: "variants",
     label: "Variants",
     iconPath: VariantIconPath,
-    // component: EQTLs,
-    component: null,
+    component: EQTLs,
   },
   {
     route: "conservation",
@@ -191,7 +192,7 @@ const humanGeneTabs: readonly TabConfig<
   {
     route: "transcript-expression",
     label: "Transcript Expression",
-    component: () => <p>This should have transcript expression data</p>,
+    component: TranscriptExpression,
   },
 ] as const;
 
@@ -331,22 +332,14 @@ const mouseVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
   },
 ] as const;
 
-const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "variants" | "conservation" | "browser">[] = [
+const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "conservation" | "browser">[] = [
   {
     route: "",
     label: "Gene",
     iconPath: GeneIconPath,
-    //  component: GeneExpression
-    component: null,
+    component: GeneExpression,
   },
-  { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: () => <p>Linked mouse cCREs</p> },
-  // {
-  //   route: "variants",
-  //   label: "Variants",
-  //   iconPath: VariantIconPath,
-  //   // component: EQTLs,
-  //   component: null,
-  // },
+  { route: "ccres", label: "cCREs", iconPath: CcreIconPath, component: GeneLinkedCcres },
   {
     route: "conservation",
     label: "Conservation",
