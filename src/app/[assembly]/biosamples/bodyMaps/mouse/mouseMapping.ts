@@ -64,7 +64,7 @@ export const MouseColorMap: Record<
   "cls-13": { fill: "#0e5796", activeFill: "#39018d", activeStroke: "#efa256" },
   "cls-14": { fill: "#719cc1", activeFill: "#c75290" },
   "cls-15": { fill: "#719cc1", stroke: "#25537b", activeFill: "#c75290", activeStroke: "#4e061a" },
-  "cls-16": { fill: "#719cc1", stroke: "#25537b", activeStroke: "#4e061a" },
+  "cls-16": { fill: "#719cc1", stroke: "#25537b", activeFill: "#c75290", activeStroke: "#4e061a" },
   "cls-17": { fill: "#5689b6", activeFill: "#bf3e33" },
   "cls-18": { fill: "#477fb0", activeFill: "#c03d33" },
   "cls-19": { fill: "#719cc1", stroke: "#edf2f5", activeStroke: "#fdcac1" },
