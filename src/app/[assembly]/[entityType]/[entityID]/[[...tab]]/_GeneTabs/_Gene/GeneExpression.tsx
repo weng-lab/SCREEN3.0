@@ -34,7 +34,7 @@ export type SharedGeneExpressionPlotProps = EntityViewComponentProps & {
   isV40?: boolean;
 };
 
-const GeneExpression = ({entity}: GeneExpressionProps) => {
+const GeneExpression = ({ entity }: GeneExpressionProps) => {
   const geneData = useGeneData({ name: entity.entityID, assembly: entity.assembly });
 
   const [selected, setSelected] = useState<PointMetadata[]>([]);
@@ -47,15 +47,15 @@ const GeneExpression = ({entity}: GeneExpressionProps) => {
   );
 
   const handleSetReplicates = (newReplicates: "mean" | "all") => {
-    setSelected([])
-    setReplicates(newReplicates)
-  }
+    setSelected([]);
+    setReplicates(newReplicates);
+  };
 
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
   const scatterRef = useRef<DownloadPlotHandle>(null);
 
-  const geneExpressionData = useGeneExpression({ id: geneData?.data.id, assembly: entity.assembly });
+  const geneExpressionData = useGeneExpression({ id: geneData?.data?.id, assembly: entity.assembly, skip: !geneData });
 
   const isV40 = useMemo(() => {
     const files = geneExpressionData?.data?.[0]?.gene_quantification_files?.[0];

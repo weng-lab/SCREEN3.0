@@ -29,6 +29,7 @@ query geneexpression($assembly: String!, $gene_id: [String]) {
 export type UseGeneDataParams = {
   id: string;
   assembly: Assembly;
+  skip?: boolean
 };
 
 type GeneDatasetWithUMAP = GeneexpressionQuery["gene_dataset"][number] & {
@@ -41,13 +42,13 @@ export type UseGeneExpressionReturn = {
   error: ApolloError;
 };
 
-export const useGeneExpression = ({ id, assembly }: UseGeneDataParams): UseGeneExpressionReturn => {
+export const useGeneExpression = ({ id, assembly, skip }: UseGeneDataParams): UseGeneExpressionReturn => {
   const { data, loading, error } = useQuery(GET_GENE_EXPRESSION, {
     variables: {
-      gene_id: id.split(".")[0],
+      gene_id: id?.split(".")[0],
       assembly: assembly,
     },
-    skip: !id,
+    skip: skip || !id,
   });
 
   /**
@@ -67,7 +68,7 @@ export const useGeneExpression = ({ id, assembly }: UseGeneDataParams): UseGeneE
         };
       }),
     };
-  }, [data]);
+  }, [assembly, data]);
 
   return {
     data: correctedData?.gene_dataset,
