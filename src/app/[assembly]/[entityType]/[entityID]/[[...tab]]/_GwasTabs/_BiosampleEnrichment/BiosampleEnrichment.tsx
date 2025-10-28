@@ -5,17 +5,14 @@ import BiosampleEnrichmentTable from "./BiosampleEnrichmentTable";
 import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnrichmentData";
 import { BarData, DownloadPlotHandle } from "@weng-lab/visualization";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-export type BiosampleEnrichmentProps = {
-  study_name: string;
-};
-
-const BiosampleEnrichment = ({ study_name }: BiosampleEnrichmentProps) => {
+const BiosampleEnrichment = ({entity}: EntityViewComponentProps) => {
   const {
     data: dataGWASEnrichment,
     loading: loadingGWASEnrichment,
     error: errorGWASEnrichment,
-  } = useGWASEnrichmentData({ study: study_name });
+  } = useGWASEnrichmentData({ study: entity.entityID });
   const [selected, setSelected] = useState<GWASEnrichment[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<GWASEnrichment[]>([]);
 
@@ -55,7 +52,7 @@ const BiosampleEnrichment = ({ study_name }: BiosampleEnrichmentProps) => {
                   sortedFilteredData={sortedFilteredData}
                   onBarClicked={handleBarClick}
                   ref={lollipopRef}
-                  study={study_name}
+                  study={entity.entityID}
                 />
               ) : (
                 <></>

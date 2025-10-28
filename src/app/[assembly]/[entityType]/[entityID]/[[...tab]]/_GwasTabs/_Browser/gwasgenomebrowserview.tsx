@@ -30,6 +30,7 @@ import DomainDisplay from "common/components/gbview/DomainDisplay";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import SelectLdBlock from "./SelectLdBlock";
 import { gql, useQuery } from "@apollo/client";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 interface Transcript {
   id: string;
@@ -62,14 +63,14 @@ const browserStore = createBrowserStore({
 const trackStore = createTrackStore([]);
 const dataStore = createDataStore();
 
-export default function GWASGenomeBrowserView({ study_name }: { study_name: string }) {
+export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps) {
   //const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosample[] | null>(null);
 
   const {
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
-  } = useGWASSnpsData({ study: [study_name] });
+  } = useGWASSnpsData({ study: [entity.entityID] });
   useCustomData(
     "ld-track",
     {

@@ -126,26 +126,7 @@ export default function DetailsPage({
     }
 
     case "gwas": {
-      const gwasData = { data, loading, error } as useEntityMetadataReturn<"gwas">;
-
-      switch (tab) {
-        case "ccres":
-          return (
-            <CcreGWASStudySNPs
-              study_name={gwasData.data.study}
-              totalldblocks={data.__typename !== "GwasStudies" ? 0 : data?.totalldblocks || 0}
-            />
-          );
-        case "genes":
-          return <GWASStudyGenes study_name={gwasData.data.study} />;
-        case "variants":
-          return <GWASStudySNPs study_name={gwasData.data.study} />;
-        case "biosample_enrichment":
-          return <BiosampleEnrichment study_name={gwasData.data.study} />;
-        case "browser":
-          return <GWASGenomeBrowserView study_name={gwasData.data.study} />;
-      }
-      break;
+      return <ComponentToRender entity={entity} />;
     }
 
     case "region": {

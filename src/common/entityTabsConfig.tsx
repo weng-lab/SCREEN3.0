@@ -14,6 +14,11 @@ import EQTLs from "./components/EQTLTables";
 import TranscriptExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Transcript/TranscriptExpression";
 import VariantInfo from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpTabs/_Variant/Variant";
 import VariantLinkedCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpTabs/_cCREs/VariantLinkedCcres";
+import BiosampleEnrichment from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_BiosampleEnrichment/BiosampleEnrichment";
+import { GWASStudySNPs } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Variant/GWASStudySNPs";
+import GWASStudyCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Ccre/GWASStudyCcres";
+import { GWASStudyGenes } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/GWASStudyGenes";
+import GWASGenomeBrowserView from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/gwasgenomebrowserview";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -197,22 +202,22 @@ const humanGwasTabs: readonly TabConfig<"biosample_enrichment" | "variants" | "c
     route: "biosample_enrichment",
     label: "Biosample Enrichment",
     iconPath: BiosampleEnrichmentIconPath,
-    component: () => <></>, //VariantInfo,
+    component: BiosampleEnrichment,
   },
   {
     route: "variants",
     label: "Variant",
     iconPath: VariantIconPath,
-    component: () => <p>GWAS variants</p>,
+    component: GWASStudySNPs,
   },
   {
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,
-    component: () => <p>GWAS cCREs</p>,
+    component: GWASStudyCcres,
   },
-  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: () => <></> },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: () => <></> },
+  { route: "genes", label: "Genes", iconPath: GeneIconPath, component: GWASStudyGenes },
+  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GWASGenomeBrowserView },
 ] as const;
 
 const humanCcreTabs: readonly TabConfig<
@@ -323,7 +328,7 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "conservation" | "browser
 ] as const;
 
 const mouseCcreTabs: readonly TabConfig<
-  "" | "genes" | "variants" | "browser" | "conservation" | "functional-characterization"
+  "" | "genes" | "browser" | "conservation" | "functional-characterization"
 >[] = [
   {
     route: "",
@@ -337,12 +342,6 @@ const mouseCcreTabs: readonly TabConfig<
     iconPath: GeneIconPath,
     component: CcreLinkedGenes,
   },
-  // {
-  //   route: "variants",
-  //   label: "Variant",
-  //   iconPath: VariantIconPath,
-  //   component: () => <p>Variants for mouse cCREs </p>,
-  // },
   {
     route: "conservation",
     label: "Conservation",

@@ -2,21 +2,16 @@ import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
 import { Tooltip, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
-
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
-//import { QuestionMark, info } from "@mui/icons-material";
 import InfoIcon from "@mui/icons-material/Info";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-export type GWASStudySNPsProps = {
-  study_name: string;
-};
-
-export const GWASStudySNPs = ({ study_name }: GWASStudySNPsProps) => {
+export const GWASStudySNPs = ({entity}: EntityViewComponentProps) => {
   const {
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
-  } = useGWASSnpsData({ study: [study_name] });
+  } = useGWASSnpsData({ study: [entity.entityID] });
 
   const columns: GridColDef<(typeof dataGWASSnps)[number]>[] = [
     {
