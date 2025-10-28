@@ -1,17 +1,18 @@
 "use client";
 import { Typography } from "@mui/material";
-import { GenomicRange } from "common/types/globalTypes";
 import { useSnpData } from "common/hooks/useSnpData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { parseGenomicRangeString } from "common/utility";
 
-const IntersectingSNPs = ({ region }: { region: GenomicRange }) => {
+const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
   const {
     data: dataSnps,
     loading: loadingSnps,
     error: errorSnps,
   } = useSnpData({
-    coordinates: { chromosome: region.chromosome, start: region.start, end: region.end },
+    coordinates: parseGenomicRangeString(entity.entityID),
     assembly: "GRCh38",
   });
 
@@ -43,9 +44,10 @@ const IntersectingSNPs = ({ region }: { region: GenomicRange }) => {
   ) : (
     <Table
       showToolbar
-      rows={dataSnps || []}
+      rows={dataSnps}
       columns={columns}
       loading={loadingSnps}
+      error={!!errorSnps}
       label={`Intersecting SNPs`}
       emptyTableFallback={"No intersecting SNPs found in this region"}
       divHeight={{ maxHeight: "400px" }}

@@ -9,17 +9,20 @@ import { useState } from "react";
 import { CancelRounded } from "@mui/icons-material";
 import { RegistryBiosamplePlusRNA } from "../../../../../../../common/components/BiosampleTables/types";
 import BiosampleSelectModal from "common/components/BiosampleSelectModal";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { parseGenomicRangeString } from "common/utility";
 
-const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembly: string }) => {
+const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
+
 
   const {
     data: dataCcres,
     loading: loadingCcres,
     error: errorCcres,
   } = useCcreData({
-    coordinates: region,
-    assembly: assembly as Assembly,
+    coordinates: parseGenomicRangeString(entity.entityID),
+    assembly: entity.assembly,
     nearbygeneslimit: 1,
     cellType: selectedBiosample ? selectedBiosample.name : undefined,
   });
@@ -68,7 +71,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
       ),
       valueGetter: (_, row) => row.info.accession,
       renderCell: (params) => (
-        <LinkComponent href={`/${assembly}/ccre/${params.value}`}>
+        <LinkComponent href={`/${entity.assembly}/ccre/${params.value}`}>
           <i>{params.value}</i>
         </LinkComponent>
       ),
@@ -206,7 +209,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
       valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
       renderCell: (params) => (
         <span>
-          <LinkComponent href={`/${assembly}/gene/${params.row.nearestgenes[0].gene}`}>
+          <LinkComponent href={`/${entity.assembly}/gene/${params.row.nearestgenes[0].gene}`}>
             <i>{params.row.nearestgenes[0].gene}</i>
           </LinkComponent>
           &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
@@ -270,6 +273,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
         rows={dataCcres || []}
         columns={columns}
         loading={loadingCcres}
+        error={!!errorCcres}
         label={`Intersecting cCREs`}
         emptyTableFallback={"No intersecting cCREs found in this region"}
         toolbarSlot={
@@ -287,7 +291,7 @@ const IntersectingCcres = ({ region, assembly }: { region: GenomicRange; assembl
         }}
       >
         <BiosampleSelectModal
-          assembly={assembly as Assembly}
+          assembly={entity.assembly}
           open={Boolean(virtualAnchor)}
           setOpen={handleClickClose}
           onChange={(selected) => handleBiosampleSelected(selected[0])}

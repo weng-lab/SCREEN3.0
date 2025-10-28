@@ -21,7 +21,7 @@ import HighlightDialog from "./HighlightDialog";
 import { randomColor } from "./utils";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
-import { AnyEntityType } from "common/entityTabsConfig";
+import { AnyEntityType, EntityViewComponentProps } from "common/entityTabsConfig";
 import CCRETooltip from "./CcreTooltip";
 import DomainDisplay from "./DomainDisplay";
 import GBButtons from "./GBButtons";
@@ -40,6 +40,7 @@ import {
   setLocalChromHmmTissues,
 } from "common/hooks/useLocalStorage";
 import PageviewIcon from "@mui/icons-material/Pageview";
+import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 
 interface Transcript {
   id: string;
@@ -84,17 +85,22 @@ function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType) {
   };
 }
 
-export default function GenomeBrowserView({
-  coordinates,
-  name,
-  type,
-  assembly,
-}: {
-  coordinates: GenomicRange;
-  name: string;
-  type: AnyEntityType;
-  assembly: Assembly;
-}) {
+export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
+  const { data, loading, error } = useEntityMetadata(entity);
+  const name =
+    data.__typename === "Gene"
+      ? data.name
+      : data.__typename === "SCREENSearchResult"
+        ? data.info.accession
+        : data.__typename === "SNP"
+          ? data.id
+          : null;
+  const coordinates =
+    data.__typename === "SCREENSearchResult"
+      ? { chromosome: data.chrom, start: data.start, end: data.start + data.len }
+      : data.coordinates;
+        
+
   const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
   const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>(getLocalChromHmmTissues());
 

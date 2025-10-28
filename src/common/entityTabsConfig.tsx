@@ -19,6 +19,9 @@ import { GWASStudySNPs } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]
 import GWASStudyCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Ccre/GWASStudyCcres";
 import { GWASStudyGenes } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/GWASStudyGenes";
 import GWASGenomeBrowserView from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/gwasgenomebrowserview";
+import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
+import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
+import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -278,22 +281,19 @@ const humanRegionTabs: readonly TabConfig<"ccres" | "genes" | "variants" | "brow
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,
-    // component: IntersectingCcres
-    component: null,
+    component: IntersectingCcres
   },
   {
     route: "genes",
     label: "Genes",
     iconPath: GeneIconPath,
-    //  component: IntersectingGenes
-    component: null,
+     component: IntersectingGenes
   },
   {
     route: "variants",
     label: "Variant",
     iconPath: VariantIconPath,
-    // component: IntersectingSNPs,
-    component: null,
+    component: IntersectingSNPs,
   },
   {
     route: "browser",
@@ -363,27 +363,19 @@ const mouseCcreTabs: readonly TabConfig<
   },
 ] as const;
 
-const mouseRegionTabs: readonly TabConfig<"variants" | "ccres" | "genes" | "browser">[] = [
+const mouseRegionTabs: readonly TabConfig<"ccres" | "genes" | "browser">[] = [
   {
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,
-    //  component: IntersectingCcres
-    component: null,
+    component: IntersectingCcres,
   },
   {
     route: "genes",
     label: "Genes",
     iconPath: GeneIconPath,
-    //  component: IntersectingGenes
-    component: null,
+    component: IntersectingGenes,
   },
-  // {
-  //   route: "variants",
-  //   label: "Variant",
-  //   iconPath: VariantIconPath,
-  //   component: () => <p>This page should have intersecting mouse SNPs</p>,
-  // },
   {
     route: "browser",
     label: "Genome Browser",

@@ -105,46 +105,5 @@ export default function DetailsPage({
         assembly={assembly}
       />
     );
-  }
-
-  /**
-   * For now we are keeping this big switch block to not have to restructure all of the files right now during this refactor.
-   * Eventually we can vastly simplify this, and remove data fetching from this file and let the leaf components do their own fetching.
-   */
-
-  switch (entityType) {
-    case "variant": {
-      return <ComponentToRender entity={entity} />;
-    }
-
-    case "gene": {
-      return <ComponentToRender entity={entity} />;
-    }
-
-    case "ccre": {
-      return <ComponentToRender entity={entity} />;
-    }
-
-    case "gwas": {
-      return <ComponentToRender entity={entity} />;
-    }
-
-    case "region": {
-      const region = parseGenomicRangeString(entityID);
-
-      switch (tab) {
-        case "ccres":
-          return <IntersectingCcres assembly={assembly} region={region} />;
-        case "genes":
-          return <IntersectingGenes assembly={assembly} region={region} />;
-        case "variants":
-          //TODO: Add Mouse SNPs
-          return assembly === "mm10" ? (
-            <p>This page should have intersecting mouse SNPs</p>
-          ) : (
-            <IntersectingSNPs region={region} />
-          );
-      }
-    }
-  }
+  } else return <ComponentToRender entity={entity} />
 }

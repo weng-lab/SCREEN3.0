@@ -4,12 +4,14 @@ import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { useGeneData } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
-const IntersectionGenes = ({ region, assembly }: { region: GenomicRange; assembly: string }) => {
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { parseGenomicRangeString } from "common/utility";
+const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {
   const {
     data: dataGenes,
     loading: loadingGenes,
     error: errorGenes,
-  } = useGeneData({ coordinates: region, assembly: assembly as Assembly });
+  } = useGeneData({ coordinates: parseGenomicRangeString(entity.entityID), assembly: entity.assembly });
 
   const columns: GridColDef<(typeof dataGenes)[number]>[] = [
     {
@@ -20,7 +22,7 @@ const IntersectionGenes = ({ region, assembly }: { region: GenomicRange; assembl
         </strong>
       ),
       renderCell: (params) => (
-        <LinkComponent href={`/${assembly}/gene/${params.value}`}>
+        <LinkComponent href={`/${entity.assembly}/gene/${params.value}`}>
           <i>{params.value}</i>
         </LinkComponent>
       ),
@@ -75,9 +77,10 @@ const IntersectionGenes = ({ region, assembly }: { region: GenomicRange; assembl
   ) : (
     <Table
       showToolbar
-      rows={dataGenes || []}
+      rows={dataGenes}
       columns={columns}
       loading={loadingGenes}
+      error={!!errorGenes}
       label={`Intersecting Genes`}
       emptyTableFallback={"No intersecting Genes found in this region"}
       divHeight={{ maxHeight: "600px" }}
