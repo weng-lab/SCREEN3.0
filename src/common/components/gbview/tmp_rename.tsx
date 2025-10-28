@@ -14,7 +14,7 @@ import {
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Assembly, GenomicRange } from "common/types/globalTypes";
+import { GenomicRange } from "common/types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import ControlButtons from "./ControlButtons";
 import HighlightDialog from "./HighlightDialog";
@@ -40,7 +40,6 @@ import {
   setLocalChromHmmTissues,
 } from "common/hooks/useLocalStorage";
 import PageviewIcon from "@mui/icons-material/Pageview";
-import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 
 interface Transcript {
   id: string;
@@ -85,28 +84,20 @@ function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType) {
   };
 }
 
-export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
-  const { data, loading, error } = useEntityMetadata(entity);
-  const name =
-    data.__typename === "Gene"
-      ? data.name
-      : data.__typename === "SCREENSearchResult"
-        ? data.info.accession
-        : data.__typename === "SNP"
-          ? data.id
-          : null;
-  const coordinates =
-    data.__typename === "SCREENSearchResult"
-      ? { chromosome: data.chrom, start: data.start, end: data.start + data.len }
-      : data.coordinates;
-        
+type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicRange };
+
+export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowserViewProps) {
+  /**
+   * @todo when refactoring this to include GWAS studies need to change this logic
+   */
+  const name = entity.entityID;
 
   const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
   const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>(getLocalChromHmmTissues());
 
   const initialState: InitialBrowserState = useMemo(() => {
     return {
-      domain: getLocalBrowser(name)?.domain || expandCoordinates(coordinates, type),
+      domain: getLocalBrowser(name)?.domain ?? expandCoordinates(coordinates, entity.entityType),
       marginWidth: 150,
       trackWidth: 1350,
       multiplier: 3,
@@ -118,7 +109,7 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
         },
       ],
     };
-  }, [getLocalBrowser, coordinates, type, name]);
+  }, [name, coordinates, entity.entityType]);
 
   const browserStore = createBrowserStoreMemo(initialState, [initialState]);
   const addHighlight = browserStore((state) => state.addHighlight);
@@ -130,7 +121,7 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
 
   useEffect(() => {
     setLocalBrowser(name, { domain, highlights });
-  }, [domain, highlights]);
+  }, [domain, highlights, name]);
 
   useEffect(() => {
     setLocalBiosamples(selectedBiosamples);
@@ -153,9 +144,9 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
   const onCcreClick = useCallback(
     (item: Rect) => {
       const accession = item.name;
-      router.push(`/${assembly}/ccre/${accession}`);
+      router.push(`/${entity.assembly}/ccre/${accession}`);
     },
-    [assembly, router]
+    [entity.assembly, router]
   );
 
   const onGeneClick = useCallback(
@@ -164,9 +155,9 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
       if (name.includes("ENSG")) {
         return;
       }
-      router.push(`/${assembly}/gene/${name}`);
+      router.push(`/${entity.assembly}/gene/${name}`);
     },
-    [assembly, router]
+    [entity.assembly, router]
   );
 
   const initialTracks: Track[] = useMemo(() => {
@@ -205,12 +196,12 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
           track.onClick = (item: Rect) => {
             onCcreClick(item);
           };
-          track.tooltip = (item: Rect) => <CCRETooltip assembly={assembly} name={item.name || ""} {...item} />;
+          track.tooltip = (item: Rect) => <CCRETooltip assembly={entity.assembly} name={item.name || ""} {...item} />;
         }
       });
       return localTracks;
     }
-    const tracks = assembly === "GRCh38" ? humanDefaultTracks : mouseDefaultTracks;
+    const tracks = entity.assembly === "GRCh38" ? humanDefaultTracks : mouseDefaultTracks;
     const defaultTracks: Track[] = [
       {
         id: "gene-track",
@@ -219,10 +210,10 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
         height: 50,
         color: "#AAAAAA",
         trackType: TrackType.Transcript,
-        assembly: assembly,
-        version: assembly === "GRCh38" ? 40 : 25,
+        assembly: entity.assembly,
+        version: entity.assembly === "GRCh38" ? 40 : 25,
         displayMode: DisplayMode.Squish,
-        geneName: type === "gene" ? name : "",
+        geneName: entity.entityType === "gene" ? name : "",
         onHover: (item: Transcript) => {
           addHighlight({
             id: item.name + "-temp" || "dsadsfd",
@@ -245,7 +236,7 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
         color: "#D05F45",
         trackType: TrackType.BigBed,
         displayMode: DisplayMode.Dense,
-        url: `https://downloads.wenglab.org/${assembly}-cCREs.DCC.bigBed`,
+        url: `https://downloads.wenglab.org/${entity.assembly}-cCREs.DCC.bigBed`,
         onHover: (rect) => {
           addHighlight({
             id: rect.name + "-temp" || "ihqoviun",
@@ -259,12 +250,12 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
         onClick: (item: Rect) => {
           onCcreClick(item);
         },
-        tooltip: (rect: Rect) => <CCRETooltip assembly={assembly} name={rect.name || ""} {...rect} />,
+        tooltip: (rect: Rect) => <CCRETooltip assembly={entity.assembly} name={rect.name || ""} {...rect} />,
       },
     ];
 
     return [...defaultTracks, ...tracks];
-  }, [assembly, type, name, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
+  }, [entity.assembly, entity.entityType, name, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
 
   const trackStore = createTrackStoreMemo(initialTracks, [initialTracks]);
 
@@ -284,8 +275,8 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
     removeHighlight("tmp-ccre");
   };
 
-  useBiosampleTracks(assembly, selectedBiosamples, trackStore, onHover, onLeave, onCcreClick);
-  useChromHmmTracks(selectedChromHmmTissues, coordinates, assembly, trackStore, addHighlight, removeHighlight);
+  useBiosampleTracks(entity.assembly, selectedBiosamples, trackStore, onHover, onLeave, onCcreClick);
+  useChromHmmTracks(selectedChromHmmTissues, coordinates, entity.assembly, trackStore, addHighlight, removeHighlight);
 
   useEffect(() => {
     setLocalTracks(currentTracks);
@@ -309,7 +300,7 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
   const theme = useTheme();
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
-  const geneVersion = assembly === "GRCh38" ? [29, 40] : 25;
+  const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
 
   useEffect(() => {
     console.log(currentTracks.map((t) => t.id));
@@ -321,7 +312,7 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
         <Box display="flex" gap={2} alignItems="center">
           <GenomeSearch
             size="small"
-            assembly={assembly as Assembly}
+            assembly={entity.assembly}
             geneVersion={geneVersion}
             onSearchSubmit={handeSearchSubmit}
             queries={["Gene", "SNP", "cCRE", "Coordinate"]}
@@ -356,7 +347,7 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
             startIcon={<PageviewIcon />}
             color="primary"
             size="small"
-            onClick={() => setDomain(expandCoordinates(coordinates, type))}
+            onClick={() => setDomain(expandCoordinates(coordinates, entity.entityType))}
           >
             Recenter on {name || "Selected Region"}
           </Button>
@@ -364,7 +355,7 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
 
         <GBButtons
           browserStore={browserStore}
-          assembly={assembly}
+          assembly={entity.assembly}
           onBiosampleSelected={onBiosampleSelected}
           selectedBiosamples={selectedBiosamples}
           selectedChromHmmTissues={selectedChromHmmTissues}
@@ -381,7 +372,7 @@ export default function GenomeBrowserView({entity}: EntityViewComponentProps) {
         p={1}
         mt={2}
       >
-        <DomainDisplay browserStore={browserStore} assembly={assembly} />
+        <DomainDisplay browserStore={browserStore} assembly={entity.assembly} />
         <ControlButtons browserStore={browserStore} />
       </Stack>
       <Browser browserStore={browserStore} trackStore={trackStore} />

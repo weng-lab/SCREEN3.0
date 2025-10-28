@@ -1,6 +1,6 @@
 import { Assembly } from "common/types/globalTypes";
-import type { ReactElement } from "react";
-import { AnyOpenEntity } from "./components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { type ReactElement } from "react";
+import { AnyOpenEntity } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionalCharacterization/FunctionalCharacterization";
@@ -22,6 +22,7 @@ import GWASGenomeBrowserView from "app/[assembly]/[entityType]/[entityID]/[[...t
 import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
+import GenomeBrowser from "common/components/gbview/GenomeBrowser";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -74,6 +75,7 @@ type HumanGwasRoutes = ExtractRoutes<typeof humanGwasTabs>;
 type MouseGeneRoutes = ExtractRoutes<typeof mouseGeneTabs>;
 type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
 type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>;
+//can I remove the types from below?
 
 export type AnyTabRoute =
   | HumanVariantRoutes
@@ -109,7 +111,7 @@ type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
     ? readonly TabConfig<MouseCcreRoutes>[]
     : E extends "gene"
       ? readonly TabConfig<MouseGeneRoutes>[]
-        : readonly TabConfig<MouseRegionRoutes>[];
+      : readonly TabConfig<MouseRegionRoutes>[];
 
 type EntityTabsConfig = {
   readonly [A in Assembly]: {
@@ -131,7 +133,7 @@ type TabConfig<R extends string = string> = {
   component: (props: EntityViewComponentProps) => ReactElement;
 };
 
-const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[] = [
+const humanVariantTabs = [
   {
     route: "",
     label: "Variant",
@@ -154,14 +156,11 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
-    // component: GenomeBrowserView,
-    component: null,
+    component: GenomeBrowser,
   },
-] as const;
+] as const satisfies TabConfig[];
 
-const humanGeneTabs: readonly TabConfig<
-  "" | "ccres" | "variants" | "conservation" | "transcript-expression" | "browser"
->[] = [
+const humanGeneTabs = [
   {
     route: "",
     label: "Gene",
@@ -190,17 +189,16 @@ const humanGeneTabs: readonly TabConfig<
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
-    // component: GenomeBrowserView,
-    component: null,
+    component: GenomeBrowser,
   },
   {
     route: "transcript-expression",
     label: "Transcript Expression",
     component: TranscriptExpression,
   },
-] as const;
+] as const satisfies TabConfig[];
 
-const humanGwasTabs: readonly TabConfig<"biosample_enrichment" | "variants" | "ccres" | "genes" | "browser">[] = [
+const humanGwasTabs = [
   {
     route: "biosample_enrichment",
     label: "Biosample Enrichment",
@@ -221,17 +219,9 @@ const humanGwasTabs: readonly TabConfig<"biosample_enrichment" | "variants" | "c
   },
   { route: "genes", label: "Genes", iconPath: GeneIconPath, component: GWASStudyGenes },
   { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GWASGenomeBrowserView },
-] as const;
+] as const satisfies TabConfig[];
 
-const humanCcreTabs: readonly TabConfig<
-  | ""
-  | "genes"
-  | "variants"
-  | "conservation"
-  | "functional-characterization"
-  | "browser"
-  | "additional-chromatin-signatures"
->[] = [
+const humanCcreTabs = [
   {
     route: "",
     label: "cCRE",
@@ -266,28 +256,27 @@ const humanCcreTabs: readonly TabConfig<
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
-    // component: GenomeBrowserView,
-    component: null,
+    component: GenomeBrowser,
   },
   {
     route: "additional-chromatin-signatures",
     label: "Additional Chromatin Signatures",
     component: AdditionalChromatinSignatures,
   },
-] as const;
+] as const satisfies TabConfig[];
 
-const humanRegionTabs: readonly TabConfig<"ccres" | "genes" | "variants" | "browser">[] = [
+const humanRegionTabs = [
   {
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,
-    component: IntersectingCcres
+    component: IntersectingCcres,
   },
   {
     route: "genes",
     label: "Genes",
     iconPath: GeneIconPath,
-     component: IntersectingGenes
+    component: IntersectingGenes,
   },
   {
     route: "variants",
@@ -299,12 +288,11 @@ const humanRegionTabs: readonly TabConfig<"ccres" | "genes" | "variants" | "brow
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
-    //  component: GenomeBrowserView
-    component: null,
+    component: GenomeBrowser,
   },
-] as const;
+] as const satisfies TabConfig[];
 
-const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "conservation" | "browser">[] = [
+const mouseGeneTabs = [
   {
     route: "",
     label: "Gene",
@@ -322,14 +310,11 @@ const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "conservation" | "browser
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
-    // component: GenomeBrowserView
-    component: null,
+    component: GenomeBrowser,
   },
-] as const;
+] as const satisfies TabConfig[];
 
-const mouseCcreTabs: readonly TabConfig<
-  "" | "genes" | "browser" | "conservation" | "functional-characterization"
->[] = [
+const mouseCcreTabs = [
   {
     route: "",
     label: "cCRE",
@@ -358,12 +343,11 @@ const mouseCcreTabs: readonly TabConfig<
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
-    // component: GenomeBrowserView
-    component: null,
+    component: GenomeBrowser,
   },
-] as const;
+] as const satisfies TabConfig[];
 
-const mouseRegionTabs: readonly TabConfig<"ccres" | "genes" | "browser">[] = [
+const mouseRegionTabs = [
   {
     route: "ccres",
     label: "cCREs",
@@ -380,10 +364,9 @@ const mouseRegionTabs: readonly TabConfig<"ccres" | "genes" | "browser">[] = [
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
-    // component: GenomeBrowserView
-    component: null,
+    component: GenomeBrowser,
   },
-] as const;
+] as const satisfies TabConfig[];
 
 export const entityTabsConfig: EntityTabsConfig = {
   GRCh38: {

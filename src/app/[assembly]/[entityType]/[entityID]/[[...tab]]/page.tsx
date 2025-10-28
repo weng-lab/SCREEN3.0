@@ -1,31 +1,11 @@
 "use client";
-import { CircularProgress, Typography } from "@mui/material";
-import GenomeBrowserView from "common/components/gbview/GenomeBrowserView";
-import { useEntityMetadata, useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
 import { isValidAssembly } from "common/types/globalTypes";
 import { getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
-import GeneExpression from "./_GeneTabs/_Gene/GeneExpression";
-import CcreLinkedGenes from "./_CcreTabs/_Genes/CcreLinkedGenes";
-import CcreVariantsTab from "./_CcreTabs/_Variants/CcreVariantsTab";
-import GeneLinkedCcres from "./_GeneTabs/_cCREs/GeneLinkedCcres";
-import VariantInfo from "./_SnpTabs/_Variant/Variant";
-import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
-import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
-import { parseGenomicRangeString } from "common/utility";
 import { use } from "react";
-import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
-import EQTLs from "common/components/EQTLTables";
-import CcreGWASStudySNPs from "./_GwasTabs/_Ccre/GWASStudyCcres";
-import { GWASStudyGenes } from "./_GwasTabs/_Gene/GWASStudyGenes";
-import { GWASStudySNPs } from "./_GwasTabs/_Variant/GWASStudySNPs";
-import BiosampleEnrichment from "./_GwasTabs/_BiosampleEnrichment/BiosampleEnrichment";
 import {
   CandidateOpenEntity,
   isValidOpenEntity,
 } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
-import GWASGenomeBrowserView from "./_GwasTabs/_Browser/gwasgenomebrowserview";
-import VariantLinkedCcres from "./_SnpTabs/_cCREs/VariantLinkedCcres";
-import TranscriptExpression from "./_GeneTabs/_Transcript/TranscriptExpression";
 
 export default function DetailsPage({
   params,
@@ -65,45 +45,8 @@ export default function DetailsPage({
     throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity));
   }
 
-  const { data, loading, error } = useEntityMetadata({ assembly, entityType, entityID: decodeURIComponent(entityID) });
-
-  if (loading) {
-    return <CircularProgress />;
-  }
-
-  if (data && data.__typename !== "SCREENSearchResult" && data.__typename !== "GwasStudies" && !data?.coordinates) {
-    return <Typography>Issue fetching data on {entityID}</Typography>;
-  }
-
-  if (error) {
-    throw new Error(JSON.stringify(error));
-  }
-
   // Find component we need to render for this route
   const ComponentToRender = getComponentForEntity(entity);
-  // Once each component is refactored to independently fetch it's own data we can simply do the following:
-  // return <ComponentToRender entity={entity} />
 
-  if (tab === "browser" && data.__typename !== "GwasStudies") {
-    return (
-      <GenomeBrowserView
-        coordinates={
-          data.__typename === "SCREENSearchResult"
-            ? { chromosome: data.chrom, start: data.start, end: data.start + data.len }
-            : data.coordinates
-        }
-        name={
-          data.__typename === "Gene"
-            ? data.name
-            : data.__typename === "SCREENSearchResult"
-              ? data.info.accession
-              : data.__typename === "SNP"
-                ? data.id
-                : null
-        }
-        type={entityType}
-        assembly={assembly}
-      />
-    );
-  } else return <ComponentToRender entity={entity} />
+  return <ComponentToRender entity={entity} />;
 }

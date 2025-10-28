@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, Dispatch, useReducer } from "react";
+import { createContext, Dispatch, ReactNode, useReducer } from "react";
 import { Assembly, isValidAssembly } from "common/types/globalTypes";
 import {
   AnyEntityType,
@@ -115,7 +115,7 @@ const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAc
 
 export const OpenEntitiesContext = createContext<[OpenEntityState, Dispatch<OpenEntityAction>]>(null);
 
-export const OpenEntitiesContextProvider = ({ children }) => {
+export const OpenEntitiesContextProvider = ({ children }: { children: ReactNode }) => {
   // The effect to sync state to url in OpenEntitiesTabs relies on this being an empty array on initial load.
   // (and only ever being an empty array on initial load)
   // It checks openEntities.length before allowing pushes to the url.
