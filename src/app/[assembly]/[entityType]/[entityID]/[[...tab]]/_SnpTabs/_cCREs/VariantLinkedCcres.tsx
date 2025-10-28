@@ -3,20 +3,15 @@ import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
-import { UseSnpDataReturn } from "common/hooks/useSnpData";
+import { useSnpData } from "common/hooks/useSnpData";
 import { useMemo, useState } from "react";
-import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { DistanceSlider } from "./DistanceSlider";
 import { calcSignedDistRegionToRegion } from "common/utility";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-const VariantLinkedCcres = ({
-  variantData,
-}: {
-  variantData: UseSnpDataReturn<{
-    coordinates: GenomicRange | GenomicRange[];
-    assembly: Assembly;
-  }>;
-}) => {
+const VariantLinkedCcres = ({entity}: EntityViewComponentProps) => {
+  const {data: variantData, loading: variantLoading, error: variantError} = useSnpData({rsID: entity.entityID, assembly: entity.assembly})
+
   const [distance, setDistance] = useState<number>(500);
 
   const handleDistanceChange = (distance: number) => {
@@ -24,19 +19,20 @@ const VariantLinkedCcres = ({
   };
 
   const coordinates = useMemo(() => {
-    if (!variantData.data[0]?.coordinates) return undefined;
+    if (!variantData?.coordinates) return null;
 
-    const { chromosome, start, end } = variantData.data[0].coordinates;
+    const { chromosome, start, end } = variantData.coordinates;
     return {
       chromosome,
       start: start - distance,
       end: end + distance,
     };
-  }, [variantData.data, distance]);
+  }, [variantData, distance]);
 
-  const { data: dataCcres, loading: loadingCcres } = useCcreData({
+  const { data: dataCcres, loading: loadingCcres, error: errorCcres } = useCcreData({
     coordinates,
     assembly: "GRCh38",
+    skip: !coordinates
   });
 
   const nearbyccres = dataCcres?.map((d) => {
@@ -47,7 +43,7 @@ const VariantLinkedCcres = ({
       end: d?.start + d?.len,
       group: d?.pct,
       distance: calcSignedDistRegionToRegion(
-        { start: variantData.data[0].coordinates.start, end: variantData.data[0].coordinates.end },
+        { start: coordinates.start, end: coordinates.end },
         { start: d?.start, end: d?.start + d?.len }
       ),
     };
@@ -116,7 +112,7 @@ const VariantLinkedCcres = ({
       headerName: "Distance",
       renderHeader: () => (
         <>
-          Distance from&nbsp;<i>{variantData.data[0]?.id}</i>
+          Distance from&nbsp;<i>{entity.entityID}</i>
         </>
       ),
       type: "number",
@@ -131,44 +127,43 @@ const VariantLinkedCcres = ({
   ];
 
   return (
-    <Box width={"100%"}>
-      <Table
-        rows={nearbyccres}
-        columns={cols}
-        label={`Nearby cCREs`}
-        loading={variantData.loading || loadingCcres}
-        initialState={{
-          sorting: {
-            sortModel: [{ field: "distance", sort: "asc" }],
-          },
-        }}
-        emptyTableFallback={
-          <Stack
-            direction={"row"}
-            border={"1px solid #e0e0e0"}
-            borderRadius={1}
-            p={2}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Stack direction={"row"} spacing={1}>
-              <InfoOutlineRounded />
-              <Typography>
-                No Nearby cCREs Found Within {distance}bp of {variantData.data[0]?.id}
-              </Typography>
-            </Stack>
-            <DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />
+    <Table
+      rows={nearbyccres}
+      columns={cols}
+      label={`Nearby cCREs`}
+      loading={variantLoading || loadingCcres}
+      error={!!(errorCcres || variantError)}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: "distance", sort: "asc" }],
+        },
+      }}
+      emptyTableFallback={
+        <Stack
+          direction={"row"}
+          border={"1px solid #e0e0e0"}
+          borderRadius={1}
+          p={2}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          <Stack direction={"row"} spacing={1}>
+            <InfoOutlineRounded />
+            <Typography>
+              No Nearby cCREs Found Within {distance}bp of {entity.entityID}
+            </Typography>
           </Stack>
-        }
-        divHeight={{ maxHeight: "600px" }}
-        toolbarSlot={<DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />}
-        labelTooltip={
-          <Typography component="span" variant="subtitle2">
-            (Within {distance}bp of {variantData.data[0]?.id})
-          </Typography>
-        }
-      />
-    </Box>
+          <DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />
+        </Stack>
+      }
+      divHeight={{ maxHeight: "600px" }}
+      toolbarSlot={<DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />}
+      labelTooltip={
+        <Typography component="span" variant="subtitle2">
+          (Within {distance}bp of {entity.entityID})
+        </Typography>
+      }
+    />
   );
 };
 

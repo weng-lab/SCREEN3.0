@@ -12,6 +12,8 @@ import GeneExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_G
 import GeneLinkedCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/GeneLinkedCcres";
 import EQTLs from "./components/EQTLTables";
 import TranscriptExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Transcript/TranscriptExpression";
+import VariantInfo from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpTabs/_Variant/Variant";
+import VariantLinkedCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpTabs/_cCREs/VariantLinkedCcres";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -38,7 +40,7 @@ const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
 
 export const validEntityTypes = {
   GRCh38: ["ccre", "gene", "variant", "region", "gwas"],
-  mm10: ["ccre", "gene", "variant", "region"],
+  mm10: ["ccre", "gene", "region"],
 } as const;
 
 export type EntityType<A extends Assembly> = (typeof validEntityTypes)[A][number];
@@ -61,7 +63,6 @@ type HumanCcreRoutes = ExtractRoutes<typeof humanCcreTabs>;
 type HumanRegionRoutes = ExtractRoutes<typeof humanRegionTabs>;
 type HumanGwasRoutes = ExtractRoutes<typeof humanGwasTabs>;
 
-type MouseVariantRoutes = ExtractRoutes<typeof mouseVariantTabs>;
 type MouseGeneRoutes = ExtractRoutes<typeof mouseGeneTabs>;
 type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
 type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>;
@@ -72,7 +73,6 @@ export type AnyTabRoute =
   | HumanCcreRoutes
   | HumanRegionRoutes
   | HumanGwasRoutes
-  | MouseVariantRoutes
   | MouseGeneRoutes
   | MouseCcreRoutes
   | MouseRegionRoutes;
@@ -101,8 +101,6 @@ type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
     ? readonly TabConfig<MouseCcreRoutes>[]
     : E extends "gene"
       ? readonly TabConfig<MouseGeneRoutes>[]
-      : E extends "variant"
-        ? readonly TabConfig<MouseVariantRoutes>[]
         : readonly TabConfig<MouseRegionRoutes>[];
 
 type EntityTabsConfig = {
@@ -130,21 +128,19 @@ const humanVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[]
     route: "",
     label: "Variant",
     iconPath: VariantIconPath,
-    // component: VariantInfo,
-    component: null,
+    component: VariantInfo,
   },
   {
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,
-    component: () => <p>cCREs intersecting this variant page</p>,
+    component: VariantLinkedCcres,
   },
   {
     route: "genes",
     label: "Genes",
     iconPath: GeneIconPath,
-    // component: EQTLs,
-    component: null,
+    component: EQTLs,
   },
   {
     route: "browser",
@@ -303,35 +299,6 @@ const humanRegionTabs: readonly TabConfig<"ccres" | "genes" | "variants" | "brow
   },
 ] as const;
 
-const mouseVariantTabs: readonly TabConfig<"" | "ccres" | "genes" | "browser">[] = [
-  {
-    route: "",
-    label: "Variant",
-    iconPath: VariantIconPath,
-    component: () => <p>variant tab for mouse</p>,
-  },
-  {
-    route: "ccres",
-    label: "cCREs",
-    iconPath: CcreIconPath,
-    component: () => <p>cCREs intersecting this variant page</p>,
-  },
-  {
-    route: "genes",
-    label: "Genes",
-    iconPath: GeneIconPath,
-    //  component: EQTLs
-    component: null,
-  },
-  {
-    route: "browser",
-    label: "Genome Browser",
-    iconPath: GbIconPath,
-    // component: GenomeBrowserView
-    component: null,
-  },
-] as const;
-
 const mouseGeneTabs: readonly TabConfig<"" | "ccres" | "conservation" | "browser">[] = [
   {
     route: "",
@@ -436,7 +403,6 @@ export const entityTabsConfig: EntityTabsConfig = {
     gwas: humanGwasTabs,
   },
   mm10: {
-    variant: mouseVariantTabs,
     gene: mouseGeneTabs,
     ccre: mouseCcreTabs,
     region: mouseRegionTabs,

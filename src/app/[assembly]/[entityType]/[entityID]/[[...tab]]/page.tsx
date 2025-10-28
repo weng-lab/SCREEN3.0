@@ -114,32 +114,15 @@ export default function DetailsPage({
 
   switch (entityType) {
     case "variant": {
-      const variantData = { data, loading, error } as useEntityMetadataReturn<"variant">;
-
-      switch (tab) {
-        case "":
-          return assembly === "GRCh38" ? <VariantInfo snpid={variantData.data.id} /> : <></>;
-        case "ccres":
-          return (
-            <VariantLinkedCcres
-              variantData={{
-                ...variantData,
-                data: [variantData.data],
-              }}
-            />
-          );
-        case "genes":
-          return <EQTLs entity={entity} />;
-      }
-      break;
+      return <ComponentToRender entity={entity} />;
     }
 
-    case ("gene"): {
-      return <ComponentToRender entity={entity} />
+    case "gene": {
+      return <ComponentToRender entity={entity} />;
     }
 
     case "ccre": {
-      return <ComponentToRender entity={entity} />
+      return <ComponentToRender entity={entity} />;
     }
 
     case "gwas": {
