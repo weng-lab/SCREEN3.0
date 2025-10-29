@@ -82,6 +82,7 @@ export function toScientificNotation(num: number, sigFigs?: number) {
   const scientific = num.toExponential(sigFigs ?? undefined);
 
   // Split the scientific notation into the coefficient and exponent parts
+  // eslint-disable-next-line prefer-const
   let [coefficient, exponent] = scientific.split("e");
 
   // Format the exponent part

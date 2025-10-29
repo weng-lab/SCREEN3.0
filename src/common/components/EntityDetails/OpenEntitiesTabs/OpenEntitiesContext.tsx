@@ -8,7 +8,7 @@ import {
   EntityType,
   isValidEntityType,
   isValidRouteForEntity,
-} from "../../../entityTabsConfig";
+} from "common/entityTabsConfig";
 
 export type OpenEntity<A extends Assembly> = {
   assembly: A;

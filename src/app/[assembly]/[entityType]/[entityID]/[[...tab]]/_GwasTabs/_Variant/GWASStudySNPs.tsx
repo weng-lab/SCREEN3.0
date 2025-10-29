@@ -1,3 +1,4 @@
+"use client";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
 import { Tooltip, Typography } from "@mui/material";
@@ -6,7 +7,7 @@ import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import InfoIcon from "@mui/icons-material/Info";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-export const GWASStudySNPs = ({entity}: EntityViewComponentProps) => {
+export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
   const {
     data: dataGWASSnps,
     loading: loadingGWASSnps,

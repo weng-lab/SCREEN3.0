@@ -1,3 +1,4 @@
+"use client";
 import { EntityType } from "common/entityTabsConfig";
 import { useEffect, useState } from "react";
 

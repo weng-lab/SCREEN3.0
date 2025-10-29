@@ -1,5 +1,6 @@
+"use client";
 import { InfoOutlineRounded } from "@mui/icons-material";
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
@@ -9,8 +10,12 @@ import { DistanceSlider } from "./DistanceSlider";
 import { calcSignedDistRegionToRegion } from "common/utility";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-const VariantLinkedCcres = ({entity}: EntityViewComponentProps) => {
-  const {data: variantData, loading: variantLoading, error: variantError} = useSnpData({rsID: entity.entityID, assembly: entity.assembly})
+const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
+  const {
+    data: variantData,
+    loading: variantLoading,
+    error: variantError,
+  } = useSnpData({ rsID: entity.entityID, assembly: entity.assembly });
 
   const [distance, setDistance] = useState<number>(500);
 
@@ -29,10 +34,14 @@ const VariantLinkedCcres = ({entity}: EntityViewComponentProps) => {
     };
   }, [variantData, distance]);
 
-  const { data: dataCcres, loading: loadingCcres, error: errorCcres } = useCcreData({
+  const {
+    data: dataCcres,
+    loading: loadingCcres,
+    error: errorCcres,
+  } = useCcreData({
     coordinates,
     assembly: "GRCh38",
-    skip: !coordinates
+    skip: !coordinates,
   });
 
   const nearbyccres = dataCcres?.map((d) => {

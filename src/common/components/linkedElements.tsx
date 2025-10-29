@@ -1,3 +1,4 @@
+"use client";
 import { Stack } from "@mui/material";
 import { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { useLinkedCcresReturn } from "common/hooks/useLinkedCcres";

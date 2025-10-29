@@ -1,3 +1,4 @@
+"use client";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip, Typography } from "@mui/material";

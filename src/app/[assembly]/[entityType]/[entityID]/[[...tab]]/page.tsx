@@ -1,4 +1,3 @@
-"use client";
 import { isValidAssembly } from "common/types/globalTypes";
 import { getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
 import { use } from "react";
@@ -48,5 +47,9 @@ export default function DetailsPage({
   // Find component we need to render for this route
   const ComponentToRender = getComponentForEntity(entity);
 
+  /**
+   * This pattern is
+   */
+  // eslint-disable-next-line react-hooks/static-components
   return <ComponentToRender entity={entity} />;
 }

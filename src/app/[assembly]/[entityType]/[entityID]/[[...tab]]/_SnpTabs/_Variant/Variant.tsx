@@ -1,3 +1,4 @@
+"use client";
 import { Stack } from "@mui/material";
 import SnpImmuneGWASLdr from "./SnpImmuneGWASLdr";
 import SnpFrequencies from "./SnpFrequencies";

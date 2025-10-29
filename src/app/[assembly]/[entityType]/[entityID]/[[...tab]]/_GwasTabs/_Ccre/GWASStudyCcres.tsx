@@ -1,3 +1,4 @@
+"use client";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
 import { useMemo, useState } from "react";
 import { GridColDef } from "@mui/x-data-grid-pro";

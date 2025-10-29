@@ -1,3 +1,4 @@
+"use client";
 import { useQuery } from "@apollo/client";
 import { Grid, Skeleton, Stack, Box } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";

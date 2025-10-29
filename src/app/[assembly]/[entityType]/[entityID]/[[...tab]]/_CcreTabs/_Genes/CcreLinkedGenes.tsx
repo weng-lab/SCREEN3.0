@@ -1,3 +1,4 @@
+"use client";
 import { Stack } from "@mui/material";
 import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";

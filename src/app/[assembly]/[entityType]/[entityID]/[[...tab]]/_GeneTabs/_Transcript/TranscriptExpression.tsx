@@ -1,3 +1,4 @@
+"use client";
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";

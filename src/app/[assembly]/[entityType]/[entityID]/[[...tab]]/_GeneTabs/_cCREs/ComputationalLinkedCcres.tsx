@@ -1,4 +1,5 @@
-import { Box, Grid, Skeleton } from "@mui/material";
+"use client";
+import { Grid, Skeleton } from "@mui/material";
 import { useLinkedCcres, useLinkedCcresReturn } from "common/hooks/useLinkedCcres";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "../../_CcreTabs/_Genes/columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";

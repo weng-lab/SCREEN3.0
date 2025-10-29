@@ -1,3 +1,4 @@
+"use client";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";

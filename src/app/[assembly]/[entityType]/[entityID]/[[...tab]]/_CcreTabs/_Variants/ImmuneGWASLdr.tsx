@@ -1,4 +1,4 @@
-import { Box, Skeleton } from "@mui/material";
+"use client";
 import useImmuneGWASLdr from "common/hooks/useImmuneGWASLdr";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { useMemo } from "react";

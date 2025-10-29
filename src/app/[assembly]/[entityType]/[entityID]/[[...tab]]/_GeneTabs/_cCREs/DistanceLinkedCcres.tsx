@@ -1,3 +1,4 @@
+"use client";
 import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 import useNearbycCREs from "common/hooks/useNearBycCREs";
 import { useCcreData } from "common/hooks/useCcreData";
