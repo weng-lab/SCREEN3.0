@@ -4,7 +4,7 @@ import { use } from "react";
 import {
   CandidateOpenEntity,
   isValidOpenEntity,
-} from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+} from "common/OpenEntitiesContext";
 
 export default function DetailsPage({
   params,
@@ -48,7 +48,11 @@ export default function DetailsPage({
   const ComponentToRender = getComponentForEntity(entity);
 
   /**
-   * This pattern is
+   * Ignoring eslint error for having page view component defined in the render function.
+   * Normally this is bad: https://react.dev/reference/eslint-plugin-react-hooks/lints/static-components
+   *
+   * In this case it's okay since this file is only re-rendered on route change
+   * (when the component needs to be redefined anyways)
    */
   // eslint-disable-next-line react-hooks/static-components
   return <ComponentToRender entity={entity} />;

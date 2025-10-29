@@ -1,10 +1,6 @@
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { Typography, TypographyOwnProps } from "@mui/material";
-import {
-  AnyOpenEntity,
-  CandidateOpenEntity,
-  isValidOpenEntity,
-} from "./components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { AnyTabRoute, AnyEntityType, validEntityTypes, entityTabsConfig } from "./entityTabsConfig";
 

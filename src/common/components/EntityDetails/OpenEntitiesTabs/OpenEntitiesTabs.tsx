@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AnyOpenEntity } from "./OpenEntitiesContext";
+import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { DraggableTab } from "./DraggableTab";
 import { Droppable } from "@hello-pangea/dnd";
 import { TabList } from "@mui/lab";

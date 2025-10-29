@@ -1,7 +1,7 @@
 import { Draggable } from "@hello-pangea/dnd";
 import { Close } from "@mui/icons-material";
 import { styled, SxProps, Tab, TabProps, Theme, Tooltip } from "@mui/material";
-import { AnyOpenEntity, OpenEntitiesContext } from "./OpenEntitiesContext";
+import { AnyOpenEntity, OpenEntitiesContext } from "common/OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { useCallback, useContext, useMemo, useState } from "react";
 import HumanIcon from "common/components/HumanIcon";
