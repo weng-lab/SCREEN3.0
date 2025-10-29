@@ -33,6 +33,16 @@ export const MouseList = {
   vein: ["cls-25"],
 };
 
+export const MouseCellsList = {
+    'adipose tissue': [],
+    blood: [],
+    'bone marrow': [],
+    'connective tissue': [],
+    embryo: [],
+    epithelium: [],
+    placenta: [],
+};
+
 export const MouseColorMap: Record<
   string,
   {

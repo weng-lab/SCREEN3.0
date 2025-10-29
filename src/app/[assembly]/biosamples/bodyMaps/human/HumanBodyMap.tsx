@@ -2,9 +2,12 @@ import SVGMap from "../SvgMap";
 import { humanPaths } from "./humanPathsArray";
 import { HumanColorMap, HumanList } from "./humanMapping";
 
-export default function HumanBodyMap() {
-  // const [selected, setSelected] = useState<string | null>(null);
+interface HumanBodyMapProps {
+  selected: string;
+  setSelected: React.Dispatch<React.SetStateAction<string>>;
+}
 
+export default function HumanBodyMap({ selected, setSelected }: HumanBodyMapProps) {
   return (
     <SVGMap
       paths={humanPaths}
@@ -13,6 +16,8 @@ export default function HumanBodyMap() {
       viewBox="0 0 600 700"
       width="500px"
       height="650px"
+      selected={selected}
+      setSelected={setSelected}
     />
   );
 }

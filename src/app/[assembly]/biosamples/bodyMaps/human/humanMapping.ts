@@ -48,6 +48,20 @@ export const HumanList = {
   vein: ["cls-vein"],
 };
 
+export const HumanCellsList = {
+    'adipose tissue': [],
+    blood: [],
+    'blood vessel': [],
+    'bone marrow': [],
+    'connective tissue': [],
+    embryo: [],
+    epithelium: [],
+    'lymphoid tissue': [],
+    'lymph node': [],
+    'lymphatic vessel': [],
+    placenta: [],
+};
+
 export const HumanColorMap: Record<
   string,
   {

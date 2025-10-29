@@ -44,3 +44,7 @@ export type SvgElement = {
   tag: string;
   props: PathProps | CircleProps | EllipseProps | PolygonProps | RectProps | LineProps;
 };
+
+export interface BodyListMap {
+  [organ: string]: string[];
+}

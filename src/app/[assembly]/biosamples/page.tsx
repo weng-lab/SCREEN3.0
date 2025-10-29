@@ -8,8 +8,8 @@ import { useTheme } from "@mui/material/styles";
 import MouseIcon from "common/components/MouseIcon";
 import { usePathname } from "next/navigation";
 import BiosampleLandingHeader from "./BiosampleLandingHeader";
-import HumanBodyMap from "./bodyMaps/human/HumanBodyMap";
-import MouseBodyMap from "./bodyMaps/mouse/MouseBodyMap";
+import Human from "./HumanBiosamples";
+import Mouse from "./MouseBiosamples";
 
 export default function BiosampleLandingPage() {
   const pathname = usePathname();
@@ -53,7 +53,7 @@ export default function BiosampleLandingPage() {
         />
       </Tabs>
       <Divider />
-      {tab === "mm10" ? <MouseBodyMap /> : <HumanBodyMap />}
+      {tab === "mm10" ? <Mouse /> : <Human />}
     </Box>
   );
 }
