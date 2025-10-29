@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { BodyListMap } from "./types";
@@ -9,10 +9,11 @@ type InsetProps = {
   cellsList: BodyListMap;
   selected: string;
   setSelected: React.Dispatch<React.SetStateAction<string>>;
+  hovered: string | null;
+  setHovered: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelected }) => {
-  const [hovered, setHovered] = useState<string | null>(null);
+const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelected, hovered, setHovered }) => {
   const isSelected = (organ: string) => selected === organ;
 
   const imagePrefix = Assembly === "mm10" ? "mouse_" : "";

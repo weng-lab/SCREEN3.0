@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { BodyListMap, SvgElement } from "./types";
 
 interface ColorMap {
@@ -22,11 +22,22 @@ interface SvgMapProps {
   setSelected: React.Dispatch<React.SetStateAction<string>>;
   width?: string;
   height?: string;
+  hovered: string | null;
+  setHovered: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-export default function SVGMap({ BodyList, ColorMap, paths, viewBox, width, height, selected, setSelected }: SvgMapProps) {
-  const [hoveredOrgan, setHoveredOrgan] = useState<string | null>(null);
-
+export default function SVGMap({
+  BodyList,
+  ColorMap,
+  paths,
+  viewBox,
+  width,
+  height,
+  selected,
+  setSelected,
+  hovered,
+  setHovered,
+}: SvgMapProps) {
   const classToOrgan = useMemo(() => {
     const map: Record<string, string> = {};
     Object.entries(BodyList).forEach(([organ, classes]) => {
@@ -45,8 +56,8 @@ export default function SVGMap({ BodyList, ColorMap, paths, viewBox, width, heig
 
   const handleHover = (cls: string | null) => {
     const organ = classToOrgan[cls];
-    if (!organ) setHoveredOrgan(null);
-    setHoveredOrgan(organ);
+    if (!organ) setHovered(null);
+    setHovered(organ);
   };
 
   const getStyle = (cls: string) => {
@@ -54,7 +65,7 @@ export default function SVGMap({ BodyList, ColorMap, paths, viewBox, width, heig
     if (!path) return {};
 
     const isActive = selected && BodyList[selected]?.includes(cls);
-    const isHovered = hoveredOrgan && BodyList[hoveredOrgan]?.includes(cls);
+    const isHovered = hovered && BodyList[hovered]?.includes(cls);
 
     if (path.outlineOnly) {
       return {

@@ -45,6 +45,8 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
   assembly,
   selected,
   onChange,
+  onAccordionClick,
+  onAccordionHover,
   preFilterBiosamples = () => true,
   fetchBiosamplesWith = ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"],
   showCheckboxes,
@@ -277,6 +279,16 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
       }
     };
 
+    const handleAccordianClick = (ontology: string) => {
+      if (!onAccordionClick) return;
+      onAccordionClick(ontology);
+    };
+
+    const handleAccordianHover = (ontology: string | null) => {
+      if (!onAccordionHover) return;
+      onAccordionHover(ontology);
+    };
+
     const handleModifyAll = (samples: BiosampleData<HasRNASeq>[], action: "select" | "deselect") => {
       if (onChange && typeof onChange === "function") {
         if (action === "select") {
@@ -338,6 +350,9 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
             slotProps={{ transition: { unmountOnExit: true } }}
             disabled={biosamples.length === 0}
             disableGutters
+            onClick={() => handleAccordianClick(ontology)}
+            onMouseEnter={() => handleAccordianHover(ontology)}
+            onMouseLeave={() => handleAccordianHover(null)}
           >
             <AccordionSummary
               expandIcon={<KeyboardArrowRightIcon />}
@@ -391,6 +406,8 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
     onChange,
     allowMultiSelect,
     selectedSamples,
+    onAccordionClick,
+    onAccordionHover,
     showCheckboxes,
     unfilteredBiosamples,
     assembly,

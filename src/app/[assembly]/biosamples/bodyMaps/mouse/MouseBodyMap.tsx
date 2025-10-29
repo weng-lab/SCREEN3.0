@@ -5,10 +5,11 @@ import { mousePaths } from "./mousePathsArray";
 interface MouseBodyMapProps {
   selected: string;
   setSelected: React.Dispatch<React.SetStateAction<string>>;
+  hovered: string | null;
+  setHovered: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-export default function MouseBodyMap({ selected, setSelected }: MouseBodyMapProps) {
-
+export default function MouseBodyMap({ selected, setSelected, hovered, setHovered }: MouseBodyMapProps) {
   return (
     <SVGMap
       paths={mousePaths}
@@ -19,6 +20,8 @@ export default function MouseBodyMap({ selected, setSelected }: MouseBodyMapProp
       height="400px"
       selected={selected}
       setSelected={setSelected}
+      hovered={hovered}
+      setHovered={setHovered}
     />
   );
 }

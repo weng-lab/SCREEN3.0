@@ -5,9 +5,11 @@ import { HumanColorMap, HumanList } from "./humanMapping";
 interface HumanBodyMapProps {
   selected: string;
   setSelected: React.Dispatch<React.SetStateAction<string>>;
+  hovered: string | null;
+  setHovered: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-export default function HumanBodyMap({ selected, setSelected }: HumanBodyMapProps) {
+export default function HumanBodyMap({ selected, setSelected, hovered, setHovered }: HumanBodyMapProps) {
   return (
     <SVGMap
       paths={humanPaths}
@@ -18,6 +20,8 @@ export default function HumanBodyMap({ selected, setSelected }: HumanBodyMapProp
       height="650px"
       selected={selected}
       setSelected={setSelected}
+      hovered={hovered}
+      setHovered={setHovered}
     />
   );
 }

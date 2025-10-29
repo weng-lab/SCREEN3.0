@@ -62,6 +62,8 @@ export interface BiosampleTablesProps<HasRNASeq extends boolean, AllowMultiSelec
   onChange?: AllowMultiSelect extends true
     ? (selected: BiosampleData<HasRNASeq>[]) => void
     : (selected: BiosampleData<HasRNASeq>) => void;
+  onAccordionClick?: (section: string) => void;
+  onAccordionHover?: (section: string | null) => void;
   /**
    * @param sample
    * If specified, samples will be passed through this function before populating tables
