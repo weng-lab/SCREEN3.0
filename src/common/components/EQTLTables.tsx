@@ -29,7 +29,7 @@ query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
 `);
 
 export default function EQTLs({ entity }: EntityViewComponentProps) {
-  const {entityID, entityType, assembly} = entity
+  const { entityID, entityType, assembly } = entity;
 
   let variables: Record<string, any> = {};
   let gtexTitle: string;

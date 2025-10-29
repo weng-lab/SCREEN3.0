@@ -207,7 +207,7 @@ const humanGwasTabs = [
   },
   {
     route: "variants",
-    label: "Variant",
+    label: "Variants",
     iconPath: VariantIconPath,
     component: GWASStudySNPs,
   },
@@ -236,7 +236,7 @@ const humanCcreTabs = [
   },
   {
     route: "variants",
-    label: "Variant",
+    label: "Variants",
     iconPath: VariantIconPath,
     component: CcreVariantsTab,
   },

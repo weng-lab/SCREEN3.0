@@ -1,3 +1,4 @@
+"use client";
 import { Stack } from "@mui/material";
 import ImmuneGWASLdr from "./ImmuneGWASLdr";
 import EQTLs from "common/components/EQTLTables";

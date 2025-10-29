@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
-import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { useCcreData } from "common/hooks/useCcreData";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";

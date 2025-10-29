@@ -1,3 +1,4 @@
+"use client";
 import { ApolloError, useQuery } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";

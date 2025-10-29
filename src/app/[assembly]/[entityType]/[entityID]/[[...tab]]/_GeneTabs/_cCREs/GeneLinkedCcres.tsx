@@ -1,10 +1,11 @@
+"use client";
 import { Stack } from "@mui/material";
 import ComputationalLinkedCcres from "./ComputationalLinkedCcres";
 import DistanceLinkedCcres from "./DistanceLinkedCcres";
 import { useGeneData } from "common/hooks/useGeneData";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-const GeneLinkedIcres = ({entity}: EntityViewComponentProps) => {
+const GeneLinkedIcres = ({ entity }: EntityViewComponentProps) => {
   const geneData = useGeneData({ name: entity.entityID, assembly: entity.assembly });
 
   return (
