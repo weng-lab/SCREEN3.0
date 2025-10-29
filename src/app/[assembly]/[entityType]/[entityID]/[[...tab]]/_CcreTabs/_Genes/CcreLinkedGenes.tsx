@@ -100,7 +100,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
         params.value.startsWith("ENSG") ? (
           <i>{params.value}</i>
         ) : (
-          <LinkComponent href={`/GRCh38/gene/${params.value}`}>
+          <LinkComponent href={`/${entity.assembly}/gene/${params.value}`}>
             <i>{params.value}</i>
           </LinkComponent>
         ),
