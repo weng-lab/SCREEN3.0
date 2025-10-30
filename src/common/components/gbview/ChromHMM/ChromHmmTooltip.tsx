@@ -31,7 +31,6 @@ const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, display
       </text>
       <text x={10} y={40} fontSize={12} fill="#000000">
         {rect.name}
-        ASdojnasoudnas
       </text>
       <text x={10} y={58} fontSize={12} fill="#000000">
         {tissue}
