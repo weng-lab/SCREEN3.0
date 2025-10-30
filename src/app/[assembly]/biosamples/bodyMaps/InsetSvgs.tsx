@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { BodyListMap } from "./types";
 import { Assembly } from "common/types/globalTypes";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 type InsetProps = {
   Assembly: Assembly;
@@ -14,6 +15,9 @@ type InsetProps = {
 };
 
 const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelected, hovered, setHovered }) => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+
   const isSelected = (organ: string) => selected === organ;
 
   const imagePrefix = Assembly === "mm10" ? "mouse_" : "";
@@ -23,16 +27,23 @@ const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelect
     setSelected((prev) => (prev === organ ? null : organ));
   };
 
+  const isHuman = Assembly === "GRCh38";
+  const perRow = isXs ? 4 : isHuman ? 6 : 4;
+  const shiftStart = isHuman ? (isXs ? perRow * 2 + 1 : perRow + 1) : perRow + 1;
+  const shiftAmount = isHuman ? (isXs ? "45px" : "42.5px") : isXs ? "45px" : "65px";
+
   return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))",
-        gap: 1.5,
+        gridTemplateColumns: `repeat(${perRow}, minmax(70px, 1fr))`,
+        gap: 1,
         justifyItems: "center",
         alignItems: "center",
         mt: 2,
-        width: "500px",
+        [`& > :nth-child(n+${shiftStart})`]: {
+          transform: `translateX(${shiftAmount})`,
+        },
       }}
     >
       {Object.keys(cellsList).map((organ) => {

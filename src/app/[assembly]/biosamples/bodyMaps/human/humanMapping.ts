@@ -30,7 +30,6 @@ export const HumanList = {
   penis: ["cls-62"],
   pericardium: ["cls-46", "cls-48"],
   "prostate gland": ["cls-54"],
-  skeleton: ["cls-65", "cls-77", "cls-78", "cls-80", "cls-81", "bone element"],
   "skin of body": ["cls-5", "cls-limb-skin"],
   "small intestine": ["cls-27", "cls-28"],
   "spinal cord": ["cls-66"],
@@ -49,17 +48,17 @@ export const HumanList = {
 };
 
 export const HumanCellsList = {
-    'adipose tissue': [],
-    blood: [],
-    'blood vessel': [],
-    'bone marrow': [],
-    'connective tissue': [],
-    embryo: [],
-    epithelium: [],
-    'lymphoid tissue': [],
-    'lymph node': [],
-    'lymphatic vessel': [],
-    placenta: [],
+  "adipose tissue": [],
+  blood: [],
+  "blood vessel": [],
+  "bone marrow": [],
+  "connective tissue": [],
+  embryo: [],
+  epithelium: [],
+  "lymphoid tissue": [],
+  "lymph node": [],
+  "lymphatic vessel": [],
+  placenta: [],
 };
 
 export const HumanColorMap: Record<

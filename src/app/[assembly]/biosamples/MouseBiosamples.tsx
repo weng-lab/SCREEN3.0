@@ -24,8 +24,12 @@ export default function Mouse() {
       </Stack>
       <BiosampleTables
         assembly={"mm10"}
+        onAccordionHover={(organ: string | null) => setHovered(organ)}
+        onAccordionClick={(organ) => setSelected((prev) => (prev === organ ? null : organ))}
+        hoveredAccordian={hovered}
+        selectedAccordian={selected}
         slotProps={{
-          paperStack: { overflow: "auto", flexGrow: 1, height: "800px" },
+          paperStack: { overflow: "auto", flexGrow: 1, height: "700px" },
         }}
       />
     </Stack>
