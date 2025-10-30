@@ -35,12 +35,7 @@ const BiosampleLandingHeader = ({ assembly }: BiosampleLandingHeaderProps) => {
         rel="noopener noreferrer"
         sx={{ width: "240px", height: 60, backgroundColor: "white" }}
       >
-        <Image
-          style={{ objectFit: "contain" }}
-          src={"https://www.genome.gov/sites/default/files/media/images/2019-03/ENCODE_color_white-01.png"}
-          fill
-          alt="genecard-snpcard-button"
-        />
+        <Image style={{ objectFit: "contain" }} src={"/encode-logo-small-2x.png"} fill alt="genecard-snpcard-button" />
       </Button>
     </Stack>
   );

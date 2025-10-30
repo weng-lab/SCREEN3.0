@@ -10,7 +10,15 @@ export const MouseList = {
   eye: ["cls-39", "cls-40", "cls-eye"],
   gonad: ["testis", "ovary"],
   heart: ["cls-33", "cls-34", "cls-18"],
-  intestine: ["large intestine", "small intestine", "colon"],
+  intestine: [
+    "cls-largeintestine",
+    "cls-19",
+    "cls-8",
+    "cls-smallintestine",
+    "cls-smallintestine19",
+    "cls-colon",
+    "cls-9",
+  ],
   kidney: ["cls-kidney"],
   "large intestine": ["cls-largeintestine", "cls-19"],
   limb: ["cls-limb1", "cls-limb2"],
@@ -18,11 +26,11 @@ export const MouseList = {
   lung: ["cls-lung"],
   "lymph node": ["cls-28"],
   "mammary gland": ["breast"],
-  "musculature of body": ["cls-14", "cls-15", "cls-16"],
+  muscle: ["cls-14", "cls-15", "cls-16"],
   nose: ["cls-11"],
   ovary: ["cls-6", "cls-7", "cls-35"],
   pancreas: ["cls-12"],
-  "skin of body": ["cls-1", "cls-2", "cls-32", "cls-3", "cls-limb1", "cls-limb2", "cls-10"],
+  skin: ["cls-1", "cls-2", "cls-32", "cls-3", "cls-10"],
   "small intestine": ["cls-8", "cls-smallintestine", "cls-smallintestine19"],
   "spinal cord": ["cls-20"],
   spleen: ["cls-13"],
@@ -34,13 +42,13 @@ export const MouseList = {
 };
 
 export const MouseCellsList = {
-    'adipose tissue': [],
-    blood: [],
-    'bone marrow': [],
-    'connective tissue': [],
-    embryo: [],
-    epithelium: [],
-    placenta: [],
+  adipose: [],
+  blood: [],
+  "bone marrow": [],
+  "connective tissue": [],
+  embryo: [],
+  epithelium: [],
+  placenta: [],
 };
 
 export const MouseColorMap: Record<
