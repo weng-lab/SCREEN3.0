@@ -1,23 +1,46 @@
-import { Rect } from "@weng-lab/genomebrowser";
+import React from "react";
+import { BulkBedRect } from "@weng-lab/genomebrowser";
 import { chromHmmStateDetails } from "../constants";
 
-export const ChromHmmTooltip = (rect: Rect, tissue: string, displayName: string) => {
+interface ChromHmmTooltipProps {
+  rect: BulkBedRect;
+  tissue: string;
+  displayName: string;
+}
+
+const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, displayName }) => {
+  const stateDetails = chromHmmStateDetails[rect.name];
+
+  if (!stateDetails) {
+    return (
+      <svg width={240} height={50}>
+        <rect width={240} height={50} fill="white" stroke="#000000" strokeWidth="2" rx="4" ry="4" />
+        <text x={10} y={30} fontSize={12} fill="#000000">
+          Unknown state: {rect.name}
+        </text>
+      </svg>
+    );
+  }
+
   return (
-    <g>
-      <rect width={240} height={92} fill="white" stroke="none" filter="drop-shadow(2px 2px 2px rgba(0,0,0,0.2))" />
-      <rect width={15} height={15} fill={chromHmmStateDetails[rect.name].color} x={10} y={10} />
-      <text x={35} y={22} fontSize={12} fontWeight="bold">
-        {chromHmmStateDetails[rect.name].description}({chromHmmStateDetails[rect.name].stateno})
+    <svg width={240} height={92}>
+      <rect width={240} height={92} fill="white" rx="4" ry="4" style={{ filter: `drop-shadow(0 0 2px #000000)` }} />
+      <rect width={15} height={15} fill={stateDetails.color} x={10} y={10} />
+      <text x={35} y={22} fontSize={12} fontWeight="bold" fill="#000000">
+        {stateDetails.description} ({stateDetails.stateno})
       </text>
-      <text x={10} y={40} fontSize={12}>
+      <text x={10} y={40} fontSize={12} fill="#000000">
         {rect.name}
+        ASdojnasoudnas
       </text>
-      <text x={10} y={58} fontSize={12}>
+      <text x={10} y={58} fontSize={12} fill="#000000">
         {tissue}
       </text>
-      <text x={10} y={76} fontSize={12}>
+      <text x={10} y={76} fontSize={12} fill="#000000">
         {displayName}
       </text>
-    </g>
+    </svg>
   );
 };
+
+export default ChromHmmTooltip;
