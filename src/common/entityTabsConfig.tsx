@@ -23,6 +23,7 @@ import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
+import { hasNoEnrichmentData } from "./hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -211,6 +212,8 @@ const humanGwasTabs = [
     label: "Biosample Enrichment",
     iconPath: BiosampleEnrichmentIconPath,
     component: BiosampleEnrichment,
+    getIsDisabled: hasNoEnrichmentData,
+    disabledMessage: "Not available for this study",
   },
   {
     route: "variants",

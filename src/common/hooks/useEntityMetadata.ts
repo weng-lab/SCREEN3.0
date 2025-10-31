@@ -30,7 +30,7 @@ export type useEntityMetadataReturn<T extends AnyEntityType> = T extends "gene"
     : T extends "variant"
       ? UseSnpDataReturn<{ rsID: string; assembly: Assembly }>
       : T extends "gwas"
-        ? UseGWASStudyDataReturn
+        ? UseGWASStudyDataReturn<{ studyid: string[] }>
         : UseGenomicRangeReturn;
 
 export const useEntityMetadata = <T extends AnyEntityType>({
@@ -46,7 +46,7 @@ export const useEntityMetadata = <T extends AnyEntityType>({
   const geneMetadata = useGeneData({ name: entityID, entityType, assembly });
   const ccreMetadata = useCcreData({ accession: entityID, entityType, assembly });
   const snpMetadata = useSnpData({ rsID: entityID, entityType, assembly: "GRCh38" });
-  const gwasStudyMetadata = useGWASStudyData({ study: [entityID], entityType });
+  const gwasStudyMetadata = useGWASStudyData({ studyid: [entityID], entityType });
   //example to use useSnpFrequencies, returns ref,alt alleles and population frequencies
   //const SnpFrequencies= useSnpFrequencies(elementID);
 

@@ -70,7 +70,7 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
-  } = useGWASSnpsData({ study: [entity.entityID] });
+  } = useGWASSnpsData({ studyid: [entity.entityID] });
   useCustomData(
     "ld-track",
     {

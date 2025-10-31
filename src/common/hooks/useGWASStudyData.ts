@@ -1,36 +1,46 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
-import { GetGwasStudiesQuery } from "common/types/generated/graphql";
+import { GetGwasStudyMetadataQuery } from "common/types/generated/graphql";
 
-const GWAS_STUDY_Query = gql(`
-  query getGWASStudies($study: [String]){  
-    getAllGwasStudies(study: $study)  
+const GWAS_STUDY_METADATA_Query = gql(`
+  query getGWASStudyMetadata($studyid: [String], $limit: Int, $studyname_prefix: [String], $parent_terms: [String]){  
+    getGWASStudiesMetadata(studyid: $studyid, limit: $limit, parent_terms: $parent_terms, studyname_prefix: $studyname_prefix )  
     {        
-        study
-        studyname
-        totalldblocks
+        studyid
         author
-        pubmedid
+        disease_trait
+        has_enrichment_info
+        population
+        parent_terms        
+        total_ld_blocks
+        ld_blocks_overlapping_ccres
+        overlapping_ccres
     }
 }
 `);
 
-export type UseGWASStudyDataParams = { study: string[]; entityType?: AnyEntityType };
+/**
+ * Currently the backend does not support querying for genes in multiple regions,
+ * which limits the input here to GenomicRange and not also GenomicRange[]
+ */
 
-export type UseGWASStudyDataReturn = {
-  data: GetGwasStudiesQuery["getAllGwasStudies"][0] | undefined;
+export type UseGWASStudyDataParams = { studyid?: string[]; parent_terms? : string[]; studyname_prefix?: string[]; limit?: number; entityType?: AnyEntityType };
+
+export type UseGWASStudyDataReturn<T extends UseGWASStudyDataParams> = {
+  data: GetGwasStudyMetadataQuery['getGWASStudiesMetadata'][0] | undefined;
   loading: boolean;
   error: ApolloError;
 };
 
 export const useGWASStudyData = <T extends UseGWASStudyDataParams>({
-  study,
+  studyid,
+  parent_terms,
   entityType,
-}: T): UseGWASStudyDataReturn => {
-  const { data, loading, error } = useQuery(GWAS_STUDY_Query, {
+}: T): UseGWASStudyDataReturn<T> => {
+  const { data, loading, error } = useQuery(GWAS_STUDY_METADATA_Query, {
     variables: {
-      study: study,
+      studyid: studyid
     },
     skip: entityType !== undefined && entityType !== "gwas",
   });
@@ -39,8 +49,8 @@ export const useGWASStudyData = <T extends UseGWASStudyDataParams>({
     /**
      * return either whole array or just first item depending on input
      */
-    data: data?.getAllGwasStudies[0],
+    data: data?.getGWASStudiesMetadata[0],
     loading,
     error,
-  } as UseGWASStudyDataReturn;
+  } as UseGWASStudyDataReturn<T>;
 };

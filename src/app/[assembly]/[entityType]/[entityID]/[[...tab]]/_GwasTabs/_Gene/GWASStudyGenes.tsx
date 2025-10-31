@@ -22,19 +22,19 @@ export const GWASStudyGenes = ({entity}: EntityViewComponentProps) => {
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
     error: errorGWASSNPscCREs,
-  } = useGWASSnpsIntersectingcCREsData({ study: [entity.entityID] });
+  } = useGWASSnpsIntersectingcCREsData({ studyid: [entity.entityID] });
   const {
     data: dataGWASSnpscCREsGenes,
     loading: loadingGWASSnpscCREsGenes,
     error: errorGWASSnpscCREsGenes,
-  } = useLinkedGenes(dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.accession))] : []);
+  } = useLinkedGenes(dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.ccre))] : []);
 
   const {
     data: dataGWASSnpscCREsCompuGenes,
     loading: loadingGWASSnpscCREsCompuGenes,
     error: errorGWASSnpscCREsCompuGenes,
   } = useCompuLinkedGenes({
-    accessions: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.accession))] : [],
+    accessions: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.ccre))] : [],
     method,
   });
 

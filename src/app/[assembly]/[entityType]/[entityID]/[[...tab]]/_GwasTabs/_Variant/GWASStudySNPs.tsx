@@ -12,7 +12,7 @@ export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
-  } = useGWASSnpsData({ study: [entity.entityID] });
+  } = useGWASSnpsData({ studyid: [entity.entityID] });
 
   const columns: GridColDef<(typeof dataGWASSnps)[number]>[] = [
     {

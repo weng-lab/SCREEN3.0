@@ -119,10 +119,10 @@ const formatEntityID = (entity: AnyOpenEntity) => {
     return <i>{entity.entityID}</i>;
   } else {
     if (entity.entityType === "gwas") {
-      const g = entity.entityID.split("-");
-      const study_name = g[g.length - 1].replaceAll("_", " ");
+     // const g = entity.entityID.split("-");
+      //const study_name = g[g.length - 1].replaceAll("_", " ");
 
-      return study_name;
+      return entity.entityID;
     }
     return entity.entityID;
   }

@@ -14,7 +14,7 @@ import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyData } from "common/hooks/useGWASStudyData";
 
 const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
-  const {data, loading, error} = useGWASStudyData({study: [entity.entityID]})
+  const {data, loading, error} = useGWASStudyData({studyid: [entity.entityID]})
 
   //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
   //setting the anchorEl to the button
@@ -45,14 +45,14 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
     error: errorGWASSNPscCREs,
-  } = useGWASSnpsIntersectingcCREsData({ study: [entity.entityID] });
+  } = useGWASSnpsIntersectingcCREsData({ studyid: [entity.entityID] });
 
   const {
     data: dataCcreDetails,
     loading: loadingCcreDetails,
     error: errorCcreDetails,
   } = useCcreData({
-    accession: dataGWASSNPscCREs ? dataGWASSNPscCREs?.map((d) => d.accession) : [],
+    accession: dataGWASSNPscCREs ? dataGWASSNPscCREs?.map((d) => d.ccre) : [],
     assembly: "GRCh38",
     nearbygeneslimit: 1,
     cellType: selectedBiosample ? selectedBiosample.name : undefined,
@@ -70,13 +70,13 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
 
     return dataGWASSNPscCREs.map((gwas) => ({
       ...gwas,
-      nearestgenes: detailMap.get(gwas.accession).nearestgenes || null,
-      ctspecific: detailMap.get(gwas.accession).ctspecific,
-      dnase_zscore: detailMap.get(gwas.accession).dnase_zscore,
-      ctcf_zscore: detailMap.get(gwas.accession).ctcf_zscore,
-      atac_zscore: detailMap.get(gwas.accession).atac_zscore,
-      enhancer_zscore: detailMap.get(gwas.accession).enhancer_zscore,
-      promoter_zscore: detailMap.get(gwas.accession).promoter_zscore,
+      nearestgenes: detailMap.get(gwas.ccre).nearestgenes || null,
+      ctspecific: detailMap.get(gwas.ccre).ctspecific,
+      dnase_zscore: detailMap.get(gwas.ccre).dnase_zscore,
+      ctcf_zscore: detailMap.get(gwas.ccre).ctcf_zscore,
+      atac_zscore: detailMap.get(gwas.ccre).atac_zscore,
+      enhancer_zscore: detailMap.get(gwas.ccre).enhancer_zscore,
+      promoter_zscore: detailMap.get(gwas.ccre).promoter_zscore,
     }));
   }, [dataGWASSNPscCREs, dataCcreDetails]);
   const showAtac = selectedBiosample ? (selectedBiosample && selectedBiosample.atac ? true : false) : true;
@@ -86,30 +86,30 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const showH3k4me3 = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k4me3 ? true : false) : true;
 
   const ldblocks_columns: GridColDef<
-    { total_ldblocks: number; ldblocks_overlapping_ccres: number; overlapping_ccres: number }[][number]
+     { total_ld_blocks: number; ld_blocks_overlapping_ccres: number; overlapping_ccres: number }[][number]
   >[] = [
     {
-      field: "total_ldblocks",
+      field: "total_ld_blocks",
       renderHeader: () => (
         <strong>
           <p>Total LD blocks</p>
         </strong>
       ),
       valueGetter: (_, row) => {
-        return row.total_ldblocks;
+        return row.total_ld_blocks;
       },
     },
     {
-      field: "ldblocks_overlapping_ccres",
+      field: "ld_blocks_overlapping_ccres",
       renderHeader: () => (
         <strong>
           <p># of LD blocks overlapping cCREs</p>
         </strong>
       ),
       valueGetter: (_, row) =>
-        row.ldblocks_overlapping_ccres +
+        row.ld_blocks_overlapping_ccres +
         " (" +
-        Math.ceil((row.ldblocks_overlapping_ccres / +row.total_ldblocks) * 100) +
+        Math.ceil((row.ld_blocks_overlapping_ccres / +row.total_ld_blocks) * 100) +
         "%)",
     },
     {
@@ -124,14 +124,14 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   ];
   const columns: GridColDef<(typeof mergedData)[number]>[] = [
     {
-      field: "accession",
+      field: "ccre",
       renderHeader: () => (
         <strong>
           <p>Accession</p>
         </strong>
       ),
       valueGetter: (_, row) => {
-        return row.accession;
+        return row.ccre;
       },
       renderCell: (params) => (
         <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
@@ -284,7 +284,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
         ]
       : []),
   ];
-  const ldblocks_data = data?.totalldblocks ? [
+  /*const ldblocks_data = data?.totalldblocks ? [
     {
       total_ldblocks: data.totalldblocks,
       ldblocks_overlapping_ccres: dataGWASSNPscCREs
@@ -296,17 +296,17 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
             ]),
           ].length
         : 0,
-      overlapping_ccres: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((item) => item.accession))].length : 0,
+      overlapping_ccres: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((item) => item.ccre))].length : 0,
     },
-  ] : undefined;
-  return errorGWASSNPscCREs || errorCcreDetails ? (
+  ] : undefined;*/
+  return errorGWASSNPscCREs || errorCcreDetails || error ? (
     <Typography>Error Fetching Intersecting cCREs against SNPs identified by a GWAS study</Typography>
   ) : (
     <>
       <Table
-        rows={ldblocks_data || []}
+        rows={[{total_ld_blocks: data.total_ld_blocks, overlapping_ccres: data.overlapping_ccres, ld_blocks_overlapping_ccres: data.ld_blocks_overlapping_ccres}] }
         columns={ldblocks_columns}
-        loading={loadingGWASSNPscCREs}
+        loading={loading}
         label={`LD Blocks`}
         emptyTableFallback={"No Intersecting cCREs found against SNPs identified by GWAS study"}
         divHeight={{ height: "100%", minHeight: "50px", maxHeight: "600px" }}

@@ -49,9 +49,9 @@ export const defaultHumanResults: Result[] = [
     type: "SNP",
   },
   {
-    title: "Adiponectin Levels",
-    description: "Dastani Z\n22479202",
-    id: "Dastani_Z-22479202-Adiponectin_levels",
+    title: "Astrocytoma",
+    description: "Foss-Skiftesvik J (GCST90296476)\nCancer\nBiosample Enrichment",
+    id: "36810956-GCST90296476-astrocytoma",
     type: "Study",
   },
 ];
