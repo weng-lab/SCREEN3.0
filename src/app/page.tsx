@@ -133,9 +133,6 @@ export default function Home() {
           Browse these example searches to get started with SCREEN. You can search for genes, cCREs, variants, a
           specific loci, or a study from the GWAS catalog. Change the assembly above to see different examples.
         </Typography>
-        <Typography variant="h4" sx={{ fontWeight: 550 }} alignSelf={"flex-start"}>
-          Search Examples
-        </Typography>
         <PopularSearches assembly={assembly} />
       </Box>
       <Box
@@ -200,7 +197,7 @@ export default function Home() {
         justifyContent={"flex-start"}
         display={"flex"}
         flexDirection={"column"}
-        sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}
+        sx={{ paddingY: 5, paddingX: { xs: 5, md: 20 } }}
       >
         <Typography variant="h6" sx={{ fontWeight: 550 }}>
           📈 Trending Datasets

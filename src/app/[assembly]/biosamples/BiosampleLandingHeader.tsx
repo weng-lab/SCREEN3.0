@@ -25,7 +25,8 @@ const BiosampleLandingHeader = ({ assembly }: BiosampleLandingHeaderProps) => {
           <strong>Explore Biosample Data</strong>
         </Typography>
         <Typography variant="body1">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna.
+          Visualize and explore {assembly === "GRCh38" ? "human" : "mouse"} biosamples across diverse tissues and cell
+          types from ENCODE
         </Typography>
       </Stack>
       <Button
