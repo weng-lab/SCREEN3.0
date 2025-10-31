@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@apollo/client";
-import { Grid, Skeleton, Stack, Box } from "@mui/material";
+import { Stack, Box } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "./LinkComponent";
@@ -207,29 +207,14 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
     });
   }
 
-  if (loading) {
-    return (
-      <Grid container spacing={2}>
-        <Grid size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={300} />
-        </Grid>
-        <Grid size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={300} />
-        </Grid>
-      </Grid>
-    );
-  }
-
-  if (error) {
-    throw new Error(JSON.stringify(error));
-  }
-
   return (
     <Stack spacing={2}>
       <Box sx={{ flex: "1 1 auto" }}>
         <Table
           columns={gtexColumns}
           rows={gtexRows}
+          loading={loading}
+          error={!!error}
           label={gtexTitle}
           initialState={{
             sorting: {
@@ -244,6 +229,8 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
         <Table
           columns={oneK1KColumns}
           rows={oneK1KRows}
+          loading={loading}
+          error={!!error}
           label={onekTitle}
           initialState={{
             sorting: {

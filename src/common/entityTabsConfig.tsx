@@ -119,7 +119,7 @@ type EntityTabsConfig = {
   };
 };
 
-type TabConfig<R extends string = string> = {
+export type TabConfig<R extends string = string> = {
   route: R;
   label: string;
   /**
@@ -128,9 +128,16 @@ type TabConfig<R extends string = string> = {
   iconPath?: string;
   /**
    * The component to render for that tab view
-   * @note NOT USED EVERYWHERE
    */
   component: (props: EntityViewComponentProps) => ReactElement;
+  /**
+   * Function that takes in the entity and determines if the tab is disabled
+   */
+  getIsDisabled?: (entityID: string) => Promise<boolean>;
+  /**
+   * Message to display on hover when mode is disable
+   */
+  disabledMessage?: string;
 };
 
 const humanVariantTabs = [

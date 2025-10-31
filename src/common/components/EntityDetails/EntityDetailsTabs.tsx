@@ -1,13 +1,19 @@
 "use client";
 
-import { Tabs, Tab, Menu, MenuItem } from "@mui/material";
+import { Tabs, Tab, Menu, MenuItem, Tooltip } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useMemo } from "react";
 import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { AnyEntityType, getTabsForEntity } from "../../entityTabsConfig";
+import { AnyEntityType, getTabsForEntity, TabConfig } from "common/entityTabsConfig";
+
+// outside the component
+function CloneProps(props) {
+  const { children, ...other } = props;
+  return children(other);
+}
 
 export type ElementDetailsTabsProps = {
   assembly: Assembly;
@@ -62,6 +68,21 @@ const EntityDetailsTabs = ({
   const iconTabs = useMemo(() => tabs.filter((x) => x.iconPath), [tabs]);
   const moreTabs = useMemo(() => tabs.filter((x) => !x.iconPath), [tabs]);
 
+  const [tabsDisabledInfo, setTabsDisabledInfo] = useState<{ route: string; isDisabled: boolean }[]>(null);
+
+  useEffect(() => {
+    async function getTabIsDisabled(tab: TabConfig<string>) {
+      return await (tab.getIsDisabled ? tab.getIsDisabled(entityID) : false);
+    }
+
+    async function fetchTabInfo(tabs: readonly TabConfig<string>[]) {
+      const info = await Promise.all(tabs.map((x) => getTabIsDisabled(x)));
+      setTabsDisabledInfo(tabs.map((x, i) => ({ route: x.route, isDisabled: info[i] })));
+    }
+
+    if (tabsDisabledInfo === null) fetchTabInfo(tabs);
+  }, [entityID, tabsDisabledInfo, tabs]);
+
   const tabVal = useMemo(() => (iconTabs.some((x) => x.route === value) ? value : "more"), [iconTabs, value]);
 
   return (
@@ -88,24 +109,42 @@ const EntityDetailsTabs = ({
           backgroundColor: verticalTabs && "#F2F2F2",
         }}
       >
-        {iconTabs.map((tab, index) => (
-          <Tab
-            label={tab.label}
-            value={tab.route}
-            LinkComponent={Link}
-            href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
-            key={tab.route}
-            icon={
-              <Image
-                width={verticalTabs ? 50 : 40}
-                height={verticalTabs ? 50 : 40}
-                src={tab.iconPath}
-                alt={tab.label + " icon"}
-              />
-            }
-            sx={{ fontSize: "12px" }}
-          />
-        ))}
+        {iconTabs.map((tab) => {
+          const tabIsDisabled = tabsDisabledInfo?.find((x) => x.route === tab.route).isDisabled;
+          const tooltipTitle = tabIsDisabled ? (tab.disabledMessage ?? "Not Available") : "";
+          return (
+            <CloneProps key={tab.route} value={tab.route}>
+              {(tabProps) => (
+                <Tooltip title={tooltipTitle} arrow>
+                  <span>
+                    <Tab
+                      {...tabProps}
+                      label={tab.label}
+                      value={tab.route}
+                      title="t"
+                      disabled={tabIsDisabled}
+                      LinkComponent={Link}
+                      href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
+                      key={tab.route}
+                      icon={
+                        <Image
+                          width={verticalTabs ? 50 : 40}
+                          height={verticalTabs ? 50 : 40}
+                          src={tab.iconPath}
+                          alt={tab.label + " icon"}
+                          style={{
+                            filter: tabIsDisabled ? "grayscale(100%) blur(1px)" : "none",
+                          }}
+                        />
+                      }
+                      sx={{ fontSize: "12px", width: "100%" }}
+                    />
+                  </span>
+                </Tooltip>
+              )}
+            </CloneProps>
+          );
+        })}
         {moreTabs.length && (
           <Tab
             value="more"
@@ -135,6 +174,7 @@ const EntityDetailsTabs = ({
             component={Link}
             href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
             onClick={handleClose}
+            disabled={tabsDisabledInfo?.find((x) => x.route === tab.route).isDisabled}
           >
             {tab.label}
           </MenuItem>

@@ -1,4 +1,6 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+
 
 export type ClosestGenes = {
   distance: number;

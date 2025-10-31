@@ -1,10 +1,7 @@
 import { isValidAssembly } from "common/types/globalTypes";
 import { getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
 import { use } from "react";
-import {
-  CandidateOpenEntity,
-  isValidOpenEntity,
-} from "common/OpenEntitiesContext";
+import { CandidateOpenEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
 
 export default function DetailsPage({
   params,
