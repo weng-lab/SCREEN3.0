@@ -22,6 +22,7 @@ export default function Mouse() {
         overflow: "hidden",
         alignItems: "stretch",
       }}
+      px={1}
     >
       <Tooltip title={showBodyMap ? "Hide Body Map" : "Show Body Map"} placement="bottom">
         <IconButton
@@ -29,7 +30,7 @@ export default function Mouse() {
           sx={{
             position: "absolute",
             top: 10,
-            left: 0,
+            alignSelf: "flex-start",
             zIndex: 2,
             backgroundColor: "background.paper",
             boxShadow: 2,
