@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
-import { BulkBedConfig, DisplayMode, TrackStoreInstance, TrackType } from "@weng-lab/genomebrowser";
+import { BulkBedConfig, BulkBedRect, DisplayMode, TrackStoreInstance, TrackType } from "@weng-lab/genomebrowser";
 import { tissueColors } from "common/colors";
 import { capitalizeFirstLetter } from "common/utility";
-import { ChromHmmTooltip } from "./ChromHmmTooltip";
-import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
+import ChromHmmTooltip from "./ChromHmmTooltip";
 import { useChromHMMData } from "common/hooks/useChromHmmData";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 
@@ -29,8 +28,8 @@ function createChromHmmTrack(
     })),
     title: `${capitalizeFirstLetter(tissue)} ChromHMM States`,
     height: 15 * tissueTracks.length,
-    tooltip: (rect: Rect) => ChromHmmTooltip(rect, tissue, rect.name),
-    onHover: (rect: Rect) => {
+    tooltip: (rect) => <ChromHmmTooltip rect={rect} tissue={tissue} displayName={rect.name} />,
+    onHover: (rect: BulkBedRect) => {
       addHighlight({
         color: rect.color,
         domain: { start: rect.start, end: rect.end },
@@ -76,13 +75,11 @@ export function useChromHmmTracks(
 
     addedTissues.forEach((tissue) => {
       const track = createChromHmmTrack(tissue, chromHmmTracks, addHighlightRef.current, removeHighlightRef.current);
-      console.log("inserting track", track.id);
       insertTrack(track);
     });
 
     removedTissues.forEach((tissue) => {
       const trackId = `ChromHmm_${tissue}_bulkbed`;
-      console.log("removing track", trackId);
       removeTrack(trackId);
     });
 
