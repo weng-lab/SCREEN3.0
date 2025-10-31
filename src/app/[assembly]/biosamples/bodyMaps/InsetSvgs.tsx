@@ -3,7 +3,8 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { BodyListMap } from "./types";
 import { Assembly } from "common/types/globalTypes";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { Tooltip, useMediaQuery, useTheme } from "@mui/material";
+import { capitalizeWords } from "common/utility";
 
 type InsetProps = {
   Assembly: Assembly;
@@ -51,49 +52,51 @@ const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelect
         const src = `/insetSVGs/${imagePrefix}${organ.replace(" ", "_")}${active ? "" : "_deselected"}.svg`;
 
         return (
-          <Button
-            key={organ}
-            onClick={() => handleClick(organ)}
-            onMouseEnter={() => setHovered(organ)}
-            onMouseLeave={() => setHovered(null)}
-            sx={{
-              minWidth: 0,
-              p: 0,
-              background: "none",
-              border: "none",
-              position: "relative",
-              cursor: "pointer",
-              transition: "transform 0.15s ease",
-            }}
-          >
-            <Box
-              component="img"
-              src={src}
-              alt={organ}
+          <Tooltip key={organ} title={capitalizeWords(organ)} arrow>
+            <Button
+              key={organ}
+              onClick={() => handleClick(organ)}
+              onMouseEnter={() => setHovered(organ)}
+              onMouseLeave={() => setHovered(null)}
               sx={{
-                width: 60,
-                height: 60,
-                objectFit: "contain",
-                display: "block",
+                minWidth: 0,
+                p: 0,
+                background: "none",
+                border: "none",
+                position: "relative",
+                cursor: "pointer",
+                transition: "transform 0.15s ease",
               }}
-            />
-            <Box
-              sx={{
-                position: "absolute",
-                inset: 0,
-                borderRadius: "50%",
-                backgroundColor:
-                  hovered === organ
-                    ? "rgba(128, 90, 213, 0.25)" // soft purple tint when active
-                    : "transparent",
-                transition: "background-color 0.2s ease",
-                pointerEvents: "none", // ensures clicks go through
-                "&:hover": {
-                  backgroundColor: "rgba(128, 90, 213, 0.25)", // hover tint
-                },
-              }}
-            />
-          </Button>
+            >
+              <Box
+                component="img"
+                src={src}
+                alt={organ}
+                sx={{
+                  width: 60,
+                  height: 60,
+                  objectFit: "contain",
+                  display: "block",
+                }}
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "50%",
+                  backgroundColor:
+                    hovered === organ
+                      ? "rgba(128, 90, 213, 0.25)" // soft purple tint when active
+                      : "transparent",
+                  transition: "background-color 0.2s ease",
+                  pointerEvents: "none", // ensures clicks go through
+                  "&:hover": {
+                    backgroundColor: "rgba(128, 90, 213, 0.25)", // hover tint
+                  },
+                }}
+              />
+            </Button>
+          </Tooltip>
         );
       })}
     </Box>
