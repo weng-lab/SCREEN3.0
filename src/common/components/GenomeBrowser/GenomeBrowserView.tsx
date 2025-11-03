@@ -302,10 +302,6 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
 
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
 
-  useEffect(() => {
-    console.log(currentTracks.map((t) => t.id));
-  }, [currentTracks]);
-
   return (
     <Stack>
       <Stack direction={{ xs: "column", md: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
