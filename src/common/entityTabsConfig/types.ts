@@ -1,4 +1,4 @@
-import { Assembly } from "common/types/globalTypes";
+import type { Assembly } from "common/types/globalTypes";
 import {
   entityTabsConfig,
   humanCcreTabs,
@@ -16,20 +16,6 @@ import { ReactElement } from "react";
 
 export type EntityType<A extends Assembly> = (typeof validEntityTypes)[A][number];
 export type AnyEntityType = EntityType<"GRCh38"> | EntityType<"mm10">;
-
-export const isValidEntityType = <A extends Assembly>(assembly: A, entityType: string): entityType is EntityType<A> => {
-  return (validEntityTypes[assembly] as readonly string[]).includes(entityType);
-};
-
-export const isValidRouteForEntity = <A extends Assembly>(
-  assembly: A,
-  entityType: EntityType<A>,
-  route: string
-): route is A extends "GRCh38"
-  ? EntityRoute<"GRCh38", EntityType<"GRCh38">>
-  : EntityRoute<"mm10", EntityType<"mm10">> => {
-  return entityTabsConfig[assembly][entityType].some((x: TabConfig) => x.route === route);
-};
 
 export type EntityViewComponentProps = {
   //This should not have any properties that should be owned by OpenEntitiesContext. Why?

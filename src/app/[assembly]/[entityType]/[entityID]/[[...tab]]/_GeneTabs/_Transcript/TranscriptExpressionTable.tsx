@@ -13,6 +13,9 @@ import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
+// const capitalizeFirstLetter = (str: string) => {
+//   return str.charAt(0).toUpperCase() + str.slice(1);
+// };
 import {
   SharedTranscriptExpressionPlotProps,
   TranscriptMetadata,

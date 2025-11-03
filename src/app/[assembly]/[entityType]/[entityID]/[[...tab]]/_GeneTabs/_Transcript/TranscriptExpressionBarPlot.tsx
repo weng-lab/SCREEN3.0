@@ -3,7 +3,19 @@ import {
   SharedTranscriptExpressionPlotProps,
 } from "./TranscriptExpression";
 import { useMemo } from "react";
-import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility";
+// import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility";
+export function capitalizeWords(input: string): string {
+  return input.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+export const truncateString = (input: string, maxLength: number) => {
+  if (input.length <= maxLength) return input;
+  return input.slice(0, maxLength - 3) + "...";
+};
+const capitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
 import { BarPlot, BarData } from "@weng-lab/visualization";

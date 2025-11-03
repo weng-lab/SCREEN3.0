@@ -30,7 +30,7 @@ const GeneExpressionTable = ({
   scale
 }: GeneExpressionTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
-  const { loading } = geneExpressionData;
+  const { loading, error } = geneExpressionData;
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -247,6 +247,7 @@ const GeneExpressionTable = ({
         rows={transformedData}
         columns={columns}
         loading={loading}
+        error={!!error}
         pageSizeOptions={[10, 25, 50]}
         initialState={{
           sorting: {

@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 import { Stack, Tab, Tabs } from "@mui/material";
 import { gql } from "common/types/generated";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
-import { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
+import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
 import { GROUP_COLOR_MAP } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { useCcreData } from "common/hooks/useCcreData";

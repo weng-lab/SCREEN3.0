@@ -1,7 +1,9 @@
 import { Add } from "@mui/icons-material";
 import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
-import { OpenEntitiesContext, AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
-import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL, parseGenomicRangeString } from "common/utility";
+import { OpenEntitiesContext, isValidOpenEntity } from "common/OpenEntitiesContext";
+import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext/types";
+import { parseGenomicRangeString } from "common/utility";
+import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL } from "./helpers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";

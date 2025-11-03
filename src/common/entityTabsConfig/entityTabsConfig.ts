@@ -20,7 +20,7 @@ import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
-import { EntityTabsConfig, TabConfig } from "./types";
+import type { EntityTabsConfig, TabConfig } from "./types";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
