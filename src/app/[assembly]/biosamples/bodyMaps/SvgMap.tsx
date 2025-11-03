@@ -10,6 +10,7 @@ interface ColorMap {
     activeStroke?: string;
     outlineOnly?: boolean;
     opacity?: number;
+    disabled?: boolean;
   };
 }
 
@@ -66,6 +67,14 @@ export default function SVGMap({
 
     const isActive = selected && BodyList[selected]?.includes(cls);
     const isHovered = hovered && BodyList[hovered]?.includes(cls);
+
+    if (path.disabled) {
+      return {
+        fill: path.fill,
+        opacity: 0.3,
+        cursor: "not-allowed",
+      };
+    }
 
     if (path.outlineOnly) {
       return {

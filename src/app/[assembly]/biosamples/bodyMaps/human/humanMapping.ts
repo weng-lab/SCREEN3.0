@@ -13,7 +13,7 @@ export const HumanList = {
   eye: ["cls-4", "cls-71", "cls-73", "cls-74", "cls-75"],
   gallbladder: ["cls-gallbladder"],
   gonad: ["testis", "ovary"],
-  heart: ["cls-33", "cls-44", "cls-45"],
+  heart: ["cls-33", "cls-44", "cls-45", "cls-46", "cls-47", "cls-48"],
   intestine: ["large intestine", "small intestine", "colon"],
   kidney: ["cls-kidney"],
   "large intestine": ["cls-29", "cls-30", "cls-lg-intestine", "colon"],
@@ -27,7 +27,6 @@ export const HumanList = {
   ovary: ["cls-ovary"],
   pancreas: ["cls-23"],
   penis: ["cls-62"],
-  pericardium: ["cls-46", "cls-48"],
   prostate: ["cls-54"],
   skin: ["cls-5", "cls-limb-skin"],
   "small intestine": ["cls-27", "cls-28"],
@@ -36,7 +35,7 @@ export const HumanList = {
   stomach: ["cls-stomach"],
   testis: ["cls-testis"],
   thymus: ["cls-39", "cls-41"],
-  "parathyroid gland": ["cls-thymus", "cls-40"],
+  "paraythroid gland": ["cls-thymus", "cls-40"],
   thyroid: ["cls-thymus", "cls-40"],
   tongue: ["cls-95"],
   ureter: ["cls-57"],
@@ -69,6 +68,7 @@ export const HumanColorMap: Record<
     activeStroke?: string;
     outlineOnly?: boolean;
     opacity?: number;
+    disabled?: boolean;
   }
 > = {
   "cls-nervebackground": { fill: "none", opacity: 0 },
@@ -83,8 +83,8 @@ export const HumanColorMap: Record<
   "cls-7": { fill: "#005091", activeFill: "#cc1e1e" },
   "cls-8": { fill: "#3f77a5", opacity: 0.75, activeFill: "#ec621c" },
   "cls-stomach": { fill: "#3f77a5", opacity: 0.75, activeFill: "#ec621c" },
-  "cls-vein": { fill: "#4d85b2", activeFill: "#63326e" },
-  "cls-11": { fill: "#2e70a5", activeFill: "#e90006" },
+  "cls-vein": { fill: "#4d85b2", activeFill: "#63326e", disabled: true },
+  "cls-11": { fill: "#2e70a5", activeFill: "#e90006", disabled: true },
   "cls-31": { fill: "#71a1c7", activeFill: "#a63128" },
   "cls-21": { fill: "#fbfbfb", activeStroke: "#77120b" },
   "cls-23": { fill: "#9cbfdc", activeFill: "#f2c57c", activeStroke: "#efef5f" },
