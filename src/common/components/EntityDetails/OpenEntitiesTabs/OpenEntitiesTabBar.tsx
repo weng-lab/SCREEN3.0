@@ -1,7 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
 import { OpenEntitiesContext, isValidOpenEntity } from "common/OpenEntitiesContext";
-import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext/types";
+import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext";
 import { parseGenomicRangeString } from "common/utility";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL } from "./helpers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

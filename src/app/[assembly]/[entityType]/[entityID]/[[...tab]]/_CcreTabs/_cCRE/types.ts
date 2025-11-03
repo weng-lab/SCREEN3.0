@@ -1,6 +1,6 @@
 import type { GridColDef } from "@weng-lab/ui-components";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
-import type { AnyOpenEntity } from "common/OpenEntitiesContext/types";
+import type { AnyOpenEntity } from "common/OpenEntitiesContext";
 import type { CcreAssay, CcreClass } from "common/types/globalTypes";
 import type { Dispatch, SetStateAction } from "react";
 

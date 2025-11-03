@@ -11,7 +11,7 @@ import {
   mouseRegionTabs,
   validEntityTypes,
 } from "./entityTabsConfig";
-import type { AnyOpenEntity } from "common/OpenEntitiesContext/types";
+import type { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { ReactElement } from "react";
 
 export type EntityType<A extends Assembly> = (typeof validEntityTypes)[A][number];

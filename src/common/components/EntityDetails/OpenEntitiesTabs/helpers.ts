@@ -1,9 +1,9 @@
 import type { Assembly } from "common/types/globalTypes";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
-import { isValidOpenEntity } from "common/OpenEntitiesContext/guards";
-import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext/types";
-import { validEntityTypes, entityTabsConfig } from "common/entityTabsConfig/entityTabsConfig";
-import type { AnyTabRoute, AnyEntityType } from "common/entityTabsConfig/types";
+import { isValidOpenEntity } from "common/OpenEntitiesContext";
+import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext";
+import { validEntityTypes, entityTabsConfig } from "common/entityTabsConfig";
+import type { AnyTabRoute, AnyEntityType } from "common/entityTabsConfig";
 
 const openEntityListDelimiter = ",";
 const openEntityDelimiter = "/";
