@@ -1,4 +1,4 @@
-import { Assembly, GenomicRange } from "common/types/globalTypes";
+import { Assembly, CcreAssay, GenomicRange } from "common/types/globalTypes";
 import { Typography, TypographyOwnProps } from "@mui/material";
 import { AnyOpenEntity, CandidateOpenEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
@@ -69,6 +69,26 @@ export function formatPortal(subpath: string): string {
 export function formatGenomicRange(region: GenomicRange) {
   return `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
 }
+
+/**
+ *
+ * @param assay
+ * @returns Formatted assay name
+ */
+export const formatAssay = (assay: CcreAssay) => {
+  switch (assay) {
+    case "atac":
+      return "ATAC";
+    case "ctcf":
+      return "CTCF";
+    case "dnase":
+      return "DNase";
+    case "h3k27ac":
+      return "H3K27ac";
+    case "h3k4me3":
+      return "H3K4me3";
+  }
+};
 
 /**
  * Only use this function if use case is unable to handle jsx element and needs string. Use `toScientificNotationElement` if possible

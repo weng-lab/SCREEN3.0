@@ -1,12 +1,11 @@
 import { Box } from "@mui/system";
 import { BarData, BarPlot } from "@weng-lab/visualization";
-import { SharedAssayViewPlotProps } from "./AssayView";
-import { capitalizeFirstLetter, truncateString } from "common/utility";
+import { capitalizeFirstLetter, formatAssay, truncateString } from "common/utility";
 import { tissueColors } from "common/colors";
-import { BiosampleRow, formatAssay } from "./BiosampleActivity";
 import { useMemo } from "react";
 import { Typography } from "@mui/material";
 import AssayPlotControls from "./AssayPlotControls";
+import type { SharedAssayViewPlotProps, BiosampleRow } from "./types";
 
 const AssayBarPlot = ({
   entity,

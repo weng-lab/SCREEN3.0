@@ -1,6 +1,3 @@
-import { Assembly } from "common/types/globalTypes";
-import { type ReactElement } from "react";
-import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionalCharacterization/FunctionalCharacterization";
@@ -10,7 +7,7 @@ import CcreLinkedGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_
 import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Variants/CcreVariantsTab";
 import GeneExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
 import GeneLinkedCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/GeneLinkedCcres";
-import EQTLs from "./components/EQTLTables";
+import EQTLs from "common/components/EQTLTables";
 import TranscriptExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Transcript/TranscriptExpression";
 import VariantInfo from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpTabs/_Variant/Variant";
 import VariantLinkedCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_SnpTabs/_cCREs/VariantLinkedCcres";
@@ -23,6 +20,7 @@ import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
+import { EntityTabsConfig, TabConfig } from "./types";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -31,6 +29,10 @@ const VariantIconPath = "/assets/VariantIcon.svg";
 const BiosampleEnrichmentIconPath = "/assets/BiosampleEnrichmentIcon.svg";
 const ConservationIconPath = "/assets/ConservationIcon.svg";
 const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
+
+/**
+ * @todo rewrite these instructions now that types are separated in own file
+ */
 
 /**
  * To add a new tab to an existing entity:
@@ -52,95 +54,7 @@ export const validEntityTypes = {
   mm10: ["ccre", "gene", "region"],
 } as const;
 
-export type EntityType<A extends Assembly> = (typeof validEntityTypes)[A][number];
-export type AnyEntityType = EntityType<"GRCh38"> | EntityType<"mm10">;
-
-export const isValidEntityType = <A extends Assembly>(assembly: A, entityType: string): entityType is EntityType<A> => {
-  return (validEntityTypes[assembly] as readonly string[]).includes(entityType);
-};
-
-export type EntityViewComponentProps = {
-  entity: AnyOpenEntity;
-};
-
-type ExtractRoutes<T extends readonly { route: string }[]> = T[number]["route"];
-
-// Individual route types for each entity
-type HumanVariantRoutes = ExtractRoutes<typeof humanVariantTabs>;
-type HumanGeneRoutes = ExtractRoutes<typeof humanGeneTabs>;
-type HumanCcreRoutes = ExtractRoutes<typeof humanCcreTabs>;
-type HumanRegionRoutes = ExtractRoutes<typeof humanRegionTabs>;
-type HumanGwasRoutes = ExtractRoutes<typeof humanGwasTabs>;
-
-type MouseGeneRoutes = ExtractRoutes<typeof mouseGeneTabs>;
-type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
-type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>;
-//can I remove the types from below?
-
-export type AnyTabRoute =
-  | HumanVariantRoutes
-  | HumanGeneRoutes
-  | HumanCcreRoutes
-  | HumanRegionRoutes
-  | HumanGwasRoutes
-  | MouseGeneRoutes
-  | MouseCcreRoutes
-  | MouseRegionRoutes;
-
-// Generic type to get routes for any assembly/entity combination
-export type EntityRoute<A extends Assembly, E extends EntityType<A>> = E extends keyof (typeof entityTabsConfig)[A]
-  ? ExtractRoutes<(typeof entityTabsConfig)[A][E]>
-  : never;
-
-/**
- * TabList type takes in assembly and EntityType and returns corresponding string literal union
- * The prettier auto-formatting on this is pretty horrendous, apologies
- */
-
-type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
-  ? E extends "ccre"
-    ? readonly TabConfig<HumanCcreRoutes>[]
-    : E extends "gene"
-      ? readonly TabConfig<HumanGeneRoutes>[]
-      : E extends "variant"
-        ? readonly TabConfig<HumanVariantRoutes>[]
-        : E extends "gwas"
-          ? readonly TabConfig<HumanGwasRoutes>[]
-          : readonly TabConfig<HumanRegionRoutes>[]
-  : E extends "ccre"
-    ? readonly TabConfig<MouseCcreRoutes>[]
-    : E extends "gene"
-      ? readonly TabConfig<MouseGeneRoutes>[]
-      : readonly TabConfig<MouseRegionRoutes>[];
-
-type EntityTabsConfig = {
-  readonly [A in Assembly]: {
-    readonly [E in EntityType<A>]: TabList<A, E>;
-  };
-};
-
-export type TabConfig<R extends string = string> = {
-  route: R;
-  label: string;
-  /**
-   * If no icon passed, will place tab in "more" section
-   */
-  iconPath?: string;
-  /**
-   * The component to render for that tab view
-   */
-  component: (props: EntityViewComponentProps) => ReactElement;
-  /**
-   * Function that takes in the entity and determines if the tab is disabled
-   */
-  getIsDisabled?: (entityID: string) => Promise<boolean>;
-  /**
-   * Message to display on hover when mode is disable
-   */
-  disabledMessage?: string;
-};
-
-const humanVariantTabs = [
+export const humanVariantTabs = [
   {
     route: "",
     label: "Variant",
@@ -167,7 +81,7 @@ const humanVariantTabs = [
   },
 ] as const satisfies TabConfig[];
 
-const humanGeneTabs = [
+export const humanGeneTabs = [
   {
     route: "",
     label: "Gene",
@@ -205,7 +119,7 @@ const humanGeneTabs = [
   },
 ] as const satisfies TabConfig[];
 
-const humanGwasTabs = [
+export const humanGwasTabs = [
   {
     route: "biosample_enrichment",
     label: "Biosample Enrichment",
@@ -228,7 +142,7 @@ const humanGwasTabs = [
   { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GWASGenomeBrowserView },
 ] as const satisfies TabConfig[];
 
-const humanCcreTabs = [
+export const humanCcreTabs = [
   {
     route: "",
     label: "cCRE",
@@ -272,7 +186,7 @@ const humanCcreTabs = [
   },
 ] as const satisfies TabConfig[];
 
-const humanRegionTabs = [
+export const humanRegionTabs = [
   {
     route: "ccres",
     label: "cCREs",
@@ -299,7 +213,7 @@ const humanRegionTabs = [
   },
 ] as const satisfies TabConfig[];
 
-const mouseGeneTabs = [
+export const mouseGeneTabs = [
   {
     route: "",
     label: "Gene",
@@ -321,7 +235,7 @@ const mouseGeneTabs = [
   },
 ] as const satisfies TabConfig[];
 
-const mouseCcreTabs = [
+export const mouseCcreTabs = [
   {
     route: "",
     label: "cCRE",
@@ -354,7 +268,7 @@ const mouseCcreTabs = [
   },
 ] as const satisfies TabConfig[];
 
-const mouseRegionTabs = [
+export const mouseRegionTabs = [
   {
     route: "ccres",
     label: "cCREs",
@@ -389,32 +303,3 @@ export const entityTabsConfig: EntityTabsConfig = {
     region: mouseRegionTabs,
   },
 } as const;
-
-export const isValidRouteForEntity = <A extends Assembly>(
-  assembly: A,
-  entityType: EntityType<A>,
-  route: string
-): route is A extends "GRCh38"
-  ? EntityRoute<"GRCh38", EntityType<"GRCh38">>
-  : EntityRoute<"mm10", EntityType<"mm10">> => {
-  return entityTabsConfig[assembly][entityType].some((x: TabConfig) => x.route === route);
-};
-
-// Helper to generate tab array for EntityDetailsTabs
-export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(
-  assembly: A,
-  entityType: E
-): readonly TabConfig[] => {
-  return entityTabsConfig[assembly][entityType];
-};
-
-// Helper to get component for given OpenEntity
-export const getComponentForEntity = (openEntity: AnyOpenEntity) => {
-  switch (openEntity.assembly) {
-    // Can't do entityTabsConfig[assembly][openEntity.entityType] since TS compiler can't assert that the entity type and assembly match which allows safe indexing
-    case "GRCh38":
-      return entityTabsConfig.GRCh38[openEntity.entityType].find((x) => x.route === openEntity.tab).component;
-    case "mm10":
-      return entityTabsConfig.mm10[openEntity.entityType].find((x) => x.route === openEntity.tab).component;
-  }
-};

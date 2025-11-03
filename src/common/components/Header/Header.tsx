@@ -15,13 +15,7 @@ import { useMenuControl } from "common/components/MenuContext";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 import { usePathname } from "next/navigation";
-
-export type PageInfo = {
-  pageName: string;
-  link: string;
-  dropdownID?: number;
-  subPages?: { pageName: string; link: string }[];
-};
+import { PageInfo } from "./types";
 
 const pageLinks: PageInfo[] = [
   {

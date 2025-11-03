@@ -18,10 +18,10 @@ import {
 import MuiLink from "@mui/material/Link";
 import AutoComplete from "../autocomplete";
 import Link from "next/link";
-import { PageInfo } from "./Header";
 import CloseIcon from "@mui/icons-material/Close";
 import { useMenuControl } from "common/components/MenuContext";
 import { useEffect, useState } from "react";
+import { PageInfo } from "./types";
 
 export type MobileMenuProps = {
   pageLinks: PageInfo[];
