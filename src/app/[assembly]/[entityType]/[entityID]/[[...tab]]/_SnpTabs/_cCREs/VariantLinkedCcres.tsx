@@ -23,7 +23,7 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
     setDistance(distance);
   };
 
-  const coordinates = useMemo(() => {
+  const searchCoordinates = useMemo(() => {
     if (!variantData?.coordinates) return null;
 
     const { chromosome, start, end } = variantData.coordinates;
@@ -39,9 +39,9 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
     loading: loadingCcres,
     error: errorCcres,
   } = useCcreData({
-    coordinates,
+    coordinates: searchCoordinates,
     assembly: "GRCh38",
-    skip: !coordinates,
+    skip: !searchCoordinates,
   });
 
   const nearbyccres = dataCcres?.map((d) => {
@@ -51,10 +51,7 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
       start: d?.start,
       end: d?.start + d?.len,
       group: d?.pct,
-      distance: calcSignedDistRegionToRegion(
-        { start: coordinates.start, end: coordinates.end },
-        { start: d?.start, end: d?.start + d?.len }
-      ),
+      distance: calcSignedDistRegionToRegion(variantData.coordinates, { start: d?.start, end: d?.start + d?.len }),
     };
   });
 
