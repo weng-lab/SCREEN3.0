@@ -1,4 +1,3 @@
-"use client";
 import { isValidAssembly } from "common/types/globalTypes";
 import { getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
 import { use } from "react";
