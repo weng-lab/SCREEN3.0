@@ -1,13 +1,14 @@
 import { AnyEntityType } from "common/entityTabsConfig";
 import { Assembly } from "common/types/globalTypes";
 import { AnyOpenEntity, OpenEntityAction, OpenEntityState } from "./types";
+import { isSameEntity } from "./helpers";
 
 export const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenEntityAction) => {
   let newState: OpenEntityState;
   switch (action.type) {
     //Add Entity to the end of the part of the array containing the assembly, if none exist add to the end
     case "addEntity": {
-      if (openEntities.some((el) => el.entityID === action.entity.entityID && el.assembly === action.entity.assembly)) {
+      if (openEntities.some((el) => isSameEntity(el, action.entity))) {
         newState = openEntities;
       } else {
         newState = [...openEntities, action.entity];
@@ -16,19 +17,12 @@ export const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenE
     }
     case "removeEntity": {
       if (openEntities.length > 1) {
-        newState = openEntities.filter(
-          (el) =>
-            el.entityID !== action.entity.entityID ||
-            el.entityType !== action.entity.entityType ||
-            el.assembly !== action.entity.assembly
-        );
+        newState = openEntities.filter((el) => !isSameEntity(el, action.entity));
       } else newState = openEntities;
       break;
     }
     case "updateEntity": {
-      newState = openEntities.map((el) =>
-        el.entityID === action.entity.entityID && el.assembly === action.entity.assembly ? action.entity : el
-      );
+      newState = openEntities.map((el) => (isSameEntity(el, action.entity) ? action.entity : el));
       break;
     }
     case "reorder": {
