@@ -19,7 +19,6 @@ import AutoSortSwitch from "common/components/AutoSortSwitch";
 export type GeneExpressionTableProps = GeneExpressionProps & SharedGeneExpressionPlotProps;
 
 const GeneExpressionTable = ({
-  geneData,
   rows,
   selected,
   setSelected,
@@ -27,9 +26,11 @@ const GeneExpressionTable = ({
   setSortedFilteredData,
   sortedFilteredData,
   viewBy,
+  entity,
+  scale
 }: GeneExpressionTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
-  const { data, loading, error } = geneExpressionData;
+  const { loading, error } = geneExpressionData;
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -126,8 +127,8 @@ const GeneExpressionTable = ({
       ),
     },
     {
-      field: "tpm" as any, //Workaround for typing issue -- find better solution
-      headerName: "TPM",
+      field: " ",
+      headerName: scale === "linearTPM" ? "TPM" : "Log10(TPM + 1)",
       type: "number",
       valueGetter: (_, row) => {
         return (row.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm).toFixed(2) ?? 0;
@@ -162,12 +163,15 @@ const GeneExpressionTable = ({
     },
   ];
 
-  const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
-    const newIds = Array.from(ids.ids);
-    const selectedRows = newIds.map((id) =>
-      transformedData.find((row) => row.gene_quantification_files[0].accession === id)
-    );
-    setSelected(selectedRows);
+  const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
+    if (newRowSelectionModel.type === "include") {
+      const newIds = Array.from(newRowSelectionModel.ids);
+      const selectedRows = newIds.map((id) => rows.find((row) => row.accession === id));
+      setSelected(selectedRows);
+    } else {
+      // if type is exclude, it's always with 0 ids (aka select all)
+      setSelected(rows);
+    }
   };
 
   const apiRef = useGridApiRef();
@@ -231,14 +235,19 @@ const GeneExpressionTable = ({
     api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
   }, [apiRef, autoSort, initialSort, selected, viewBy]);
 
+    const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
+      return { type: "include", ids: new Set(selected.map((x) => x.accession)) };
+    }, [selected]);
+
   return (
     <>
       <Table
         apiRef={apiRef}
-        label={`${geneData?.data.name} Expression`}
+        label={`${entity.entityID} Expression`}
         rows={transformedData}
         columns={columns}
         loading={loading}
+        error={!!error}
         pageSizeOptions={[10, 25, 50]}
         initialState={{
           sorting: {
@@ -247,12 +256,9 @@ const GeneExpressionTable = ({
         }}
         // -- Selection Props --
         checkboxSelection
-        getRowId={(row) => row.gene_quantification_files[0].accession} //needed to match up data with the ids returned by onRowSelectionModelChange
+        getRowId={(row: typeof transformedData[number]) => row.accession} //needed to match up data with the ids returned by onRowSelectionModelChange
         onRowSelectionModelChange={handleRowSelectionModelChange}
-        rowSelectionModel={{
-          type: "include",
-          ids: new Set(selected.map((x) => x.gene_quantification_files[0].accession)),
-        }}
+        rowSelectionModel={rowSelectionModel}
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         // -- End Selection Props --
         onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger

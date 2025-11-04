@@ -16,14 +16,9 @@ const GWAS_STUDY_Query = gql(`
 }
 `);
 
-/**
- * Currently the backend does not support querying for genes in multiple regions,
- * which limits the input here to GenomicRange and not also GenomicRange[]
- */
-
 export type UseGWASStudyDataParams = { study: string[]; entityType?: AnyEntityType };
 
-export type UseGWASStudyDataReturn<T extends UseGWASStudyDataParams> = {
+export type UseGWASStudyDataReturn = {
   data: GetGwasStudiesQuery["getAllGwasStudies"][0] | undefined;
   loading: boolean;
   error: ApolloError;
@@ -32,7 +27,7 @@ export type UseGWASStudyDataReturn<T extends UseGWASStudyDataParams> = {
 export const useGWASStudyData = <T extends UseGWASStudyDataParams>({
   study,
   entityType,
-}: T): UseGWASStudyDataReturn<T> => {
+}: T): UseGWASStudyDataReturn => {
   const { data, loading, error } = useQuery(GWAS_STUDY_Query, {
     variables: {
       study: study,
@@ -47,5 +42,5 @@ export const useGWASStudyData = <T extends UseGWASStudyDataParams>({
     data: data?.getAllGwasStudies[0],
     loading,
     error,
-  } as UseGWASStudyDataReturn<T>;
+  } as UseGWASStudyDataReturn;
 };

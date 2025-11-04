@@ -1,4 +1,7 @@
+"use client";
+
 import { Domain, Highlight, Track } from "@weng-lab/genomebrowser";
+import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 
 type LocalBrowserState = {
   domain: Domain;
@@ -6,6 +9,7 @@ type LocalBrowserState = {
 };
 
 export function getLocalBrowser(name: string): LocalBrowserState | null {
+  if (typeof window === "undefined" || !window.sessionStorage) return null;
   const localBrowserState = sessionStorage.getItem(name + "-browser-state");
   if (!localBrowserState) return null;
   const localBrowserStateJson = JSON.parse(localBrowserState) as LocalBrowserState;
@@ -28,7 +32,7 @@ export function getLocalTracks(): Track[] {
 }
 
 // temporary until we rework track selection
-export function setLocalBiosamples(biosamples: any[] | null) {
+export function setLocalBiosamples(biosamples: RegistryBiosamplePlusRNA[] | null) {
   if (biosamples === null || biosamples.length === 0) {
     sessionStorage.removeItem("selected-biosamples");
   } else {
@@ -36,7 +40,8 @@ export function setLocalBiosamples(biosamples: any[] | null) {
   }
 }
 
-export function getLocalBiosamples(): any[] | null {
+export function getLocalBiosamples(): RegistryBiosamplePlusRNA[] | null {
+  if (typeof window === "undefined" || !window.sessionStorage) return null;
   const localBiosamples = sessionStorage.getItem("selected-biosamples");
   if (!localBiosamples) return null;
   const localBiosamplesJson = JSON.parse(localBiosamples);
@@ -52,6 +57,7 @@ export function setLocalChromHmmTissues(tissues: string[] | null) {
 }
 
 export function getLocalChromHmmTissues(): string[] {
+  if (typeof window === "undefined" || !window.sessionStorage) return null;
   const localTissues = sessionStorage.getItem("selected-chromhmm-tissues");
   if (!localTissues) return [];
   const localTissuesJson = JSON.parse(localTissues) as string[];

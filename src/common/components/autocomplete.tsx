@@ -120,7 +120,7 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
         url = `/GRCh38/gwas/${r.id}`;
         break;
     }
-    router.push(url);
+    router.push(url, { scroll: false });
   };
 
   const defaultResults: Result[] = useMemo(() => {

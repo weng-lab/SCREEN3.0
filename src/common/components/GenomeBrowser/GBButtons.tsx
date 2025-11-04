@@ -36,10 +36,6 @@ export default function GBButtons({
     onBiosampleSelected(biosample);
   };
 
-  /**
-   * @todo This broke the session storage track syncing
-   */
-
   return (
     <Box display="flex" gap={1}>
       <Button

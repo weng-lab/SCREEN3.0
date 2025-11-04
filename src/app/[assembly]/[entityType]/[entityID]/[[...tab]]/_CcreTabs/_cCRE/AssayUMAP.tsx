@@ -1,8 +1,6 @@
 import { Box, Stack } from "@mui/system";
 import { Point, ScatterPlot } from "@weng-lab/visualization";
-import { SharedAssayViewPlotProps } from "./AssayView";
 import { tissueColors } from "common/colors";
-import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import { useCallback, useMemo, useState } from "react";
 import { gql } from "common/types/generated";
 import { useQuery } from "@apollo/client";
@@ -19,7 +17,10 @@ import {
 } from "@mui/material";
 import { LinearScaleConfig, scaleLinear } from "@visx/scale";
 import { interpolateRdYlBu } from "d3-scale-chromatic";
-import UMAPLegend from "../../../../../../../common/components/UMAPLegend";
+import UMAPLegend from "common/components/UMAPLegend";
+import { formatAssay } from "common/utility";
+import { CcreAssay } from "common/types/globalTypes";
+import type { BiosampleRow, SharedAssayViewPlotProps } from "./types";
 
 const BIOSAMPLE_UMAP = gql(`
   query BiosampleUmap($assembly: String!, $assay: String!) {
@@ -32,7 +33,7 @@ const BIOSAMPLE_UMAP = gql(`
   }
 `);
 
-const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: Assay }) => {
+const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: CcreAssay }) => {
   return (
     <>
       <Typography>
@@ -141,6 +142,10 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
     } else setSelected([...selected, point.metaData]);
   };
 
+  const handleLassoSelect = (points: Point<BiosampleRow>[]) => {
+    setSelected(prev => [...prev, ...points.map(x => x.metaData)])
+  }
+
   return (
     <Stack
       width={"100%"}
@@ -179,6 +184,7 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
         <ScatterPlot
           pointData={scatterData}
           onPointClicked={handlePointClick}
+          onSelectionChange={handleLassoSelect}
           leftAxisLabel="UMAP-2"
           bottomAxisLabel="UMAP-1"
           selectable

@@ -24,12 +24,6 @@ interface BiosampleSelectModalProps {
   onChange?: (selected: RegistryBiosamplePlusRNA[] | null) => void;
 }
 
-/**
- * @todo do some work on the typing here. If multiselect is true, selectedBiosamples should be array. If false then should be single obect.
- * Deselecting doesn't work!
- *
- */
-
 const BiosampleSelectModal = ({
   assembly,
   open,

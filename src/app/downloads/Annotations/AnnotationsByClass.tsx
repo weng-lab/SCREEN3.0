@@ -3,7 +3,7 @@ import Config from "common/config.json";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
 import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS, pELS, CTCF_Bound, ELS } from "../../../common/colors";
 import DownloadContentLayout from "./DownloadContentLayout";
-import { Assembly } from "./Annotations";
+import type { Assembly } from "./Annotations";
 
 const classDownloads: {
   GRCh38: DownloadButtonProps[];

@@ -1,3 +1,4 @@
+"use client";
 import { useQuery } from "@apollo/client";
 import { GridColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";

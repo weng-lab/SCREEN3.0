@@ -1,18 +1,25 @@
 import {
   TranscriptMetadata,
   SharedTranscriptExpressionPlotProps,
-  TranscriptExpressionProps,
 } from "./TranscriptExpression";
 import { useMemo } from "react";
-import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility";
+// import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility";
+export function capitalizeWords(input: string): string {
+  return input.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+export const truncateString = (input: string, maxLength: number) => {
+  if (input.length <= maxLength) return input;
+  return input.slice(0, maxLength - 3) + "...";
+};
+const capitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
-import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
+import { BarPlot, BarData } from "@weng-lab/visualization";
 import TranscriptPlotControls from "./TranscriptPlotControls";
-
-export type TranscriptExpressionBarPlotProps = TranscriptExpressionProps &
-  SharedTranscriptExpressionPlotProps &
-  Partial<BarPlotProps<TranscriptMetadata>>;
 
 const TranscriptExpressionBarPlot = ({
   setPeak,
@@ -20,7 +27,7 @@ const TranscriptExpressionBarPlot = ({
   setScale,
   scale,
   viewBy,
-  geneData,
+  entity,
   transcriptExpressionData,
   selected,
   setSelected,
@@ -28,7 +35,7 @@ const TranscriptExpressionBarPlot = ({
   sortedFilteredData,
   ref,
   ...rest
-}: TranscriptExpressionBarPlotProps) => {
+}: SharedTranscriptExpressionPlotProps) => {
   const plotData: BarData<TranscriptMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((x, i) => {
@@ -46,9 +53,9 @@ const TranscriptExpressionBarPlot = ({
     });
   }, [sortedFilteredData, selected]);
 
-  const onBarClicked = (bar: BarData<TranscriptMetadata>) => {
-    if (selected.includes(bar.metadata)) {
-      setSelected(selected.filter((x) => x !== bar.metadata));
+  const handleBarClick = (bar: BarData<TranscriptMetadata>) => {
+    if (selected.some(x => x.expAccession === bar.metadata.expAccession)) {
+      setSelected(selected.filter((x) => x.expAccession !== bar.metadata.expAccession));
     } else setSelected([...selected, bar.metadata]);
   };
 
@@ -89,13 +96,12 @@ const TranscriptExpressionBarPlot = ({
         selectedPeak={selectedPeak}
       />
       <BarPlot
-        {...rest}
-        onBarClicked={onBarClicked}
+        onBarClicked={handleBarClick}
         data={plotData}
-        topAxisLabel={`TSS Expression at ${selectedPeak} of ${geneData.data.name} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
+        topAxisLabel={`TSS Expression at ${selectedPeak} of ${entity.entityID} - ${scale === "log" ? "log₁₀(RPM + 1)" : "RPM"}`}
         TooltipContents={PlotTooltip}
         ref={ref}
-        downloadFileName={`${geneData.data.name}_TSS_bar_plot`}
+        downloadFileName={`${entity.entityID}_TSS_bar_plot`}
       />
     </Box>
   );

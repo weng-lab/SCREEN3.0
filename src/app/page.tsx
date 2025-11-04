@@ -148,7 +148,7 @@ export default function Home() {
               Access SCREEN Data Instantly!
             </Typography>
             <Typography variant="body1" maxWidth={500}>
-              Download comprehensive datasets of candidate cis-Regulatory Elements (cCREs) from ENCODE for in-depth
+              Download comprehensive datasets of candidate cis-regulatory elements (cCREs) from ENCODE for in-depth
               analysis.
             </Typography>
           </Grid>

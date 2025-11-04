@@ -14,11 +14,9 @@ export type GeneExpressionViolinPlotProps = GeneExpressionProps &
 const GeneExpressionBarPlot = ({
   scale,
   setScale,
-  geneData,
   selected,
   sortedFilteredData,
   setSelected,
-  assembly,
   RNAtype,
   setRNAType,
   viewBy,
@@ -27,10 +25,14 @@ const GeneExpressionBarPlot = ({
   setReplicates,
   ref,
   rows,
+  entity,
+  geneExpressionData,
   ...rest
 }: GeneExpressionViolinPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
+
+  const { loading } = geneExpressionData;
 
   const violinData: Distribution<PointMetadata>[] = useMemo(() => {
     if (!rows) return [];
@@ -135,7 +137,7 @@ const GeneExpressionBarPlot = ({
       sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
     >
       <GenePlotControls
-        assembly={assembly}
+        assembly={entity.assembly}
         RNAtype={RNAtype}
         scale={scale}
         viewBy={viewBy}
@@ -161,10 +163,10 @@ const GeneExpressionBarPlot = ({
           distributions={violinData}
           axisLabel={
             scale === "linearTPM"
-              ? `${geneData?.data.name} Expression - TPM`
-              : `${geneData?.data.name} Expression - Log\u2081\u2080(TPM + 1)`
+              ? `${entity.entityID} Expression - TPM`
+              : `${entity.entityID} Expression - Log\u2081\u2080(TPM + 1)`
           }
-          loading={geneData.loading}
+          loading={loading}
           labelOrientation="leftDiagonal"
           violinProps={{
             bandwidth: "scott",
@@ -175,7 +177,7 @@ const GeneExpressionBarPlot = ({
             outliers: showPoints ? "all" : "none",
           }}
           ref={ref}
-          downloadFileName={`${geneData.data.name}_expression_violin_plot`}
+          downloadFileName={`${entity.entityID}_expression_violin_plot`}
           pointTooltipBody={(point) => {
             const rawTPM = point.metadata?.gene_quantification_files[0].quantifications[0]?.tpm ?? 0;
             const displayTPM = scale === "linearTPM" ? rawTPM : Math.log10(rawTPM + 1);

@@ -1,5 +1,4 @@
 import {
-  TranscriptExpressionProps,
   TranscriptMetadata,
   SharedTranscriptExpressionPlotProps,
 } from "./TranscriptExpression";
@@ -9,10 +8,6 @@ import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-la
 import { tissueColors } from "common/colors";
 import TranscriptPlotControls from "./TranscriptPlotControls";
 
-export type TranscriptExpressionViolinPlotProps = TranscriptExpressionProps &
-  SharedTranscriptExpressionPlotProps &
-  Partial<ViolinPlotProps<TranscriptMetadata>>;
-
 const TranscriptExpressionBarPlot = ({
   setViewBy,
   setPeak,
@@ -20,14 +15,14 @@ const TranscriptExpressionBarPlot = ({
   setSelected,
   scale,
   viewBy,
-  geneData,
+  entity,
   selectedPeak,
   transcriptExpressionData,
   selected,
   rows,
   ref,
   ...rest
-}: TranscriptExpressionViolinPlotProps) => {
+}: SharedTranscriptExpressionPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
@@ -140,7 +135,7 @@ const TranscriptExpressionBarPlot = ({
         <ViolinPlot
           {...rest}
           distributions={violinData}
-          axisLabel={`TSS Expression at ${selectedPeak} of ${geneData.data.name} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
+          axisLabel={`TSS Expression at ${selectedPeak} of ${entity.entityID} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
           loading={transcriptExpressionData.loading}
           labelOrientation="leftDiagonal"
           onViolinClicked={onViolinClicked}
@@ -154,7 +149,7 @@ const TranscriptExpressionBarPlot = ({
             outliers: showPoints ? "all" : "none",
           }}
           ref={ref}
-          downloadFileName={`${geneData.data.name}_TSS_violin_plot`}
+          downloadFileName={`${entity.entityID}_TSS_violin_plot`}
           pointTooltipBody={(point) => {
             return (
               <Box maxWidth={300}>

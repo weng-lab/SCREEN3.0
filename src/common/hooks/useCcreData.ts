@@ -66,10 +66,6 @@ const CCRE_QUERY = gql(`
   }
 `);
 
-/**
- * I suppose the advantage is that there can potentially be a mapping between the entityType and assembly (soon wiht biosample), but the issue is that that type specification means that I need to needlessly pass the assembly as a type to this function which is not at all used in the return (just for blocking)
- */
-
 type UseCcreDataParams =
   | {
       assembly: Assembly;
@@ -78,6 +74,7 @@ type UseCcreDataParams =
       entityType?: AnyEntityType;
       nearbygeneslimit?: number;
       cellType?: string;
+      skip?: boolean
     }
   | {
       assembly: Assembly;
@@ -86,6 +83,7 @@ type UseCcreDataParams =
       entityType?: AnyEntityType;
       nearbygeneslimit?: number;
       cellType?: string;
+      skip?: boolean
     };
 
 export type UseCcreDataReturn<T extends UseCcreDataParams> = T extends
@@ -109,6 +107,7 @@ export const useCcreData = <T extends UseCcreDataParams>({
   assembly,
   nearbygeneslimit,
   cellType,
+  skip,
 }: T): UseCcreDataReturn<T> => {
   const { data, loading, error } = useQuery(CCRE_QUERY, {
     variables: {
@@ -119,7 +118,7 @@ export const useCcreData = <T extends UseCcreDataParams>({
       cellType: cellType,
     },
     skip:
-      (entityType !== undefined && entityType !== "ccre") ||
+      skip || (entityType !== undefined && entityType !== "ccre") ||
       ((!accession || (Array.isArray(accession) && accession.length === 0)) &&
         (!coordinates || (Array.isArray(coordinates) && coordinates.length === 0))),
   });

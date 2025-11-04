@@ -20,16 +20,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { GenomicRange } from "common/types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 //import GenomeBrowserView from "common/gbview/genomebrowserview";
-import ControlButtons from "common/components/gbview/ControlButtons";
-import HighlightDialog from "common/components/gbview/HighlightDialog";
-import { randomColor } from "common/components/gbview/utils";
+import ControlButtons from "common/components/GenomeBrowser/ControlButtons";
+import HighlightDialog from "common/components/GenomeBrowser/HighlightDialog";
+import { randomColor } from "common/components/GenomeBrowser/utils";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
-import CCRETooltip from "common/components/gbview/CcreTooltip";
-import DomainDisplay from "common/components/gbview/DomainDisplay";
+import CCRETooltip from "common/components/GenomeBrowser/CcreTooltip";
+import DomainDisplay from "common/components/GenomeBrowser/DomainDisplay";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import SelectLdBlock from "./SelectLdBlock";
 import { gql, useQuery } from "@apollo/client";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 interface Transcript {
   id: string;
@@ -62,14 +63,14 @@ const browserStore = createBrowserStore({
 const trackStore = createTrackStore([]);
 const dataStore = createDataStore();
 
-export default function GWASGenomeBrowserView({ study_name }: { study_name: string }) {
+export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps) {
   //const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosample[] | null>(null);
 
   const {
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
-  } = useGWASSnpsData({ study: [study_name] });
+  } = useGWASSnpsData({ study: [entity.entityID] });
   useCustomData(
     "ld-track",
     {

@@ -1,3 +1,4 @@
+"use client";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip, Typography } from "@mui/material";
@@ -9,22 +10,19 @@ import SelectCompuGenesMethod from "app/[assembly]/[entityType]/[entityID]/[[...
 import useLinkedGenes from "common/hooks/useLinkedGenes";
 import { useCompuLinkedGenes } from "common/hooks/useCompuLinkedGenes";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
-
-export type GWASStudyGenesProps = {
-  study_name: string;
-};
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 function formatCoord(str) {
   const [chrom, start, end] = str.split("_");
   return `${chrom}:${start}-${end}`;
 }
-export const GWASStudyGenes = ({ study_name }: GWASStudyGenesProps) => {
+export const GWASStudyGenes = ({entity}: EntityViewComponentProps) => {
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
   const {
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
     error: errorGWASSNPscCREs,
-  } = useGWASSnpsIntersectingcCREsData({ study: [study_name] });
+  } = useGWASSnpsIntersectingcCREsData({ study: [entity.entityID] });
   const {
     data: dataGWASSnpscCREsGenes,
     loading: loadingGWASSnpscCREsGenes,

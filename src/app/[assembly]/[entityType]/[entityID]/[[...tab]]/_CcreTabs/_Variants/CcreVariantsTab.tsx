@@ -1,22 +1,16 @@
+"use client";
 import { Stack } from "@mui/material";
-import { useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import GWASLdr from "./GWASLdr";
+import ImmuneGWASLdr from "./ImmuneGWASLdr";
 import EQTLs from "common/components/EQTLTables";
-import { Assembly } from "common/types/globalTypes";
 import IntersectingSNPs from "../../_RegionTabs/_Variants/IntersectingSNPs";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-const CcreVariantsTab = ({ CcreData, assembly }: { CcreData: useEntityMetadataReturn<"ccre">; assembly: Assembly }) => {
+const CcreVariantsTab = ({ entity }: EntityViewComponentProps) => {
   return (
     <Stack spacing={2}>
-      <IntersectingSNPs
-        region={{
-          chromosome: CcreData.data.chrom,
-          start: CcreData.data.start,
-          end: CcreData.data.start + CcreData.data.len,
-        }}
-      />
-      <GWASLdr accession={CcreData.data.info.accession} />
-      <EQTLs data={CcreData.data} entityType="ccre" assembly={assembly} />
+      <IntersectingSNPs entity={entity} />
+      {entity.assembly === "GRCh38" && <ImmuneGWASLdr accession={entity.entityID} />}
+      {entity.assembly === "GRCh38" && <EQTLs entity={entity} />}
     </Stack>
   );
 };

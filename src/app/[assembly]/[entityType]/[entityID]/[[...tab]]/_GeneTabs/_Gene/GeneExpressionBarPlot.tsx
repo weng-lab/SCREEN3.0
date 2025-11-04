@@ -14,10 +14,8 @@ export type GeneExpressionBarPlotProps = GeneExpressionProps &
 
 const GeneExpressionBarPlot = ({
   scale,
-  geneData,
   selected,
   setSelected,
-  assembly,
   sortedFilteredData,
   RNAtype,
   setRNAType,
@@ -28,6 +26,7 @@ const GeneExpressionBarPlot = ({
   setReplicates,
   ref,
   isV40,
+  entity,
   ...rest
 }: GeneExpressionBarPlotProps) => {
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
@@ -60,8 +59,8 @@ const GeneExpressionBarPlot = ({
   }, [sortedFilteredData, selected]);
 
   const handleBarClick = (bar: BarData<PointMetadata>) => {
-    if (selected.includes(bar.metadata)) {
-      setSelected(selected.filter((x) => x !== bar.metadata));
+    if (selected.some(x => x.accession === bar.metadata.accession)) {
+      setSelected(selected.filter((x) => x.accession !== bar.metadata.accession));
     } else setSelected([...selected, bar.metadata]);
   };
 
@@ -105,7 +104,7 @@ const GeneExpressionBarPlot = ({
       sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
     >
       <GenePlotControls
-        assembly={assembly}
+        assembly={entity.assembly}
         RNAtype={RNAtype}
         scale={scale}
         viewBy={viewBy}
@@ -125,12 +124,12 @@ const GeneExpressionBarPlot = ({
           data={plotData}
           topAxisLabel={
             scale === "linearTPM"
-              ? `${geneData?.data.name} Expression - TPM`
-              : `${geneData?.data.name} Expression - Log\u2081\u2080(TPM + 1)`
+              ? `${entity.entityID} Expression - TPM`
+              : `${entity.entityID} Expression - log\u2081\u2080(TPM + 1)`
           }
           TooltipContents={PlotTooltip}
           ref={ref}
-          downloadFileName={`${geneData.data.name}_expression_bar_plot`}
+          downloadFileName={`${entity.entityID}_expression_bar_plot`}
         />
       )}
     </Box>
