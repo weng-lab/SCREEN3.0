@@ -141,8 +141,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     (elToClose: AnyOpenEntity) => {
       if (openEntities.length > 1) {
         // only need to navigate if you're closing the tab that you're on
-        const needToNavigate =
-          elToClose.entityID === urlOpenEntity.entityID && elToClose.assembly === urlOpenEntity.assembly;
+        const needToNavigate = isSameEntity(elToClose, urlOpenEntity);
         if (needToNavigate) {
           /**
            * @todo can this be changed to simply openEntities.findIndex((openEl) => openEl === elToClose)? Is there reference equality?

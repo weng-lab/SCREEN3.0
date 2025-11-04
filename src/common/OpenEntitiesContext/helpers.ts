@@ -17,4 +17,4 @@ export const isSameEntity = (entity1: AnyOpenEntity, entity2: AnyOpenEntity) => 
       JSON.stringify(parseGenomicRangeString(entity2.entityID))
     );
   } else return entity1.entityID === entity2.entityID && entity1.entityType === entity2.entityType;
-};
+}; 
