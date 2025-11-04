@@ -12,7 +12,7 @@ const QUERY = gql(
 );
 
 export async function hasNoEnrichmentData(entityID: string) {
-  console.log("hasNoEnrichment entityID",entityID)
+  
   try {
     // importantly this is not currently setup to allow using useQuery
     // maybe we can transition this all to using some custom hook to allow that

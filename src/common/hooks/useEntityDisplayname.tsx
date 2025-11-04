@@ -7,7 +7,7 @@ const useEntityDisplayname = (entity: AnyOpenEntity) => {
   //Todo replace with new useGWASStudyData when the study displayname is returned
   const { data, loading, error } = useGWASStudyData({ entityType, studyid: [entityID] });
 
-  console.log("useEntityDisplayname",data)
+  
   let label: React.ReactNode;
 
   switch (entityType) {
@@ -21,7 +21,7 @@ const useEntityDisplayname = (entity: AnyOpenEntity) => {
     case "gwas": {
       const g = entityID.split("-");
       const study_name = g[g.length - 1].replaceAll("_", " ");
-      label = study_name;
+      label = data?.disease_trait || study_name;
       break;
     }
     case "region": {
