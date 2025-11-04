@@ -106,17 +106,20 @@ const BiosampleEnrichmentTable = ({
     {
       field: "fc",
       headerName: "Fold Change",
-      valueGetter: (_, row) => row.fc.toFixed(3),
+      valueFormatter:  (_, row) => row.fc.toFixed(3),
+      valueGetter: (_, row) => row.fc,
     },
     {
       field: "fdr",
       headerName: "FDR",
-      valueGetter: (_, row) => row.fdr.toFixed(3),
+      valueFormatter: (_, row) => row.fdr.toFixed(3),
+      valueGetter: (_, row) => row.fdr,
     },
     {
       field: "pvalue",
       headerName: "P",
-      valueGetter: (_, row) => row.pvalue.toFixed(3),
+      valueFormatter: (_, row) => row.pvalue.toFixed(3),
+      valueGetter: (_, row) => row.pvalue,
     },
 
     {
