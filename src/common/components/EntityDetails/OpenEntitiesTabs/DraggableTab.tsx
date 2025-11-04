@@ -2,12 +2,12 @@ import { Draggable } from "@hello-pangea/dnd";
 import { Close, Error } from "@mui/icons-material";
 import { CircularProgress, styled, SxProps, Tab, TabProps, Theme, Tooltip } from "@mui/material";
 import { AnyOpenEntity, OpenEntitiesContext } from "common/OpenEntitiesContext";
-import { parseGenomicRangeString, truncateString } from "common/utility";
+import { truncateString } from "common/utility";
 import { useCallback, useContext, useMemo, useState } from "react";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 import { theme } from "app/theme";
-import useEntityLabelFormat from "common/hooks/useEntityLabelFormat";
+import useEntityDisplayname from "common/hooks/useEntityDisplayname";
 
 export type DraggableTabProps = TabProps & {
   entity: AnyOpenEntity;
@@ -55,7 +55,7 @@ export const DraggableTab = ({
 
   const dragID = entity.entityID + entity.assembly;
 
-  const { label, loading, error } = useEntityLabelFormat(entity);
+  const { label, loading, error } = useEntityDisplayname(entity);
 
   const labelEl = useMemo(() => {
     if (loading) return <CircularProgress size={26} />;

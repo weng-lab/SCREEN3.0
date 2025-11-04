@@ -2,7 +2,7 @@ import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { useGWASStudyData } from "./useGWASStudyData";
 import { parseGenomicRangeString } from "common/utility";
 
-const useEntityLabelFormat = (entity: AnyOpenEntity) => {
+const useEntityDisplayname = (entity: AnyOpenEntity) => {
   const { entityID, entityType } = entity;
   //Todo replace with new useGWASStudyData when the study displayname is returned
   const { data, loading, error } = useGWASStudyData({ entityType, study: [entityID] });
@@ -32,4 +32,4 @@ const useEntityLabelFormat = (entity: AnyOpenEntity) => {
   return { label, loading, error };
 };
 
-export default useEntityLabelFormat;
+export default useEntityDisplayname;
