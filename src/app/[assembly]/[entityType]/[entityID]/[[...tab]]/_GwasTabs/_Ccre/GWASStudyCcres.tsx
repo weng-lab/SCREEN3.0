@@ -1,3 +1,4 @@
+"use client";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
 import { useMemo, useState } from "react";
 import { GridColDef } from "@mui/x-data-grid-pro";
@@ -9,12 +10,12 @@ import { useCcreData } from "common/hooks/useCcreData";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import BiosampleSelectModal from "common/components/BiosampleSelectModal";
-export type CcreGWASStudySNPsProps = {
-  study_name: string;
-  totalldblocks: number;
-};
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { useGWASStudyData } from "common/hooks/useGWASStudyData";
 
-const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps) => {
+const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
+  const {data, loading, error} = useGWASStudyData({study: [entity.entityID]})
+
   //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
   //setting the anchorEl to the button
   const [virtualAnchor, setVirtualAnchor] = useState<{
@@ -44,7 +45,7 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
     error: errorGWASSNPscCREs,
-  } = useGWASSnpsIntersectingcCREsData({ study: [study_name] });
+  } = useGWASSnpsIntersectingcCREsData({ study: [entity.entityID] });
 
   const {
     data: dataCcreDetails,
@@ -283,9 +284,9 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
         ]
       : []),
   ];
-  const ldblocks_data = [
+  const ldblocks_data = data?.totalldblocks ? [
     {
-      total_ldblocks: totalldblocks,
+      total_ldblocks: data.totalldblocks,
       ldblocks_overlapping_ccres: dataGWASSNPscCREs
         ? [
             ...new Set([
@@ -297,7 +298,7 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
         : 0,
       overlapping_ccres: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((item) => item.accession))].length : 0,
     },
-  ];
+  ] : undefined;
   return errorGWASSNPscCREs || errorCcreDetails ? (
     <Typography>Error Fetching Intersecting cCREs against SNPs identified by a GWAS study</Typography>
   ) : (
@@ -383,4 +384,4 @@ const CcreGWASStudySNPs = ({ study_name, totalldblocks }: CcreGWASStudySNPsProps
     </>
   );
 };
-export default CcreGWASStudySNPs;
+export default GWASStudyCcres;

@@ -56,9 +56,9 @@ export async function fetchcCREData(
   nearbygeneslimit: number,
   intersectedAccessions?: string[],
   noLimit?: boolean
-): Promise<MainQueryData> {
+) {
   //cCRESearchQuery
-  const mainQueryData: MainQueryData = await MainQuery(
+  const mainQueryData = await MainQuery(
     assembly,
     chromosome,
     start,
@@ -193,7 +193,7 @@ export const downloadBED = async (
   for (let i = 0; i < ranges.length; i++) {
     const range = ranges[i];
     try {
-      const data = await fetchcCREData(
+      const data = (await fetchcCREData(
         assembly,
         chromosome,
         range.start,
@@ -203,7 +203,7 @@ export const downloadBED = async (
         null,
         bedIntersect ? sessionStorage.getItem("bed intersect")?.split(" ") : undefined,
         true
-      );
+      )) as MainQueryData;
       dataArray.push(data);
       setBedLoadingPercent((dataArray.length / ranges.length) * 100);
       //Wait one second before sending the next query to reduce load on service

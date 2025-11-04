@@ -1,12 +1,14 @@
+"use client";
 import { Stack } from "@mui/material";
-import SnpGWASLdr from "./SnpGWASLdr";
+import SnpImmuneGWASLdr from "./SnpImmuneGWASLdr";
 import SnpFrequencies from "./SnpFrequencies";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-const VariantInfo = ({ snpid }: { snpid: string }) => {
+const VariantInfo = ({ entity }: EntityViewComponentProps) => {
   return (
     <Stack spacing={2}>
-      <SnpFrequencies snpid={snpid} />
-      <SnpGWASLdr snpid={snpid} />
+      <SnpFrequencies snpid={entity.entityID} />
+      <SnpImmuneGWASLdr snpid={entity.entityID} />
     </Stack>
   );
 };

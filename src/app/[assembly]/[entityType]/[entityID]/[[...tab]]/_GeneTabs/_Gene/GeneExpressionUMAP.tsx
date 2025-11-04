@@ -21,7 +21,7 @@ export type GeneExpressionUmapProps<
 > = GeneExpressionProps & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
 
 const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends boolean | undefined>({
-  geneData,
+  entity,
   selected,
   geneExpressionData,
   setSelected,
@@ -175,6 +175,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
               <ScatterPlot
                 {...rest}
                 onSelectionChange={handlePointsSelected}
+                onPointClicked={() => console.error("onClick missing")}
                 controlsHighlight={theme.palette.primary.light}
                 pointData={scatterData}
                 selectable
@@ -185,7 +186,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
                 leftAxisLabel="UMAP-2"
                 bottomAxisLabel="UMAP-1"
                 ref={ref}
-                downloadFileName={`${geneData.data.name}_expression_UMAP`}
+                downloadFileName={`${entity.entityID}_expression_UMAP`}
               />
             </Box>
           </>

@@ -21,3 +21,5 @@ export const ccreClassDescriptions: Record<string, string> = {
   CA: "CA",
   TF: "TF",
 };
+
+export const CCRE_ASSAYS = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"] as const;

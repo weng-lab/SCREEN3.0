@@ -9,8 +9,8 @@ import { tissueColors } from "common/colors";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
 import { ScaleLinear } from "d3-scale";
 import { generateDomain } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpressionUMAP";
-import { PointMetadata } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
-import { BiosampleRow } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
+import type { PointMetadata } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
+import { BiosampleRow } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/types";
 
 type Data = {
   label: string;

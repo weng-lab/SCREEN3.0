@@ -1,31 +1,12 @@
-import { GridColDef } from "@weng-lab/ui-components";
-import { Assay, BiosampleRow } from "./BiosampleActivity";
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
-import { AnyOpenEntity } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
-
-export type AssayViewProps = {
-  rows: BiosampleRow[];
-  columns: GridColDef[];
-  assay: Assay;
-  entity: AnyOpenEntity;
-};
-
-export type SharedAssayViewPlotProps = AssayViewProps & {
-  selected: BiosampleRow[];
-  setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
-  sortedFilteredData: BiosampleRow[];
-  setSortedFilteredData: Dispatch<SetStateAction<BiosampleRow[]>>;
-  viewBy: "value" | "tissue" | "tissueMax";
-  setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
-  ref?: React.RefObject<DownloadPlotHandle>;
-};
+import type { AssayViewProps, BiosampleRow, SharedAssayViewPlotProps } from "./types";
 
 const AssayView = (props: AssayViewProps) => {
   const [selected, setSelected] = useState<BiosampleRow[]>([]);

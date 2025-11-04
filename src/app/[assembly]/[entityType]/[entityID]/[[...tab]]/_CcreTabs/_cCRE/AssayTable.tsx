@@ -1,6 +1,4 @@
-import { SharedAssayViewPlotProps } from "./AssayView";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Assay, BiosampleRow, formatAssay } from "./BiosampleActivity";
 import {
   GridColumnVisibilityModel,
   gridFilteredSortedRowEntriesSelector,
@@ -12,8 +10,10 @@ import {
 } from "@weng-lab/ui-components";
 import { useMediaQuery, useTheme } from "@mui/material";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
-
-const assays: Assay[] = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"];
+import { CcreAssay } from "common/types/globalTypes";
+import { CCRE_ASSAYS } from "common/consts";
+import { formatAssay } from "common/utility";
+import { BiosampleRow, SharedAssayViewPlotProps } from "./types";
 
 const arraysAreEqual = (arr1: BiosampleRow[], arr2: BiosampleRow[]): boolean => {
   if (arr1.length !== arr2.length) {
@@ -33,9 +33,9 @@ const arraysAreEqual = (arr1: BiosampleRow[], arr2: BiosampleRow[]): boolean => 
   return true;
 };
 
-const makeColumnVisibiltyModel = (assay: Assay): GridColumnVisibilityModel => {
+const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel => {
   const hidden = { ontology: false, sampleType: false, lifeStage: false, tf: false };
-  assays.forEach((x) => {
+  CCRE_ASSAYS.forEach((x) => {
     if (x !== assay) Object.defineProperty(hidden, x, { value: false, enumerable: true });
   });
   return hidden;
@@ -110,16 +110,6 @@ const AssayTable = ({
 
   const apiRef = useGridApiRef();
 
-  // const tableCols = useMemo(() => {
-  //   const displaynameCol = columns.find((x) => x.field === "displayname");
-  //   const assayCols = columns.filter((x) => assays.includes(x.field as Assay));
-  //   const tfCol = columns.find((x) => x.field === "tf");
-  //   const restCols = columns.filter(
-  //     (x) => x.field !== "displayname" && x.field !== "tf" && !assays.includes(x.field as Assay)
-  //   );
-  //   return [displaynameCol, ...assayCols, tfCol, ...restCols];
-  // }, [columns]);
-
   const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
     if (newRowSelectionModel.type === "include") {
       const newIds = Array.from(newRowSelectionModel.ids);
@@ -135,9 +125,7 @@ const AssayTable = ({
     if (!apiRef.current) return;
     const rows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as BiosampleRow[];
     if (!arraysAreEqual(sortedFilteredData, rows)) {
-      //It's breaking when this is called
       setSortedFilteredData(rows);
-      // setSortedFilteredData((prev) => [...prev]);
     }
   }, [apiRef, setSortedFilteredData, sortedFilteredData]);
 

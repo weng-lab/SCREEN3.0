@@ -2,10 +2,10 @@
  * Send the request to our Server from a server component
  */
 "use server";
-import { ApolloQueryResult, gql } from "@apollo/client";
-import { getClient } from "common/apollo/client";
+import { query } from "common/apollo/client";
+import { gql } from "common/types/generated";
 
-const cCRE_QUERY = gql`
+const cCRE_QUERY = gql(`
   query ccreSearchQuery_1(
     $accessions: [String!]
     $assembly: String!
@@ -99,7 +99,7 @@ const cCRE_QUERY = gql`
       }
     }
   }
-`;
+`);
 
 function cCRE_QUERY_VARIABLES(
   assembly: string,
@@ -167,9 +167,8 @@ export async function MainQuery(
   accessions: string[] = null,
   noLimit?: boolean
 ) {
-  let data: ApolloQueryResult<any>;
   try {
-    data = await getClient().query({
+    const data = await query({
       query: cCRE_QUERY,
       variables: cCRE_QUERY_VARIABLES(
         assembly,
@@ -183,10 +182,9 @@ export async function MainQuery(
       //Telling it to not cache, next js caches also and for things that exceed the 2mb cache limit it slows down substantially for some reason
       fetchPolicy: "no-cache",
     });
+    return data;
   } catch (error) {
     console.error(error);
     throw error;
   }
-
-  return data;
 }

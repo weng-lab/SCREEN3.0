@@ -1,11 +1,11 @@
 import { Box, Skeleton } from "@mui/material";
-import useGWASLdr from "common/hooks/useGWASLdr";
+import useImmuneGWASLdr from "common/hooks/useImmuneGWASLdr";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 
-export default function SnpGWASLdr({ snpid }: { snpid: string }) {
-  const { data, loading, error } = useGWASLdr(undefined, [snpid]);
+export default function SnpImmuneGWASLdr({ snpid }: { snpid: string }) {
+  const { data, loading, error } = useImmuneGWASLdr(undefined, [snpid]);
   const snpAlleles = useSnpFrequencies([snpid]);
   const ref = snpAlleles.data && snpAlleles.data[snpid]?.ref;
   const alt = snpAlleles.data && snpAlleles.data[snpid]?.alt;
@@ -77,7 +77,7 @@ export default function SnpGWASLdr({ snpid }: { snpid: string }) {
               sortModel: [{ field: "zscore", sort: "desc" }],
             },
           }}
-          label="GWAS Variants"
+          label="Immune GWAS Hits"
           emptyTableFallback={"This variant is not identified in any genome wide association studies (GWAS)"}
         />
       )}

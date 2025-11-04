@@ -1,12 +1,12 @@
-import { Box, Skeleton } from "@mui/material";
-import useGWASLdr from "common/hooks/useGWASLdr";
+"use client";
+import useImmuneGWASLdr from "common/hooks/useImmuneGWASLdr";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { useMemo } from "react";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 
-export default function GWASLdr({ accession }: { accession: string }) {
-  const { data, loading, error } = useGWASLdr([accession]);
+export default function ImmuneGWASLdr({ accession }: { accession: string }) {
+  const { data, loading, error } = useImmuneGWASLdr([accession]);
   const snpids = [...new Set(data?.map((l) => l.snpid))];
   const { data: snpAlleles, loading: loadingSnpAlleles } = useSnpFrequencies(snpids);
 
@@ -87,26 +87,20 @@ export default function GWASLdr({ accession }: { accession: string }) {
   ];
 
   return (
-    <Box width={"100%"}>
-      {loading ? (
-        <Skeleton variant="rounded" width={"100%"} height={100} />
-      ) : (
-        <Table
-          rows={gwasSnps}
-          columns={cols}
-          loading={loading || loadingSnpAlleles}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: "zscore", sort: "desc" }],
-            },
-          }}
-          label={`GWAS Variants for ${accession}`}
-          emptyTableFallback={
-            "This cCRE does not overlap a variant associated with significant changes in gene expression"
-          }
-          divHeight={{ maxHeight: "400px" }}
-        />
-      )}
-    </Box>
+    <Table
+      rows={gwasSnps}
+      columns={cols}
+      loading={loading || loadingSnpAlleles}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: "zscore", sort: "desc" }],
+        },
+      }}
+      label={`Immune GWAS Variants intersecting ${accession}`}
+      emptyTableFallback={
+        "This cCRE does not intersect any variants associated with significant changes in immune-related phenotypes"
+      }
+      divHeight={{ maxHeight: "400px" }}
+    />
   );
 }

@@ -1,14 +1,14 @@
 import { useState, useMemo } from "react";
 import { Tooltip, Stack, Typography } from "@mui/material";
 import { Launch } from "@mui/icons-material";
-import { Assay } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/BiosampleActivity";
 import { assayColors, assayHoverInfo } from "common/components/BiosampleTables/helpers";
+import { CcreAssay } from "common/types/globalTypes";
 
 export type AssayWheelProps = {
   /**
    * The value of the assay should be the experiment accession if the assay exists for that sample
    */
-  row: { [key in Assay]: string | null };
+  row: { [key in CcreAssay]: string | null };
 };
 
 /**
@@ -17,7 +17,7 @@ export type AssayWheelProps = {
  * @returns the assay wheel for the row
  */
 export const AssayWheel = ({ row }: AssayWheelProps) => {
-  const [hoveredAssay, setHoveredAssay] = useState<Assay>(null);
+  const [hoveredAssay, setHoveredAssay] = useState<CcreAssay>(null);
 
   const height = 36;
 
@@ -28,7 +28,7 @@ export const AssayWheel = ({ row }: AssayWheelProps) => {
   const fifthHovered = (2 * Math.PI * radiusHovered) / 5;
 
   const assays: {
-    id: Assay;
+    id: CcreAssay;
     accession: string;
     color: string;
     dashArray: string;

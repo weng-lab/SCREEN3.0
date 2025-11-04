@@ -1,12 +1,11 @@
+"use client";
 import { useQuery } from "@apollo/client";
-import { Grid, Skeleton, Stack, Box } from "@mui/material";
+import { Stack, Box } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";
 import { gql } from "common/types/generated";
-import { useEntityMetadataReturn } from "common/hooks/useEntityMetadata";
-import { Assembly } from "common/types/globalTypes";
 import { LinkComponent } from "./LinkComponent";
 import { GridColDef, Table } from "@weng-lab/ui-components";
-import { AnyEntityType } from "common/entityTabsConfig";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 const EQTL_QUERY = gql(`
 query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
@@ -29,35 +28,26 @@ query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
 } 
 `);
 
-export default function EQTLs<T extends AnyEntityType>({
-  data,
-  entityType,
-  assembly,
-}: {
-  entityType: AnyEntityType;
-  data: useEntityMetadataReturn<T>["data"];
-  assembly: Assembly;
-}) {
+export default function EQTLs({ entity }: EntityViewComponentProps) {
+  const { entityID, entityType, assembly } = entity;
+
   let variables: Record<string, any> = {};
   let gtexTitle: string;
   let onekTitle: string;
 
   //Change query variables and table title based on element type
   if (entityType === "gene") {
-    const geneData = data as useEntityMetadataReturn<"gene">["data"];
-    variables = { genes: [geneData.name] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${geneData.name}`;
-    onekTitle = `OneK1K eQTLs for ${geneData.name}`;
+    variables = { genes: [entityID] };
+    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    onekTitle = `OneK1K eQTLs for ${entityID}`;
   } else if (entityType === "ccre") {
-    const ccreData = data as useEntityMetadataReturn<"ccre">["data"];
-    variables = { ccre: [ccreData.info.accession] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${ccreData.info.accession}`;
-    onekTitle = `OneK1K eQTLs for ${ccreData.info.accession}`;
+    variables = { ccre: [entityID] };
+    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    onekTitle = `OneK1K eQTLs for ${entityID}`;
   } else {
-    const snpData = data as useEntityMetadataReturn<"variant">["data"];
-    variables = { snps: [snpData.id] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${snpData.id}`;
-    onekTitle = `OneK1K eQTLs for ${snpData.id}`;
+    variables = { snps: [entityID] };
+    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    onekTitle = `OneK1K eQTLs for ${entityID}`;
   }
 
   const {
@@ -66,7 +56,7 @@ export default function EQTLs<T extends AnyEntityType>({
     data: eqtlData,
   } = useQuery(EQTL_QUERY, {
     variables,
-    skip: !data,
+    skip: !entity,
   });
 
   const gtexRows = eqtlData?.immuneeQTLsQuery.filter((i) => i.study === "GTEX");
@@ -217,29 +207,14 @@ export default function EQTLs<T extends AnyEntityType>({
     });
   }
 
-  if (loading) {
-    return (
-      <Grid container spacing={2}>
-        <Grid size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={300} />
-        </Grid>
-        <Grid size={12}>
-          <Skeleton variant="rounded" width={"100%"} height={300} />
-        </Grid>
-      </Grid>
-    );
-  }
-
-  if (error) {
-    throw new Error(JSON.stringify(error));
-  }
-
   return (
     <Stack spacing={2}>
       <Box sx={{ flex: "1 1 auto" }}>
         <Table
           columns={gtexColumns}
           rows={gtexRows}
+          loading={loading}
+          error={!!error}
           label={gtexTitle}
           initialState={{
             sorting: {
@@ -254,6 +229,8 @@ export default function EQTLs<T extends AnyEntityType>({
         <Table
           columns={oneK1KColumns}
           rows={oneK1KRows}
+          loading={loading}
+          error={!!error}
           label={onekTitle}
           initialState={{
             sorting: {

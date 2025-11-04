@@ -1,12 +1,12 @@
 import { gql, useQuery } from "@apollo/client";
 
-function useLinkedGenes(accession: string[]) {
+function useLinkedGenes(accession: string[], skip?: boolean) {
   const { loading, error, data } = useQuery(LINKED_GENES, {
     variables: {
       accessions: accession,
       assembly: "grch38",
     },
-    skip: !accession || accession?.length === 0,
+    skip: skip || !accession || accession?.length === 0,
   });
 
   return { data: data?.linkedGenes as LinkedGeneInfo[], loading, error };

@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { ApolloWrapper } from "common/apollo/apollo-wrapper";
 import Footer from "common/components/Footer";
 import Header from "common/components/Header/Header";
-import { OpenEntitiesContextProvider } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import { OpenEntitiesContextProvider } from "common/OpenEntitiesContext";
 import { MenuControlProvider } from "common/components/MenuContext";
 import MuiXLicense from "common/components/MuiXLicense";
 import { Suspense } from "react";

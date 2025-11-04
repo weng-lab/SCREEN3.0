@@ -4,36 +4,16 @@ import { useQuery } from "@apollo/client";
 import { Stack, Tab, Tabs } from "@mui/material";
 import { gql } from "common/types/generated";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
-import { CcreClass, GenomicRange } from "common/types/globalTypes";
+import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
 import { GROUP_COLOR_MAP } from "common/colors";
-import { AnyOpenEntity } from "common/components/EntityDetails/OpenEntitiesTabs/OpenEntitiesContext";
+import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
 import { AssayWheel } from "common/components/BiosampleTables/AssayWheel";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { CCRE_CLASSES } from "common/consts";
-
-export type BiosampleRow = {
-  name?: string;
-  displayname: string;
-  sampleType?: string;
-  lifeStage?: string;
-  ontology?: string;
-  class: CcreClass;
-  collection: "core" | "partial" | "ancillary";
-  dnase?: number;
-  dnaseAccession?: string;
-  atac?: number;
-  atacAccession?: string;
-  h3k4me3?: number;
-  h3k4me3Accession?: string;
-  h3k27ac?: number;
-  h3k27acAccession?: string;
-  ctcf?: number;
-  ctcfAccession?: string;
-  tf?: string;
-};
+import { BiosampleRow } from "./types";
 
 const classifyCcre = (
   scores: { dnase: number; atac: number; h3k4me3: number; h3k27ac: number; ctcf: number; tf: string },
@@ -315,23 +295,6 @@ export const NEARBY_GENES = gql(`
   }
 `);
 
-export type Assay = "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf";
-
-export const formatAssay = (assay: Assay) => {
-  switch (assay) {
-    case "atac":
-      return "ATAC";
-    case "ctcf":
-      return "CTCF";
-    case "dnase":
-      return "DNase";
-    case "h3k27ac":
-      return "H3K27ac";
-    case "h3k4me3":
-      return "H3K4me3";
-  }
-};
-
 const CORE_COLLECTION_TOOLTIP =
   "Thanks to the extensive coordination efforts by the ENCODE4 Biosample Working Group, 171 biosamples have DNase, H3K4me3, H3K27ac, and CTCF data. We refer to these samples as the biosample-specific Core Collection of cCREs. These samples cover a variety of tissues and organs and primarily comprise primary tissues and cells. We suggest that users prioritize these samples for their analysis as they contain all the relevant marks for the most complete annotation of cCREs.";
 
@@ -342,9 +305,9 @@ const ANCILLARY_COLLECTION_TOOLTIP =
   "For the 563 biosamples lacking DNase data, we do not have the resolution to identify specific elements and we refer to these annotations as the Ancillary Collection. In these biosamples, we simply label cCREs as having a high or low signal for every available assay. We highly suggest that users do not use annotations from the Ancillary Collection unless they are anchoring their analysis on cCREs from the Core Collection or Partial Data Collection.";
 
 //Cache is not working as expected when switching between open cCREs
-export const BiosampleActivity = ({ entity }: { entity: AnyOpenEntity }) => {
+export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   // Assay values are used to index into row object, so need to modify assaySpecificRows if changing assays here
-  const [tab, setTab] = useState<"tables" | Assay>("tables");
+  const [tab, setTab] = useState<"tables" | CcreAssay>("tables");
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setTab(newValue as "tables" | "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf");
