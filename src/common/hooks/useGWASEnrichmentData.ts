@@ -17,16 +17,17 @@ const CCRE_BIOSAMPLE_QUERY = gql(`
   }`);
 
 const GWAS_ENRICHMENT_QUERY = gql(`
-  query getGWASCTEnrichmentQuery($study: String!) {
-  getGWASCtEnrichmentQuery(study: $study) {
-    celltype
-    accession
+  query getGWASBiosampleEnrichmentDataforGivenStudy($studyid: [String]) {
+  getGWASBiosampleEnrichmentQuery(studyid: $studyid) {
+    studyid
     fc
+    accession
     fdr
     pvalue
-    __typename
+    celltype
   }
-}`);
+}
+`);
 
 export type GWASEnrichment = {
   celltype: string;
@@ -57,9 +58,9 @@ export const useGWASEnrichmentData = ({ study }: UseGWASEnrichmentParams): UseGW
     error: enrichmentError,
   } = useQuery(GWAS_ENRICHMENT_QUERY, {
     variables: {
-      study: study, //"Dastani_Z-22479202-Adiponectin_levels"
+      studyid: [study], //"Dastani_Z-22479202-Adiponectin_levels"
     },
-    skip: !study,
+    skip: !study || (study && study.length === 0),
   });
   const {
     data: biosampleData,
@@ -75,11 +76,11 @@ export const useGWASEnrichmentData = ({ study }: UseGWASEnrichmentParams): UseGW
   const isReady = !biosampleLoading && !enrichmentLoading && biosampleData && enrichmentData;
 
   const data: GWASEnrichment[] | undefined = isReady
-    ? enrichmentData.getGWASCtEnrichmentQuery.map((item) => {
+    ? enrichmentData.getGWASBiosampleEnrichmentQuery.map((item) => {
         const matchedBiosample = biosampleData.ccREBiosampleQuery.biosamples.find((b) => b.name === item.celltype);
         return {
           ...item,
-          fc: Math.log2(item.fc + FCaugmentation),
+          fc: item.fc,//Math.log2(item.fc+FCaugmentation),
           pvalue: item.pvalue === 0 ? minFDRval : item.pvalue,
           fdr: item.fdr === 0 ? minFDRval : item.fdr,
           ontology: matchedBiosample?.ontology,
