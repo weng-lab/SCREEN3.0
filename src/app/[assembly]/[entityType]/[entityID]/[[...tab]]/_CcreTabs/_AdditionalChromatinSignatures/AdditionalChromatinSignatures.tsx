@@ -1,5 +1,5 @@
 "use client";
-import { EntityViewComponentProps } from "common/entityTabsConfig";
+import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { GridColDef, Table } from "@weng-lab/ui-components";

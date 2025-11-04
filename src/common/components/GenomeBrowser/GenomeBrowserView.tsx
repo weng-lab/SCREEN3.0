@@ -9,13 +9,13 @@ import {
   createTrackStoreMemo,
   DisplayMode,
   InitialBrowserState,
+  Rect,
   Track,
   TrackType,
 } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GenomicRange } from "common/types/globalTypes";
-import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 import ControlButtons from "./ControlButtons";
 import HighlightDialog from "./HighlightDialog";
 import { randomColor } from "./utils";
@@ -301,10 +301,6 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
   const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
-
-  useEffect(() => {
-    console.log(currentTracks.map((t) => t.id));
-  }, [currentTracks]);
 
   return (
     <Stack>

@@ -1,5 +1,5 @@
 import { isValidAssembly } from "common/types/globalTypes";
-import { AnyOpenEntity, CandidateOpenEntity } from "./types";
+import type { AnyOpenEntity, CandidateOpenEntity } from "./types";
 import { isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
 
 export const isValidOpenEntity = (e: CandidateOpenEntity): e is AnyOpenEntity => {

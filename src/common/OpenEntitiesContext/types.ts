@@ -1,5 +1,5 @@
-import { EntityType, EntityRoute } from "common/entityTabsConfig";
-import { Assembly } from "common/types/globalTypes";
+import type { EntityType, EntityRoute } from "common/entityTabsConfig";
+import type { Assembly } from "common/types/globalTypes";
 
 export type OpenEntity<A extends Assembly> = {
   assembly: A;
