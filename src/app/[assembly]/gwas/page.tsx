@@ -16,7 +16,7 @@ type ParentTermMetadata = {
 };
 
 const data: TreemapNode<ParentTermMetadata>[] = [
-  { label: "Other measurement", value: 31657, style: { color: "#056798", labelColor: "#58C1E5" } },
+  //{ label: "Other measurement", value: 31657, style: { color: "#056798", labelColor: "#58C1E5" } },
   { label: "Lipid or lipoprotein measurement", value: 2123, style: { color: "#B5DD6E", labelColor: "#525D3D" } },
   { label: "Other disease", value: 1676, style: { color: "#FC3C99", labelColor: "#840040" } },
   { label: "Other trait", value: 1273, style: { color: "#F98174", labelColor: "#953227" } },
@@ -35,16 +35,12 @@ const data: TreemapNode<ParentTermMetadata>[] = [
 
 export default function GWASLandingPage() {
   const [expanded, setExpanded] = useState<string | false>(false);
-  const [checked, setChecked] = useState<boolean>(false);
+  
 
   const accordionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const theme = useTheme();
   const gwasStudyMetadata = useGWASStudyMetaData({ entityType: "gwas" });
 
-  const handleToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(event.target.checked);
-    console.log('Biosample Enrichment:', event.target.checked ? 'Enabled' : 'Disabled');
-  };
   useEffect(() => {
     if (expanded && accordionRefs.current[expanded]) {
       accordionRefs.current[expanded]?.scrollIntoView({
@@ -164,18 +160,12 @@ export default function GWASLandingPage() {
               </div>
             </Box>
           )}
-          data={!checked ? data.filter(d => d.label !== "Other measurement") : data}
+          data={data}
           animation="scale"
           labelPlacement={"topLeft"}
           treemapStyle={{ padding: 8, borderRadius: 5, paddingOuter: 1 }}
         />
       </Box>
-      <FormGroup>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-          <Typography>Other Measurements</Typography>
-          <FormControlLabel control={<Switch checked={checked} onChange={handleToggle} />} label="" />
-        </Stack>
-      </FormGroup>
       <Box sx={{ width: "100%", margin: "auto", mt: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 1 }}>
         {gwasStudyMetadata.loading && <CircularProgress />}
         {sortedCategories &&

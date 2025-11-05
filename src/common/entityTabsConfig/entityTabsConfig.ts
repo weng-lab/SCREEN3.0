@@ -21,6 +21,7 @@ import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
+import { hasNoEnrichmentData } from "common/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -125,6 +126,7 @@ export const humanGwasTabs = [
     label: "Biosample Enrichment",
     iconPath: BiosampleEnrichmentIconPath,
     component: BiosampleEnrichment,
+    getIsDisabled: hasNoEnrichmentData
   },
   {
     route: "variants",
