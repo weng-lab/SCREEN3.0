@@ -121,7 +121,6 @@ const EntityDetailsTabs = ({
                       {...tabProps}
                       label={tab.label}
                       value={tab.route}
-                      title="t"
                       disabled={tabIsDisabled}
                       LinkComponent={Link}
                       href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
