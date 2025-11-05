@@ -1,6 +1,6 @@
 export const HumanList = {
   "adrenal gland": ["cls-34"],
-  "arterial blood vessel": ["cls-11"],
+  "blood vessel": ["cls-11"],
   bone: ["cls-65", "cls-77", "cls-78", "cls-80", "cls-81"],
   brain: ["cls-6", "cls-68", "cls-69", "cls-70"],
   breast: ["cls-breast", "cls-97", "cls-98", "cls-99", "cls-100", "cls-101", "mammary gland"],
@@ -48,14 +48,11 @@ export const HumanList = {
 export const HumanCellsList = {
   adipose: [],
   blood: [],
-  "blood vessel": [],
   "bone marrow": [],
   "connective tissue": [],
   embryo: [],
   epithelium: [],
   "lymphoid tissue": [],
-  "lymph node": [],
-  "lymphatic vessel": [],
   placenta: [],
 };
 
@@ -84,7 +81,7 @@ export const HumanColorMap: Record<
   "cls-8": { fill: "#3f77a5", opacity: 0.75, activeFill: "#ec621c" },
   "cls-stomach": { fill: "#3f77a5", opacity: 0.75, activeFill: "#ec621c" },
   "cls-vein": { fill: "#4d85b2", activeFill: "#63326e", disabled: true },
-  "cls-11": { fill: "#2e70a5", activeFill: "#e90006", disabled: true },
+  "cls-11": { fill: "#2e70a5", activeFill: "#e90006" },
   "cls-31": { fill: "#71a1c7", activeFill: "#a63128" },
   "cls-21": { fill: "#fbfbfb", activeStroke: "#77120b" },
   "cls-23": { fill: "#9cbfdc", activeFill: "#f2c57c", activeStroke: "#efef5f" },

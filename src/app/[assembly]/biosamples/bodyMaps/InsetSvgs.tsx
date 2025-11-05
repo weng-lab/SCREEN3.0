@@ -29,9 +29,9 @@ const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelect
   };
 
   const isHuman = Assembly === "GRCh38";
-  const perRow = isXs ? 4 : isHuman ? 6 : 4;
+  const perRow = 4;
   const shiftStart = isHuman ? (isXs ? perRow * 2 + 1 : perRow + 1) : perRow + 1;
-  const shiftAmount = isHuman ? (isXs ? "45px" : "42.5px") : isXs ? "45px" : "65px";
+  const shiftAmount = isHuman ? "0px" : isXs ? "45px" : "65px";
 
   return (
     <Box
