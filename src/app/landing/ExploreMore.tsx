@@ -7,7 +7,7 @@ const cards = [
   {
     assembly: "GRCh38",
     name: "Human",
-    subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi.",
+    subtitle: "Visualize and explore human biosamples across diverse tissues and cell types from ENCODE.",
     link: "/GRCh38/biosamples",
     img: "/human.png",
     size: 200,
@@ -15,7 +15,7 @@ const cards = [
   {
     assembly: "mm10",
     name: "Mouse",
-    subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi.",
+    subtitle: "Visualize and explore Mouse biosamples across diverse tissues and cell types from ENCODE.",
     link: "/mm10/biosamples",
     img: "/mouse.png",
     size: 400,
@@ -23,7 +23,7 @@ const cards = [
   {
     assembly: "GRCh38",
     name: "GWAS",
-    subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi.",
+    subtitle: "Explore Genome-Wide Association Studies (GWAS).",
     link: "/GRCh38/gwas",
     img: "/treemap.svg",
     size: 300,
