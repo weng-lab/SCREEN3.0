@@ -9,6 +9,11 @@ const nextConfig = {
         permanent: false,
       },
       {
+        source: "/:assembly/bed/:fileName",
+        destination: "/:assembly/bed/:fileName/ccres",
+        permanent: false,
+      },
+      {
         source: "/:assembly/gwas/:study",
         destination: "/:assembly/gwas/:study/biosample_enrichment",
         permanent: false,

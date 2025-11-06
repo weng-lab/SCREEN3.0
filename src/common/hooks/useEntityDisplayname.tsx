@@ -11,6 +11,7 @@ const useEntityDisplayname = (entity: AnyOpenEntity) => {
 
   switch (entityType) {
     case "ccre":
+    case "bed":
     case "variant":
       label = entityID;
       break;

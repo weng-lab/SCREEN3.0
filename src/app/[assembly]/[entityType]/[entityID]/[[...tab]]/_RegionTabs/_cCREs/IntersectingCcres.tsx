@@ -14,7 +14,6 @@ import { parseGenomicRangeString } from "common/utility";
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
 
-
   const {
     data: dataCcres,
     loading: loadingCcres,

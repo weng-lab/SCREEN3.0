@@ -19,6 +19,8 @@ import GWASGenomeBrowserView from "app/[assembly]/[entityType]/[entityID]/[[...t
 import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
+import BedIntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_cCREs/BedIntersectingCcres";
+import BedIntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Genes/BedIntersectingGenes";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
 
@@ -50,8 +52,8 @@ const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
  */
 
 export const validEntityTypes = {
-  GRCh38: ["ccre", "gene", "variant", "region", "gwas"],
-  mm10: ["ccre", "gene", "region"],
+  GRCh38: ["ccre", "gene", "variant", "region", "gwas", "bed"],
+  mm10: ["ccre", "gene", "region", "bed"],
 } as const;
 
 export const humanVariantTabs = [
@@ -213,6 +215,21 @@ export const humanRegionTabs = [
   },
 ] as const satisfies TabConfig[];
 
+export const humanBedTabs = [
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    component: BedIntersectingCcres,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    component: BedIntersectingGenes,
+  },
+] as const satisfies TabConfig[];
+
 export const mouseGeneTabs = [
   {
     route: "",
@@ -289,6 +306,8 @@ export const mouseRegionTabs = [
   },
 ] as const satisfies TabConfig[];
 
+export const mouseBedTabs = [] as const satisfies TabConfig[];
+
 export const entityTabsConfig: EntityTabsConfig = {
   GRCh38: {
     variant: humanVariantTabs,
@@ -296,10 +315,12 @@ export const entityTabsConfig: EntityTabsConfig = {
     ccre: humanCcreTabs,
     region: humanRegionTabs,
     gwas: humanGwasTabs,
+    bed: humanBedTabs,
   },
   mm10: {
     gene: mouseGeneTabs,
     ccre: mouseCcreTabs,
     region: mouseRegionTabs,
+    bed: mouseBedTabs,
   },
 } as const;

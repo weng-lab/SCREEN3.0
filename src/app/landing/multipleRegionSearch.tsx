@@ -1,68 +1,85 @@
 import React, { useCallback, useState } from "react";
-import {
-  Box,
-  Typography,
-  Stack,
-  IconButton,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Button,
-  Container,
-  FormControl,
-  TextField,
-} from "@mui/material";
+import { Box, Typography, Stack, IconButton, Button, Container, Tooltip } from "@mui/material";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useDropzone } from "react-dropzone";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { Cancel } from "@mui/icons-material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import RequiredFieldsDialog from "./requiredFieldsDialog";
+import { GenomicRange } from "common/types/globalTypes";
+import { encodeRegions } from "common/utility";
 
 type MultipleRegionSearchProps = {
   assembly: "GRCh38" | "mm10";
   toggleMultipleRegionSearchVisible: () => void;
 };
 
-//TODO - Add functionality to handle the uploaded file and text input
 const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, toggleMultipleRegionSearchVisible }) => {
-  const [searchBy, setSearhBy] = useState<string>("tsv");
-  const [files, setFiles] = useState<File>(null);
-  const [textValue, setTextValue] = useState(""); // State to control the TextField value
-  const [submittedText, setSubmittedText] = useState("");
-  const [textChanged, setTextChanged] = useState(true);
-  const [helpOpen, setHelpOpen] = useState(false);
-
-  const handleHelpOpen = () => setHelpOpen(true);
-  const handleHelpClose = () => setHelpOpen(false);
+  const [file, setFile] = useState<File>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const onDrop = useCallback((acceptedFiles) => {
-    setFiles(acceptedFiles[0]);
+    setFile(acceptedFiles[0]);
   }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const handleReset = () => {
-    setFiles(null);
+    setLoading(false);
+    setFile(null);
   };
 
-  const handleSearchChange = (search: string) => {
-    setSearhBy(search);
-  };
+  //Encode the regions and open the tab
+  const configureInputedRegions = useCallback(
+    async (data, fileName: string) => {
+      const regions: GenomicRange[] = data.map((item) => ({
+        chromosome: item[0],
+        start: Number(item[1]),
+        end: Number(item[2]),
+      }));
 
-  //Allow the user to insert a tab in the text box
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Tab") {
-      event.preventDefault();
-      const target = event.target as HTMLTextAreaElement;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
+      setLoading(true);
 
-      // Insert tab character at the cursor position
-      target.value = target.value.substring(0, start) + "\t" + target.value.substring(end);
+      // Sort the regions
+      const sortedRegions = regions.sort((a, b) => {
+        const chrA = Number(a.chromosome.replace("chr", ""));
+        const chrB = Number(b.chromosome.replace("chr", ""));
 
-      // Move the cursor after the inserted tab character
-      target.selectionStart = target.selectionEnd = start + 1;
-    }
+        if (chrA !== chrB) {
+          return chrA - chrB;
+        }
+        return a.start - b.start;
+      });
+      const encoded = encodeRegions(sortedRegions);
+      sessionStorage.setItem(fileName, encoded);
+      window.open(`/${assembly}/bed/${fileName}`, "_self");
+    },
+    [assembly]
+  );
+
+  //read the file and retreive all lines
+  const submitUploadedFile = () => {
+    setLoading(true);
+    const allLines = [];
+    const filename = file.name;
+
+    const reader = new FileReader();
+    reader.onload = (r) => {
+      const contents = r.target.result;
+      const lines = contents.toString().split("\n");
+      lines.forEach((line) => {
+        // The if statement checks if the BED file has a header and does not push those
+        // Also checks for empty lines
+        if (!(line.startsWith("#") || line.startsWith("browser") || line.startsWith("track") || line.length === 0)) {
+          allLines.push(line.split("\t"));
+        }
+      });
+    };
+    reader.onabort = () => console.log("file reading was aborted");
+    reader.onerror = () => console.log("file reading has failed");
+    reader.onloadend = () => {
+      configureInputedRegions(allLines, filename.split(".")[0]);
+    };
+    reader.readAsText(file);
   };
 
   function truncateFileName(string, maxLength, ellipsis = "...") {
@@ -71,12 +88,6 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
     }
 
     return string.substring(0, maxLength - ellipsis.length) + ellipsis;
-  }
-
-  function submitTextUpload(event) {
-    // const uploadedData = event.get("textUploadFile").toString()
-    // const inputData = parseDataInput(uploadedData)
-    // configureInputedRegions(inputData)
   }
 
   return (
@@ -98,9 +109,9 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
             Multiple Region Search
           </Typography>
         </Stack>
-        <IconButton sx={{ color: "white" }} onClick={handleHelpOpen}>
-          <HelpOutlineIcon />
-        </IconButton>
+        <Tooltip title="This will search a range of your uploaded regions">
+          <HelpOutlineIcon sx={{ color: "white" }} />
+        </Tooltip>
       </Box>
       <Box
         sx={{
@@ -115,128 +126,55 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
         }}
       >
         <Stack>
-          <Typography variant="subtitle1" color="white" textAlign="left">
-            Search By
-          </Typography>
-          <RadioGroup
-            value={searchBy}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            row
-            sx={{
-              justifyContent: "flex-start",
-              alignItems: "center",
-              gap: 4,
-              flexWrap: "wrap",
-            }}
-          >
-            {["tsv", "text"].map((value) => (
-              <FormControlLabel
-                key={value}
-                value={value}
-                control={
-                  <Radio
-                    sx={{
-                      color: "white",
-                      "&.Mui-checked": { color: "white" },
-                    }}
-                  />
-                }
-                label={<Typography color="white">{value === "tsv" ? "TSV File" : "Text Box"}</Typography>}
-                sx={{ marginRight: 0 }}
-              />
-            ))}
-          </RadioGroup>
-          {searchBy === "tsv" ? (
-            <>
-              {files === null ? (
-                <Container
-                  sx={{
-                    border: isDragActive ? "2px dashed blue" : "none",
-                    borderRadius: "10px",
-                    color: isDragActive ? "text.secondary" : "text.primary",
-                    backgroundColor: "white",
-                    height: "192.5px", //exact height of text box with buttons so no height changes
-                  }}
-                >
-                  <div {...getRootProps()} style={{ padding: "1rem" }}>
-                    <input {...getInputProps()} type="file" accept=".tsv" />
-                    <Stack spacing={1} direction="column" alignItems="center">
-                      <UploadFileIcon />
-                      <Typography>Drag and drop a .tsv file</Typography>
-                      <Typography>or</Typography>
-                      <Button variant="contained" disabled={isDragActive}>
-                        Browse files on your computer
-                      </Button>
-                    </Stack>
-                  </div>
-                </Container>
-              ) : (
-                <>
-                  <Typography mb={1} variant="h5">
-                    Uploaded:
-                  </Typography>
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <Typography>
-                      {`${truncateFileName(files.name, 40)}\u00A0-\u00A0${(files.size / 1000000).toFixed(1)}\u00A0mb`}
-                    </Typography>
-                    <IconButton color="primary" onClick={handleReset}>
-                      <Cancel />
-                    </IconButton>
-                  </Stack>
-                  <Button
-                    loadingPosition="end"
-                    sx={{ textTransform: "none", maxWidth: "18rem" }}
-                    // onClick={() => submitUploadedFile(files)}
-                    variant="outlined"
-                    color="primary"
-                  >
-                    <span>Submit</span>
-                  </Button>
-                </>
-              )}
-            </>
-          ) : (
-            <FormControl fullWidth>
-              <form action={submitTextUpload}>
-                <TextField
-                  name="textUploadFile"
-                  multiline
-                  fullWidth
-                  rows={5}
-                  placeholder="Copy and paste your data from Excel here"
-                  onKeyDown={handleKeyDown}
-                  value={textValue}
-                  onChange={(e) => setTextValue(e.target.value)}
-                  sx={{ backgroundColor: "#ffffff" }}
-                />
-                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1 }}>
-                  <Button
-                    loadingPosition="end"
-                    type="submit"
-                    size="medium"
-                    variant="contained"
-                    disabled={!textChanged}
-                    sx={{ textTransform: "none" }}
-                  >
-                    Submit
-                  </Button>
-                  <Button
-                    color="error"
-                    type="button"
-                    size="medium"
-                    variant="contained"
-                    onClick={handleReset}
-                    sx={{ textTransform: "none" }}
-                  >
-                    Reset
+          {file === null ? (
+            <Container
+              sx={{
+                border: isDragActive ? "2px dashed blue" : "none",
+                borderRadius: "10px",
+                color: isDragActive ? "text.secondary" : "text.primary",
+                backgroundColor: "white",
+                height: "192.5px", //exact height of text box with buttons so no height changes
+              }}
+            >
+              <div {...getRootProps()} style={{ padding: "1rem" }}>
+                <input {...getInputProps()} type="file" accept=".bed" />
+                <Stack spacing={1} direction="column" alignItems="center">
+                  <UploadFileIcon />
+                  <Typography>Drag and drop a .bed file</Typography>
+                  <Typography>or</Typography>
+                  <Button variant="contained" disabled={isDragActive}>
+                    Browse files on your computer
                   </Button>
                 </Stack>
-              </form>
-            </FormControl>
+              </div>
+            </Container>
+          ) : (
+            <Box justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"}>
+              <Typography mb={1} variant="h5" color="white">
+                Uploaded:
+              </Typography>
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography color="white">
+                  {`${truncateFileName(file.name, 40)}\u00A0-\u00A0${(file.size / 1000000).toFixed(1)}\u00A0mb`}
+                </Typography>
+                <IconButton sx={{ color: "white" }} onClick={handleReset}>
+                  <Cancel />
+                </IconButton>
+              </Stack>
+              <Button
+                loadingPosition="end"
+                loading={loading}
+                sx={{ textTransform: "none", maxWidth: "18rem" }}
+                onClick={submitUploadedFile}
+                variant="contained"
+                color="primary"
+              >
+                <span>Submit</span>
+              </Button>
+            </Box>
           )}
         </Stack>
       </Box>
-      <RequiredFieldsDialog open={helpOpen} onClose={handleHelpClose} />
     </Box>
   );
 };

@@ -2,7 +2,6 @@ import { Assembly } from "common/types/globalTypes";
 import type { EntityType, TabConfig } from "./types";
 import { entityTabsConfig } from "./entityTabsConfig";
 
-
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
 
 // Helper to generate tab array for EntityDetailsTabs

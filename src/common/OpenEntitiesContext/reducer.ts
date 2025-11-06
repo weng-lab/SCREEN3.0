@@ -40,7 +40,7 @@ export const openEntitiesReducer = (openEntities: OpenEntityState, action: OpenE
     }
     case "sort": {
       const assemblyOrder: Assembly[] = ["GRCh38", "mm10"];
-      const entityOrder: AnyEntityType[] = ["region", "gene", "ccre", "variant", "gwas"];
+      const entityOrder: AnyEntityType[] = ["region", "gene", "ccre", "variant", "gwas", "bed"];
 
       const sortFn = (a: AnyOpenEntity, b: AnyOpenEntity) => {
         const assemblyComparison = assemblyOrder.indexOf(a.assembly) - assemblyOrder.indexOf(b.assembly);
