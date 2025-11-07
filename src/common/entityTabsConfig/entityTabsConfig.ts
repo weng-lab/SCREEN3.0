@@ -21,6 +21,7 @@ import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 import BedIntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_cCREs/BedIntersectingCcres";
 import BedIntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Genes/BedIntersectingGenes";
+import BedIntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Variants/BedIntersectingSnps";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
 
@@ -227,6 +228,12 @@ export const humanBedTabs = [
     label: "Genes",
     iconPath: GeneIconPath,
     component: BedIntersectingGenes,
+  },
+  {
+    route: "variants",
+    label: "Variant",
+    iconPath: VariantIconPath,
+    component: BedIntersectingSNPs,
   },
 ] as const satisfies TabConfig[];
 

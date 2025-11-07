@@ -1,5 +1,5 @@
 "use client";
-import { Typography } from "@mui/material";;
+import { Typography } from "@mui/material";
 import { useGeneData } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
