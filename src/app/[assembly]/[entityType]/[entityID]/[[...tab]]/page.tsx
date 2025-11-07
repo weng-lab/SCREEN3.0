@@ -41,7 +41,9 @@ export default function DetailsPage({
     throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity));
   }
 
-  // Find component we need to render for this route
+  /**
+   * Find the component to render. Components rendered for a given entity are defined in common/entityTabsConfig
+   */
   const ComponentToRender = getComponentForEntity(entity);
 
   /**

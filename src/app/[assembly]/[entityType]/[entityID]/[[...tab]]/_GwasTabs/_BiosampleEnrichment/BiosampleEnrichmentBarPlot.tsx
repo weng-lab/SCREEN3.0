@@ -1,8 +1,8 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
 //import VerticalBarPlot, { BarData, BarPlotProps } from "common/components/VerticalBarPlot";
 import { BarPlot, BarData, DownloadPlotHandle } from "@weng-lab/visualization";
-import { Box } from "@mui/material";
-import { capitalizeFirstLetter } from "common/utility";
+import { Box, Typography } from "@mui/material";
+import { capitalizeFirstLetter, truncateString } from "common/utility";
 import { tissueColors } from "common/colors";
 import { useMemo } from "react";
 export type BiosampleEnrichmentBarPlotProps = {
@@ -23,13 +23,9 @@ const BiosampleEnrichmentBarPlot = ({
   ...rest
 }: BiosampleEnrichmentBarPlotProps) => {
   const makeLabel = (fc: number, biosample: string, accession: string): string => {
-    const maxLength = 50;
     let name = biosample?.replaceAll("_", " ");
-    if (name?.length > maxLength) {
-      name = name?.slice(0, maxLength) + "...";
-    }
-    name = capitalizeFirstLetter(name);
-    return `${fc.toFixed(2)}, ${accession},${name}`;
+    name = capitalizeFirstLetter(truncateString(name, 40));
+    return `${fc.toFixed(2)}, ${accession}, ${name}`;
   };
   // Add functionality for replicates and log
   const plotData: BarData<GWASEnrichment>[] = useMemo(() => {
@@ -39,9 +35,9 @@ const BiosampleEnrichmentBarPlot = ({
       const isSelected = selected.some((y) => y.accession === x.accession);
 
       return {
-        category: x.ontology,
+        category: capitalizeFirstLetter(x.ontology),
         label: makeLabel(x.fc, x.displayname, x.accession),
-        value: x.fc, //indexing into 0th position, only one gene so quantifications should always be length 1
+        value: x.fc,
         color:
           (anySelected && isSelected) || !anySelected ? (tissueColors[x.ontology] ?? tissueColors.missing) : "#CCCCCC",
         id: i.toString(),
@@ -68,13 +64,14 @@ const BiosampleEnrichmentBarPlot = ({
         topAxisLabel={`Log2(Fold Enrichment)`}
         TooltipContents={(bar) => {
           return (
-            <>
-              <div style={{ padding: 2 }}>
-                <strong>{bar.label}</strong>
-                <br />
-                {bar.metadata && <div>FDR: {bar.metadata.fdr.toFixed(3)}</div>}
-              </div>
-            </>
+            <div style={{ padding: 2, maxWidth: 350 }}>
+              <Typography>{capitalizeFirstLetter(bar.metadata.displayname?.replaceAll("_", " "))}</Typography>
+              <Typography variant="body2">Log2(Fold Enrichment): {bar.metadata.fc.toFixed(3)}</Typography>
+              <Typography variant="body2">FDR: {bar.metadata.fdr.toFixed(3)}</Typography>
+              <Typography variant="body2">
+                <i>P</i>: {bar.metadata.pvalue.toFixed(3)}
+              </Typography>
+            </div>
           );
         }}
         ref={ref}

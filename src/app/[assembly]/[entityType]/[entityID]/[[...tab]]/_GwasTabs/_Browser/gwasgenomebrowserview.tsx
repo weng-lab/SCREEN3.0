@@ -70,7 +70,7 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
-  } = useGWASSnpsData({ study: [entity.entityID] });
+  } = useGWASSnpsData({ studyid: [entity.entityID] });
   useCustomData(
     "ld-track",
     {
@@ -96,7 +96,7 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
       }
     }
 
-    return Array.from(map.values());
+    return Array.from(map.values()).sort((a, b) => a.ldblock - b.ldblock);
   }, [dataGWASSnps]);
 
   const [selectedLdBlock, setselectedLdBlock] = useState<{
@@ -111,10 +111,6 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
       setselectedLdBlock(ldblockStats[0]);
     }
   }, [ldblockStats, selectedLdBlock]);
-
-  const coordinates = selectedLdBlock
-    ? { chromosome: selectedLdBlock.chromosome, start: selectedLdBlock.start, end: selectedLdBlock.end }
-    : { chromosome: "chr1", start: 52000, end: 53000 };
 
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
@@ -344,29 +340,4 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
       <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
     </Grid>
   );
-}
-
-export const GWAS_SNP_QUERY = gql`
-  query getSNPsforgivengwasStudy($study: [String!]!) {
-    getSNPsforGWASStudies(study: $study) {
-      snpid
-      ldblock
-      rsquare
-      chromosome
-      stop
-      start
-      ldblocksnpid
-      __typename
-    }
-  }
-`;
-
-function useLDData(study_name: string) {
-  const { data, loading, error } = useQuery(GWAS_SNP_QUERY, {
-    variables: {
-      study: [study_name],
-    },
-  });
-
-  return { data: data?.getSNPsforGWASStudies, loading, error };
 }

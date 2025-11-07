@@ -137,7 +137,7 @@ const GeneExpressionTable = ({
     },
     {
       field: "tissue",
-      headerName: "Tissue",
+      headerName: "Organ/Tissue",
       sortable: viewBy !== "byTissueTPM",
     },
     {
@@ -235,9 +235,9 @@ const GeneExpressionTable = ({
     api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
   }, [apiRef, autoSort, initialSort, selected, viewBy]);
 
-    const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
-      return { type: "include", ids: new Set(selected.map((x) => x.accession)) };
-    }, [selected]);
+  const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
+    return { type: "include", ids: new Set(selected.map((x) => x.accession)) };
+  }, [selected]);
 
   return (
     <>

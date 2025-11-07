@@ -10,7 +10,7 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
   const { data: dataCoords, loading: loadingCoords, error: errorCoords } = useEntityMetadata(entity);
 
   const coordinates = useMemo(() => {
-    if (!dataCoords || dataCoords.__typename === "GwasStudies") return null;
+    if (!dataCoords || dataCoords.__typename === "GwasStudiesMetadata") return null;
     if (dataCoords.__typename === "SCREENSearchResult") {
       return { chromosome: dataCoords.chrom, start: dataCoords.start, end: dataCoords.start + dataCoords.len };
     } else return dataCoords.coordinates;
@@ -40,11 +40,13 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
     {
       field: "coordinates.start",
       headerName: "Start",
+      type: "number",
       valueGetter: (_, row) => row.coordinates.start.toLocaleString(),
     },
     {
       field: "coordinates.end",
       headerName: "End",
+      type: "number",
       valueGetter: (_, row) => row.coordinates.end.toLocaleString(),
     },
   ];
@@ -59,7 +61,7 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
       label={`Intersecting SNPs`}
       emptyTableFallback={"No intersecting SNPs found in this region"}
       initialState={{ sorting: { sortModel: [{ field: "coordinates.start", sort: "asc" }] } }}
-      divHeight={{ maxHeight: "400px" }}
+      divHeight={{ maxHeight: "600px" }}
     />
   );
 };

@@ -1,8 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
-import { OpenEntitiesContext, isValidOpenEntity } from "common/OpenEntitiesContext";
+import { OpenEntitiesContext, isSameEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
 import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext";
-import { parseGenomicRangeString } from "common/utility";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL } from "./helpers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -12,17 +11,6 @@ import TabPanel from "@mui/lab/TabPanel";
 import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/components/MenuContext";
 import { OpenTabs } from "./OpenEntitiesTabs";
-
-const isSameEntity = (urlOpenEntity: AnyOpenEntity, openEntity: AnyOpenEntity) => {
-  if (!(openEntity.assembly === urlOpenEntity.assembly)) return false;
-  if (urlOpenEntity.entityType === "region" && openEntity.entityType === "region") {
-    // need to check the parsed genomic region to handle url encoding of ':' and '%3A'
-    return (
-      JSON.stringify(parseGenomicRangeString(openEntity.entityID)) ===
-      JSON.stringify(parseGenomicRangeString(urlOpenEntity.entityID))
-    );
-  } else return urlOpenEntity.entityID === openEntity.entityID;
-};
 
 export const constructEntityURL = (entity: AnyOpenEntity) =>
   `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
@@ -118,6 +106,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   //sync the current view to the state
   useEffect(() => {
     if (!isRoutingRef.current && currentEntityState && urlOpenEntity.tab !== currentEntityState.tab) {
+      console.log("updating view to " + urlOpenEntity.tab);
       dispatch({
         type: "updateEntity",
         entity: urlOpenEntity,
@@ -152,15 +141,12 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     (elToClose: AnyOpenEntity) => {
       if (openEntities.length > 1) {
         // only need to navigate if you're closing the tab that you're on
-        const needToNavigate =
-          elToClose.entityID === urlOpenEntity.entityID && elToClose.assembly === urlOpenEntity.assembly;
+        const needToNavigate = isSameEntity(elToClose, urlOpenEntity);
         if (needToNavigate) {
           /**
            * @todo can this be changed to simply openEntities.findIndex((openEl) => openEl === elToClose)? Is there reference equality?
            */
-          const toCloseIndex = openEntities.findIndex(
-            (openEl) => openEl.entityID === elToClose.entityID && openEl.assembly && elToClose.assembly
-          );
+          const toCloseIndex = openEntities.findIndex((openEl) => isSameEntity(openEl, elToClose));
 
           //if elToClose is last tab, go to the tab on left. Else, go to the tab on the right
           const elToNavTo =
