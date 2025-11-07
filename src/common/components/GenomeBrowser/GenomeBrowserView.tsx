@@ -88,9 +88,9 @@ type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicR
 
 export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowserViewProps) {
   /**
-   * @todo when refactoring this to include GWAS studies need to change this logic
+   * @todo when refactoring this to include GWAS need to change this logic
    */
-  const name = entity.entityID;
+  const name = entity.entityType === "region" ? entity.entityID.replace("%3A", ":") : entity.entityID;
 
   const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
   const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>(getLocalChromHmmTissues());

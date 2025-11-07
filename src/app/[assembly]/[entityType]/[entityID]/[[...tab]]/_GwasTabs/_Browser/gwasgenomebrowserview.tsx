@@ -112,10 +112,6 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
     }
   }, [ldblockStats, selectedLdBlock]);
 
-  const coordinates = selectedLdBlock
-    ? { chromosome: selectedLdBlock.chromosome, start: selectedLdBlock.start, end: selectedLdBlock.end }
-    : { chromosome: "chr1", start: 52000, end: 53000 };
-
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
