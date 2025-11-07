@@ -7,6 +7,25 @@ import { Typography } from "@mui/material";
 import AssayPlotControls from "./AssayPlotControls";
 import type { SharedAssayViewPlotProps, BiosampleRow } from "./types";
 
+const PlotTooltip = (bar: BarData<BiosampleRow>) => {
+  return (
+    <Box maxWidth={350}>
+      <Typography variant="body2">
+        <b>Sample:</b> {capitalizeFirstLetter(bar.metadata.displayname)}
+      </Typography>
+      <Typography variant="body2">
+        <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.ontology)}
+      </Typography>
+      <Typography variant="body2">
+        <b>Classification:</b> {capitalizeFirstLetter(bar.metadata.class)}
+      </Typography>
+      <Typography variant="body2">
+        <b>Z-Score</b> {bar.value.toFixed(2)}
+      </Typography>
+    </Box>
+  );
+};
+
 const AssayBarPlot = ({
   entity,
   assay,
@@ -37,28 +56,9 @@ const AssayBarPlot = ({
   }, [assay, selected, sortedFilteredData]);
 
   const handleBarClick = (bar: BarData<BiosampleRow>) => {
-    if (selected.includes(bar.metadata)) {
+    if (selected.some((x) => x.name === bar.metadata.name)) {
       setSelected(selected.filter((x) => x.name !== bar.metadata.name));
     } else setSelected([...selected, bar.metadata]);
-  };
-
-  const PlotTooltip = (bar: BarData<BiosampleRow>) => {
-    return (
-      <Box maxWidth={350}>
-        <Typography variant="body2">
-          <b>Sample:</b> {capitalizeFirstLetter(bar.metadata.displayname)}
-        </Typography>
-        <Typography variant="body2">
-          <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.ontology)}
-        </Typography>
-        <Typography variant="body2">
-          <b>Classification:</b> {capitalizeFirstLetter(bar.metadata.class)}
-        </Typography>
-        <Typography variant="body2">
-          <b>Z-Score</b> {bar.value.toFixed(2)}
-        </Typography>
-      </Box>
-    );
   };
 
   return (

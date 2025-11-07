@@ -13,7 +13,7 @@ const popularSearchesGRCh38 = [
   { entity: "cCRE", name: "EH38E3314260", region: "chr19:50,417,519-50,417,853" },
   { entity: "Variant", name: "rs9466027", region: "chr6:21,298,226-21,298,227" },
   { entity: "Region", name: "chr12:53380176-53416446", region: "chr12:53380176-53416446" },
-  { entity: "GWAS", name: "Adiponectin Levels", region: "Dastani Z" },
+  { entity: "GWAS", name: "Astrocytoma", region: "Foss-Skiftesvik J" },
   { entity: "Gene", name: "APOE", region: "chr19:44,905,754-44,909,393" },
   // { entity: "Biosample", name: "Brain", region: "chr6:21,298,226-21,298,227" },
 ];
@@ -51,7 +51,7 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({ assembly }) => {
               component={Link}
               href={
                 entity.entity === "GWAS"
-                  ? `/GRCh38/gwas/Dastani_Z-22479202-Adiponectin_levels`
+                  ? `/GRCh38/gwas/36810956-GCST90296476-astrocytoma`
                   : `/${assembly}/${entity.entity.toLowerCase()}/${entity.name}`
               }
               sx={{
