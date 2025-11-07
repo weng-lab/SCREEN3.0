@@ -49,9 +49,9 @@ export const defaultHumanResults: Result[] = [
     type: "SNP",
   },
   {
-    title: "Adiponectin Levels",
-    description: "Dastani Z\n22479202",
-    id: "Dastani_Z-22479202-Adiponectin_levels",
+    title: "Astrocytoma",
+    description: "Foss-Skiftesvik J (GCST90296476)\nCancer\nBiosample Enrichment",
+    id: "36810956-GCST90296476-astrocytoma",
     type: "Study",
   },
 ];
@@ -117,7 +117,9 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
         url = `/${props.assembly}/variant/${r.title}`;
         break;
       case "Study":
-        url = `/GRCh38/gwas/${r.id}`;
+        let be = r.description?.split("\n").pop().trim()
+        
+        url = be!=="Biosample Enrichment" ? `/GRCh38/gwas/${r.id}/variants` :`/GRCh38/gwas/${r.id}`;
         break;
     }
     router.push(url, { scroll: false });

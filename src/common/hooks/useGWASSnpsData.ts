@@ -1,41 +1,42 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import { gql } from "common/types/generated/gql";
-import { GetSnPsforgivengwasStudyQuery } from "common/types/generated/graphql";
+import { GetSnPsIdentifiedbyGivenStudyQuery } from "common/types/generated/graphql";
 
 const GWAS_SNP_QUERY = gql(`
-  query getSNPsforgivengwasStudy($study: [String!]!) {
-    getSNPsforGWASStudies(study: $study) {
-      snpid
-      ldblock
-      rsquare
-      chromosome
-      stop
-      start
-      ldblocksnpid
-      __typename
-    }
-  }`);
+  query getSNPsIdentifiedbyGivenStudy($studyid: [String!]!) {
+  getSNPsforGivenGWASStudy(studyid: $studyid) {
+    snpid
+    ldblock
+    studyid
+    ldblocksnpid
+    rsquare
+    stop
+    start
+    chromosome
+  }
+}
+`);
 
 export type UseGWASSnpsParams = {
-  study: string[];
+  studyid: string[];
 };
 
 export type UseGWASSnpsReturn = {
-  data: GetSnPsforgivengwasStudyQuery["getSNPsforGWASStudies"] | undefined;
+  data: GetSnPsIdentifiedbyGivenStudyQuery["getSNPsforGivenGWASStudy"] | undefined;
   loading: boolean;
   error: ApolloError;
 };
 
-export const useGWASSnpsData = ({ study }: UseGWASSnpsParams): UseGWASSnpsReturn => {
+export const useGWASSnpsData = ({ studyid }: UseGWASSnpsParams): UseGWASSnpsReturn => {
   const { data, loading, error } = useQuery(GWAS_SNP_QUERY, {
     variables: {
-      study,
+      studyid,
     },
-    skip: !study || study.length === 0,
+    skip: !studyid || studyid.length === 0,
   });
 
   return {
-    data: data?.getSNPsforGWASStudies,
+    data: data?.getSNPsforGivenGWASStudy,
     loading,
     error,
   };

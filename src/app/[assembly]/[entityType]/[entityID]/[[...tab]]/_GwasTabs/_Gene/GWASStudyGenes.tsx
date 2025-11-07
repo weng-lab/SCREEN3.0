@@ -1,7 +1,7 @@
 "use client";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
-import { Box, Button, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Tooltip } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { toScientificNotationElement } from "common/utility";
 import { useState } from "react";
@@ -12,29 +12,116 @@ import { useCompuLinkedGenes } from "common/hooks/useCompuLinkedGenes";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-function formatCoord(str) {
+function formatCoord(str: string) {
   const [chrom, start, end] = str.split("_");
   return `${chrom}:${start}-${end}`;
 }
-export const GWASStudyGenes = ({entity}: EntityViewComponentProps) => {
+
+// Shared column definitions
+const sharedColumns: { [key: string]: GridColDef } = {
+  accession: {
+    field: "accession",
+    headerName: "Accession",
+    renderCell: (params) => (
+      <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
+        <i>{params.value}</i>
+      </LinkComponent>
+    ),
+  },
+  gene: {
+    field: "gene",
+    headerName: "Common Gene Name",
+    renderCell: (params) => (
+      <LinkComponent href={`/GRCh38/gene/${params.value}`}>
+        <i>{params.value}</i>
+      </LinkComponent>
+    ),
+  },
+  genename: {
+    field: "genename",
+    headerName: "Common Gene Name",
+    renderCell: (params) => (
+      <LinkComponent href={`/GRCh38/gene/${params.value}`}>
+        <i>{params.value}</i>
+      </LinkComponent>
+    ),
+  },
+  genetype: {
+    field: "genetype",
+    headerName: "Gene Type",
+    valueGetter: (_, row) =>
+      row.genetype === "lncRNA"
+        ? row.genetype
+        : row.genetype
+            .replaceAll("_", " ")
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
+  },
+  assay: {
+    field: "assay",
+    headerName: "Assay Type",
+  },
+  experiment_accession: {
+    field: "experiment_accession",
+    headerName: "Experiment ID",
+    renderCell: (params) => (
+      <LinkComponent href={`https://www.encodeproject.org/experiments/${params.value}`} openInNewTab showExternalIcon>
+        {params.value}
+      </LinkComponent>
+    ),
+  },
+  displayname: {
+    field: "displayname",
+    headerName: "Biosample",
+  },
+  score: {
+    field: "score",
+    headerName: "Score",
+    type: "number",
+  },
+  p_val: {
+    field: "p_val",
+    headerName: "P",
+    renderHeader: () => (
+      <p>
+        <i>P&nbsp;</i>
+      </p>
+    ),
+    renderCell: (params) => (
+      <>
+        {params.value === 0
+          ? "0"
+          : toScientificNotationElement(params.value, 2, {
+              variant: "body2",
+            })}
+      </>
+    ),
+    type: "number",
+  },
+};
+
+export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
+
   const {
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
     error: errorGWASSNPscCREs,
-  } = useGWASSnpsIntersectingcCREsData({ study: [entity.entityID] });
+  } = useGWASSnpsIntersectingcCREsData({ studyid: [entity.entityID] });
+
   const {
     data: dataGWASSnpscCREsGenes,
     loading: loadingGWASSnpscCREsGenes,
     error: errorGWASSnpscCREsGenes,
-  } = useLinkedGenes(dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.accession))] : []);
+  } = useLinkedGenes(dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.ccre))] : []);
 
   const {
     data: dataGWASSnpscCREsCompuGenes,
     loading: loadingGWASSnpscCREsCompuGenes,
     error: errorGWASSnpscCREsCompuGenes,
   } = useCompuLinkedGenes({
-    accessions: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.accession))] : [],
+    accessions: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((g) => g.ccre))] : [],
     method,
   });
 
@@ -67,111 +154,43 @@ export const GWASStudyGenes = ({entity}: EntityViewComponentProps) => {
     }
   };
 
-  const HiCLinked = dataGWASSnpscCREsGenes && dataGWASSnpscCREsGenes.filter((x) => x.assay === "Intact-HiC");
+  const HiCLinked = dataGWASSnpscCREsGenes?.filter((x) => x.assay === "Intact-HiC");
 
-  const ChIAPETLinked =
-    dataGWASSnpscCREsGenes &&
-    dataGWASSnpscCREsGenes.filter((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET");
-  const crisprLinked = dataGWASSnpscCREsGenes && dataGWASSnpscCREsGenes.filter((x) => x.method === "CRISPR");
-  const eqtlLinked = dataGWASSnpscCREsGenes && dataGWASSnpscCREsGenes.filter((x) => x.method === "eQTLs");
+  const ChIAPETLinked = dataGWASSnpscCREsGenes?.filter(
+    (x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET"
+  );
+  const crisprLinked = dataGWASSnpscCREsGenes?.filter((x) => x.method === "CRISPR");
+  const eqtlLinked = dataGWASSnpscCREsGenes?.filter((x) => x.method === "eQTLs");
   const CompuLinkedGenes_columns: GridColDef<(typeof dataGWASSnpscCREsCompuGenes)[number]>[] = [
-    {
-      field: "accession",
-      renderHeader: () => (
-        <strong>
-          <p>cCRE Accession</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.accession;
-      },
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
+    sharedColumns.accession,
     {
       field: "fileaccession",
-      renderHeader: () => (
-        <strong>
-          <p>File Accession</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.fileaccession;
-      },
+      headerName: "File",
       renderCell: (params) => (
         <LinkComponent href={`https://www.encodeproject.org/file/${params.value}`} openInNewTab showExternalIcon>
           {params.value}
         </LinkComponent>
       ),
     },
-    {
-      field: "genename",
-      renderHeader: () => (
-        <strong>
-          <p>Common Gene Name</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.genename,
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/gene/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
+    sharedColumns.genename,
     {
       field: "geneid",
-      renderHeader: () => (
-        <strong>
-          <p>Gene ID</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.geneid,
+      headerName: "Gene ID",
     },
-    {
-      field: "genetype",
-      renderHeader: () => (
-        <strong>
-          <p>Gene Type</p>
-        </strong>
-      ),
-      valueGetter: (_, row) =>
-        row.genetype === "lncRNA"
-          ? row.genetype
-          : row.genetype
-              .replaceAll("_", " ")
-              .split(" ")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" "),
-    },
-    //
+    sharedColumns.genetype,
     {
       field: "method",
-      renderHeader: () => (
-        <strong>
-          <p>Method</p>
-        </strong>
-      ),
+      headerName: "Method",
       valueGetter: (_, row) => row.method.replaceAll("_", " "),
     },
     {
       field: "methodregion",
-      renderHeader: () => (
-        <strong>
-          <p>Method Region</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => formatCoord(row.methodregion), //.replaceAll("_"," "),
+      headerName: "Method Region",
+      valueGetter: (_, row) => formatCoord(row.methodregion),
     },
     {
       field: "celltype",
-      renderHeader: () => (
-        <strong>
-          <p>Biosample</p>
-        </strong>
-      ),
+      headerName: "Biosample",
       valueGetter: (_, row) =>
         row.celltype
           .replaceAll("_", " ")
@@ -180,526 +199,173 @@ export const GWASStudyGenes = ({entity}: EntityViewComponentProps) => {
           .join(" "),
     },
     {
-      field: "score",
-      renderHeader: () => (
-        <strong>
-          <p>Score</p>
-        </strong>
-      ),
+      ...sharedColumns.score,
       valueGetter: (_, row) => row.score.toFixed(2),
     },
   ];
+
   const HiC_columns: GridColDef<(typeof HiCLinked)[number]>[] = [
-    {
-      field: "accession",
-      renderHeader: () => (
-        <strong>
-          <p>Accession</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.accession;
-      },
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "gene",
-      renderHeader: () => (
-        <strong>
-          <p>Common Gene Name</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.gene,
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/gene/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "genetype",
-      renderHeader: () => (
-        <strong>
-          <p>Gene Type</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.genetype === "lncRNA"
-          ? row.genetype
-          : row.genetype
-              .replaceAll("_", " ")
-              .split(" ")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ");
-      },
-    },
-    {
-      field: "assay",
-      renderHeader: () => (
-        <strong>
-          <p>Assay Type</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.assay,
-    },
-    {
-      field: "experiment_accession",
-      renderHeader: () => (
-        <strong>
-          <p>Experiment ID</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.experiment_accession,
-      renderCell: (params) => (
-        <LinkComponent href={`https://www.encodeproject.org/experiments/${params.value}`} openInNewTab showExternalIcon>
-          {params.value}
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "displayname",
-      renderHeader: () => (
-        <strong>
-          <p>Biosample</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.displayname,
-    },
-    {
-      field: "score",
-      renderHeader: () => (
-        <strong>
-          <p>Score</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.score,
-    },
-    {
-      field: "p_val",
-      renderHeader: () => (
-        <strong>
-          <p>
-            <i>P</i>
-          </p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.p_val,
-      renderCell: (params) => (
-        <>
-          {params.value === 0
-            ? "0"
-            : toScientificNotationElement(params.value, 2, {
-                variant: "body2",
-              })}
-        </>
-      ),
-    },
+    sharedColumns.accession,
+    sharedColumns.gene,
+    sharedColumns.genetype,
+    sharedColumns.assay,
+    sharedColumns.experiment_accession,
+    sharedColumns.displayname,
+    sharedColumns.score,
+    sharedColumns.p_val,
   ];
+
   const eqtl_columns: GridColDef<(typeof eqtlLinked)[number]>[] = [
-    {
-      field: "accession",
-      renderHeader: () => (
-        <strong>
-          <p>Accession</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.accession,
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "gene",
-      renderHeader: () => (
-        <strong>
-          <p>Common Gene Name</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.gene,
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/gene/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "genetype",
-      renderHeader: () => (
-        <strong>
-          <p>Gene Type</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.genetype === "lncRNA"
-          ? row.genetype
-          : row.genetype
-              .replaceAll("_", " ")
-              .split(" ")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ");
-      },
-    },
+    sharedColumns.accession,
+    sharedColumns.gene,
+    sharedColumns.genetype,
     {
       field: "variantid",
-      renderHeader: () => (
-        <strong>
-          <p>Variant ID</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.variantid,
+      headerName: "Variant ID",
     },
     {
       field: "source",
-      renderHeader: () => (
-        <strong>
-          <p>Source</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.source,
+      headerName: "Source",
     },
     {
       field: "tissue",
-      renderHeader: () => (
-        <strong>
-          <p>Tissue</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.tissue,
+      headerName: "Tissue",
     },
     {
       field: "slope",
-      renderHeader: () => (
-        <strong>
-          <p>Slope</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.slope,
+      headerName: "Slope",
     },
-    {
-      field: "p_val",
-      renderHeader: () => (
-        <strong>
-          <p>
-            <i>P</i>
-          </p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.p_val,
-      renderCell: (params) => (
-        <>
-          {params.value === 0
-            ? "0"
-            : toScientificNotationElement(params.value, 2, {
-                variant: "body2",
-              })}
-        </>
-      ),
-    },
+    sharedColumns.p_val,
   ];
 
   const CRISPR_columns: GridColDef<(typeof crisprLinked)[number]>[] = [
-    {
-      field: "accession",
-      renderHeader: () => (
-        <strong>
-          <p>Accession</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.accession,
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "gene",
-      renderHeader: () => (
-        <strong>
-          <p>Common Gene Name</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.gene,
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/gene/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "genetype",
-      renderHeader: () => (
-        <strong>
-          <p>Gene Type</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.genetype === "lncRNA"
-          ? row.genetype
-          : row.genetype
-              .replaceAll("_", " ")
-              .split(" ")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ");
-      },
-    },
-    {
-      field: "assay",
-      renderHeader: () => (
-        <strong>
-          <p>Assay Type</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.assay,
-    },
-    {
-      field: "experiment_accession",
-      renderHeader: () => (
-        <strong>
-          <p>Experiment ID</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.experiment_accession,
-      renderCell: (params) => (
-        <LinkComponent href={`https://www.encodeproject.org/experiments/${params.value}`} openInNewTab showExternalIcon>
-          {params.value}
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "displayname",
-      renderHeader: () => (
-        <strong>
-          <p>Biosample</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.displayname,
-    },
+    sharedColumns.accession,
+    sharedColumns.gene,
+    sharedColumns.genetype,
+    sharedColumns.assay,
+    sharedColumns.experiment_accession,
+    sharedColumns.displayname,
     {
       field: "effectsize",
-      renderHeader: () => (
-        <strong>
-          <p>Effect Size</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.effectsize,
+      headerName: "Effect Size",
     },
-    {
-      field: "p_val",
-      renderHeader: () => (
-        <strong>
-          <p>
-            <i>P</i>
-          </p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.p_val,
-      renderCell: (params) => (
-        <>
-          {params.value === 0
-            ? "0"
-            : toScientificNotationElement(params.value, 2, {
-                variant: "body2",
-              })}
-        </>
-      ),
-    },
+    sharedColumns.p_val,
   ];
 
   const ChIA_PET_columns: GridColDef<(typeof ChIAPETLinked)[number]>[] = [
-    {
-      field: "accession",
-      renderHeader: () => (
-        <strong>
-          <p>Accession</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.accession,
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "gene",
-      renderHeader: () => (
-        <strong>
-          <p>Common Gene Name</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.gene,
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/gene/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "genetype",
-      renderHeader: () => (
-        <strong>
-          <p>Gene Type</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.genetype === "lncRNA"
-          ? row.genetype
-          : row.genetype
-              .replaceAll("_", " ")
-              .split(" ")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ");
-      },
-    },
-    {
-      field: "assay",
-      renderHeader: () => (
-        <strong>
-          <p>Assay Type</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.assay,
-    },
-    {
-      field: "experiment_accession",
-      renderHeader: () => (
-        <strong>
-          <p>Experiment ID</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.experiment_accession,
-      renderCell: (params) => (
-        <LinkComponent href={`https://www.encodeproject.org/experiments/${params.value}`} openInNewTab showExternalIcon>
-          {params.value}
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "score",
-      renderHeader: () => (
-        <strong>
-          <p>Score</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.score,
-    },
-    {
-      field: "displayname",
-      renderHeader: () => (
-        <strong>
-          <p>Biosample</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.displayname,
-    },
+    sharedColumns.accession,
+    sharedColumns.gene,
+    sharedColumns.genetype,
+    sharedColumns.assay,
+    sharedColumns.experiment_accession,
+    sharedColumns.score,
+    sharedColumns.displayname,
   ];
 
-  return errorGWASSnpscCREsGenes || errorGWASSnpscCREsCompuGenes || errorGWASSNPscCREs ? (
-    <Typography>Error Fetching Linked genes of cCREs against SNPs identified by a GWAS study</Typography>
-  ) : (
+  const errorLinked = !!(errorGWASSNPscCREs || errorGWASSnpscCREsGenes);
+  const loadingLinked = loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs;
+  const errorCompu = !!(errorGWASSNPscCREs || errorGWASSnpscCREsCompuGenes);
+  const loadingCompu = loadingGWASSnpscCREsGenes || loadingGWASSnpscCREsCompuGenes;
+
+  return (
     <>
       <Table
         showToolbar
-        rows={HiCLinked || []}
+        rows={HiCLinked}
         columns={HiC_columns}
-        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs}
+        loading={loadingLinked}
+        error={errorLinked}
         label={`Intact Hi-C Loops`}
-        emptyTableFallback={"No intact Hi-C loops overlaps cCREs identified by this GWAS study"}
+        emptyTableFallback={"No intact Hi-C loops overlaps cCREs identified by this GWAS"}
         initialState={{
           sorting: {
-            sortModel: [{ field: "p_val", sort: "desc" }],
+            sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        divHeight={{ height: "600px" }}
       />
       <Table
         showToolbar
-        rows={ChIAPETLinked || []}
+        rows={ChIAPETLinked}
         columns={ChIA_PET_columns}
-        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs}
+        loading={loadingLinked}
+        error={errorLinked}
         label={`ChIA-PET Interactions`}
-        emptyTableFallback={"No ChIA-PET Interactions overlaps cCREs identified by this GWAS study"}
+        emptyTableFallback={"No ChIA-PET Interactions overlaps cCREs identified by this GWAS"}
         initialState={{
           sorting: {
-            sortModel: [{ field: "score", sort: "asc" }],
+            sortModel: [{ field: "score", sort: "desc" }],
           },
         }}
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        divHeight={{ height: "600px" }}
       />
       <Table
         showToolbar
-        rows={crisprLinked || []}
+        rows={crisprLinked}
         columns={CRISPR_columns}
-        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs}
+        loading={loadingLinked}
+        error={errorLinked}
         label={`CRISPRi-FlowFISH`}
-        emptyTableFallback={"No cCREs identified by this GWAS study were targeted in CRISPRi-FlowFISH experiments"}
+        emptyTableFallback={"No cCREs identified by this GWAS were targeted in CRISPRi-FlowFISH experiments"}
         initialState={{
           sorting: {
-            sortModel: [{ field: "p_val", sort: "desc" }],
+            sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        divHeight={{ height: "600px" }}
       />
       <Table
         showToolbar
-        rows={eqtlLinked || []}
+        rows={eqtlLinked}
         columns={eqtl_columns}
-        loading={loadingGWASSnpscCREsGenes || loadingGWASSNPscCREs}
+        loading={loadingLinked}
+        error={errorLinked}
         label={`eQTLs`}
         emptyTableFallback={
-          "No cCREs identified by this GWAS study overlap a variant associated with significant changes in gene expression"
+          "No cCREs identified by this GWAS overlap a variant associated with significant changes in gene expression"
         }
         initialState={{
           sorting: {
-            sortModel: [{ field: "p_val", sort: "desc" }],
+            sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
+        divHeight={{ height: "600px" }}
       />
-      {
-        <>
-          <Table
-            showToolbar
-            rows={dataGWASSnpscCREsCompuGenes || []}
-            columns={CompuLinkedGenes_columns}
-            loading={loadingGWASSnpscCREsCompuGenes}
-            label={`Computational Predictions`}
-            emptyTableFallback={"No Computational Predictions"}
-            initialState={{
-              sorting: {
-                sortModel: [{ field: "score", sort: "desc" }],
-              },
-            }}
-            toolbarSlot={
-              <Tooltip title="Advanced Filters">
-                <Button variant="outlined" onClick={handleClick}>
-                  Select Method
-                </Button>
-              </Tooltip>
-            }
-            divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
-          />
-          <Box
-            onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-              event.stopPropagation();
-            }}
-          >
-            <SelectCompuGenesMethod
-              method={method}
-              open={Boolean(virtualAnchor)}
-              setOpen={handleClickClose}
-              onMethodSelect={handleMethodSelected}
-            />
-          </Box>
-        </>
-      }
+      <Table
+        showToolbar
+        rows={dataGWASSnpscCREsCompuGenes}
+        columns={CompuLinkedGenes_columns}
+        loading={loadingCompu}
+        error={errorCompu}
+        label={`Computational Predictions`}
+        emptyTableFallback={"No Computational Predictions"}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "score", sort: "desc" }],
+          },
+        }}
+        labelTooltip={"Only one method can be shown at a time — select a method by clicking the button to the right"}
+        toolbarSlot={
+          <Tooltip title="Advanced Filters">
+            <Button variant="outlined" onClick={handleClick}>
+              Select Method
+            </Button>
+          </Tooltip>
+        }
+        divHeight={{ height: "600px" }}
+      />
+      <Box
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          event.stopPropagation();
+        }}
+      >
+        <SelectCompuGenesMethod
+          method={method}
+          open={Boolean(virtualAnchor)}
+          setOpen={handleClickClose}
+          onMethodSelect={handleMethodSelected}
+        />
+      </Box>
     </>
   );
 };

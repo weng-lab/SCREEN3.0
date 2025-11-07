@@ -24,16 +24,16 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
   };
 
   const handleBarClick = (bar: BarData<GWASEnrichment>) => {
-    if (selected.includes(bar.metadata)) {
-      setSelected(selected.filter((x) => x !== bar.metadata));
+    if (selected.some((x) => x.accession === bar.metadata.accession)) {
+      setSelected(selected.filter((x) => x.accession !== bar.metadata.accession));
     } else setSelected([...selected, bar.metadata]);
   };
+
   return (
     <>
       <TwoPaneLayout
         TableComponent={
           <BiosampleEnrichmentTable
-            //study_name={study_name}
             enrichmentdata={{ data: dataGWASEnrichment, loading: loadingGWASEnrichment, error: errorGWASEnrichment }}
             selected={selected}
             onSelectionChange={handleSelectionChange}

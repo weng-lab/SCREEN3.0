@@ -10,7 +10,7 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
   const { data: dataCoords, loading: loadingCoords, error: errorCoords } = useEntityMetadata(entity);
 
   const coordinates = useMemo(() => {
-    if (!dataCoords || dataCoords.__typename === "GwasStudies") return null;
+    if (!dataCoords || dataCoords.__typename === "GwasStudiesMetadata") return null;
     if (dataCoords.__typename === "SCREENSearchResult") {
       return { chromosome: dataCoords.chrom, start: dataCoords.start, end: dataCoords.start + dataCoords.len };
     } else return dataCoords.coordinates;

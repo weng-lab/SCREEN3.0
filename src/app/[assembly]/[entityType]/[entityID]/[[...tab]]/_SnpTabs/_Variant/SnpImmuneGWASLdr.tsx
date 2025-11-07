@@ -78,7 +78,7 @@ export default function SnpImmuneGWASLdr({ snpid }: { snpid: string }) {
             },
           }}
           label="Immune GWAS Hits"
-          emptyTableFallback={"This variant is not identified in any genome wide association studies (GWAS)"}
+          emptyTableFallback={"This variant is not identified in any immune genome wide association studies (GWAS)"}
         />
       )}
     </Box>
