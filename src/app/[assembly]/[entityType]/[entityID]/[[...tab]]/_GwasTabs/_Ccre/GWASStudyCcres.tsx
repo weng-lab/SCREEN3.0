@@ -125,8 +125,9 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
       },
       {
         field: "ldblocksnpid",
-        headerName: "LD Block SNP ID",
+        headerName: "LD Block Lead SNP ID(s)",
         renderCell: (params) => {
+          if (params.value === "Lead") return "Lead";
           const rsIDs = (params.value as string)?.split(",");
           const links = rsIDs?.map((rsID: string, index: number) => (
             <>

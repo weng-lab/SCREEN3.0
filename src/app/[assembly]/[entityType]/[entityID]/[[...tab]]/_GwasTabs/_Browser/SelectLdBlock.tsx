@@ -22,7 +22,7 @@ interface Props {
   onLdBlockSelect: (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => void;
 }
 
-const SelectLdBlock: React.FC<Props> = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }) => {
+const SelectLdBlock = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }: Props) => {
   const [selectedldblock, setSelectedLdBlock] = useState(JSON.stringify(ldblock));
 
   useEffect(() => {

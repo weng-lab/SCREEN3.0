@@ -26,11 +26,7 @@ export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
     {
       field: "snpid",
       headerName: "rsID",
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/variant/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
+      renderCell: (params) => <LinkComponent href={`/GRCh38/variant/${params.value}`}>{params.value}</LinkComponent>,
     },
     {
       field: "chromosome",
@@ -51,16 +47,19 @@ export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "ldblocksnpid",
-      headerName: "LD Block SNP ID",
+      headerName: "LD Block Lead SNP ID(s)",
       renderCell: (params) => {
-        const rsID: string = params.value;
-        return rsID === "Lead" ? (
-          "Lead"
-        ) : (
-          <LinkComponent href={`/GRCh38/variant/${rsID}`} key={rsID}>
-            {rsID}
-          </LinkComponent>
-        );
+        if (params.value === "Lead") return "Lead";
+        const rsIDs = (params.value as string)?.split(",");
+        const links = rsIDs?.map((rsID: string, index: number) => (
+          <>
+            <LinkComponent href={`/GRCh38/variant/${rsID}`} key={rsID}>
+              {rsID}
+            </LinkComponent>
+            {index < rsIDs.length - 1 ? ", " : ""}
+          </>
+        ));
+        return <span>{links}</span>;
       },
     },
     {
