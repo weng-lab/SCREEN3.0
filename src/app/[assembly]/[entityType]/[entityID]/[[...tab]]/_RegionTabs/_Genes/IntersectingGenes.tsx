@@ -1,5 +1,4 @@
 "use client";
-import { Typography } from "@mui/material";;
 import { useGeneData } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
@@ -15,11 +14,7 @@ const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {
   const columns: GridColDef<(typeof dataGenes)[number]>[] = [
     {
       field: "name",
-      renderHeader: () => (
-        <strong>
-          <p>Symbol</p>
-        </strong>
-      ),
+      headerName: "Name",
       renderCell: (params) => (
         <LinkComponent href={`/${entity.assembly}/gene/${params.value}`}>
           <i>{params.value}</i>
@@ -28,52 +23,32 @@ const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "id",
-      renderHeader: () => (
-        <strong>
-          <p>ID</p>
-        </strong>
-      ),
+      headerName: "ID",
     },
     {
       field: "strand",
-      renderHeader: () => (
-        <strong>
-          <p>Strand</p>
-        </strong>
-      ),
+      headerName: "Strand",
     },
     {
       field: "coordinates.chromosome",
-      renderHeader: () => (
-        <strong>
-          <p>Chromosome</p>
-        </strong>
-      ),
+      headerName: "Chromosome",
       valueGetter: (_, row) => row.coordinates.chromosome,
     },
     {
       field: "coordinates.start",
-      renderHeader: () => (
-        <strong>
-          <p>Start</p>
-        </strong>
-      ),
+      headerName: "Start",
+      type: "number",
       valueGetter: (_, row) => row.coordinates.start,
     },
     {
       field: "coordinates.end",
-      renderHeader: () => (
-        <strong>
-          <p>End</p>
-        </strong>
-      ),
+      headerName: "End",
+      type: "number",
       valueGetter: (_, row) => row.coordinates.end,
     },
   ];
 
-  return errorGenes ? (
-    <Typography>Error Fetching Genes</Typography>
-  ) : (
+  return (
     <Table
       showToolbar
       rows={dataGenes}
@@ -82,6 +57,7 @@ const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {
       error={!!errorGenes}
       label={`Intersecting Genes`}
       emptyTableFallback={"No intersecting Genes found in this region"}
+      initialState={{ sorting: { sortModel: [{ field: "coordinates.start", sort: "asc" }] } }}
       divHeight={{ maxHeight: "600px" }}
     />
   );
