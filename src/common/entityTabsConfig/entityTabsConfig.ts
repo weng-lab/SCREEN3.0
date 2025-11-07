@@ -21,7 +21,7 @@ import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
-import { hasNoEnrichmentData } from "common/hasNoEnrichmentData";
+import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -47,6 +47,7 @@ const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
  * 4) Add an entry to the TabList type that adds a new TabConfig<NewEntityRoutes>[]
  * 5) Add the entity and corresponding tabs to the entityTabsConfig object
  * 6) Add the entityType to the "sort" action in OpenEntitiesContext
+ * 7) Add a new case in useEntityDisplayname to handle the new entity
  *
  */
 
@@ -126,7 +127,7 @@ export const humanGwasTabs = [
     label: "Biosample Enrichment",
     iconPath: BiosampleEnrichmentIconPath,
     component: BiosampleEnrichment,
-    getIsDisabled: hasNoEnrichmentData
+    getIsDisabled: hasNoEnrichmentData,
   },
   {
     route: "variants",

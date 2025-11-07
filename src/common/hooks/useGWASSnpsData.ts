@@ -22,7 +22,7 @@ export type UseGWASSnpsParams = {
 };
 
 export type UseGWASSnpsReturn = {
-  data: GetSnPsIdentifiedbyGivenStudyQuery['getSNPsforGivenGWASStudy'] | undefined;
+  data: GetSnPsIdentifiedbyGivenStudyQuery["getSNPsforGivenGWASStudy"] | undefined;
   loading: boolean;
   error: ApolloError;
 };

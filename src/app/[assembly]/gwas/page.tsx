@@ -2,14 +2,15 @@
 import { LinkComponent } from "common/components/LinkComponent";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { GridColDef } from "@mui/x-data-grid-pro";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, CircularProgress, Switch, FormGroup, FormControlLabel, Stack } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, CircularProgress } from "@mui/material";
 import { Table } from "@weng-lab/ui-components";
 import { useTheme } from "@mui/material/styles";
 import GWASLandingHeader from "./GWASLandingHeader";
 import { Treemap, TreemapNode } from "@weng-lab/visualization";
-import { useGWASStudyMetaData } from "../../../common/hooks/useGWASStudyMetadata";
+import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
 import { GwasStudiesMetadata } from "common/types/generated/graphql";
 import { useEffect, useMemo, useRef, useState } from "react";
+
 type ParentTermMetadata = {
   description: string;
   source: string;
@@ -35,8 +36,6 @@ const data: TreemapNode<ParentTermMetadata>[] = [
 
 export default function GWASLandingPage() {
   const [expanded, setExpanded] = useState<string | false>(false);
-  
-
   const accordionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const theme = useTheme();
   const gwasStudyMetadata = useGWASStudyMetaData({ entityType: "gwas" });
@@ -50,91 +49,68 @@ export default function GWASLandingPage() {
     }
   }, [expanded]);
 
-  // ✅ Safely build categorized studies
+  // Build categorized studies
   const categorizedStudies: Record<string, GwasStudiesMetadata[]> = useMemo(() => {
     if (!gwasStudyMetadata?.data) return {};
-    return gwasStudyMetadata.data.reduce((acc, study) => {
-      for (const term of study.parent_terms || []) {
-        if (!acc[term]) acc[term] = [];
-        acc[term].push(study);
-      }
-      return acc;
-    }, {} as Record<string, GwasStudiesMetadata[]>);
+    return gwasStudyMetadata.data.reduce(
+      (acc, study) => {
+        for (const term of study.parent_terms || []) {
+          if (!acc[term]) acc[term] = [];
+          acc[term].push(study);
+        }
+        return acc;
+      },
+      {} as Record<string, GwasStudiesMetadata[]>
+    );
   }, [gwasStudyMetadata]);
 
-  // ✅ Sort by number of studies
+  // Sort by number of studies
   const sortedCategories = useMemo(
-    () =>
-      Object.entries(categorizedStudies).sort(
-        (a, b) => b[1].length - a[1].length
-      ),
+    () => Object.entries(categorizedStudies).sort((a, b) => b[1].length - a[1].length),
     [categorizedStudies]
   );
-
 
   const studies_columns: GridColDef<GwasStudiesMetadata>[] = [
     {
       field: "disease_trait",
-      renderHeader: () => (
-        <strong>
-          <p>Disease</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.disease_trait;
-      },
+      headerName: "Disease",
       renderCell: (params) => (
-        <LinkComponent href={!params.row.has_enrichment_info ? `/GRCh38/gwas/${params.row.studyid}/variants` : `/GRCh38/gwas/${params.row.studyid}/biosample_enrichment`}>
+        <LinkComponent
+          href={
+            !params.row.has_enrichment_info
+              ? `/GRCh38/gwas/${params.row.studyid}/variants`
+              : `/GRCh38/gwas/${params.row.studyid}/biosample_enrichment`
+          }
+        >
           {params.value}
         </LinkComponent>
-      )
+      ),
     },
     {
       field: "population",
-      renderHeader: () => (
-        <strong>
-          <p>Population</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.population;
-      },
+      headerName: "Population"
     },
     {
       field: "studyid",
-      renderHeader: () => (
-        <strong>
-          <p>PubMed ID</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.studyid.split("-")[0],
+      headerName: "PubMed ID",
+      valueGetter: (value: string) => value?.split("-")[0],
       renderCell: (params) => (
-        <LinkComponent href={`https://pubmed.ncbi.nlm.nih.gov/${params.row.studyid.split("-")[0]}`} showExternalIcon>
-          {params.row.studyid.split("-")[0]}
+        <LinkComponent href={`https://pubmed.ncbi.nlm.nih.gov/${params.value}`} showExternalIcon openInNewTab>
+          {params.value}
         </LinkComponent>
       ),
     },
     {
       field: "author",
-      renderHeader: () => (
-        <strong>
-          <p>Author</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.author.replaceAll("_", " ")
-
-    }, {
+      headerName: "Author",
+      valueGetter: (value: string) => value?.replaceAll("_", " "),
+    },
+    {
       field: "has_enrichment_info",
-      renderHeader: () => (
-        <strong>
-          <p>Enrichment</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.has_enrichment_info;
-      },
+      headerName: "Enrichment",
+    },
+  ];
 
-    },]
   return (
     <Box sx={{ marginX: "5%", marginY: 2 }}>
       <GWASLandingHeader />
@@ -147,9 +123,8 @@ export default function GWASLandingPage() {
       >
         <Treemap
           onNodeClicked={(point) => {
-            setExpanded(point.label)
-          }
-          }
+            setExpanded(point.label);
+          }}
           tooltipBody={(node) => (
             <Box maxWidth={300}>
               <div>
@@ -191,12 +166,13 @@ export default function GWASLandingPage() {
                 }}
               >
                 <Typography variant="h6">
-                  {term} ({studies.length})
+                  {term} ({studies.length.toLocaleString()})
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Box sx={{ height: 500, width: "100%" }}>
-                  {<Table
+                  {
+                    <Table
                       showToolbar
                       rows={studies.map((s) => ({ id: s.studyid, ...s })) || []}
                       columns={studies_columns}
@@ -205,7 +181,8 @@ export default function GWASLandingPage() {
                       emptyTableFallback={"No studies"}
                       divHeight={{ height: "100%", minHeight: "500px", maxHeight: "300px" }}
                       initialState={{ sorting: { sortModel: [{ field: "has_enrichment_info", sort: "desc" }] } }}
-                    />}
+                    />
+                  }
                 </Box>
               </AccordionDetails>
             </Accordion>

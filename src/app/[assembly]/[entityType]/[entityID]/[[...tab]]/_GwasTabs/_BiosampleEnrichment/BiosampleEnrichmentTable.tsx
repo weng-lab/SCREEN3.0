@@ -1,20 +1,20 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { Typography, useMediaQuery, useTheme } from "@mui/material";
-import { Table, GRID_CHECKBOX_SELECTION_COL_DEF } from "@weng-lab/ui-components";
+import { useMediaQuery, useTheme } from "@mui/material";
+import {
+  Table,
+  GRID_CHECKBOX_SELECTION_COL_DEF,
+  GridColDef,
+  gridFilteredSortedRowEntriesSelector,
+  GridRowSelectionModel,
+  GridSortDirection,
+  GridSortModel,
+  useGridApiRef,
+} from "@weng-lab/ui-components";
 import { OpenInNew } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
 import { capitalizeFirstLetter } from "common/utility";
-
-import {
-  gridFilteredSortedRowEntriesSelector,
-  GridRowSelectionModel,
-  useGridApiRef,
-  GridColDef,
-  GridSortDirection,
-  GridSortModel,
-} from "@mui/x-data-grid-pro";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 export type BiosampleEnrichmentTableProps = {
@@ -36,10 +36,15 @@ const BiosampleEnrichmentTable = ({
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleRowSelectionModelChange = (ids: GridRowSelectionModel) => {
-    const newIds = Array.from(ids.ids);
-    const selectedRows = newIds.map((id) => data.find((row) => row.accession === id));
-    onSelectionChange(selectedRows);
+  const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
+    if (newRowSelectionModel.type === "include") {
+      const newIds = Array.from(newRowSelectionModel.ids);
+      const selectedRows = newIds.map((id) => data.find((row) => row.accession === id));
+      onSelectionChange(selectedRows);
+    } else {
+      // if type is exclude, it's always with 0 ids (aka select all)
+      onSelectionChange(data);
+    }
   };
 
   const apiRef = useGridApiRef();
@@ -86,46 +91,32 @@ const BiosampleEnrichmentTable = ({
     {
       field: "displayname",
       headerName: "Biosample",
-      valueGetter: (_, row) => {
-        return capitalizeFirstLetter(row.displayname);
-      },
-      renderCell: (params) => (
-        <div
-          style={{
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: 150,
-          }}
-          title={params.value}
-        >
-          {params.value}
-        </div>
-      ),
+      valueFormatter: (value: string) => capitalizeFirstLetter(value),
+      maxWidth: 150,
     },
     {
       field: "fc",
-      headerName: "Fold Change",
-      valueFormatter:  (_, row) => row.fc.toFixed(3),
-      valueGetter: (_, row) => row.fc,
+      headerName: "Log2(Fold Enrichment)",
+      type: "number",
+      valueFormatter: (value: number) => value?.toFixed(3),
+      maxWidth: 150,
     },
     {
       field: "fdr",
       headerName: "FDR",
-      valueFormatter: (_, row) => row.fdr.toFixed(3),
-      valueGetter: (_, row) => row.fdr,
+      type: "number",
+      valueFormatter: (value: number) => value?.toFixed(3),
     },
     {
       field: "pvalue",
       headerName: "P",
-      valueFormatter: (_, row) => row.pvalue.toFixed(3),
-      valueGetter: (_, row) => row.pvalue,
+      type: "number",
+      renderHeader: () => <i>P&nbsp;</i>,
+      valueFormatter: (value: number) => value?.toFixed(3),
     },
-
     {
       field: "ontology",
-      headerName: "Tissue",
-      valueGetter: (_, row) => row.ontology,
+      headerName: "Organ/Tissue",
     },
     {
       field: "link",
@@ -174,34 +165,31 @@ const BiosampleEnrichmentTable = ({
     api.setSortModel(selected?.length > 0 ? [{ field: "__check__", sort: "desc" }] : initialSort);
   }, [apiRef, autoSort, initialSort, selected]);
 
-  return error ? (
-    <Typography>Error Fetching GWAS Enrichment</Typography>
-  ) : (
-    <>
-      <Table
-        apiRef={apiRef}
-        showToolbar
-        rows={data || []}
-        columns={columns}
-        loading={loading}
-        label={`Suggested Biosamples`}
-        emptyTableFallback={"No Suggested Biosamples found for this study"}
-        initialState={{
-          sorting: {
-            sortModel: initialSort,
-          },
-        }}
-        checkboxSelection
-        getRowId={(row) => row.accession} //needed to match up data with the ids returned by onRowSelectionModelChange
-        onRowSelectionModelChange={handleRowSelectionModelChange}
-        rowSelectionModel={{ type: "include", ids: new Set(selected.map((x) => x.accession)) }}
-        keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
-        onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structur
-        divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
-        labelTooltip={tooltip}
-        toolbarSlot={AutoSortToolbar}
-      />
-    </>
+  return (
+    <Table
+      apiRef={apiRef}
+      showToolbar
+      rows={data}
+      columns={columns}
+      loading={loading}
+      error={!!error}
+      label={`Suggested Biosamples`}
+      emptyTableFallback={"No Suggested Biosamples found for this study"}
+      initialState={{
+        sorting: {
+          sortModel: initialSort,
+        },
+      }}
+      checkboxSelection
+      getRowId={(row) => row.accession} //needed to match up data with the ids returned by onRowSelectionModelChange
+      onRowSelectionModelChange={handleRowSelectionModelChange}
+      rowSelectionModel={{ type: "include", ids: new Set(selected.map((x) => x.accession)) }}
+      keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
+      onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structur
+      divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
+      labelTooltip={tooltip}
+      toolbarSlot={AutoSortToolbar}
+    />
   );
 };
 

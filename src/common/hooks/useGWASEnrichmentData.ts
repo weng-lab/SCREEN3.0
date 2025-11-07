@@ -80,7 +80,8 @@ export const useGWASEnrichmentData = ({ study }: UseGWASEnrichmentParams): UseGW
         const matchedBiosample = biosampleData.ccREBiosampleQuery.biosamples.find((b) => b.name === item.celltype);
         return {
           ...item,
-          fc: item.fc,//Math.log2(item.fc+FCaugmentation),
+          // fc is already log2 transformed
+          fc: item.fc,
           pvalue: item.pvalue === 0 ? minFDRval : item.pvalue,
           fdr: item.fdr === 0 ? minFDRval : item.fdr,
           ontology: matchedBiosample?.ontology,

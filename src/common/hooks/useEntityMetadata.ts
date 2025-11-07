@@ -30,7 +30,7 @@ export type useEntityMetadataReturn<T extends AnyEntityType> = T extends "gene"
     : T extends "variant"
       ? UseSnpDataReturn<{ rsID: string; assembly: Assembly }>
       : T extends "gwas"
-        ? UseGWASStudyDataReturn<{ studyid: string[] }>
+        ? UseGWASStudyDataReturn
         : UseGenomicRangeReturn;
 
 export const useEntityMetadata = <T extends AnyEntityType>({

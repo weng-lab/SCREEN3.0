@@ -1,10 +1,6 @@
-import { Button, Stack, Typography } from "@mui/material";
-
-import Image from "next/image";
-
+import { Stack, Typography } from "@mui/material";
 
 const GWASLandingHeader = () => {
-  
   return (
     <Stack
       sx={{ p: 1, mb: 2 }}
@@ -17,11 +13,8 @@ const GWASLandingHeader = () => {
         <Typography variant="h4">
           <strong>Explore GWAS Data</strong>
         </Typography>
-        <Typography variant="body1">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna.
-        </Typography>
+        <Typography variant="body1">Search studies by category</Typography>
       </Stack>
-     
     </Stack>
   );
 };

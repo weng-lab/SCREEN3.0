@@ -17,24 +17,25 @@ const GWAS_ALL_STUDIES_METADATA_Query = gql(`
 }
 `);
 
-/**
- * Currently the backend does not support querying for genes in multiple regions,
- * which limits the input here to GenomicRange and not also GenomicRange[]
- */
+export type UseGWASStudyMetaDataParams = {
+  studyid?: string[];
+  parent_terms?: string[];
+  studyname_prefix?: string[];
+  limit?: number;
+  entityType?: AnyEntityType;
+};
 
-export type UseGWASStudyMetaDataParams = { studyid?: string[]; parent_terms? : string[]; studyname_prefix?: string[]; limit?: number; entityType?: AnyEntityType };
-
-export type UseGWASStudyMetaDataReturn<T extends UseGWASStudyMetaDataParams> = {
+export type UseGWASStudyMetaDataReturn = {
   data: GetGwasAllStudiesMetadataQuery['getGWASStudiesMetadata'] | undefined;
   loading: boolean;
   error: ApolloError;
 };
 
-export const useGWASStudyMetaData = <T extends UseGWASStudyMetaDataParams>({
+export const useGWASStudyMetaData = ({
   studyid,
   parent_terms,
   entityType,
-}: T): UseGWASStudyMetaDataReturn<T> => {
+}: UseGWASStudyMetaDataParams): UseGWASStudyMetaDataReturn => {
   const { data, loading, error } = useQuery(GWAS_ALL_STUDIES_METADATA_Query, {
     variables: {
       studyid: studyid
@@ -43,11 +44,8 @@ export const useGWASStudyMetaData = <T extends UseGWASStudyMetaDataParams>({
   });
 
   return {
-    /**
-     * return either whole array or just first item depending on input
-     */
     data: data?.getGWASStudiesMetadata,
     loading,
     error,
-  } as UseGWASStudyMetaDataReturn<T>;
+  } as UseGWASStudyMetaDataReturn;
 };

@@ -1,11 +1,9 @@
 "use client";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
 import { useMemo, useState } from "react";
-import { GridColDef } from "@mui/x-data-grid-pro";
-import { Table } from "@weng-lab/ui-components";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { CancelRounded } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
-import InfoIcon from "@mui/icons-material/Info";
 import { useCcreData } from "common/hooks/useCcreData";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
@@ -14,7 +12,7 @@ import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyData } from "common/hooks/useGWASStudyData";
 
 const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
-  const {data, loading, error} = useGWASStudyData({studyid: [entity.entityID]})
+  const { data, loading, error } = useGWASStudyData({ studyid: [entity.entityID] });
 
   //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
   //setting the anchorEl to the button
@@ -85,239 +83,170 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const showH3k27ac = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k27ac ? true : false) : true;
   const showH3k4me3 = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k4me3 ? true : false) : true;
 
-  const ldblocks_columns: GridColDef<
-     { total_ld_blocks: number; ld_blocks_overlapping_ccres: number; overlapping_ccres: number }[][number]
-  >[] = [
-    {
-      field: "total_ld_blocks",
-      renderHeader: () => (
-        <strong>
-          <p>Total LD blocks</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.total_ld_blocks;
+  const ldblocks_columns: GridColDef<typeof data>[] = useMemo(
+    () => [
+      //skip specifying type: "number" to avoid manual left align. Nobody is filtering this table so doesn't matter
+      {
+        field: "total_ld_blocks",
+        headerName: "Total LD Blocks",
       },
-    },
-    {
-      field: "ld_blocks_overlapping_ccres",
-      renderHeader: () => (
-        <strong>
-          <p># of LD blocks overlapping cCREs</p>
-        </strong>
-      ),
-      valueGetter: (_, row) =>
-        row.ld_blocks_overlapping_ccres +
-        " (" +
-        Math.ceil((row.ld_blocks_overlapping_ccres / +row.total_ld_blocks) * 100) +
-        "%)",
-    },
-    {
-      field: "overlapping_ccres",
-      renderHeader: () => (
-        <strong>
-          <p># of overlapping cCREs</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.overlapping_ccres,
-    },
-  ];
-  const columns: GridColDef<(typeof mergedData)[number]>[] = [
-    {
-      field: "ccre",
-      renderHeader: () => (
-        <strong>
-          <p>Accession</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.ccre;
+      {
+        field: "ld_blocks_overlapping_ccres",
+        headerName: "# of LD blocks overlapping cCREs",
+        valueGetter: (_, row) =>
+          row.ld_blocks_overlapping_ccres +
+          " (" +
+          Math.ceil((row.ld_blocks_overlapping_ccres / +row.total_ld_blocks) * 100) +
+          "%)",
       },
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
-    },
-    {
-      field: "snpid",
-      renderHeader: () => (
-        <strong>
-          <p>SNP</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.snpid,
-    },
+      {
+        field: "overlapping_ccres",
+        headerName: "# of overlapping cCREs",
+      },
+    ],
+    []
+  );
 
-    {
-      field: "ldblocksnpid",
-      renderHeader: () => (
-        <strong>
-          <p>LD Block SNP ID</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.ldblocksnpid,
-    },
-
-    {
-      field: "rsquare",
-      renderHeader: () => (
-        <strong>
-          <p>
-            <i>R</i>
-            <sup>2</sup>
-          </p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.rsquare,
-    },
-    {
-      field: "nearestgenes",
-      renderHeader: () => (
-        <strong>
-          <p>Nearest&nbsp;Gene</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
-      renderCell: (params) => (
-        <span>
-          <LinkComponent href={`/GRCh38/gene/${params.row.nearestgenes[0].gene}`}>
-            <i>{params.row.nearestgenes[0].gene}</i>
+  const columns: GridColDef<(typeof mergedData)[number]>[] = useMemo(
+    () => [
+      {
+        field: "ccre",
+        headerName: "Accession",
+        renderCell: (params) => (
+          <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
+            <i>{params.value}</i>
           </LinkComponent>
-          &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
-        </span>
-      ),
-    },
-    ...(showAtac
-      ? [
-          {
-            field: selectedBiosample && selectedBiosample.atac ? "ctspecific.atac_zscore" : "atac_zscore",
-            renderHeader: () => {
-              const headerVal = selectedBiosample && selectedBiosample.atac ? "ATAC" : "ATAC max Z";
-              return (
-                <strong>
-                  <p>{headerVal}</p>
-                </strong>
-              );
-            },
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.atac
-                ? row.ctspecific.atac_zscore.toFixed(2)
-                : row.atac_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showH3k27ac
-      ? [
-          {
-            field: selectedBiosample && selectedBiosample.h3k27ac ? "ctspecific.enhancer_zscore" : "enhancer_zscore",
-            renderHeader: () => {
-              const headerVal = selectedBiosample && selectedBiosample.h3k27ac ? "H3k27ac" : "H3k27ac max Z";
-              return (
-                <strong>
-                  <p>{headerVal}</p>
-                </strong>
-              );
-            },
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.h3k27ac
-                ? row.ctspecific.h3k27ac_zscore.toFixed(2)
-                : row.enhancer_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showH3k4me3
-      ? [
-          {
-            field: selectedBiosample && selectedBiosample.h3k4me3 ? "ctspecific.h3k4me3_zscore" : "promoter_zscore",
-            renderHeader: () => {
-              const headerVal = selectedBiosample && selectedBiosample.h3k4me3 ? "H3k4me3" : "H3k4me3 max Z";
-              return (
-                <strong>
-                  <p>{headerVal}</p>
-                </strong>
-              );
-            },
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.h3k4me3
-                ? row.ctspecific.h3k4me3_zscore.toFixed(2)
-                : row.promoter_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showCTCF
-      ? [
-          {
-            field: selectedBiosample && selectedBiosample.ctcf ? "ctspecific.ctcf_zscore" : "ctcf_zscore",
-            renderHeader: () => {
-              const headerVal = selectedBiosample && selectedBiosample.ctcf ? "CTCF" : "CTCF max Z";
-              return (
-                <strong>
-                  <p>{headerVal}</p>
-                </strong>
-              );
-            },
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.ctcf
-                ? row.ctspecific.ctcf_zscore.toFixed(2)
-                : row.ctcf_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showDNase
-      ? [
-          {
-            field: selectedBiosample && selectedBiosample.dnase ? "ctspecific.dnase_zscore" : "dnase_zscore",
-            renderHeader: () => {
-              const headerVal = selectedBiosample && selectedBiosample.dnase ? "DNase" : "DNase max Z";
-              return (
-                <strong>
-                  <p>{headerVal}</p>
-                </strong>
-              );
-            },
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.dnase
-                ? row.ctspecific.dnase_zscore.toFixed(2)
-                : row.dnase_zscore.toFixed(2),
-          },
-        ]
-      : []),
-  ];
-  /*const ldblocks_data = data?.totalldblocks ? [
-    {
-      total_ldblocks: data.totalldblocks,
-      ldblocks_overlapping_ccres: dataGWASSNPscCREs
+        ),
+      },
+      {
+        field: "snpid",
+        headerName: "SNP",
+        renderCell: (params) => <LinkComponent href={`/GRCh38/variant/${params.value}`}>{params.value}</LinkComponent>,
+      },
+      {
+        field: "ldblocksnpid",
+        headerName: "LD Block SNP ID",
+        renderCell: (params) => {
+          const rsIDs = (params.value as string)?.split(",");
+          const links = rsIDs?.map((rsID: string, index: number) => (
+            <>
+              <LinkComponent href={`/GRCh38/variant/${rsID}`} key={rsID}>
+                {rsID}
+              </LinkComponent>
+              {index < rsIDs.length - 1 ? ", " : ""}
+            </>
+          ));
+          return <span>{links}</span>;
+        },
+      },
+      // ideally this would be type: "number" to allow <,>,<= filtering but with * and comma separated values keeping default
+      {
+        field: "rsquare",
+        renderHeader: () => (
+          <p>
+            <i>
+              R<sup>2&nbsp;</sup>
+            </i>
+          </p>
+        ),
+      },
+      {
+        field: "nearestgenes",
+        headerName: "Nearest Gene",
+        valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
+        renderCell: (params) => (
+          <span>
+            <LinkComponent href={`/GRCh38/gene/${params.row.nearestgenes[0].gene}`}>
+              <i>{params.row.nearestgenes[0].gene}</i>
+            </LinkComponent>
+            &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
+          </span>
+        ),
+      },
+      ...(showDNase
         ? [
-            ...new Set([
-              ...dataGWASSNPscCREs.map((c) => {
-                return +c.ldblock;
-              }),
-            ]),
-          ].length
-        : 0,
-      overlapping_ccres: dataGWASSNPscCREs ? [...new Set(dataGWASSNPscCREs.map((item) => item.ccre))].length : 0,
-    },
-  ] : undefined;*/
+            {
+              field: "dnase",
+              type: "number" as const,
+              headerName: selectedBiosample ? "DNase" : "DNase Max Z",
+              valueGetter: (_, row) =>
+                selectedBiosample && selectedBiosample.dnase
+                  ? row.ctspecific.dnase_zscore.toFixed(2)
+                  : row.dnase_zscore.toFixed(2),
+            },
+          ]
+        : []),
+      ...(showAtac
+        ? [
+            {
+              field: "atac",
+              type: "number" as const,
+              headerName: selectedBiosample ? "ATAC" : "ATAC Max Z",
+              valueGetter: (_, row) =>
+                selectedBiosample && selectedBiosample.atac
+                  ? row.ctspecific.atac_zscore.toFixed(2)
+                  : row.atac_zscore.toFixed(2),
+            },
+          ]
+        : []),
+      ...(showH3k4me3
+        ? [
+            {
+              field: "h3k4me3",
+              type: "number" as const,
+              headerName: selectedBiosample ? "H3K4me3" : "H3K4me3 Max Z",
+              valueGetter: (_, row) =>
+                selectedBiosample && selectedBiosample.h3k4me3
+                  ? row.ctspecific.h3k4me3_zscore.toFixed(2)
+                  : row.promoter_zscore.toFixed(2),
+            },
+          ]
+        : []),
+      ...(showH3k27ac
+        ? [
+            {
+              field: "h3k27ac",
+              type: "number" as const,
+              headerName: selectedBiosample ? "H3K27ac" : "H3K27ac Max Z",
+              valueGetter: (_, row) =>
+                selectedBiosample && selectedBiosample.h3k27ac
+                  ? row.ctspecific.h3k27ac_zscore.toFixed(2)
+                  : row.enhancer_zscore.toFixed(2),
+            },
+          ]
+        : []),
+      ...(showCTCF
+        ? [
+            {
+              field: "ctcf",
+              type: "number" as const,
+              headerName: selectedBiosample ? "CTCF" : "CTCF Max Z",
+              valueGetter: (_, row) =>
+                selectedBiosample && selectedBiosample.ctcf
+                  ? row.ctspecific.ctcf_zscore.toFixed(2)
+                  : row.ctcf_zscore.toFixed(2),
+            },
+          ]
+        : []),
+    ],
+    [selectedBiosample, showAtac, showCTCF, showDNase, showH3k27ac, showH3k4me3]
+  );
+
   return errorGWASSNPscCREs || errorCcreDetails || error ? (
     <Typography>Error Fetching Intersecting cCREs against SNPs identified by a GWAS study</Typography>
   ) : (
     <>
       <Table
-        rows={[{total_ld_blocks: data.total_ld_blocks, overlapping_ccres: data.overlapping_ccres, ld_blocks_overlapping_ccres: data.ld_blocks_overlapping_ccres}] }
+        rows={data ? [data] : []}
         columns={ldblocks_columns}
         loading={loading}
-        label={`LD Blocks`}
-        emptyTableFallback={"No Intersecting cCREs found against SNPs identified by GWAS study"}
-        divHeight={{ height: "100%", minHeight: "50px", maxHeight: "600px" }}
+        error={!!error}
+        label={"LD Blocks"}
+        emptyTableFallback={"Error fetching information about this study"}
+        //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+        divHeight={!data ? { height: "182px" } : undefined}
         labelTooltip={
-          <Tooltip
-            title={
-              "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)"
-            }
-          >
-            <InfoIcon fontSize="inherit" />
-          </Tooltip>
+          "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)"
         }
       />
       {selectedBiosample && (
@@ -344,7 +273,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
       )}
       <Table
         showToolbar
-        rows={mergedData || []}
+        rows={mergedData}
         columns={columns}
         loading={loadingGWASSNPscCREs || loadingCcreDetails}
         label={`Intersecting cCREs`}
@@ -354,12 +283,8 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "rsquare", sort: "desc" }],
           },
         }}
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
-        labelTooltip={
-          <Tooltip title={"cCREs intersected against SNPs identified by selected GWAS study"}>
-            <InfoIcon fontSize="inherit" />
-          </Tooltip>
-        }
+        divHeight={{ height: "600px" }}
+        labelTooltip={"cCREs intersected against SNPs identified by selected GWAS study"}
         toolbarSlot={
           <Tooltip title="Advanced Filters">
             <Button variant="outlined" onClick={handleClick}>

@@ -32,7 +32,7 @@ const methodDescriptions = {
   "rE2G_(extended)": "Extended Regulatory Element to Gene mapping using multiple features",
 };
 
-const SelectCompuGenesMethod: React.FC<Props> = ({ method, open, setOpen, onMethodSelect }) => {
+const SelectCompuGenesMethod = ({ method, open, setOpen, onMethodSelect }: Props) => {
   const [selectedmethod, setSelectedMethod] = useState<string>(method);
   const methods = [
     "ABC_(DNase_only)",

@@ -20,37 +20,36 @@ const GWAS_STUDY_METADATA_Query = gql(`
 }
 `);
 
-/**
- * Currently the backend does not support querying for genes in multiple regions,
- * which limits the input here to GenomicRange and not also GenomicRange[]
- */
+export type UseGWASStudyDataParams = {
+  studyid?: string[];
+  parent_terms?: string[];
+  studyname_prefix?: string[];
+  limit?: number;
+  entityType?: AnyEntityType;
+};
 
-export type UseGWASStudyDataParams = { studyid?: string[]; parent_terms? : string[]; studyname_prefix?: string[]; limit?: number; entityType?: AnyEntityType };
-
-export type UseGWASStudyDataReturn<T extends UseGWASStudyDataParams> = {
-  data: GetGwasStudyMetadataQuery['getGWASStudiesMetadata'][0] | undefined;
+export type UseGWASStudyDataReturn = {
+  data: GetGwasStudyMetadataQuery["getGWASStudiesMetadata"][0] | undefined;
   loading: boolean;
   error: ApolloError;
 };
 
-export const useGWASStudyData = <T extends UseGWASStudyDataParams>({
+export const useGWASStudyData = ({
   studyid,
   parent_terms,
   entityType,
-}: T): UseGWASStudyDataReturn<T> => {
+}: UseGWASStudyDataParams): UseGWASStudyDataReturn => {
   const { data, loading, error } = useQuery(GWAS_STUDY_METADATA_Query, {
     variables: {
       studyid: studyid
     },
     skip: entityType !== undefined && entityType !== "gwas",
+    fetchPolicy: "cache-and-network",
   });
 
   return {
-    /**
-     * return either whole array or just first item depending on input
-     */
     data: data?.getGWASStudiesMetadata[0],
     loading,
     error,
-  } as UseGWASStudyDataReturn<T>;
+  } as UseGWASStudyDataReturn;
 };
