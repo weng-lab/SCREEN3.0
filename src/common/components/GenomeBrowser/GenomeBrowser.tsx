@@ -10,7 +10,7 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
   const { data, loading, error } = useEntityMetadata(entity);
 
   const coordinates = useMemo(() => {
-    if (!data || data.__typename === "GwasStudies") return null;
+    if (!data || data.__typename === "GwasStudiesMetadata") return null;
     if (data.__typename === "SCREENSearchResult") {
       return { chromosome: data.chrom, start: data.start, end: data.start + data.len };
     } else return data.coordinates;

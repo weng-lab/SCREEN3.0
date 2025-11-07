@@ -47,7 +47,7 @@ const GeneExpressionBarPlot = ({
         (y) => y.gene_quantification_files[0].accession === x.gene_quantification_files[0].accession
       );
       return {
-        category: x.tissue,
+        category: capitalizeFirstLetter(x.tissue),
         label: makeLabel(x.gene_quantification_files[0].quantifications[0]?.tpm, x.biosample, x.accession),
         value: x.gene_quantification_files[0].quantifications[0]?.tpm, //indexing into 0th position, only one gene so quantifications should always be length 1
         color:
@@ -59,7 +59,7 @@ const GeneExpressionBarPlot = ({
   }, [sortedFilteredData, selected]);
 
   const handleBarClick = (bar: BarData<PointMetadata>) => {
-    if (selected.some(x => x.accession === bar.metadata.accession)) {
+    if (selected.some((x) => x.accession === bar.metadata.accession)) {
       setSelected(selected.filter((x) => x.accession !== bar.metadata.accession));
     } else setSelected([...selected, bar.metadata]);
   };

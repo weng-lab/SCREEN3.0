@@ -19,7 +19,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
   const c =
-    entityMetadata?.__typename !== "GwasStudies" &&
+    entityMetadata?.__typename !== "GwasStudiesMetadata" &&
     (entityMetadata?.__typename === "SCREENSearchResult"
       ? {
           chromosome: entityMetadata?.chrom,

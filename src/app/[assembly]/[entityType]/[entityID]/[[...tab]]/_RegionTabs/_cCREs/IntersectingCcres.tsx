@@ -62,11 +62,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const columns: GridColDef<(typeof dataCcres)[number]>[] = [
     {
       field: "info.accession",
-      renderHeader: () => (
-        <strong>
-          <p>Accession</p>
-        </strong>
-      ),
+      headerName: "Accession",
       valueGetter: (_, row) => row.info.accession,
       renderCell: (params) => (
         <LinkComponent href={`/${entity.assembly}/ccre/${params.value}`}>
@@ -76,11 +72,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "pct",
-      renderHeader: () => (
-        <strong>
-          <p>Class</p>
-        </strong>
-      ),
+      headerName: "Class",
       valueGetter: (_, row) =>
         row.pct === "PLS"
           ? "Promoter"
@@ -92,40 +84,27 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "chrom",
-      renderHeader: () => (
-        <strong>
-          <p>Chromosome</p>
-        </strong>
-      ),
+      headerName: "Chromosome",
     },
     {
       field: "start",
-      renderHeader: () => (
-        <strong>
-          <p>Start</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.start.toLocaleString(),
+      headerName: "Start",
+      type: "number",
+      valueFormatter: (value: number) => value?.toLocaleString(),
     },
     {
       field: "end",
-      renderHeader: () => (
-        <strong>
-          <p>End</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => (row.start + row.len).toLocaleString(),
-      sortComparator: (v1, v2) => v1 - v2,
+      headerName: "End",
+      type: "number",
+      valueGetter: (_, row) => row.start + row.len,
+      valueFormatter: (value: number) => value?.toLocaleString(),
     },
     ...(showDNase
       ? [
           {
-            field: selectedBiosample && selectedBiosample.dnase ? "ctspecific.dnase_zscore" : "dnase_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>DNase</p>
-              </strong>
-            ),
+            field: "dnase",
+            headerName: "DNase",
+            type: "number" as const,
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.dnase
                 ? row.ctspecific.dnase_zscore.toFixed(2)
@@ -136,12 +115,9 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     ...(showAtac
       ? [
           {
-            field: selectedBiosample && selectedBiosample.atac ? "ctspecific.atac_zscore" : "atac_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>ATAC</p>
-              </strong>
-            ),
+            field: "atac",
+            headerName: "ATAC",
+            type: "number" as const,
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.atac
                 ? row.ctspecific.atac_zscore.toFixed(2)
@@ -149,47 +125,13 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
           },
         ]
       : []),
-    ...(showCTCF
-      ? [
-          {
-            field: selectedBiosample && selectedBiosample.ctcf ? "ctspecific.ctcf_zscore" : "ctcf_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>CTCF</p>
-              </strong>
-            ),
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.ctcf
-                ? row.ctspecific.ctcf_zscore.toFixed(2)
-                : row.ctcf_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showH3k27ac
-      ? [
-          {
-            field: selectedBiosample && selectedBiosample.h3k27ac ? "ctspecific.h3k27ac_zscore" : "enhancer_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>H3K27ac</p>
-              </strong>
-            ),
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.h3k27ac
-                ? row.ctspecific.h3k27ac_zscore.toFixed(2)
-                : row.enhancer_zscore.toFixed(2),
-          },
-        ]
-      : []),
     ...(showH3k4me3
       ? [
           {
-            field: selectedBiosample && selectedBiosample.h3k4me3 ? "ctspecific.h3k4me3_zscore" : "promoter_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>H3K4me3</p>
-              </strong>
-            ),
+            field: "h3k4me3",
+            headerName: "H3K4me3",
+            type: "number" as const,
+
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.h3k4me3
                 ? row.ctspecific.h3k4me3_zscore.toFixed(2)
@@ -197,13 +139,35 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
           },
         ]
       : []),
+    ...(showH3k27ac
+      ? [
+          {
+            field: "h3k27ac",
+            headerName: "H3K27ac",
+            type: "number" as const,
+            valueGetter: (_, row) =>
+              selectedBiosample && selectedBiosample.h3k27ac
+                ? row.ctspecific.h3k27ac_zscore.toFixed(2)
+                : row.enhancer_zscore.toFixed(2),
+          },
+        ]
+      : []),
+    ...(showCTCF
+      ? [
+          {
+            field: "ctcf",
+            headerName: "CTCF",
+            type: "number" as const,
+            valueGetter: (_, row) =>
+              selectedBiosample && selectedBiosample.ctcf
+                ? row.ctspecific.ctcf_zscore.toFixed(2)
+                : row.ctcf_zscore.toFixed(2),
+          },
+        ]
+      : []),
     {
       field: "nearestgene",
-      renderHeader: () => (
-        <strong>
-          <p>Nearest&nbsp;Gene</p>
-        </strong>
-      ),
+      headerName: "Nearest Gene",
       valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
       renderCell: (params) => (
         <span>
@@ -216,11 +180,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "isicre",
-      renderHeader: () => (
-        <strong>
-          <p>iCRE</p>
-        </strong>
-      ),
+      headerName: "iCRE",
       valueGetter: (_, row) => row.isicre,
       renderCell: (params) => {
         return params.row.isicre ? (
@@ -240,9 +200,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
   ];
 
-  return errorCcres ? (
-    <Typography>Error Fetching Ccres</Typography>
-  ) : (
+  return (
     <>
       {selectedBiosample && (
         <Stack
@@ -281,6 +239,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
             </Button>
           </Tooltip>
         }
+        initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
         divHeight={{ maxHeight: "600px" }}
       />
       <Box

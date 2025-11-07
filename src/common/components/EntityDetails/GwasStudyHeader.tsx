@@ -16,8 +16,8 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
 
   const subtitle =
-    entityType === "gwas" && entityMetadata?.__typename === "GwasStudies"
-      ? entityMetadata?.author.replaceAll("_", " ")
+    entityType === "gwas" && entityMetadata?.__typename === "GwasStudiesMetadata"
+      ? entityMetadata && entityMetadata.__typename === "GwasStudiesMetadata" &&  entityMetadata?.author.replaceAll("_", " ")
       : "";
 
   return (
@@ -34,8 +34,8 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
           <Stack>
             <Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>
             <Typography variant="h4">
-              {entityType === "gwas" && entityMetadata.__typename === "GwasStudies"
-                ? entityMetadata.studyname
+              {entityType === "gwas" && entityMetadata.__typename === "GwasStudiesMetadata"
+                ? entityMetadata?.disease_trait
                 : entityID}
             </Typography>
             <Typography>
@@ -44,13 +44,13 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
               ) : (
                 <>
                   {subtitle + " "}
-                  {entityType === "gwas" && entityMetadata.__typename === "GwasStudies" && (
+                  {entityType === "gwas" && entityMetadata.__typename === "GwasStudiesMetadata" && (
                     <LinkComponent
                       openInNewTab
                       showExternalIcon
-                      href={`https://pubmed.ncbi.nlm.nih.gov/${entityMetadata.pubmedid}`}
+                      href={`https://pubmed.ncbi.nlm.nih.gov/${entityMetadata?.studyid.split("-")[0].trim()}`}
                     >
-                      ({entityMetadata.pubmedid.trim()})
+                       ({entityMetadata?.studyid.split("-")[0].trim()})
                     </LinkComponent>
                   )}
                 </>

@@ -4,8 +4,8 @@ import { parseGenomicRangeString } from "common/utility";
 
 const useEntityDisplayname = (entity: AnyOpenEntity) => {
   const { entityID, entityType } = entity;
-  //Todo replace with new useGWASStudyData when the study displayname is returned
-  const { data, loading, error } = useGWASStudyData({ entityType, study: [entityID] });
+
+  const { data, loading, error } = useGWASStudyData({ entityType, studyid: [entityID] });
 
   let label: React.ReactNode;
 
@@ -21,7 +21,7 @@ const useEntityDisplayname = (entity: AnyOpenEntity) => {
     case "gwas": {
       const g = entityID.split("-");
       const study_name = g[g.length - 1].replaceAll("_", " ");
-      label = study_name;
+      label = data?.disease_trait || study_name;
       break;
     }
     case "region": {

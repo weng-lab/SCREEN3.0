@@ -1,10 +1,8 @@
 "use client";
 import { GridColDef } from "@mui/x-data-grid-pro";
 import { Table } from "@weng-lab/ui-components";
-import { Tooltip, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
-import InfoIcon from "@mui/icons-material/Info";
+import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";;
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
@@ -12,99 +10,99 @@ export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
-  } = useGWASSnpsData({ study: [entity.entityID] });
+  } = useGWASSnpsData({ studyid: [entity.entityID] });
+
+  const r2SortComparator = (v1: string | number, v2: string | number) => {
+    const parse = (v: string | number) => {
+      if (v === "*") return 1.1; // lead SNP
+      const n = Number(v);
+      return isNaN(n) ? 0 : n; // fallback for safety
+    };
+
+    return parse(v1) - parse(v2);
+  };
 
   const columns: GridColDef<(typeof dataGWASSnps)[number]>[] = [
     {
       field: "snpid",
-      renderHeader: () => (
-        <strong>
-          <p>SNP</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => {
-        return row.snpid;
-      },
-      renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/variant/${params.value}`}>
-          <i>{params.value}</i>
-        </LinkComponent>
-      ),
+      headerName: "rsID",
+      renderCell: (params) => <LinkComponent href={`/GRCh38/variant/${params.value}`}>{params.value}</LinkComponent>,
     },
     {
       field: "chromosome",
-      renderHeader: () => (
-        <strong>
-          <p>Chromosome</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.chromosome,
+      headerName: "Chromosome",
+      sortComparator: (a: string, b: string) => {
+        const numA = parseInt(a.replace("chr", ""));
+        const numB = parseInt(b.replace("chr", ""));
+        return numA - numB;
+      },
     },
     {
       field: "start",
-      renderHeader: () => (
-        <strong>
-          <p>Start</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.start,
+      headerName: "Start",
+      align: "left",
+      headerAlign: "left",
+      type: "number",
+      valueFormatter: (value: number) => value?.toLocaleString(),
     },
     {
       field: "ldblocksnpid",
-      renderHeader: () => (
-        <strong>
-          <p>LD Block SNP ID</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.ldblocksnpid,
+      headerName: "LD Block Lead SNP ID(s)",
+      renderCell: (params) => {
+        if (params.value === "Lead") return "Lead";
+        const rsIDs = (params.value as string)?.split(",");
+        const links = rsIDs?.map((rsID: string, index: number) => (
+          <>
+            <LinkComponent href={`/GRCh38/variant/${rsID}`} key={rsID}>
+              {rsID}
+            </LinkComponent>
+            {index < rsIDs.length - 1 ? ", " : ""}
+          </>
+        ));
+        return <span>{links}</span>;
+      },
     },
-
     {
       field: "rsquare",
+      align: "left",
+      headerAlign: "left",
+      type: "number",
       renderHeader: () => (
-        <strong>
-          <p>
-            <i>R</i>
-            <sup>2</sup>
-          </p>
-        </strong>
+        <p>
+          <i>
+            R<sup>2&nbsp;</sup>
+          </i>
+        </p>
       ),
-      valueGetter: (_, row) => row.rsquare,
+      sortComparator: r2SortComparator,
     },
     {
       field: "ldblock",
-      renderHeader: () => (
-        <strong>
-          <p>LD Block</p>
-        </strong>
-      ),
-      valueGetter: (_, row) => row.ldblock,
+      align: "left",
+      headerAlign: "left",
+      type: "number",
+      headerName: "LD Block",
     },
   ];
 
-  return errorGWASSnps ? (
-    <Typography>Error Fetching Intersecting cCREs against SNPs identified by a GWAS study</Typography>
-  ) : (
-    <>
-      <Table
-        showToolbar
-        rows={dataGWASSnps || []}
-        columns={columns}
-        loading={loadingGWASSnps}
-        label={`SNPs identified by this GWAS study`}
-        emptyTableFallback={"No SNPs identified by this GWAS study"}
-        initialState={{
-          sorting: {
-            sortModel: [{ field: "rsquare", sort: "desc" }],
-          },
-        }}
-        divHeight={{ height: "100%", minHeight: "580px", maxHeight: "600px" }}
-        labelTooltip={
-          <Tooltip title={"SNPs identified by selected GWAS study"}>
-            <InfoIcon fontSize="inherit" />
-          </Tooltip>
-        }
-      />
-    </>
+  return (
+    <Table
+      showToolbar
+      rows={dataGWASSnps || []}
+      columns={columns}
+      loading={loadingGWASSnps}
+      error={!!errorGWASSnps}
+      label={`SNPs identified by this GWAS study`}
+      emptyTableFallback={"No SNPs identified by this GWAS study"}
+      initialState={{
+        sorting: {
+          sortModel: [
+            { field: "rsquare", sort: "desc" },
+            { field: "ldblock", sort: "asc" },
+          ],
+        },
+      }}
+      divHeight={{ height: "600px" }}
+    />
   );
-};
+}

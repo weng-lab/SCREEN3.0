@@ -54,7 +54,7 @@ const TranscriptExpressionBarPlot = ({
   }, [sortedFilteredData, selected]);
 
   const handleBarClick = (bar: BarData<TranscriptMetadata>) => {
-    if (selected.some(x => x.expAccession === bar.metadata.expAccession)) {
+    if (selected.some((x) => x.expAccession === bar.metadata.expAccession)) {
       setSelected(selected.filter((x) => x.expAccession !== bar.metadata.expAccession));
     } else setSelected([...selected, bar.metadata]);
   };
