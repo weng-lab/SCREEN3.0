@@ -2,7 +2,7 @@
 import { CancelRounded } from "@mui/icons-material";
 import { Typography, IconButton, Tooltip, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
 import BiosampleSelectModal from "common/components/BiosampleSelectModal";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { LinkComponent } from "common/components/LinkComponent";
@@ -12,6 +12,9 @@ import { decodeRegions } from "common/utility";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { GenomicRange } from "common/types/generated/graphql";
+import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
+import { GROUP_COLOR_MAP } from "common/colors";
+import { CCRE_CLASSES } from "common/consts";
 
 const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
@@ -65,14 +68,41 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     setSelectedBiosample(biosample);
   };
 
+  const classificationFormatting: Partial<GridColDef> = {
+    renderCell: (params: GridRenderCellParams) => {
+      const group = params.value;
+      const colormap = GROUP_COLOR_MAP.get(group);
+      const color = colormap ? (group === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
+      const classification = colormap ? colormap.split(":")[0] : "DNase only";
+      return (
+        <Tooltip
+          title={
+            <div>
+              See{" "}
+              <LinkComponent
+                openInNewTab
+                color="inherit"
+                showExternalIcon
+                href="https://screen.wenglab.org/about#classifications"
+              >
+                SCREEN
+              </LinkComponent>{" "}
+              for Class definitions
+            </div>
+          }
+        >
+          <span style={{ color }}>
+            <strong>{classification}</strong>
+          </span>
+        </Tooltip>
+      );
+    },
+  };
+
   const columns: GridColDef<(typeof dataCcres)[number]>[] = [
     {
       field: "info.accession",
-      renderHeader: () => (
-        <strong>
-          <p>Accession</p>
-        </strong>
-      ),
+      headerName: "Accession",
       valueGetter: (_, row) => row.info.accession,
       renderCell: (params) => (
         <LinkComponent href={`/${entity.assembly}/ccre/${params.value}`}>
@@ -82,44 +112,21 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "pct",
-      renderHeader: () => (
-        <strong>
-          <p>Class</p>
-        </strong>
-      ),
-      valueGetter: (_, row) =>
-        row.pct === "PLS"
-          ? "Promoter"
-          : row.pct === "pELS"
-            ? "Proximal Enhancer"
-            : row.pct === "dELS"
-              ? "Distal Enhancer"
-              : row.pct,
+      headerName: "Classification",
+      ...classificationFormatting,
     },
     {
       field: "chrom",
-      renderHeader: () => (
-        <strong>
-          <p>Chromosome</p>
-        </strong>
-      ),
+      headerName: "Chromosome",
     },
     {
       field: "start",
-      renderHeader: () => (
-        <strong>
-          <p>Start</p>
-        </strong>
-      ),
+      headerName: "Start",
       valueGetter: (_, row) => row.start.toLocaleString(),
     },
     {
       field: "end",
-      renderHeader: () => (
-        <strong>
-          <p>End</p>
-        </strong>
-      ),
+      headerName: "End",
       valueGetter: (_, row) => (row.start + row.len).toLocaleString(),
       sortComparator: (v1, v2) => v1 - v2,
     },
@@ -127,11 +134,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       ? [
           {
             field: selectedBiosample && selectedBiosample.dnase ? "ctspecific.dnase_zscore" : "dnase_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>DNase</p>
-              </strong>
-            ),
+            headerName: "DNase",
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.dnase
                 ? row.ctspecific.dnase_zscore.toFixed(2)
@@ -143,11 +146,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       ? [
           {
             field: selectedBiosample && selectedBiosample.atac ? "ctspecific.atac_zscore" : "atac_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>ATAC</p>
-              </strong>
-            ),
+            headerName: "ATAC",
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.atac
                 ? row.ctspecific.atac_zscore.toFixed(2)
@@ -159,11 +158,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       ? [
           {
             field: selectedBiosample && selectedBiosample.ctcf ? "ctspecific.ctcf_zscore" : "ctcf_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>CTCF</p>
-              </strong>
-            ),
+            headerName: "CTCF",
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.ctcf
                 ? row.ctspecific.ctcf_zscore.toFixed(2)
@@ -175,11 +170,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       ? [
           {
             field: selectedBiosample && selectedBiosample.h3k27ac ? "ctspecific.h3k27ac_zscore" : "enhancer_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>H3K27ac</p>
-              </strong>
-            ),
+            headerName: "H3K27ac",
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.h3k27ac
                 ? row.ctspecific.h3k27ac_zscore.toFixed(2)
@@ -191,11 +182,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       ? [
           {
             field: selectedBiosample && selectedBiosample.h3k4me3 ? "ctspecific.h3k4me3_zscore" : "promoter_zscore",
-            renderHeader: () => (
-              <strong>
-                <p>H3K4me3</p>
-              </strong>
-            ),
+            headerName: "H3K4me3",
             valueGetter: (_, row) =>
               selectedBiosample && selectedBiosample.h3k4me3
                 ? row.ctspecific.h3k4me3_zscore.toFixed(2)
@@ -205,11 +192,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       : []),
     {
       field: "nearestgene",
-      renderHeader: () => (
-        <strong>
-          <p>Nearest&nbsp;Gene</p>
-        </strong>
-      ),
+      headerName: "Nearest Gene",
       valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
       renderCell: (params) => (
         <span>
@@ -222,11 +205,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "isicre",
-      renderHeader: () => (
-        <strong>
-          <p>iCRE</p>
-        </strong>
-      ),
+      headerName: "iCRE",
       valueGetter: (_, row) => row.isicre,
       renderCell: (params) => {
         return params.row.isicre ? (
@@ -246,10 +225,8 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
   ];
 
-  return errorCcres ? (
-    <Typography>Error Fetching Ccres</Typography>
-  ) : (
-    <>
+  return (
+    <Stack spacing={1}>
       {selectedBiosample && (
         <Stack
           borderRadius={1}
@@ -272,6 +249,15 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
           </IconButton>
         </Stack>
       )}
+      <ProportionsBar
+        data={getProportionsFromArray(dataCcres, "pct", CCRE_CLASSES)}
+        label="Classification Proportions"
+        loading={loadingCcres || !!errorCcres}
+        getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
+        formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
+        tooltipTitle="Classification Proportions, Core Collection"
+        sortDescending
+      />
       <Table
         showToolbar
         rows={dataCcres || []}
@@ -302,7 +288,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
           initialSelected={selectedBiosample ? [selectedBiosample] : []}
         />
       </Box>
-    </>
+    </Stack>
   );
 };
 
