@@ -18,10 +18,19 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
   const [loading, setLoading] = useState<boolean>(false);
 
   const onDrop = useCallback((acceptedFiles) => {
-    setFile(acceptedFiles[0]);
+    if (acceptedFiles.length > 0) {
+      setFile(acceptedFiles[0]);
+    }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: {
+      "application/octet-stream": [".bed"],
+      "text/plain": [".bed"],
+    },
+    multiple: false,
+    onDrop,
+  });
 
   const handleReset = () => {
     setLoading(false);
