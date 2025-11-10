@@ -22,7 +22,7 @@ export default function ComputationalLinkedCcres({
 }: {
   geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
 }) {
-  const { data, loading, error } = useLinkedCcres({geneid: geneData?.data.id});
+  const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data.id });
 
   const pathname = usePathname();
   const assembly = pathname.split("/")[1];
@@ -110,7 +110,5 @@ export default function ComputationalLinkedCcres({
     },
   ];
 
-  return (
-    <LinkedElements tables={tables} />
-  );
+  return <LinkedElements tables={tables} />;
 }

@@ -10,6 +10,10 @@ import { RegistryBiosamplePlusRNA } from "../../../../../../../common/components
 import BiosampleSelectModal from "common/components/BiosampleSelectModal";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { parseGenomicRangeString } from "common/utility";
+import { GROUP_COLOR_MAP } from "common/colors";
+import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
+import { CCRE_CLASSES } from "common/consts";
+import { classificationFormatting } from "common/components/ClassificationFormatting";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
@@ -72,15 +76,8 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "pct",
-      headerName: "Class",
-      valueGetter: (_, row) =>
-        row.pct === "PLS"
-          ? "Promoter"
-          : row.pct === "pELS"
-            ? "Proximal Enhancer"
-            : row.pct === "dELS"
-              ? "Distal Enhancer"
-              : row.pct,
+      headerName: "Classification",
+      ...classificationFormatting,
     },
     {
       field: "chrom",
@@ -201,7 +198,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   ];
 
   return (
-    <>
+    <Stack spacing={1}>
       {selectedBiosample && (
         <Stack
           borderRadius={1}
@@ -224,6 +221,15 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
           </IconButton>
         </Stack>
       )}
+      <ProportionsBar
+        data={getProportionsFromArray(dataCcres, "pct", CCRE_CLASSES)}
+        label="Classification Proportions"
+        loading={loadingCcres || !!errorCcres}
+        getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
+        formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
+        tooltipTitle="Classification Proportions, Core Collection"
+        sortDescending
+      />
       <Table
         showToolbar
         rows={dataCcres || []}
@@ -255,7 +261,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
           initialSelected={selectedBiosample ? [selectedBiosample] : []}
         />
       </Box>
-    </>
+    </Stack>
   );
 };
 

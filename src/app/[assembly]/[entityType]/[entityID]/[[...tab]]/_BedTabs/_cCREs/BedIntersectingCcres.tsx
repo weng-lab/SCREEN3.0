@@ -2,7 +2,7 @@
 import { CancelRounded } from "@mui/icons-material";
 import { Typography, IconButton, Tooltip, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { Table, GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import BiosampleSelectModal from "common/components/BiosampleSelectModal";
 import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
 import { LinkComponent } from "common/components/LinkComponent";
@@ -15,6 +15,7 @@ import { GenomicRange } from "common/types/generated/graphql";
 import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
 import { GROUP_COLOR_MAP } from "common/colors";
 import { CCRE_CLASSES } from "common/consts";
+import { classificationFormatting } from "common/components/ClassificationFormatting";
 
 const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
@@ -66,37 +67,6 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
 
   const handleBiosampleSelected = (biosample: RegistryBiosamplePlusRNA | null) => {
     setSelectedBiosample(biosample);
-  };
-
-  const classificationFormatting: Partial<GridColDef> = {
-    renderCell: (params: GridRenderCellParams) => {
-      const group = params.value;
-      const colormap = GROUP_COLOR_MAP.get(group);
-      const color = colormap ? (group === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
-      const classification = colormap ? colormap.split(":")[0] : "DNase only";
-      return (
-        <Tooltip
-          title={
-            <div>
-              See{" "}
-              <LinkComponent
-                openInNewTab
-                color="inherit"
-                showExternalIcon
-                href="https://screen.wenglab.org/about#classifications"
-              >
-                SCREEN
-              </LinkComponent>{" "}
-              for Class definitions
-            </div>
-          }
-        >
-          <span style={{ color }}>
-            <strong>{classification}</strong>
-          </span>
-        </Tooltip>
-      );
-    },
   };
 
   const columns: GridColDef<(typeof dataCcres)[number]>[] = [

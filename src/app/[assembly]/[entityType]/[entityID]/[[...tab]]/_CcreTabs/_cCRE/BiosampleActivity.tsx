@@ -14,6 +14,7 @@ import { AssayWheel } from "common/components/BiosampleTables/AssayWheel";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { CCRE_CLASSES } from "common/consts";
 import { BiosampleRow } from "./types";
+import { classificationFormatting } from "common/components/ClassificationFormatting";
 
 const classifyCcre = (
   scores: { dnase: number; atac: number; h3k4me3: number; h3k27ac: number; ctcf: number; tf: string },
@@ -75,20 +76,6 @@ const zScoreFormatting: Partial<GridColDef> = {
   },
   sortComparator: (v1, v2) => (v1 === "NA" ? -1 : v2 === "NA" ? 1 : v1 - v2),
   type: "number",
-};
-
-const classificationFormatting: Partial<GridColDef> = {
-  renderCell: (params: GridRenderCellParams) => {
-    const group = params.value;
-    const colormap = GROUP_COLOR_MAP.get(group);
-    const color = colormap ? (group === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
-    const classification = colormap ? colormap.split(":")[0] : "DNase only";
-    return (
-      <span style={{ color }}>
-        <strong>{classification}</strong>
-      </span>
-    );
-  },
 };
 
 const ctAgnosticCols: GridColDef[] = [
