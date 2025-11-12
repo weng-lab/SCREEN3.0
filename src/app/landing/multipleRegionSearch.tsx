@@ -3,7 +3,7 @@ import { Box, Typography, Stack, IconButton, Button, Container, Tooltip } from "
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useDropzone } from "react-dropzone";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { Cancel } from "@mui/icons-material";
+import { Cancel, WarningAmberRounded } from "@mui/icons-material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { GenomicRange } from "common/types/globalTypes";
 import { encodeRegions } from "common/utility";
@@ -16,6 +16,9 @@ type MultipleRegionSearchProps = {
 const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, toggleMultipleRegionSearchVisible }) => {
   const [file, setFile] = useState<File>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [bpLimit, setBpLimit] = useState<boolean>(false);
+
+  const maxBp = 100000;
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {
@@ -35,7 +38,15 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
   const handleReset = () => {
     setLoading(false);
     setFile(null);
+    setBpLimit(false);
   };
+
+  function getBasePairs(regions: GenomicRange[]): number {
+    return regions.reduce((total, region) => {
+      const length = Math.max(0, region.end - region.start);
+      return total + length;
+    }, 0);
+  }
 
   //Encode the regions and open the tab
   const configureInputedRegions = useCallback(
@@ -58,9 +69,16 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
         }
         return a.start - b.start;
       });
-      const encoded = encodeRegions(sortedRegions);
-      sessionStorage.setItem(fileName, encoded);
-      window.open(`/${assembly}/bed/${fileName}`, "_self");
+      const totalBp = getBasePairs(sortedRegions);
+      if (totalBp > maxBp) {
+        console.warn("Exceeds base pair limit");
+        setBpLimit(true);
+        setLoading(false);
+      } else {
+        const encoded = encodeRegions(sortedRegions);
+        sessionStorage.setItem(fileName, encoded);
+        window.open(`/${assembly}/bed/${fileName}`, "_self");
+      }
     },
     [assembly]
   );
@@ -158,15 +176,28 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
               </div>
             </Container>
           ) : (
-            <Box justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"}>
-              <Typography mb={1} variant="h5" color="white">
-                Uploaded:
-              </Typography>
+            <Box
+              justifyContent={"center"}
+              alignItems={"center"}
+              display={"flex"}
+              flexDirection={"column"}
+              sx={{ height: "192.5px", backgroundColor: "white", borderRadius: "10px" }}
+            >
+              {bpLimit ? (
+                <Stack direction={"row"} border={"1px solid #e25141"} borderRadius={1} p={2} spacing={1} mb={1}>
+                  <WarningAmberRounded sx={{ color: "#e25141" }} />
+                  <Typography>Total base pairs in file must not exceed {maxBp}</Typography>
+                </Stack>
+              ) : (
+                <Typography mb={1} variant="h5">
+                  Uploaded:
+                </Typography>
+              )}
               <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography color="white">
+                <Typography>
                   {`${truncateFileName(file.name, 40)}\u00A0-\u00A0${(file.size / 1000000).toFixed(1)}\u00A0mb`}
                 </Typography>
-                <IconButton sx={{ color: "white" }} onClick={handleReset}>
+                <IconButton sx={{ color: "primary.main" }} onClick={handleReset}>
                   <Cancel />
                 </IconButton>
               </Stack>
