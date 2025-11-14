@@ -6,6 +6,15 @@ import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
 const cards = [
   {
     assembly: "GRCh38",
+    name: "GWAS",
+    subtitle: "Explore Genome-Wide Association Studies (GWAS).",
+    link: "/GRCh38/gwas",
+    img: "/treemap.svg",
+    size: 300,
+    disabled: false,
+  },
+  {
+    assembly: "GRCh38",
     name: "Human",
     subtitle: "Visualize and explore human biosamples across diverse tissues and cell types from ENCODE.",
     link: "/GRCh38/biosamples",
@@ -21,15 +30,6 @@ const cards = [
     img: "/mouse.png",
     size: 400,
     disabled: true,
-  },
-  {
-    assembly: "GRCh38",
-    name: "GWAS",
-    subtitle: "Explore Genome-Wide Association Studies (GWAS).",
-    link: "/GRCh38/gwas",
-    img: "/treemap.svg",
-    size: 300,
-    disabled: false,
   },
 ];
 
