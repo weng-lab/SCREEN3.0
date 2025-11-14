@@ -186,7 +186,7 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
               {bpLimit ? (
                 <Stack direction={"row"} border={"1px solid #e25141"} borderRadius={1} p={2} spacing={1} mb={1}>
                   <WarningAmberRounded sx={{ color: "#e25141" }} />
-                  <Typography>Total base pairs in file must not exceed {maxBp}</Typography>
+                  <Typography>Total base pairs in file must not exceed {maxBp.toLocaleString()}</Typography>
                 </Stack>
               ) : (
                 <Typography mb={1} variant="h5">
@@ -208,6 +208,7 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
                 onClick={submitUploadedFile}
                 variant="contained"
                 color="primary"
+                disabled={bpLimit}
               >
                 <span>Submit</span>
               </Button>
