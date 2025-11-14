@@ -9,6 +9,8 @@ interface AssayPlotControlsProps {
   sortBy?: "median" | "max" | "tissue";
   setShowPoints?: (showPoints: boolean) => void;
   showPoints?: boolean;
+  cutoffLowSignal?: boolean;
+  setCutoffLowSignal?: (cutoff: boolean) => void;
 }
 
 const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
@@ -19,6 +21,8 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
   violin = false,
   setShowPoints = () => {},
   showPoints = true,
+  cutoffLowSignal = true,
+  setCutoffLowSignal = () => {},
 }) => (
   <Stack direction="row" spacing={2} alignItems="center" mb={2}>
     {!violin && (
@@ -99,6 +103,28 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
         </FormControl>
       </Stack>
     )}
+    <FormControl>
+      <FormLabel>Cut off Low Signal</FormLabel>
+      <ToggleButtonGroup
+        color="primary"
+        value={cutoffLowSignal}
+        exclusive
+        onChange={(_event, value) => {
+          if (value !== null) {
+            setCutoffLowSignal(value);
+          }
+        }}
+        aria-label="show points"
+        size="small"
+      >
+        <ToggleButton sx={{ textTransform: "none" }} value={true}>
+          On
+        </ToggleButton>
+        <ToggleButton sx={{ textTransform: "none" }} value={false}>
+          Off
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </FormControl>
   </Stack>
 );
 

@@ -14,6 +14,8 @@ const AssayViolinPlot = ({
   setSelected,
   viewBy,
   setViewBy,
+  cutoffLowSignal,
+  setCutoffLowSignal,
   ref,
 }: SharedAssayViewPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
@@ -119,6 +121,8 @@ const AssayViolinPlot = ({
         setSortBy={setSortBy}
         showPoints={showPoints}
         setShowPoints={setShowPoints}
+        cutoffLowSignal={cutoffLowSignal}
+        setCutoffLowSignal={setCutoffLowSignal}
       />
       <Box
         width={"100%"}
@@ -131,6 +135,7 @@ const AssayViolinPlot = ({
           onViolinClicked={onViolinClicked}
           onPointClicked={onPointClicked}
           labelOrientation="leftDiagonal"
+          cutoffValue={cutoffLowSignal ? -1.64 : undefined}
           violinProps={{
             bandwidth: "scott",
             showAllPoints: showPoints,
