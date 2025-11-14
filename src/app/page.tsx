@@ -8,18 +8,19 @@ import Image from "next/image";
 import MainSearch from "./landing/mainSearch";
 import PopularSearches from "./landing/popularSearches";
 import TrendingDatasets from "./landing/trendingDatasets";
+import ExploreMore from "./landing/ExploreMore";
 
 export default function Home() {
   const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38");
-  const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
+  // const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
 
   const handleAssemblyChange = (asmb: "GRCh38" | "mm10") => {
     setAssembly(asmb);
   };
 
-  const toggleMultipleRegionSearchVisible = () => {
-    setMultipleRegionSearchVisible(!multipleRegionSearchVisible);
-  };
+  // const toggleMultipleRegionSearchVisible = () => {
+  //   setMultipleRegionSearchVisible(!multipleRegionSearchVisible);
+  // };
 
   //@todo: Add actual download links and desired popular searches
   return (
@@ -111,7 +112,7 @@ export default function Home() {
         alignItems={"center"}
         display={"flex"}
         flexDirection={"column"}
-        sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}
+        sx={{ paddingY: 5, paddingX: { xs: 5, md: 20 } }}
       >
         <Typography
           sx={{
@@ -133,6 +134,19 @@ export default function Home() {
           specific loci, or a study from the GWAS catalog. Change the assembly above to see different examples.
         </Typography>
         <PopularSearches assembly={assembly} />
+      </Box>
+      <Box
+        width={"100%"}
+        justifyContent={"center"}
+        alignItems={"flex-start"}
+        display={"flex"}
+        flexDirection={"column"}
+        sx={{ paddingY: 5, paddingX: { xs: 5, md: 20 } }}
+      >
+        <Typography variant="h4" sx={{ fontWeight: 550 }}>
+          Explore All Biosamples and GWAS
+        </Typography>
+        <ExploreMore />
       </Box>
       <Box
         width={"100%"}
@@ -183,7 +197,7 @@ export default function Home() {
         justifyContent={"flex-start"}
         display={"flex"}
         flexDirection={"column"}
-        sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}
+        sx={{ paddingY: 5, paddingX: { xs: 5, md: 20 } }}
       >
         <Typography variant="h6" sx={{ fontWeight: 550 }}>
           📈 Trending Datasets
