@@ -135,7 +135,7 @@ const AssayViolinPlot = ({
           onViolinClicked={onViolinClicked}
           onPointClicked={onPointClicked}
           labelOrientation="leftDiagonal"
-          cutoffValue={cutoffLowSignal ? -1.64 : undefined}
+          cutoffValue={cutoffLowSignal ? -0.5 : undefined}
           violinProps={{
             bandwidth: "scott",
             showAllPoints: showPoints,
