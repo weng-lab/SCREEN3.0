@@ -104,7 +104,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
       </Stack>
     )}
     <FormControl>
-      <FormLabel>Cut off Low Signal</FormLabel>
+      <FormLabel>Hide Low Z-Scores</FormLabel>
       <ToggleButtonGroup
         color="primary"
         value={cutoffLowSignal}
