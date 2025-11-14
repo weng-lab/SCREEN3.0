@@ -40,4 +40,6 @@ export type SharedAssayViewPlotProps = AssayViewProps & {
   viewBy: "value" | "tissue" | "tissueMax";
   setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
   ref?: React.RefObject<DownloadPlotHandle>;
+  cutoffLowSignal: boolean;
+  setCutoffLowSignal: (cutoff: boolean) => void;
 };
