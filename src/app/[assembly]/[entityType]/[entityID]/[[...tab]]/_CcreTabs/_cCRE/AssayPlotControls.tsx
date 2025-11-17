@@ -130,7 +130,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
       </ToggleButtonGroup>
     </FormControl>
     <FormControl>
-      <FormLabel>95th Percentile Line</FormLabel>
+      <FormLabel>95th Percentile Line (1.64)</FormLabel>
       <ToggleButtonGroup
         color="primary"
         value={show95Line}
