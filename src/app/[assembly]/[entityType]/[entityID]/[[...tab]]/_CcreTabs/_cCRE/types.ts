@@ -42,4 +42,6 @@ export type SharedAssayViewPlotProps = AssayViewProps & {
   ref?: React.RefObject<DownloadPlotHandle>;
   cutoffLowSignal: boolean;
   setCutoffLowSignal: (cutoff: boolean) => void;
+  show95Line: boolean;
+  setShow95Line: (show: boolean) => void;
 };

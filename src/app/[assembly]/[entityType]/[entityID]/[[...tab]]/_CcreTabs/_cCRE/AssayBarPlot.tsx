@@ -37,6 +37,8 @@ const AssayBarPlot = ({
   setViewBy,
   cutoffLowSignal,
   setCutoffLowSignal,
+  show95Line,
+  setShow95Line,
 }: SharedAssayViewPlotProps) => {
   const plotData: BarData<BiosampleRow>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
@@ -76,11 +78,14 @@ const AssayBarPlot = ({
         setViewBy={setViewBy}
         cutoffLowSignal={cutoffLowSignal}
         setCutoffLowSignal={setCutoffLowSignal}
+        show95Line={show95Line}
+        setShow95Line={setShow95Line}
       />
       <BarPlot
         data={plotData}
         topAxisLabel={`${entity.entityID} ${formatAssay(assay)} z-scores`}
         cutoffNegativeValues={cutoffLowSignal}
+        show95thPercentileLine={show95Line}
         onBarClicked={handleBarClick}
         TooltipContents={PlotTooltip}
         ref={ref}

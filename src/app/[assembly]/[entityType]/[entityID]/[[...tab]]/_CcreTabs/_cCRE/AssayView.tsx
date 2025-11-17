@@ -13,6 +13,7 @@ const AssayView = (props: AssayViewProps) => {
   const [sortedFilteredData, setSortedFilteredData] = useState<BiosampleRow[]>([]);
   const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value");
   const [cutoffLowSignal, setCutoffLowSignal] = useState<boolean>(true);
+  const [show95Line, setShow95Line] = useState<boolean>(true);
 
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
@@ -33,9 +34,11 @@ const AssayView = (props: AssayViewProps) => {
       setViewBy,
       cutoffLowSignal,
       setCutoffLowSignal,
+      show95Line,
+      setShow95Line,
       ...props,
     }),
-    [cutoffLowSignal, props, selected, sortedFilteredData, viewBy]
+    [cutoffLowSignal, props, selected, show95Line, sortedFilteredData, viewBy]
   );
 
   const plots: TwoPanePlotConfig[] = useMemo(() => {

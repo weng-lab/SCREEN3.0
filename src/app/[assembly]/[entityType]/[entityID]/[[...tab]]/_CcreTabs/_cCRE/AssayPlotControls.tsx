@@ -11,6 +11,8 @@ interface AssayPlotControlsProps {
   showPoints?: boolean;
   cutoffLowSignal?: boolean;
   setCutoffLowSignal?: (cutoff: boolean) => void;
+  show95Line?: boolean;
+  setShow95Line?: (show: boolean) => void;
 }
 
 const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
@@ -23,6 +25,8 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
   showPoints = true,
   cutoffLowSignal = true,
   setCutoffLowSignal = () => {},
+  show95Line = true,
+  setShow95Line = () => {},
 }) => (
   <Stack direction="row" spacing={2} alignItems="center" mb={2}>
     {!violin && (
@@ -112,6 +116,28 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
         onChange={(_event, value) => {
           if (value !== null) {
             setCutoffLowSignal(value);
+          }
+        }}
+        aria-label="show points"
+        size="small"
+      >
+        <ToggleButton sx={{ textTransform: "none" }} value={true}>
+          On
+        </ToggleButton>
+        <ToggleButton sx={{ textTransform: "none" }} value={false}>
+          Off
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </FormControl>
+    <FormControl>
+      <FormLabel>95th Percentile Line</FormLabel>
+      <ToggleButtonGroup
+        color="primary"
+        value={show95Line}
+        exclusive
+        onChange={(_event, value) => {
+          if (value !== null) {
+            setShow95Line(value);
           }
         }}
         aria-label="show points"
