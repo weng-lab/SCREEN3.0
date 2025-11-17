@@ -8,6 +8,8 @@ import { usePathname } from "next/navigation";
 import { Assembly } from "common/types/globalTypes";
 import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
+import { useCcreData } from "common/hooks/useCcreData";
+import { classificationFormatting } from "common/components/ClassificationFormatting";
 
 export const accessionCol = (assembly: string): GridColDef => ({
   field: "accession",
@@ -22,12 +24,24 @@ export default function ComputationalLinkedCcres({
 }: {
   geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
 }) {
-  const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data.id });
-
   const pathname = usePathname();
   const assembly = pathname.split("/")[1];
 
-  if (geneData.loading || loading) {
+  const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data.id });
+
+  const {
+    data: dataCcres,
+    loading: loadingCcres,
+    error: errorCcres,
+  } = useCcreData({
+    accession: data?.map((acc) => acc.accession),
+    assembly: assembly as Assembly,
+    skip: !data,
+  });
+
+  const classByAccession = Object.fromEntries(dataCcres?.map((c) => [c.info.accession, c.pct]) ?? []);
+
+  if (geneData.loading || loading || loadingCcres) {
     return (
       <Grid container spacing={2} width={"100%"}>
         <Grid size={12}>
@@ -46,7 +60,7 @@ export default function ComputationalLinkedCcres({
     );
   }
 
-  if (error) {
+  if (error || errorCcres) {
     throw new Error(JSON.stringify(error));
   }
 
@@ -55,31 +69,43 @@ export default function ComputationalLinkedCcres({
     .map((x, index: number) => ({
       ...x,
       id: index.toString(),
+      class: classByAccession[x.accession] ?? "Unclassifed",
     }));
   const ChIAPETLinked = data
     .filter((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
     .map((x, index: number) => ({
       ...x,
       id: index.toString(),
+      class: classByAccession[x.accession] ?? "Unclassifed",
     }));
   const crisprLinked = data
     .filter((x) => x.method === "CRISPR")
     .map((x, index: number) => ({
       ...x,
       id: index.toString(),
+      class: classByAccession[x.accession] ?? "Unclassifed",
     }));
   const eqtlLinked = data
     .filter((x) => x.method === "eQTLs")
     .map((x, index: number) => ({
       ...x,
       id: index.toString(),
+      class: classByAccession[x.accession] ?? "Unclassifed",
     }));
 
   const tables: TableDef<useLinkedCcresReturn["data"][number]>[] = [
     {
       label: "Intact Hi-C Loops",
       rows: HiCLinked,
-      columns: [accessionCol(assembly), ...IntactHiCLoopsCols.slice(2)],
+      columns: [
+        accessionCol(assembly),
+        {
+          field: "class",
+          headerName: "Classification",
+          ...classificationFormatting,
+        },
+        ...IntactHiCLoopsCols.slice(2),
+      ],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No intact Hi-C loops overlap a cCRE and the promoter of this gene`,
@@ -87,7 +113,15 @@ export default function ComputationalLinkedCcres({
     {
       label: "ChIA-PET",
       rows: ChIAPETLinked,
-      columns: [accessionCol(assembly), ...ChIAPETCols.slice(2)],
+      columns: [
+        accessionCol(assembly),
+        {
+          field: "class",
+          headerName: "Classification",
+          ...classificationFormatting,
+        },
+        ...ChIAPETCols.slice(2),
+      ],
       sortColumn: "score",
       sortDirection: "desc",
       emptyTableFallback: `No ChIA-PET interactions overlap a cCRE and the promoter of this gene`,
@@ -95,7 +129,15 @@ export default function ComputationalLinkedCcres({
     {
       label: "CRISPRi-FlowFISH",
       rows: crisprLinked,
-      columns: [accessionCol(assembly), ...CrisprFlowFISHCols.slice(2)],
+      columns: [
+        accessionCol(assembly),
+        {
+          field: "class",
+          headerName: "Classification",
+          ...classificationFormatting,
+        },
+        ...CrisprFlowFISHCols.slice(2),
+      ],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No cCREs targeted in a CRISPRi-FlowFISH experiment were linked to this gene`,
@@ -103,7 +145,15 @@ export default function ComputationalLinkedCcres({
     {
       label: "eQTLs",
       rows: eqtlLinked,
-      columns: [accessionCol(assembly), ...eQTLCols.slice(2)],
+      columns: [
+        accessionCol(assembly),
+        {
+          field: "class",
+          headerName: "Classification",
+          ...classificationFormatting,
+        },
+        ...eQTLCols.slice(2),
+      ],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No cCREs overlap variants associated with significant changes in expression of this gene`,
