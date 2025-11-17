@@ -81,7 +81,7 @@ export const useGWASEnrichmentData = ({ study }: UseGWASEnrichmentParams): UseGW
         return {
           ...item,
           // fc is already log2 transformed
-          fc: item.fc,
+          fc: Math.log2(item.fc + FCaugmentation),
           pvalue: item.pvalue === 0 ? minFDRval : item.pvalue,
           fdr: item.fdr === 0 ? minFDRval : item.fdr,
           ontology: matchedBiosample?.ontology,
