@@ -64,6 +64,7 @@ const expansionPercentages: Record<AnyEntityType, number> = {
   gene: 0.2,
   variant: 5.0,
   region: 0.25,
+  bed: 0.25,
   gwas: 0.2,
 };
 
@@ -84,30 +85,55 @@ function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType) {
   };
 }
 
-type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicRange };
+type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicRange | GenomicRange[] };
 
 export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowserViewProps) {
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
-  const name = entity.entityType === "region" ? entity.entityID.replace("%3A", ":") : entity.entityID;
+  const name =
+    entity.entityType === "region"
+      ? entity.entityID.replace("%3A", ":")
+      : entity.entityType === "bed"
+        ? `${coordinates[0].chromosome}:${coordinates[0].start}-${coordinates[0].end}`
+        : entity.entityID;
 
   const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
   const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>(getLocalChromHmmTissues());
 
   const initialState: InitialBrowserState = useMemo(() => {
+    const coords = Array.isArray(coordinates) ? coordinates[0] : coordinates;
+
+    let defaultHighlights;
+    if (Array.isArray(coordinates)) {
+      defaultHighlights = coordinates.map((c) => ({
+        id: `${c.chromosome}:${c.start}-${c.end}`,
+        domain: {
+          chromosome: c.chromosome,
+          start: c.start,
+          end: c.end,
+        },
+        color: randomColor(),
+      }));
+    } else {
+      defaultHighlights = [
+        {
+          id: `${coordinates.chromosome}:${coordinates.start}-${coordinates.end}`,
+          domain: {
+            chromosome: coordinates.chromosome,
+            start: coordinates.start,
+            end: coordinates.end,
+          },
+          color: randomColor(),
+        },
+      ];
+    }
     return {
-      domain: getLocalBrowser(name)?.domain ?? expandCoordinates(coordinates, entity.entityType),
+      domain: getLocalBrowser(name)?.domain ?? expandCoordinates(coords, entity.entityType),
       marginWidth: 150,
       trackWidth: 1350,
       multiplier: 3,
-      highlights: getLocalBrowser(name)?.highlights || [
-        {
-          id: name || coordinates.chromosome + ":" + coordinates.start + "-" + coordinates.end,
-          domain: { chromosome: coordinates.chromosome, start: coordinates.start, end: coordinates.end },
-          color: randomColor(),
-        },
-      ],
+      highlights: getLocalBrowser(name)?.highlights || defaultHighlights,
     };
   }, [name, coordinates, entity.entityType]);
 
@@ -276,7 +302,14 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
   };
 
   useBiosampleTracks(entity.assembly, selectedBiosamples, trackStore, onHover, onLeave, onCcreClick);
-  useChromHmmTracks(selectedChromHmmTissues, coordinates, entity.assembly, trackStore, addHighlight, removeHighlight);
+  useChromHmmTracks(
+    selectedChromHmmTissues,
+    Array.isArray(coordinates) ? coordinates[0] : coordinates,
+    entity.assembly,
+    trackStore,
+    addHighlight,
+    removeHighlight
+  );
 
   useEffect(() => {
     setLocalTracks(currentTracks);
@@ -343,7 +376,9 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
             startIcon={<PageviewIcon />}
             color="primary"
             size="small"
-            onClick={() => setDomain(expandCoordinates(coordinates, entity.entityType))}
+            onClick={() =>
+              setDomain(expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType))
+            }
           >
             Recenter on {name || "Selected Region"}
           </Button>

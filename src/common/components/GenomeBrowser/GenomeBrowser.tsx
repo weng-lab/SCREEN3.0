@@ -5,6 +5,7 @@ import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { useMemo } from "react";
 import GenomeBrowserView from "./GenomeBrowserView";
 import { Alert, CircularProgress } from "@mui/material";
+import { decodeRegions } from "common/utility";
 
 export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
   const { data, loading, error } = useEntityMetadata(entity);
@@ -13,8 +14,13 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
     if (!data || data.__typename === "GwasStudiesMetadata") return null;
     if (data.__typename === "SCREENSearchResult") {
       return { chromosome: data.chrom, start: data.start, end: data.start + data.len };
+    }
+    if (data.__typename === "Bed") {
+      if (typeof window === "undefined") return null;
+      const encoded = sessionStorage.getItem(entity.entityID);
+      return decodeRegions(encoded);
     } else return data.coordinates;
-  }, [data]);
+  }, [data, entity.entityID]);
 
   if (loading) return <CircularProgress />;
   if (error)
