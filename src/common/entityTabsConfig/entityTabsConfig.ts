@@ -22,6 +22,7 @@ import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/
 import BedIntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_cCREs/BedIntersectingCcres";
 import BedIntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Genes/BedIntersectingGenes";
 import BedIntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Variants/BedIntersectingSnps";
+import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Overview/BedOverview";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
 import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
@@ -220,6 +221,12 @@ export const humanRegionTabs = [
 ] as const satisfies TabConfig[];
 
 export const humanBedTabs = [
+  {
+    route: "overview",
+    label: "Overview",
+    iconPath: CcreIconPath,
+    component: BedOverview,
+  },
   {
     route: "ccres",
     label: "cCREs",

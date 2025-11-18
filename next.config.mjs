@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         source: "/:assembly/bed/:fileName",
-        destination: "/:assembly/bed/:fileName/ccres",
+        destination: "/:assembly/bed/:fileName/overview",
         permanent: false,
       },
       {
