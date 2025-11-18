@@ -1,5 +1,5 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
-import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
+import { Box, SelectChangeEvent, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
 import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
@@ -8,6 +8,7 @@ import { scaleLinear } from "@visx/scale";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
 import { Stack } from "@mui/system";
 import UMAPLegend from "../../../../../../../common/components/UMAPLegend";
+import { ColorBySelect } from "common/components/ColorBySelect";
 
 //generate the domain for the gradient based on the max number
 export const generateDomain = (max: number, steps: number) => {
@@ -95,6 +96,15 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
     setSelected([...selected, ...selectedPoints.map((point) => point.metaData)]);
   };
 
+  const handlePointSelected = (selectedPoint: Point<PointMetadata>) => {
+    const id = selectedPoint.metaData.accession;
+    if (selected.some((x) => x.accession === id)) {
+      setSelected(selected.filter((x) => x.accession !== id));
+    } else {
+      setSelected([...selected, selectedPoint.metaData]);
+    }
+  };
+
   const TooltipBody = (point: Point<PointMetadata>) => {
     const avgTPM = (() => {
       const files = point.metaData.gene_quantification_files || [];
@@ -130,26 +140,6 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
     );
   };
 
-  const ColorBySelect = () => {
-    return (
-      <FormControl sx={{ alignSelf: "flex-start" }}>
-        <InputLabel>Color By</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={colorScheme}
-          label="Color By"
-          onChange={handleColorSchemeChange}
-          MenuProps={{ disableScrollLock: true }}
-          size="small"
-        >
-          <MenuItem value={"expression"}>Expression</MenuItem>
-          <MenuItem value={"organ/tissue"}>Tissue</MenuItem>
-        </Select>
-      </FormControl>
-    );
-  };
-
   return (
     <>
       <Stack
@@ -163,7 +153,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm !== undefined ? (
           <>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <ColorBySelect />
+              <ColorBySelect colorScheme={colorScheme} handleColorSchemeChange={handleColorSchemeChange} />
               <UMAPLegend
                 colorScheme={colorScheme}
                 scatterData={scatterData}
@@ -175,7 +165,7 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
               <ScatterPlot
                 {...rest}
                 onSelectionChange={handlePointsSelected}
-                onPointClicked={() => console.error("onClick missing")}
+                onPointClicked={handlePointSelected}
                 controlsHighlight={theme.palette.primary.light}
                 pointData={scatterData}
                 selectable
