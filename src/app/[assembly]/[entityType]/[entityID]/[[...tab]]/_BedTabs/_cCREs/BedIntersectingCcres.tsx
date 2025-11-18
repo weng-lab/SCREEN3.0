@@ -173,26 +173,29 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
         </span>
       ),
     },
-    {
-      field: "isicre",
-      headerName: "iCRE",
-      valueGetter: (_, row) => row.isicre,
-      renderCell: (params) => {
-        return params.row.isicre ? (
-          <LinkComponent href={`https://igscreen.vercel.app/icre/${params.row.info.accession}`} openInNewTab>
-            <Image
-              src="/igSCREEN_icon.png"
-              alt="igSCREEN Helix"
-              height={14}
-              width={14}
-              style={{ verticalAlign: "text-bottom" }} // try "sub" if you want it lower
-            />
-          </LinkComponent>
-        ) : (
-          <></>
-        );
-      },
-    },
+    ...(entity.assembly === "GRCh38"
+      ? [
+          {
+            field: "isicre",
+            headerName: "iCRE",
+            valueGetter: (_, row) => row.isicre,
+            renderCell: (params) =>
+              params.row.isicre ? (
+                <LinkComponent href={`https://igscreen.vercel.app/icre/${params.row.info.accession}`} openInNewTab>
+                  <Image
+                    src="/igSCREEN_icon.png"
+                    alt="igSCREEN Helix"
+                    height={14}
+                    width={14}
+                    style={{ verticalAlign: "text-bottom" }}
+                  />
+                </LinkComponent>
+              ) : (
+                <></>
+              ),
+          },
+        ]
+      : []),
   ];
 
   return (

@@ -12,7 +12,7 @@ const popularSearchesGRCh38 = [
   { entity: "Gene", name: "SOX4", region: "chr6:21,592,768-21,598,619" },
   { entity: "cCRE", name: "EH38E3314260", region: "chr19:50,417,519-50,417,853" },
   { entity: "Variant", name: "rs9466027", region: "chr6:21,298,226-21,298,227" },
-  { entity: "Region", name: "chr12:53380176-53416446", region: "chr12:53380176-53416446" },
+  { entity: "Region", name: "chr12:53,380,176-53,416,446", region: "chr12:53,380,176-53,416,446" },
   { entity: "GWAS", name: "Astrocytoma", region: "Foss-Skiftesvik J" },
   { entity: "Gene", name: "APOE", region: "chr19:44,905,754-44,909,393" },
   // { entity: "Biosample", name: "Brain", region: "chr6:21,298,226-21,298,227" },
@@ -52,7 +52,7 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({ assembly }) => {
               href={
                 entity.entity === "GWAS"
                   ? `/GRCh38/gwas/36810956-GCST90296476-astrocytoma`
-                  : `/${assembly}/${entity.entity.toLowerCase()}/${entity.name}`
+                  : `/${assembly}/${entity.entity.toLowerCase()}/${entity.name.replaceAll(",", "")}`
               }
               sx={{
                 position: "relative",

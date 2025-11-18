@@ -238,6 +238,12 @@ export const humanBedTabs = [
     iconPath: VariantIconPath,
     component: BedIntersectingSNPs,
   },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    component: GenomeBrowser,
+  },
 ] as const satisfies TabConfig[];
 
 export const mouseGeneTabs = [
@@ -316,7 +322,26 @@ export const mouseRegionTabs = [
   },
 ] as const satisfies TabConfig[];
 
-export const mouseBedTabs = [] as const satisfies TabConfig[];
+export const mouseBedTabs = [
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    component: BedIntersectingCcres,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    component: BedIntersectingGenes,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    component: GenomeBrowser,
+  },
+] as const satisfies TabConfig[];
 
 export const entityTabsConfig: EntityTabsConfig = {
   GRCh38: {
