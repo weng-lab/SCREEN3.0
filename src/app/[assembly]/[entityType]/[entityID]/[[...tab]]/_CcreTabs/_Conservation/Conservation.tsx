@@ -5,6 +5,7 @@ import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
+import { useCcreData } from "common/hooks/useCcreData";
 
 type orthologRow = {
   accession: string;
@@ -37,6 +38,12 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+   const {
+      data: dataCcre,
+      loading: loadingCcre,
+      error: errorCcre,
+    } = useCcreData({ assembly: entity.assembly, accession: [entity.entityID] });
+
 
   const ortholog: orthologRow[] = [];
   if (data && data.orthologQuery.length > 0) {
@@ -74,7 +81,27 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     },
   ];
 
+  const conservationCols: GridColDef[] = [
+    {
+      headerName: "Vertebrates",
+      field: "vertebrates",
+      valueFormatter: (value: number) => value.toFixed(2),
+    },
+    {
+      headerName: "Mammals",
+      field: "mammals",
+      valueFormatter: (value: number) => value.toFixed(2),
+    },
+    {
+      headerName: "Primates",
+      field: "primates",
+      valueFormatter: (value: number) => value.toFixed(2),
+    },
+  ]
+
+
   return (
+    <>
     <Table
       label={`Orthologous cCREs in ${entity.assembly == "GRCh38" ? "mm10" : "GRCh38"}`}
       loading={loading}
@@ -83,5 +110,14 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       rows={ortholog}
       emptyTableFallback={"No Orthologous cCREs found"}
     />
+     {entity.assembly == "GRCh38" && dataCcre && <Table
+      label={`Conservation`}
+      loading={loadingCcre}
+      error={!!errorCcre}
+      columns={conservationCols}
+      rows={dataCcre}
+      emptyTableFallback={"No Conservation data found"}
+    />}
+    </>
   );
 };
