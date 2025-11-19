@@ -331,6 +331,12 @@ export const mouseRegionTabs = [
 
 export const mouseBedTabs = [
   {
+    route: "overview",
+    label: "Overview",
+    iconPath: CcreIconPath,
+    component: BedOverview,
+  },
+  {
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,

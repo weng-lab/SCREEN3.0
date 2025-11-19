@@ -18,7 +18,7 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
   const [loading, setLoading] = useState<boolean>(false);
   const [bpLimit, setBpLimit] = useState<boolean>(false);
 
-  const maxBp = 100000;
+  const maxBp = 500000;
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {

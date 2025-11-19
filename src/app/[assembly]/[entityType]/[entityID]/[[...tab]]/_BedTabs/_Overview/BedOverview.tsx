@@ -5,18 +5,13 @@ import { decodeRegions } from "common/utility";
 import { useMemo, useState } from "react";
 import { GenomicRange } from "common/types/generated/graphql";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRowSelectionModel, Table } from "@weng-lab/ui-components";
-import { Box, Grid, IconButton, Typography } from "@mui/material";
+import { Grid, IconButton } from "@mui/material";
 import { OpenInNew } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
-import Image from "next/image";
-import Link from "next/link";
+import OverviewCards from "./OverviewCards";
 
 const BedOverview = ({ entity }: EntityViewComponentProps) => {
   const [selected, setSelected] = useState<GenomicRange[]>([]);
-
-  const CcreIconPath = "/assets/CcreIcon.svg";
-  const GeneIconPath = "/assets/GeneIcon.svg";
-  const VariantIconPath = "/assets/VariantIcon.svg";
 
   const regions: GenomicRange[] = useMemo(() => {
     if (typeof window === "undefined") return null;
@@ -54,7 +49,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "link",
-      headerName: "New Tab",
+      headerName: "Open in New Tab",
       sortable: false,
       disableColumnMenu: true,
       valueGetter: (_, row) => {
@@ -89,8 +84,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
 
   return (
     <Stack spacing={1}>
-      <Grid container spacing={2}>
-        {/* Table */}
+      <Grid container spacing={2} height={"600px"}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Table
             showToolbar
@@ -107,57 +101,12 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
             keepNonExistentRowsSelected
           />
         </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Stack spacing={2}>
-            <InfoCard
-              icon={CcreIconPath}
-              label="Overlapping cCREs"
-              value={42}
-              path={`/${entity.assembly}/${entity.entityType}/${entity.entityID}/ccres`}
-            />
-            <InfoCard
-              icon={GeneIconPath}
-              label="Overlapping Genes"
-              value={7}
-              path={`/${entity.assembly}/${entity.entityType}/${entity.entityID}/genes`}
-            />
-            <InfoCard
-              icon={VariantIconPath}
-              label="Overlapping Variants"
-              value={128}
-              path={`/${entity.assembly}/${entity.entityType}/${entity.entityID}/variants`}
-            />
-          </Stack>
+        <Grid size={{ xs: 12, md: 4 }} height={"100%"}>
+          <OverviewCards entity={entity} regions={regions} />
         </Grid>
       </Grid>
     </Stack>
   );
 };
-
-const InfoCard = ({ icon, label, value, path }: { icon: string; label: string; value: number; path: string }) => (
-  <Box
-    component={Link}
-    href={path}
-    sx={{
-      p: 2,
-      borderRadius: 2,
-      boxShadow: 2,
-      textAlign: "center",
-      bgcolor: "background.paper",
-      textDecoration: "none",
-      transition: "transform 0.2s ease, box-shadow 0.2s ease",
-      transformOrigin: "center",
-      "&:hover": {
-        transform: "scale(1.02)",
-        boxShadow: 6,
-        zIndex: 2,
-      },
-    }}
-  >
-    <Image src={icon} alt={label} width={60} height={60} />
-    <Typography sx={{ fontSize: "0.9rem", color: "text.secondary" }}>{label}</Typography>
-    <Typography sx={{ fontSize: "2rem", fontWeight: 600, color: "text.primary" }}>{value}</Typography>
-  </Box>
-);
 
 export default BedOverview;
