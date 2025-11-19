@@ -34,6 +34,8 @@ const data: TreemapNode<ParentTermMetadata>[] = [
   { label: "Inflammatory measurement", value: 201, style: { color: "#CDEAC6", labelColor: "#6B8764" } },
 ];
 
+
+
 export default function GWASLandingPage() {
   const [expanded, setExpanded] = useState<string | false>(false);
   const accordionRefs = useRef<Record<string, HTMLDivElement | null>>({});

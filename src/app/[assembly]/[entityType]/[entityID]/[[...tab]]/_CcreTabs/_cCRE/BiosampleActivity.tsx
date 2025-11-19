@@ -14,6 +14,9 @@ import { AssayWheel } from "common/components/BiosampleTables/AssayWheel";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { CCRE_CLASSES } from "common/consts";
 import { BiosampleRow } from "./types";
+import { useSilencersData } from "common/hooks/useSilencersData";
+import { Silencer_Studies } from "./consts";
+import { LinkComponent } from "common/components/LinkComponent";
 
 const classifyCcre = (
   scores: { dnase: number; atac: number; h3k4me3: number; h3k27ac: number; ctcf: number; tf: string },
@@ -124,6 +127,32 @@ const ctAgnosticCols: GridColDef[] = [
   },
 ];
 
+const silencersDataCols:  GridColDef[] = [
+  {
+      headerName: "Study",
+      field: "study",
+      valueGetter: (value, row) => row.study
+    },
+  {
+      headerName: "PMID",
+      field: "pmid",
+      valueGetter: (value, row) => row.pmid,
+      renderCell: (params) => (
+                        <LinkComponent
+                          href={params.row.pubmed_link}
+                          showExternalIcon
+                          openInNewTab
+                        >
+                          {params.row.pmid}
+                        </LinkComponent>
+                      ),
+    },
+  {
+      headerName: "Method",
+      field: "method",
+      valueGetter: (value, row) => row.method,
+    },
+]
 //This is used to prevent sorting from happening when clicking on the header checkbox
 const StopPropagationWrapper = (params) => (
   <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
@@ -319,6 +348,20 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     error: errorCcreData,
   } = useCcreData({ accession: entity.entityID, assembly: entity.assembly });
 
+  const {
+    data: silencersData,
+    loading: loadingSilencersData,
+    error: errorSilencersData,
+  } = useSilencersData({ accession: [entity.entityID], assembly: entity.assembly })
+
+  console.log("silencersData",silencersData, silencersData?.flatMap(item =>
+                            item.silencer_studies.map(study => ({                              
+                              study:  Silencer_Studies.find(s=>s.value==study).study,
+                              pmid: Silencer_Studies.find(s=>s.value==study).pubmed_id,
+                              method: Silencer_Studies.find(s=>s.value==study).method,
+                              pubmed_link: Silencer_Studies.find(s=>s.value==study).pubmed_link
+                            }))
+                          ) || [])
   const coordinates: GenomicRange = {
     chromosome: cCREdata?.chrom,
     start: cCREdata?.start,
@@ -526,6 +569,24 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             error={!!error_Ct_Agnostic}
             {...disableCsvEscapeChar}
           />
+          {silencersData && silencersData.length>0 &&<Table
+            label="Silencers"
+            rows={ silencersData?.flatMap(item =>
+                            item.silencer_studies.map(study => ({                              
+                              study:  Silencer_Studies.find(s=>s.value==study).study,
+                              pmid: Silencer_Studies.find(s=>s.value==study).pubmed_id,
+                              method: Silencer_Studies.find(s=>s.value==study).method,
+                              pubmed_link: Silencer_Studies.find(s=>s.value==study).pubmed_link
+                            }))
+                          ) || []}
+            columns={silencersDataCols}
+            loading={loadingSilencersData}
+            //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+            divHeight={!silencersData ? { height: "182px" } : undefined}
+            error={!!errorSilencersData}
+            {...disableCsvEscapeChar}
+          />
+          }
           <div>
             <ProportionsBar
               data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}

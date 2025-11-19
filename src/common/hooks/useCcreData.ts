@@ -45,6 +45,9 @@ const CCRE_QUERY = gql(`
       info {
         accession
       }
+      vertebrates
+      mammals
+      primates  
       ctcf_zscore
       dnase_zscore
       enhancer_zscore
