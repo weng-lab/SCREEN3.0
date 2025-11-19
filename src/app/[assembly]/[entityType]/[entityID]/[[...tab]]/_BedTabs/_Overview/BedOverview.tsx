@@ -132,7 +132,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
           />
         </Grid>
         <Grid size={{ xs: 12, md: 4 }} height={"100%"}>
-          <OverviewCards entity={entity} regions={regions} />
+          <OverviewCards entity={entity} regions={selected.length > 0 ? selected : regions} />
         </Grid>
       </Grid>
     </Stack>
