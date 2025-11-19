@@ -2,15 +2,23 @@
 import { Stack } from "@mui/system";
 import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { decodeRegions } from "common/utility";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GenomicRange } from "common/types/generated/graphql";
-import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRowSelectionModel, Table } from "@weng-lab/ui-components";
+import {
+  GRID_CHECKBOX_SELECTION_COL_DEF,
+  GridColDef,
+  GridRowSelectionModel,
+  Table,
+  useGridApiRef,
+} from "@weng-lab/ui-components";
 import { Grid, IconButton } from "@mui/material";
 import { OpenInNew } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import OverviewCards from "./OverviewCards";
+import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 const BedOverview = ({ entity }: EntityViewComponentProps) => {
+  const [autoSort, setAutoSort] = useState<boolean>(false);
   const [selected, setSelected] = useState<GenomicRange[]>([]);
 
   const regions: GenomicRange[] = useMemo(() => {
@@ -67,6 +75,12 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
     },
   ];
 
+  const apiRef = useGridApiRef();
+
+  const AutoSortToolbar = useMemo(() => {
+    return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
+  }, [autoSort]);
+
   const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
     if (newRowSelectionModel.type === "include") {
       const newIds = Array.from(newRowSelectionModel.ids);
@@ -82,11 +96,26 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
     return { type: "include", ids: new Set(selected.map((x) => x.start)) };
   }, [selected]);
 
+  // handle auto sorting
+  useEffect(() => {
+    const api = apiRef?.current;
+    if (!api) return;
+    if (!autoSort) {
+      //reset sort if none selected
+      api.setSortModel([]);
+      return;
+    }
+
+    //sort by checkboxes if some selected, otherwise sort by tpm
+    api.setSortModel(selected?.length > 0 ? [{ field: "__check__", sort: "desc" }] : []);
+  }, [apiRef, autoSort, selected]);
+
   return (
     <Stack spacing={1}>
       <Grid container spacing={2} height={"600px"}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Table
+            apiRef={apiRef}
             showToolbar
             rows={regions || []}
             columns={columns}
@@ -99,6 +128,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
             onRowSelectionModelChange={handleRowSelectionModelChange}
             rowSelectionModel={rowSelectionModel}
             keepNonExistentRowsSelected
+            toolbarSlot={AutoSortToolbar}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 4 }} height={"100%"}>
