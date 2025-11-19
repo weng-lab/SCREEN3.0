@@ -13,17 +13,16 @@ import MultipleRegionSearch from "./landing/multipleRegionSearch";
 
 export default function Home() {
   const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38");
-  // const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
+  const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
 
   const handleAssemblyChange = (asmb: "GRCh38" | "mm10") => {
     setAssembly(asmb);
   };
 
-  // const toggleMultipleRegionSearchVisible = () => {
-  //   setMultipleRegionSearchVisible(!multipleRegionSearchVisible);
-  // };
+  const toggleMultipleRegionSearchVisible = () => {
+    setMultipleRegionSearchVisible(!multipleRegionSearchVisible);
+  };
 
-  //@todo: Add actual download links and desired popular searches
   return (
     <div>
       <Box
