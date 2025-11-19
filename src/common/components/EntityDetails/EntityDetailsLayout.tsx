@@ -25,7 +25,7 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
       <Stack direction={"row"} id="element-details-wrapper" height={"100%"}>
         {/* View tabs, shown only on desktop */}
         <Box sx={{ display: { xs: "none", md: "initial", height: "100%" } }} id="element-details-desktop-tabs">
-          <Box sx={{ position: "fixed", height: "100%" }}>
+          <Box sx={{ position: "absolute", height: "100%" }}>
             <EntityDetailsTabs
               assembly={assembly}
               entityType={entityType}

@@ -1,5 +1,5 @@
 "use client";
-import { Typography, Box, Grid, Link as MuiLink, Stack } from "@mui/material";
+import { Typography, Box, Grid, Link as MuiLink, Stack, useTheme } from "@mui/material";
 import Image from "next/image";
 import { LinkComponent } from "./LinkComponent";
 
@@ -52,6 +52,7 @@ export default function Footer() {
         zIndex: (theme) => theme.zIndex.appBar,
         color: "#fff",
         paddingX: 6,
+        position: "absolute",
       }}
     >
       <Grid container spacing={6} my={3}>

@@ -229,7 +229,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   return (
     <TabContext value={tabIndex}>
       {/* z index of scrollbar in DataGrid is 60 */}
-      <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 61 }} id="open-elements-tabs">
+      <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 1 }} id="open-elements-tabs">
         <Stack direction={"row"}>
           <DragDropContext onDragEnd={onDragEnd}>
             <OpenTabs {...openTabsProps} />

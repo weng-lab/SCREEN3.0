@@ -138,7 +138,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   };
 
   return (
-    <Box position={"sticky"} top={0} zIndex={1}>
+    <Box position={"sticky"} top={0} zIndex={10}>
       <Stack
         direction={"row"}
         style={{
