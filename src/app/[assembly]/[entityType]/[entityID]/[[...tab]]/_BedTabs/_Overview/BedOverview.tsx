@@ -65,7 +65,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
       },
       renderCell: (params) => {
         return (
-          <LinkComponent href={`/${entity.assembly}/ccre/${params.value}`}>
+          <LinkComponent href={`/${entity.assembly}/region/${params.value}`}>
             <IconButton size="small">
               <OpenInNew fontSize="small" />
             </IconButton>
