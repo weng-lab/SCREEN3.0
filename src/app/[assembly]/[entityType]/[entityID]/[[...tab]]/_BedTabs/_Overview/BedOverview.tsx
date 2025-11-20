@@ -18,7 +18,7 @@ import OverviewCards from "./OverviewCards";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 const BedOverview = ({ entity }: EntityViewComponentProps) => {
-  const [autoSort, setAutoSort] = useState<boolean>(false);
+  const [autoSort, setAutoSort] = useState<boolean>(true);
   const [selected, setSelected] = useState<GenomicRange[]>([]);
 
   const regions: GenomicRange[] = useMemo(() => {
