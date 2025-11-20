@@ -26,7 +26,6 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
   useEffect(() => {
     if (tabsRef.current) {
       setTabsHeight(tabsRef.current.getBoundingClientRect().height);
-      console.log(tabsRef.current.getBoundingClientRect().height);
     }
   }, [tabsRef]);
 
