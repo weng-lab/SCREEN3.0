@@ -8,6 +8,7 @@ import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { GwasStudyHeader } from "./GwasStudyHeader";
+import { useEffect, useRef, useState } from "react";
 
 export type EntityDetailsLayoutProps = {
   assembly: Assembly;
@@ -18,15 +19,41 @@ export type EntityDetailsLayoutProps = {
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
   const verticalTabsWidth = 100;
 
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [tabsHeight, setTabsHeight] = useState<number>(0);
+  const [openEntityTabsHeight, setOpenEntityTabsHeight] = useState<number>(0);
+
+  useEffect(() => {
+    if (tabsRef.current) {
+      setTabsHeight(tabsRef.current.getBoundingClientRect().height);
+      console.log(tabsRef.current.getBoundingClientRect().height);
+    }
+  }, [tabsRef]);
+
+  useEffect(() => {
+    const openTabsElement = document.getElementById("open-elements-tabs");
+    if (openTabsElement) {
+      setOpenEntityTabsHeight(openTabsElement.getBoundingClientRect().height);
+    }
+  }, []);
+
   return (
     // Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/. Children wrapped in <TabPanel>
     <OpenEntityTabs>
       {/* Everything below the open elements tabs */}
-      <Stack direction={"row"} id="element-details-wrapper" height={"100%"}>
+      <Stack direction={"row"} id="element-details-wrapper" height={"100%"} minHeight={`${tabsHeight}px` || 0}>
         {/* View tabs, shown only on desktop */}
-        <Box sx={{ display: { xs: "none", md: "initial", height: "100%" } }} id="element-details-desktop-tabs">
-          <Box sx={{ position: "fixed", height: "100%" }}>
+        <Box sx={{ display: { xs: "none", md: "initial" } }} id="element-details-desktop-tabs">
+          <Box
+            sx={{
+              position: "sticky",
+              top: openEntityTabsHeight,
+              width: verticalTabsWidth,
+              height: `calc(100vh + ${openEntityTabsHeight}px)`,
+            }}
+          >
             <EntityDetailsTabs
+              ref={tabsRef}
               assembly={assembly}
               entityType={entityType}
               entityID={entityID}
@@ -34,8 +61,6 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
               verticalTabsWidth={verticalTabsWidth}
             />
           </Box>
-          {/* Needed to bump over the rest of the content since above is using position="fixed" */}
-          <div style={{ width: verticalTabsWidth }} />
         </Box>
         <Stack
           width={"100%"}
