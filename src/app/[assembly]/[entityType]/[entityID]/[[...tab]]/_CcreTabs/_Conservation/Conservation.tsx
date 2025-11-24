@@ -102,6 +102,16 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
 
   return (
     <>
+     {entity.assembly == "GRCh38" && dataCcre && <Table
+      label={`Conservation`}
+      loading={loadingCcre}
+      error={!!errorCcre}
+      columns={conservationCols}
+      rows={dataCcre}
+      hideFooter
+      showToolbar={false}
+      emptyTableFallback={"No Conservation data found"}
+    />}
     <Table
       label={`Orthologous cCREs in ${entity.assembly == "GRCh38" ? "mm10" : "GRCh38"}`}
       loading={loading}
@@ -110,14 +120,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       rows={ortholog}
       emptyTableFallback={"No Orthologous cCREs found"}
     />
-     {entity.assembly == "GRCh38" && dataCcre && <Table
-      label={`Conservation`}
-      loading={loadingCcre}
-      error={!!errorCcre}
-      columns={conservationCols}
-      rows={dataCcre}
-      emptyTableFallback={"No Conservation data found"}
-    />}
+    
     </>
   );
 };

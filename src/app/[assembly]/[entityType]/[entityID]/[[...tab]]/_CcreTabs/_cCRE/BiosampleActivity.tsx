@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
-import { Stack, Tab, Tabs } from "@mui/material";
+import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "common/types/generated";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
@@ -354,14 +354,6 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     error: errorSilencersData,
   } = useSilencersData({ accession: [entity.entityID], assembly: entity.assembly })
 
-  console.log("silencersData",silencersData, silencersData?.flatMap(item =>
-                            item.silencer_studies.map(study => ({                              
-                              study:  Silencer_Studies.find(s=>s.value==study).study,
-                              pmid: Silencer_Studies.find(s=>s.value==study).pubmed_id,
-                              method: Silencer_Studies.find(s=>s.value==study).method,
-                              pubmed_link: Silencer_Studies.find(s=>s.value==study).pubmed_link
-                            }))
-                          ) || [])
   const coordinates: GenomicRange = {
     chromosome: cCREdata?.chrom,
     start: cCREdata?.start,
@@ -559,8 +551,19 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
       </Tabs>
       {tab === "tables" ? (
         <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
+          <Typography   variant="body1"
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      fontWeight: 400,
+      color: "text.primary",
+      pl: 1, 
+      ml: 0// match table start
+    }}>
+    Cell type agnostic classification
+  </Typography>
           <Table
-            label="Cell type agnostic classification"
+            //label="Cell type agnostic classification"
             rows={ctAgnosticRow}
             columns={ctAgnosticCols}
             loading={loading_Ct_Agnostic}
@@ -568,9 +571,11 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
             error={!!error_Ct_Agnostic}
             {...disableCsvEscapeChar}
+            hideFooter
+            showToolbar={false}
           />
           {silencersData && silencersData.length>0 &&<Table
-            label="Silencers"
+           // label="Silencers"
             rows={ silencersData?.flatMap(item =>
                             item.silencer_studies.map(study => ({                              
                               study:  Silencer_Studies.find(s=>s.value==study).study,
@@ -585,6 +590,8 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             divHeight={!silencersData ? { height: "182px" } : undefined}
             error={!!errorSilencersData}
             {...disableCsvEscapeChar}
+            hideFooter
+            showToolbar={false}
           />
           }
           <div>
