@@ -6,36 +6,37 @@ import { Box, Button, IconButton, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // @weng-lab
-import { Browser, createBrowserStoreMemo, createTrackStoreMemo } from "@weng-lab/genomebrowser";
+import { Browser, BrowserStoreInstance, TrackStoreInstance } from "@weng-lab/genomebrowser";
 import { GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
 import { GenomicRange } from "common/types/globalTypes";
 import HighlightDialog from "./Dialogs/HighlightDialog";
 import { expandCoordinates, randomColor, SearchToScreenTypes } from "./utils";
+import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 
 // icons
 import PageviewIcon from "@mui/icons-material/Pageview";
 import DomainDisplay from "./Controls/DomainDisplay";
 import ControlButtons from "./Controls/ControlButtons";
-import { EntityViewComponentProps } from "common/entityTabsConfig";
 import TrackSelect from "./TrackSelect/TrackSelect";
 
-type GenomeBrowserViewProps = EntityViewComponentProps & { entityCoordinates: GenomicRange };
+type GenomeBrowserViewProps = EntityViewComponentProps & {
+  entityCoordinates: GenomicRange;
+  browserStore: BrowserStoreInstance;
+  trackStore: TrackStoreInstance;
+};
 
-export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeBrowserViewProps) {
+export default function GenomeBrowserView({
+  entity,
+  entityCoordinates,
+  browserStore,
+  trackStore,
+}: GenomeBrowserViewProps) {
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
   const name = entity.entityType === "region" ? entity.entityID.replace("%3A", ":") : entity.entityID;
-
-  const browserStore = createBrowserStoreMemo({
-    domain: expandCoordinates(entityCoordinates, entity.entityType),
-    marginWidth: 100,
-    multiplier: 3,
-    trackWidth: 1400,
-  });
-  const trackStore = createTrackStoreMemo([]);
 
   const addHighlight = browserStore((state) => state.addHighlight);
   const setDomain = browserStore((state) => state.setDomain);
@@ -106,8 +107,10 @@ export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeB
             Recenter on {name || "Selected Region"}
           </Button>
         </Box>
-        <HighlightDialog browserStore={browserStore} />
-        <TrackSelect trackStore={trackStore} />
+        <Box display="flex" gap={2} alignItems="center">
+          <HighlightDialog browserStore={browserStore} />
+          <TrackSelect trackStore={trackStore} />
+        </Box>
         {/* Add new track select button and modal here */}
       </Stack>
       {/* Browser Controls */}
