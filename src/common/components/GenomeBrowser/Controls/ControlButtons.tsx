@@ -2,6 +2,50 @@ import { Box, Button, Divider, Stack, Typography, ButtonGroup as MuiButtonGroup 
 import { useCallback } from "react";
 import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 
+type ButtonConfig = { label: string; onClick: (value: number) => void; value: number };
+
+// Reusable button group component
+const ButtonGroup = ({ buttons }: { buttons: ButtonConfig[] }) => (
+  <MuiButtonGroup>
+    {buttons.map((btn, index) => {
+      return (
+        <Button
+          key={index}
+          variant="outlined"
+          size="small"
+          onClick={() => btn.onClick(btn.value)}
+          sx={{
+            padding: "2px 8px",
+            minWidth: "30px",
+            fontSize: "0.8rem",
+          }}
+        >
+          {btn.label}
+        </Button>
+      );
+    })}
+  </MuiButtonGroup>
+);
+
+const TwoSidedControl = ({
+  leftButtons,
+  rightButtons,
+  label,
+}: {
+  leftButtons: ButtonConfig[];
+  rightButtons: ButtonConfig[];
+  label: string;
+}) => (
+  <Stack alignItems={"center"}>
+    <Typography variant="body2">{label}</Typography>
+    <Stack direction={"row"} spacing={0.5}>
+      <ButtonGroup buttons={leftButtons} />
+      <Divider orientation="vertical" flexItem />
+      <ButtonGroup buttons={rightButtons} />
+    </Stack>
+  </Stack>
+);
+
 export default function ControlButtons({ browserStore }: { browserStore: BrowserStoreInstance }) {
   const domain = browserStore((state) => state.domain);
   const setDomain = browserStore((state) => state.setDomain);
@@ -45,50 +89,6 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
       });
     },
     [domain, setDomain]
-  );
-
-  type ButtonConfig = { label: string; onClick: (value: number) => void; value: number };
-
-  // Reusable button group component
-  const ButtonGroup = ({ buttons }: { buttons: ButtonConfig[] }) => (
-    <MuiButtonGroup>
-      {buttons.map((btn, index) => {
-        return (
-          <Button
-            key={index}
-            variant="outlined"
-            size="small"
-            onClick={() => btn.onClick(btn.value)}
-            sx={{
-              padding: "2px 8px",
-              minWidth: "30px",
-              fontSize: "0.8rem",
-            }}
-          >
-            {btn.label}
-          </Button>
-        );
-      })}
-    </MuiButtonGroup>
-  );
-
-  const TwoSidedControl = ({
-    leftButtons,
-    rightButtons,
-    label,
-  }: {
-    leftButtons: ButtonConfig[];
-    rightButtons: ButtonConfig[];
-    label: string;
-  }) => (
-    <Stack alignItems={"center"}>
-      <Typography variant="body2">{label}</Typography>
-      <Stack direction={"row"} spacing={0.5}>
-        <ButtonGroup buttons={leftButtons} />
-        <Divider orientation="vertical" flexItem />
-        <ButtonGroup buttons={rightButtons} />
-      </Stack>
-    </Stack>
   );
 
   const width = domain.end - domain.start;

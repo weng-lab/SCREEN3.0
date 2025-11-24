@@ -24,5 +24,5 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
       </Alert>
     );
 
-  return <GenomeBrowserView entity={entity} coordinates={coordinates} />;
+  return <GenomeBrowserView entity={entity} entityCoordinates={coordinates} />;
 }

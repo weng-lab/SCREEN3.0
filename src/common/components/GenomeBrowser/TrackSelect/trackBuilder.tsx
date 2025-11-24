@@ -18,7 +18,7 @@ export function buildBigWig(selection: Selection): Track {
   return bigWigTrack;
 }
 
-export function buildBigBed(selection: Selection): Track {
+export function buildBigBed(selection: Selection, onHover, onLeave, onClick): Track {
   const bigBedTrack: BigBedConfig = {
     title: selection.name,
     trackType: TrackType.BigBed,
@@ -26,6 +26,9 @@ export function buildBigBed(selection: Selection): Track {
     height: 100,
     displayMode: DisplayMode.Dense,
     id: `bigBed-${selection.name}`,
+    onHover: onHover,
+    onLeave: onLeave,
+    onClick: onClick,
   };
   return bigBedTrack;
 }

@@ -20,16 +20,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { GenomicRange } from "common/types/globalTypes";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 //import GenomeBrowserView from "common/gbview/genomebrowserview";
-import ControlButtons from "common/components/GenomeBrowser/ControlButtons";
-import HighlightDialog from "common/components/GenomeBrowser/HighlightDialog";
+import ControlButtons from "common/components/GenomeBrowser/Controls/ControlButtons";
+import HighlightDialog from "common/components/GenomeBrowser/Dialogs/HighlightDialog";
 import { randomColor } from "common/components/GenomeBrowser/utils";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
-import CCRETooltip from "common/components/GenomeBrowser/CcreTooltip";
-import DomainDisplay from "common/components/GenomeBrowser/DomainDisplay";
+import CCRETooltip from "common/components/GenomeBrowser/Tooltips/CcreTooltip";
+import DomainDisplay from "common/components/GenomeBrowser/Controls/DomainDisplay";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import SelectLdBlock from "./SelectLdBlock";
-import { gql, useQuery } from "@apollo/client";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 interface Transcript {
@@ -63,7 +62,7 @@ const browserStore = createBrowserStore({
 const trackStore = createTrackStore([]);
 const dataStore = createDataStore();
 
-export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps) {
+export default function GWASGenomeBrowserView({ entity }: EntityViewComponentProps) {
   //const [selectedBiosamples, setselectedBiosamples] = useState<RegistryBiosample[] | null>(null);
 
   const {
@@ -110,7 +109,8 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
     if (ldblockStats.length > 0 && !selectedLdBlock) {
       setselectedLdBlock(ldblockStats[0]);
     }
-  }, [ldblockStats, selectedLdBlock]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ldblockStats]);
 
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);
@@ -253,7 +253,6 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
   };
 
   const theme = useTheme();
-  const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
   return (
     <Grid container spacing={2} sx={{ mt: "0rem", mb: "1rem" }} justifyContent="center" alignItems="center">
@@ -337,7 +336,7 @@ export default function GWASGenomeBrowserView({entity}: EntityViewComponentProps
           externalDataStore={dataStore}
         />
       </Grid>
-      <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
+      <HighlightDialog browserStore={browserStore} />
     </Grid>
   );
 }

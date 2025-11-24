@@ -47,10 +47,6 @@ export default function DetailsPage({
   const ComponentToRender = getComponentForEntity(entity);
 
   /**
-   * Genome Browser context
-   */
-
-  /**
    * Ignoring eslint error for having page view component defined in the render function.
    * Normally this is bad: https://react.dev/reference/eslint-plugin-react-hooks/lints/static-components
    *
