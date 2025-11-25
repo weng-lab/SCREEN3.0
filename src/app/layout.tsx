@@ -11,6 +11,7 @@ import MuiXLicense from "common/components/MuiXLicense";
 import { Suspense } from "react";
 import { theme } from "./theme";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+import ScrollReset from "common/components/ScrollReset";
 
 export const metadata = {
   title: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       <Header maintenance={false} />
                       {/* Overflow=auto provides scrolling ancestor for OpenElementsTab. This allows it to be position=sticky with top=0, and right under AppBar*/}
                       <Stack flexGrow={1} overflow={"auto"} minHeight={0} id="content-wrapper">
+                        <ScrollReset />
                         <Stack flexGrow={1}>{children}</Stack>
                         <Footer />
                       </Stack>
