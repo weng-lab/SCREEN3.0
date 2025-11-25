@@ -71,7 +71,7 @@ const Annotations = () => {
             <StyledTreeItem itemId="other/ortho" label="Orthologous cCREs" />
           </StyledTreeItem>
         </SimpleTreeView>
-        <Stack flexGrow={1} gap={2}>
+        <Stack flexGrow={1} overflow={"auto"} gap={2}>
           {assembly !== "other" && <AnnotationsHeader assembly={assembly} />}
           <Content />
         </Stack>
