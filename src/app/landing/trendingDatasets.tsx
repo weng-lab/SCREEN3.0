@@ -27,7 +27,7 @@ const trendingDataSets = [
   { name: "Mouse Enhancers", subtitle: "512,001 cCREs", size: "28.2 MB", link: Config.Downloads.MouseEnhancers },
 ];
 
-const TrendingDatasets: React.FC = ({}) => {
+const TrendingDatasets: React.FC = () => {
   const theme = useTheme();
 
   const { visible: trendingVisible, refs: trendingRefs } = useGrowOnScroll(trendingDataSets.length);
@@ -82,6 +82,7 @@ const TrendingDatasets: React.FC = ({}) => {
                     display: "-webkit-box",
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: "vertical",
+                    pr: 5,
                   }}
                 >
                   {data.name}
