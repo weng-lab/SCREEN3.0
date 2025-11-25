@@ -28,11 +28,13 @@ const data: TreemapNode<ParentTermMetadata>[] = [
   { label: "Digestive system disorder", value: 684, style: { color: "#B6704F", labelColor: "#2F0F00" } },
   { label: "Cardiovascular disease", value: 649, style: { color: "#B13535", labelColor: "#FFD4D4" } },
   { label: "Immune system disorder", value: 587, style: { color: "#FFEC76", labelColor: "#988612" } },
-  { label: "Hematological measurement", value: 568, style: { color: "#90D3C7", labelColor: "#90D3C7" } },
+  { label: "Hematological measurement", value: 568, style: { color: "#90D3C7", labelColor: "##3B776C" } },
   { label: "Body measurement", value: 376, style: { color: "#69CDFE", labelColor: "#f9719B" } },
   { label: "Metabolic disorder", value: 294, style: { color: "#FCB467", labelColor: "#9C5A13" } },
   { label: "Inflammatory measurement", value: 201, style: { color: "#CDEAC6", labelColor: "#6B8764" } },
 ];
+
+
 
 export default function GWASLandingPage() {
   const [expanded, setExpanded] = useState<string | false>(false);
@@ -88,7 +90,9 @@ export default function GWASLandingPage() {
     },
     {
       field: "population",
-      headerName: "Population"
+      headerName: "Population",
+      valueGetter: (value: string) => value.toUpperCase(),
+
     },
     {
       field: "studyid",
@@ -107,7 +111,8 @@ export default function GWASLandingPage() {
     },
     {
       field: "has_enrichment_info",
-      headerName: "Enrichment",
+      headerName: "Biosample Enrichment",
+      valueGetter: (value: boolean) => value ? "Available" : "Not Available" ,
     },
   ];
 
@@ -138,7 +143,7 @@ export default function GWASLandingPage() {
           data={data}
           animation="scale"
           labelPlacement={"topLeft"}
-          treemapStyle={{ padding: 8, borderRadius: 5, paddingOuter: 1 }}
+          treemapStyle={{ padding: 8, borderRadius: 5, paddingOuter: 1, opacity: 1 }}
         />
       </Box>
       <Box sx={{ width: "100%", margin: "auto", mt: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 1 }}>
@@ -180,7 +185,7 @@ export default function GWASLandingPage() {
                       label={`${term} studies`}
                       emptyTableFallback={"No studies"}
                       divHeight={{ height: "100%", minHeight: "500px", maxHeight: "300px" }}
-                      initialState={{ sorting: { sortModel: [{ field: "has_enrichment_info", sort: "desc" }] } }}
+                      initialState={{ sorting: { sortModel: [{ field: "has_enrichment_info", sort: "asc" }] } }}
                     />
                   }
                 </Box>
