@@ -6,35 +6,11 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, Circula
 import { Table } from "@weng-lab/ui-components";
 import { useTheme } from "@mui/material/styles";
 import GWASLandingHeader from "./GWASLandingHeader";
-import { Treemap, TreemapNode } from "@weng-lab/visualization";
+import { Treemap } from "@weng-lab/visualization";
 import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
 import { GwasStudiesMetadata } from "common/types/generated/graphql";
 import { useEffect, useMemo, useRef, useState } from "react";
-
-type ParentTermMetadata = {
-  description: string;
-  source: string;
-};
-
-const data: TreemapNode<ParentTermMetadata>[] = [
-  //{ label: "Other measurement", value: 31657, style: { color: "#056798", labelColor: "#58C1E5" } },
-  { label: "Lipid or lipoprotein measurement", value: 2123, style: { color: "#B5DD6E", labelColor: "#525D3D" } },
-  { label: "Other disease", value: 1676, style: { color: "#FC3C99", labelColor: "#840040" } },
-  { label: "Other trait", value: 1273, style: { color: "#F98174", labelColor: "#953227" } },
-  { label: "Cancer", value: 1169, style: { color: "#BB82BC", labelColor: "#683569" } },
-  { label: "Neurological disorder", value: 1158, style: { color: "#FFFEB6", labelColor: "#95944D" } },
-  { label: "Biological process", value: 1008, style: { color: "#BEBBD9", labelColor: "#676480" } },
-  { label: "Cardiovascular measurement", value: 726, style: { color: "#81B2D2", labelColor: "#335E7A" } },
-  { label: "Digestive system disorder", value: 684, style: { color: "#B6704F", labelColor: "#2F0F00" } },
-  { label: "Cardiovascular disease", value: 649, style: { color: "#B13535", labelColor: "#FFD4D4" } },
-  { label: "Immune system disorder", value: 587, style: { color: "#FFEC76", labelColor: "#988612" } },
-  { label: "Hematological measurement", value: 568, style: { color: "#90D3C7", labelColor: "##3B776C" } },
-  { label: "Body measurement", value: 376, style: { color: "#69CDFE", labelColor: "#f9719B" } },
-  { label: "Metabolic disorder", value: 294, style: { color: "#FCB467", labelColor: "#9C5A13" } },
-  { label: "Inflammatory measurement", value: 201, style: { color: "#CDEAC6", labelColor: "#6B8764" } },
-];
-
-
+import { subdisease_treemap, tree } from "./gwas_tree_mappings";
 
 export default function GWASLandingPage() {
   const [expanded, setExpanded] = useState<string | false>(false);
@@ -140,15 +116,15 @@ export default function GWASLandingPage() {
               </div>
             </Box>
           )}
-          data={data}
+          data={ (!expanded || ["Other measurement","Other disease","Other trait"].includes(expanded as string))  ? tree : subdisease_treemap[expanded as string]}
           animation="scale"
           labelPlacement={"topLeft"}
-          treemapStyle={{ padding: 8, borderRadius: 5, paddingOuter: 1, opacity: 1 }}
+          treemapStyle={{ padding: 8, borderRadius: 5, paddingOuter: 1, opacity: 0.5 }}
         />
       </Box>
       <Box sx={{ width: "100%", margin: "auto", mt: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 1 }}>
         {gwasStudyMetadata.loading && <CircularProgress />}
-        {sortedCategories &&
+        {sortedCategories && (!expanded || ["Other measurement","Other disease","Other trait"].includes(expanded as string)) &&
           sortedCategories.map(([term, studies]) => (
             <Accordion
               key={term}

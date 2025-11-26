@@ -560,7 +560,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
       pl: 1, 
       ml: 0// match table start
     }}>
-    Cell type agnostic classification
+    Cell type Agnostic Classification
   </Typography>
           <Table
             //label="Cell type agnostic classification"
