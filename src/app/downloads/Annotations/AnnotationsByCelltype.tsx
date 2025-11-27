@@ -65,6 +65,8 @@ const AnnotationsByCelltype: React.FC<NewAnnotationsByCelltypeProps> = ({ assemb
         assembly={assembly as "GRCh38" | "mm10"}
         divHeight={{ height: 600 }}
         initialState={overrideInitialTableState}
+        //Temporary until we can remove default true value of this prop for all tables
+        disableRowGrouping={false}
       />
     </DownloadContentLayout>
   );

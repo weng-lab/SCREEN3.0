@@ -1,5 +1,6 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
+import type {} from "@weng-lab/ui-components";
 
 export const theme = createTheme({
   palette: {
@@ -37,6 +38,13 @@ export const theme = createTheme({
         root: {
           textTransform: "none",
         },
+      },
+    },
+    // temporary fix until we setup all tables to properly handle row grouping
+    // note: row aggregation and pivoting are currently disabled by default directly in the <Table /> component since we have no clear use case
+    MuiDataGrid: {
+      defaultProps: {
+        disableRowGrouping: true,
       },
     },
   },
