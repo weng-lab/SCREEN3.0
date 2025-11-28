@@ -585,6 +585,7 @@ export function DataMatrices() {
             </Paper>
           )}
           <BiosampleTable
+            label={"Find Biosample"}
             assembly={selectedAssay.assembly === "Human" ? "GRCh38" : "mm10"}
             disableMultipleRowSelection
             rowSelectionModel={{ type: "include", ids: new Set(searchedBiosample ? [searchedBiosample?.name] : []) }}
