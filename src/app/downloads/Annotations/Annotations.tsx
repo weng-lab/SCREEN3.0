@@ -27,24 +27,24 @@ const StyledTreeItem = styled(TreeItem)<TreeItemProps>(({ theme }) => ({
 
 export type Assembly = "GRCh38" | "mm10" | "other";
 
+const Content = ({ tab, assembly }: { tab: string; assembly: Assembly }) => {
+  switch (tab) {
+    case "byClass":
+      return <AnnotationsByClass assembly={assembly} />;
+    case "byCelltype":
+      return <AnnotationsByCelltype assembly={assembly} />;
+    case "geneLinks":
+      return <AnnotationsGeneLinks />;
+    case "ortho":
+      return <AnnotationsOtherOrthologous />;
+    case "functional":
+      return <AnnotationsFunctional assembly={assembly} />;
+  }
+};
+
 const Annotations = () => {
   const [selectedTab, setSelectedTab] = useState<string>("GRCh38/byClass");
   const [assembly, tab] = selectedTab.split("/") as [Assembly, string];
-
-  const Content = () => {
-    switch (tab) {
-      case "byClass":
-        return <AnnotationsByClass assembly={assembly} />;
-      case "byCelltype":
-        return <AnnotationsByCelltype assembly={assembly} />;
-      case "geneLinks":
-        return <AnnotationsGeneLinks />;
-      case "ortho":
-        return <AnnotationsOtherOrthologous />;
-      case "functional":
-        return <AnnotationsFunctional assembly={assembly} />;
-    }
-  };
 
   return (
     <Stack gap={2} height={"100%"} justifyContent={"space-between"}>
@@ -71,9 +71,10 @@ const Annotations = () => {
             <StyledTreeItem itemId="other/ortho" label="Orthologous cCREs" />
           </StyledTreeItem>
         </SimpleTreeView>
-        <Stack flexGrow={1} overflow={"auto"} gap={2}>
+        {/* overflow: visible allows box shadows of buttons to not be clipped */}
+        <Stack flexGrow={1} overflow={"visible"} gap={2}>
           {assembly !== "other" && <AnnotationsHeader assembly={assembly} />}
-          <Content />
+          <Content tab={tab} assembly={assembly} />
         </Stack>
       </Stack>
       <AnnotationsContactUs />
