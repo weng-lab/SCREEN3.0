@@ -127,7 +127,7 @@ export const humanGwasTabs = [
     label: "Biosample Enrichment",
     iconPath: BiosampleEnrichmentIconPath,
     component: BiosampleEnrichment,
-    getIsDisabled: hasNoEnrichmentData,
+   // getIsDisabled: hasNoEnrichmentData,
   },
   {
     route: "variants",

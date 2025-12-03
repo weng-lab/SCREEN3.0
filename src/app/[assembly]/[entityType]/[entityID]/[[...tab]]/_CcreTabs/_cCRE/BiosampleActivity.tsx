@@ -575,7 +575,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             showToolbar={false}
           />
           {silencersData && silencersData.length>0 &&<Table
-           // label="Silencers"
+            label="Silencers"
             rows={ silencersData?.flatMap(item =>
                             item.silencer_studies.map(study => ({                              
                               study:  Silencer_Studies.find(s=>s.value==study).study,
@@ -591,7 +591,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             error={!!errorSilencersData}
             {...disableCsvEscapeChar}
             hideFooter
-            showToolbar={false}
+            //showToolbar={false}
           />
           }
           <div>

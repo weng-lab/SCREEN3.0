@@ -8,7 +8,8 @@ export type ParentTermMetadata = {
 
 export const subdisease_treemap: Record<string, TreemapNode<ParentTermMetadata>[]> ={'Metabolic disorder':
 [
-  { label: "Metabolic disorder", displayValue: 294, style: { color: "#FCB467", labelColor: "#9C5A13" },
+  { label: "Metabolic disorder", displayValue: 294,
+     style: { color: "#FCB467", labelColor: "#9C5A13" },
   children: [ 
   {label: "Nutritional disorder", value: 93, style: {  labelColor: "#9C5A13" }},
   {label: "Gout", value: 41, style: {labelColor: "#9C5A13" }},
@@ -106,7 +107,8 @@ export const subdisease_treemap: Record<string, TreemapNode<ParentTermMetadata>[
   { label: "Intertrochanteric region size", value: 1, style: { labelColor: "#f9719B" } },
   { label: "Arm span", value: 1, style: { labelColor: "#f9719B" } }]}],
 
-  'Cancer':[{ label: "Cancer", displayValue: 1169, style: {  color: "#BB82BC", labelColor: "#683569"   },children: [
+  'Cancer':[{ label: "Cancer", displayValue: 1169, style: {  color: "#BB82BC", labelColor: "#683569"   },
+  children: [
   { label: "Rare genetic tumor", value: 104, style: { labelColor: "#683569" } },
   { label: "Hematopoietic and lymphoid system neoplasm", value: 102, style: { labelColor: "#683569" } },
   { label: "Respiratory system cancer", value: 97, style: { labelColor: "#683569" } },

@@ -2,7 +2,7 @@
 import { LinkComponent } from "common/components/LinkComponent";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { GridColDef } from "@mui/x-data-grid-pro";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, CircularProgress } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, CircularProgress, Button } from "@mui/material";
 import { Table } from "@weng-lab/ui-components";
 import { useTheme } from "@mui/material/styles";
 import GWASLandingHeader from "./GWASLandingHeader";
@@ -12,11 +12,15 @@ import { GwasStudiesMetadata } from "common/types/generated/graphql";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { subdisease_treemap, tree } from "./gwas_tree_mappings";
 
+
+
 export default function GWASLandingPage() {
   const [expanded, setExpanded] = useState<string | false>(false);
+    const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
   const accordionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const theme = useTheme();
-  const gwasStudyMetadata = useGWASStudyMetaData({ entityType: "gwas" });
+  const gwasStudyMetadata = useGWASStudyMetaData({ entityType: "gwas", parent_terms: activeCategory? [activeCategory] : undefined });
 
   useEffect(() => {
     if (expanded && accordionRefs.current[expanded]) {
@@ -27,6 +31,7 @@ export default function GWASLandingPage() {
     }
   }, [expanded]);
 
+  
   // Build categorized studies
   const categorizedStudies: Record<string, GwasStudiesMetadata[]> = useMemo(() => {
     if (!gwasStudyMetadata?.data) return {};
@@ -41,11 +46,45 @@ export default function GWASLandingPage() {
       {} as Record<string, GwasStudiesMetadata[]>
     );
   }, [gwasStudyMetadata]);
+// Build categorized studies for ACTIVE category (layer_2_terms based)
+const active_categorizedStudies = useMemo(() => {
+  if (!activeCategory || !gwasStudyMetadata?.data) return {};
 
+  const studies = gwasStudyMetadata.data;
+
+  // List of second-level disease labels inside activeCategory treemap
+  const layer2Nodes =
+    subdisease_treemap?.[activeCategory]?.[0]?.children?.map((c) => c.label) || [];
+
+  const result: Record<string, GwasStudiesMetadata[]> = {};
+
+  // Initialize empty arrays
+  for (const label of layer2Nodes) {
+    result[label] = [];
+  }
+
+  // Assign studies based on layer_2_terms
+  for (const study of studies) {
+    const layer2Terms = study.layer_2_terms || [];
+
+    for (const label of layer2Nodes) {
+      if (layer2Terms.includes(label.toLowerCase())) {
+        result[label].push(study);
+      }
+    }
+  }
+
+  return result;
+}, [activeCategory, gwasStudyMetadata]);
+console.log(active_categorizedStudies,"active_categorizedStudies")
   // Sort by number of studies
   const sortedCategories = useMemo(
     () => Object.entries(categorizedStudies).sort((a, b) => b[1].length - a[1].length),
     [categorizedStudies]
+  );
+   const sortedActiveCategories = useMemo(
+    () => Object.entries(active_categorizedStudies).sort((a, b) => b[1].length - a[1].length),
+    [active_categorizedStudies]
   );
 
   const studies_columns: GridColDef<GwasStudiesMetadata>[] = [
@@ -55,9 +94,10 @@ export default function GWASLandingPage() {
       renderCell: (params) => (
         <LinkComponent
           href={
-            !params.row.has_enrichment_info
-              ? `/GRCh38/gwas/${params.row.studyid}/variants`
-              : `/GRCh38/gwas/${params.row.studyid}/biosample_enrichment`
+            //!params.row.has_enrichment_info
+             // ? `/GRCh38/gwas/${params.row.studyid}/variants`
+             // : 
+              `/GRCh38/gwas/${params.row.studyid}/biosample_enrichment`
           }
         >
           {params.value}
@@ -90,11 +130,40 @@ export default function GWASLandingPage() {
       headerName: "Biosample Enrichment",
       valueGetter: (value: boolean) => value ? "Available" : "Not Available" ,
     },
+    {
+      field: "total_ld_blocks",
+      headerName: "Total LD blocks",
+      
+    },
   ];
+  const onNodeClicked = (node: any) => {
+    const label = node.label;
 
+    const isTerminal = ["Other disease", "Other trait", "Other measurement"].includes(label);
+
+    if (!activeCategory && !isTerminal) {
+      setActiveCategory(label);
+      setExpanded(false);
+      return;
+    }
+
+    setExpanded(label);
+  };
   return (
     <Box sx={{ marginX: "5%", marginY: 2 }}>
       <GWASLandingHeader />
+         {/* Back button */}
+      {activeCategory && (
+        <Button
+          sx={{ mb: 2 }}
+          onClick={() => {
+            setActiveCategory(null);
+            setExpanded(false);
+          }}
+        >
+          ← Back to all categories
+        </Button>
+      )}
       <Box
         sx={{
           height: 400, // or use theme.spacing() / vh / %
@@ -103,9 +172,7 @@ export default function GWASLandingPage() {
         }}
       >
         <Treemap
-          onNodeClicked={(point) => {
-            setExpanded(point.label);
-          }}
+          onNodeClicked={onNodeClicked}
           tooltipBody={(node) => (
             <Box maxWidth={300}>
               <div>
@@ -116,7 +183,9 @@ export default function GWASLandingPage() {
               </div>
             </Box>
           )}
-          data={ (!expanded || ["Other measurement","Other disease","Other trait"].includes(expanded as string))  ? tree : subdisease_treemap[expanded as string]}
+        //  data={ (!expanded || ["Other measurement","Other disease","Other trait"].includes(expanded as string))  ? tree : subdisease_treemap[expanded as string]}
+          data={!activeCategory ? tree : subdisease_treemap[activeCategory]}
+
           animation="scale"
           labelPlacement={"topLeft"}
           treemapStyle={{ padding: 8, borderRadius: 5, paddingOuter: 1, opacity: 0.5 }}
@@ -124,7 +193,7 @@ export default function GWASLandingPage() {
       </Box>
       <Box sx={{ width: "100%", margin: "auto", mt: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 1 }}>
         {gwasStudyMetadata.loading && <CircularProgress />}
-        {sortedCategories && (!expanded || ["Other measurement","Other disease","Other trait"].includes(expanded as string)) &&
+        {sortedCategories && !activeCategory  &&
           sortedCategories.map(([term, studies]) => (
             <Accordion
               key={term}
@@ -148,6 +217,50 @@ export default function GWASLandingPage() {
               >
                 <Typography variant="h6">
                   {term} ({studies.length.toLocaleString()})
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box sx={{ height: 500, width: "100%" }}>
+                  {
+                    <Table
+                      showToolbar
+                      rows={studies.map((s) => ({ id: s.studyid, ...s })) || []}
+                      columns={studies_columns}
+                      loading={gwasStudyMetadata.loading}
+                      label={`${term} studies`}
+                      emptyTableFallback={"No studies"}
+                      divHeight={{ height: "100%", minHeight: "500px", maxHeight: "300px" }}
+                      initialState={{ sorting: { sortModel: [{ field: "has_enrichment_info", sort: "asc" }] } }}
+                    />
+                  }
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+          ))}
+           {sortedActiveCategories && activeCategory  &&
+          sortedActiveCategories.map(([term, studies]) => (
+            <Accordion
+              key={term}
+              expanded={expanded === term}
+              onChange={(_, isExpanded) => setExpanded(isExpanded ? term : false)}
+              slotProps={{ transition: { unmountOnExit: true } }}
+              disabled={studies.length === 0}
+              ref={(el) => {
+                accordionRefs.current[term] = el;
+              }}
+              disableGutters
+            >
+              <AccordionSummary
+                expandIcon={<KeyboardArrowRightIcon />}
+                sx={{
+                  flexDirection: "row-reverse",
+                  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+                    transform: "rotate(90deg)",
+                  },
+                }}
+              >
+                <Typography variant="h6">
+                  {term.charAt(0).toUpperCase() + term.slice(1)} ({studies.length.toLocaleString()})
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
