@@ -21,9 +21,9 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
     data: dataGWASMetadata,
     loading: loadingGWASMetadata,
     error: errorGWASMetadata,
-  } = useGWASStudyMetaData({ studyid: [entity.entityID], entityType: "gwas"  });
+  } = useGWASStudyMetaData({ studyid: [entity.entityID], entityType: "gwas" });
 
-  console.log("dataGWASMetadata",dataGWASMetadata)
+
   const [selected, setSelected] = useState<GWASEnrichment[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<GWASEnrichment[]>([]);
 
@@ -42,29 +42,26 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
   return (
     <>
       <Table
-            label={`GWAS Study Metadata`}
-            columns={[  
-              {
-                headerName: "Platform",
-                field: "platform",
-              },
-            
-               {
-                headerName: "Initial sample size",
-                field: "initial_sample_size",
-                
-                
-              },
-              {
-                headerName: "Replication sample size",
-                field: "replication_sample_size",
-              }
-            ]}
-            rows={dataGWASMetadata}
-            loading={loadingGWASMetadata}
-            error={!!errorGWASMetadata}
-            
-          />
+        label={`GWAS Study Metadata`}
+        columns={[
+          {
+            headerName: "Platform",
+            field: "platform",
+          },
+          {
+            headerName: "Initial sample size",
+            field: "initial_sample_size",
+
+          },
+          {
+            headerName: "Replication sample size",
+            field: "replication_sample_size",
+          }
+        ]}
+        rows={dataGWASMetadata}
+        loading={loadingGWASMetadata}
+        error={!!errorGWASMetadata}
+      />
       <TwoPaneLayout
         TableComponent={
           <BiosampleEnrichmentTable

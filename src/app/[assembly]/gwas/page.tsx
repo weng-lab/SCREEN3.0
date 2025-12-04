@@ -12,15 +12,12 @@ import { GwasStudiesMetadata } from "common/types/generated/graphql";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { subdisease_treemap, tree } from "./gwas_tree_mappings";
 
-
-
 export default function GWASLandingPage() {
   const [expanded, setExpanded] = useState<string | false>(false);
-    const [activeCategory, setActiveCategory] = useState<string | null>(null);
-
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const accordionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const theme = useTheme();
-  const gwasStudyMetadata = useGWASStudyMetaData({ entityType: "gwas", parent_terms: activeCategory? [activeCategory] : undefined });
+  const gwasStudyMetadata = useGWASStudyMetaData({ entityType: "gwas", parent_terms: activeCategory ? [activeCategory] : undefined });
 
   useEffect(() => {
     if (expanded && accordionRefs.current[expanded]) {
@@ -31,7 +28,7 @@ export default function GWASLandingPage() {
     }
   }, [expanded]);
 
-  
+
   // Build categorized studies
   const categorizedStudies: Record<string, GwasStudiesMetadata[]> = useMemo(() => {
     if (!gwasStudyMetadata?.data) return {};
@@ -46,43 +43,43 @@ export default function GWASLandingPage() {
       {} as Record<string, GwasStudiesMetadata[]>
     );
   }, [gwasStudyMetadata]);
-// Build categorized studies for ACTIVE category (layer_2_terms based)
-const active_categorizedStudies = useMemo(() => {
-  if (!activeCategory || !gwasStudyMetadata?.data) return {};
+  // Build categorized studies for ACTIVE category (layer_2_terms based)
+  const active_categorizedStudies = useMemo(() => {
+    if (!activeCategory || !gwasStudyMetadata?.data) return {};
 
-  const studies = gwasStudyMetadata.data;
+    const studies = gwasStudyMetadata.data;
 
-  // List of second-level disease labels inside activeCategory treemap
-  const layer2Nodes =
-    subdisease_treemap?.[activeCategory]?.[0]?.children?.map((c) => c.label) || [];
+    // List of second-level disease labels inside activeCategory treemap
+    const layer2Nodes =
+      subdisease_treemap?.[activeCategory]?.[0]?.children?.map((c) => c.label) || [];
 
-  const result: Record<string, GwasStudiesMetadata[]> = {};
+    const result: Record<string, GwasStudiesMetadata[]> = {};
 
-  // Initialize empty arrays
-  for (const label of layer2Nodes) {
-    result[label] = [];
-  }
-
-  // Assign studies based on layer_2_terms
-  for (const study of studies) {
-    const layer2Terms = study.layer_2_terms || [];
-
+    // Initialize empty arrays
     for (const label of layer2Nodes) {
-      if (layer2Terms.includes(label.toLowerCase())) {
-        result[label].push(study);
+      result[label] = [];
+    }
+
+    // Assign studies based on layer_2_terms
+    for (const study of studies) {
+      const layer2Terms = study.layer_2_terms || [];
+
+      for (const label of layer2Nodes) {
+        if (layer2Terms.includes(label.toLowerCase())) {
+          result[label].push(study);
+        }
       }
     }
-  }
 
-  return result;
-}, [activeCategory, gwasStudyMetadata]);
-console.log(active_categorizedStudies,"active_categorizedStudies")
+    return result;
+  }, [activeCategory, gwasStudyMetadata]);
+
   // Sort by number of studies
   const sortedCategories = useMemo(
     () => Object.entries(categorizedStudies).sort((a, b) => b[1].length - a[1].length),
     [categorizedStudies]
   );
-   const sortedActiveCategories = useMemo(
+  const sortedActiveCategories = useMemo(
     () => Object.entries(active_categorizedStudies).sort((a, b) => b[1].length - a[1].length),
     [active_categorizedStudies]
   );
@@ -95,9 +92,9 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
         <LinkComponent
           href={
             //!params.row.has_enrichment_info
-             // ? `/GRCh38/gwas/${params.row.studyid}/variants`
-             // : 
-              `/GRCh38/gwas/${params.row.studyid}/biosample_enrichment`
+            // ? `/GRCh38/gwas/${params.row.studyid}/variants`
+            // : 
+            `/GRCh38/gwas/${params.row.studyid}/biosample_enrichment`
           }
         >
           {params.value}
@@ -108,7 +105,6 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
       field: "population",
       headerName: "Population",
       valueGetter: (value: string) => value.toUpperCase(),
-
     },
     {
       field: "studyid",
@@ -128,17 +124,15 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
     {
       field: "has_enrichment_info",
       headerName: "Biosample Enrichment",
-      valueGetter: (value: boolean) => value ? "Available" : "Not Available" ,
+      valueGetter: (value: boolean) => value ? "Available" : "Not Available",
     },
     {
       field: "total_ld_blocks",
       headerName: "Total LD blocks",
-      
     },
   ];
   const onNodeClicked = (node: any) => {
     const label = node.label;
-
     const isTerminal = ["Other disease", "Other trait", "Other measurement"].includes(label);
 
     if (!activeCategory && !isTerminal) {
@@ -149,21 +143,14 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
 
     setExpanded(label);
   };
+
+  const backToGWASHome = () => {
+    setActiveCategory(null);
+    setExpanded(false);
+  };
   return (
     <Box sx={{ marginX: "5%", marginY: 2 }}>
-      <GWASLandingHeader />
-         {/* Back button */}
-      {activeCategory && (
-        <Button
-          sx={{ mb: 2 }}
-          onClick={() => {
-            setActiveCategory(null);
-            setExpanded(false);
-          }}
-        >
-          ← Back to all categories
-        </Button>
-      )}
+      <GWASLandingHeader activeCategory={activeCategory} backToGWASHome={backToGWASHome} />          
       <Box
         sx={{
           height: 400, // or use theme.spacing() / vh / %
@@ -182,10 +169,8 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
                 <strong> {node.value}</strong>
               </div>
             </Box>
-          )}
-        //  data={ (!expanded || ["Other measurement","Other disease","Other trait"].includes(expanded as string))  ? tree : subdisease_treemap[expanded as string]}
+          )}          
           data={!activeCategory ? tree : subdisease_treemap[activeCategory]}
-
           animation="scale"
           labelPlacement={"topLeft"}
           treemapStyle={{ padding: 8, borderRadius: 5, paddingOuter: 1, opacity: 0.5 }}
@@ -193,7 +178,7 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
       </Box>
       <Box sx={{ width: "100%", margin: "auto", mt: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 1 }}>
         {gwasStudyMetadata.loading && <CircularProgress />}
-        {sortedCategories && !activeCategory  &&
+        {sortedCategories && !activeCategory &&
           sortedCategories.map(([term, studies]) => (
             <Accordion
               key={term}
@@ -237,7 +222,7 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
               </AccordionDetails>
             </Accordion>
           ))}
-           {sortedActiveCategories && activeCategory  &&
+        {sortedActiveCategories && activeCategory &&
           sortedActiveCategories.map(([term, studies]) => (
             <Accordion
               key={term}
@@ -264,8 +249,7 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Box sx={{ height: 500, width: "100%" }}>
-                  {
+                <Box sx={{ height: 500, width: "100%" }}>                  
                     <Table
                       showToolbar
                       rows={studies.map((s) => ({ id: s.studyid, ...s })) || []}
@@ -275,8 +259,7 @@ console.log(active_categorizedStudies,"active_categorizedStudies")
                       emptyTableFallback={"No studies"}
                       divHeight={{ height: "100%", minHeight: "500px", maxHeight: "300px" }}
                       initialState={{ sorting: { sortModel: [{ field: "has_enrichment_info", sort: "asc" }] } }}
-                    />
-                  }
+                    />                  
                 </Box>
               </AccordionDetails>
             </Accordion>
