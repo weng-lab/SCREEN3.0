@@ -16,6 +16,15 @@ const GWAS_STUDY_METADATA_Query = gql(`
         total_ld_blocks
         ld_blocks_overlapping_ccres
         overlapping_ccres
+        journal
+        link
+        study 
+        initial_sample_size
+        replication_sample_size         
+        platform       
+        layer_2_terms
+        total_ld_blocks
+        genotyping_technology
     }
 }
 `);

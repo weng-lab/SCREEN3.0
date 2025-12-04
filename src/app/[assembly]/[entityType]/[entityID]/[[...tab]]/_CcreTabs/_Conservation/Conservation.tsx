@@ -109,7 +109,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       columns={conservationCols}
       rows={dataCcre}
       hideFooter
-      showToolbar={false}
+      //showToolbar={false}
       emptyTableFallback={"No Conservation data found"}
     />}
     <Table
