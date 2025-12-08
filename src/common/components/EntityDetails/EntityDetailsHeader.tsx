@@ -8,6 +8,7 @@ import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { AnyEntityType } from "../../entityTabsConfig";
+import { useMemo } from "react";
 
 export type EntityDetailsHeaderProps = {
   assembly: Assembly;
@@ -17,7 +18,7 @@ export type EntityDetailsHeaderProps = {
 
 export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
   const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
-
+  console.log(entityMetadata);
   const c =
     entityMetadata?.__typename !== "GwasStudiesMetadata" &&
     (entityMetadata?.__typename === "SCREENSearchResult"
@@ -40,6 +41,11 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
   const alt =
     entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.alt : "";
 
+  const strand = entityMetadata?.__typename === "Gene" ? entityMetadata.strand : "";
+
+  // Plus one to include both end and start bases ()
+  const len = (c && c.end - c.start + 1) || -1;
+
   /**
    * @todo this should be put in a utils file
    */
@@ -47,7 +53,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
 
   const subtitle =
     entityType === "gene" ? (
-      geneID
+      "Ensebml ID: " + geneID + ' | Orientation: "' + strand + '" | Size: ' + len.toLocaleString() + " bases"
     ) : entityType === "ccre" ? (
       <>{ccreClassDescriptions[ccreClass] ?? ""}</>
     ) : entityType === "variant" ? (
