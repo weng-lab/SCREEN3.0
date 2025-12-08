@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
-import { Stack, Tab, Tabs } from "@mui/material";
+import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "common/types/generated";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
@@ -14,6 +14,9 @@ import { AssayWheel } from "common/components/BiosampleTables/AssayWheel";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { CCRE_CLASSES } from "common/consts";
 import { BiosampleRow } from "./types";
+import { useSilencersData } from "common/hooks/useSilencersData";
+import { Silencer_Studies } from "./consts";
+import { LinkComponent } from "common/components/LinkComponent";
 
 const classifyCcre = (
   scores: { dnase: number; atac: number; h3k4me3: number; h3k27ac: number; ctcf: number; tf: string },
@@ -124,6 +127,28 @@ const ctAgnosticCols: GridColDef[] = [
   },
 ];
 
+const silencersDataCols: GridColDef[] = [
+  {
+    headerName: "Study",
+    field: "study",
+    valueGetter: (value, row) => row.study,
+  },
+  {
+    headerName: "PMID",
+    field: "pmid",
+    valueGetter: (value, row) => row.pmid,
+    renderCell: (params) => (
+      <LinkComponent href={params.row.pubmed_link} showExternalIcon openInNewTab>
+        {params.row.pmid}
+      </LinkComponent>
+    ),
+  },
+  {
+    headerName: "Method",
+    field: "method",
+    valueGetter: (value, row) => row.method,
+  },
+];
 //This is used to prevent sorting from happening when clicking on the header checkbox
 const StopPropagationWrapper = (params) => (
   <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
@@ -313,11 +338,16 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     setTab(newValue as "tables" | "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf");
   };
 
+  const { data: cCREdata, error: errorCcreData } = useCcreData({
+    accession: entity.entityID,
+    assembly: entity.assembly,
+  });
+
   const {
-    data: cCREdata,
-    loading: loadingCcreData,
-    error: errorCcreData,
-  } = useCcreData({ accession: entity.entityID, assembly: entity.assembly });
+    data: silencersData,
+    loading: loadingSilencersData,
+    error: errorSilencersData,
+  } = useSilencersData({ accession: [entity.entityID], assembly: entity.assembly });
 
   const coordinates: GenomicRange = {
     chromosome: cCREdata?.chrom,
@@ -341,11 +371,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     },
   });
 
-  const {
-    data: data_biosampleZs,
-    loading: loading_biosampleZs,
-    error: error_biosampleZs,
-  } = useQuery(BIOSAMPLE_Zs, {
+  const { data: data_biosampleZs, error: error_biosampleZs } = useQuery(BIOSAMPLE_Zs, {
     variables: {
       assembly: entity.assembly.toLowerCase(),
       accession: entity.entityID,
@@ -355,11 +381,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   /**
    * Fetch mapping between biosample and if cCRE is TF in that sample, displayed in table and used for classification
    */
-  const {
-    data: data_ccre_tf,
-    loading: loading_ccre_tf,
-    error: error_ccre_tf,
-  } = useQuery(GET_CCRE_CT_TF, {
+  const { data: data_ccre_tf, error: error_ccre_tf } = useQuery(GET_CCRE_CT_TF, {
     variables: {
       assembly: entity.assembly.toLowerCase() === "mm10" ? "mm10" : "GRCh38",
       accession: entity.entityID,
@@ -369,11 +391,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   /**
    * fetch genes within 2M bp region to find distance to nearest TSS, used for classification.
    */
-  const {
-    loading: loadingNearbyGenes,
-    data: dataNearbyGenes,
-    error: errorNearbyGenes,
-  } = useQuery(NEARBY_GENES, {
+  const { data: dataNearbyGenes, error: errorNearbyGenes } = useQuery(NEARBY_GENES, {
     variables: {
       assembly: entity.assembly.toLowerCase(),
       geneSearchChrom: coordinates.chromosome,
@@ -516,8 +534,20 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
       </Tabs>
       {tab === "tables" ? (
         <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
+          <Typography
+            variant="body1"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 400,
+              color: "text.primary",
+              pl: 1,
+              ml: 0, // match table start
+            }}
+          >
+            Cell Type Agnostic Classification
+          </Typography>
           <Table
-            label="Cell type agnostic classification"
             rows={ctAgnosticRow}
             columns={ctAgnosticCols}
             loading={loading_Ct_Agnostic}
@@ -525,7 +555,31 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
             error={!!error_Ct_Agnostic}
             {...disableCsvEscapeChar}
+            hideFooter
+            showToolbar={false}
           />
+          {silencersData && silencersData.length > 0 && (
+            <Table
+              rows={
+                silencersData?.flatMap((item) =>
+                  item.silencer_studies.map((study) => ({
+                    study: Silencer_Studies.find((s) => s.value == study).study,
+                    pmid: Silencer_Studies.find((s) => s.value == study).pubmed_id,
+                    method: Silencer_Studies.find((s) => s.value == study).method,
+                    pubmed_link: Silencer_Studies.find((s) => s.value == study).pubmed_link,
+                  }))
+                ) || []
+              }
+              columns={silencersDataCols}
+              loading={loadingSilencersData}
+              //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+              divHeight={!silencersData ? { height: "182px" } : undefined}
+              error={!!errorSilencersData}
+              {...disableCsvEscapeChar}
+              hideFooter
+              showToolbar={false}
+            />
+          )}
           <div>
             <ProportionsBar
               data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}

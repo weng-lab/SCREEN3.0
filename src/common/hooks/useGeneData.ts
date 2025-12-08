@@ -103,12 +103,12 @@ export const useGeneData = <T extends UseGeneDataParams>({
 
       // Add v29 genes first
       v29Query.data?.gene?.forEach((gene) => {
-        if (gene) geneMap.set(gene.id, gene);
+        if (gene) geneMap.set(gene.id.split(".")[0], gene);
       });
 
       // Override with v40 genes
       v40Query.data?.gene?.forEach((gene) => {
-        if (gene) geneMap.set(gene.id, gene);
+        if (gene) geneMap.set(gene.id.split(".")[0], gene);
       });
 
       // Convert back to array
