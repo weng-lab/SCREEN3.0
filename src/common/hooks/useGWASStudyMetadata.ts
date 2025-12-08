@@ -57,7 +57,12 @@ export const useGWASStudyMetaData = ({
   });
 
   return {
-    data: data?.getGWASStudiesMetadata,
+    data: data?.getGWASStudiesMetadata.map((d)=> {
+    return {
+      ...d,      
+      layer_2_terms: !d.layer_2_terms ? ["other"] : d.layer_2_terms
+
+    }}),
     loading,
     error,
   } as UseGWASStudyMetaDataReturn;

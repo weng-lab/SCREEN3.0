@@ -129,6 +129,7 @@ export const subdisease_treemap: Record<string, TreemapNode<ParentTermMetadata>[
   { label: "Skin neoplasm", value: 20, style: { labelColor: "#683569" } },
   { label: "Mesenchymal cell neoplasm", value: 20, style: { labelColor: "#683569" } },
   { label: "Melanocytic neoplasm", value: 19, style: { labelColor: "#683569" } },
+  { label: "Other", value: 15, style: { labelColor: "#683569" } },
   { label: "Virus associated tumor", value: 14, style: { labelColor: "#683569" } },
   { label: "Epithelial neoplasm", value: 14, style: { labelColor: "#683569" } },
   { label: "Head and neck neoplasia", value: 14, style: { labelColor: "#683569" } },
@@ -138,6 +139,7 @@ export const subdisease_treemap: Record<string, TreemapNode<ParentTermMetadata>[
   { label: "Secondary malignant neoplasm", value: 7, style: { labelColor: "#683569" } },
   { label: "Myeloproliferative disorder", value: 7, style: { labelColor: "#683569" } },
   { label: "High grade malignant neoplasm", value: 7, style: { labelColor: "#683569" } },
+  
   { label: "Sarcoma", value: 6, style: { labelColor: "#683569" } },
   { label: "Germ cell tumor", value: 6, style: { labelColor: "#683569" } },
   { label: "Pre-malignant neoplasm", value: 4, style: { labelColor: "#683569" } },
