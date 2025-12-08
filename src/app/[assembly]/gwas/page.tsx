@@ -19,6 +19,7 @@ export default function GWASLandingPage() {
   const theme = useTheme();
   const gwasStudyMetadata = useGWASStudyMetaData({ entityType: "gwas", parent_terms: activeCategory ? [activeCategory] : undefined });
 
+  
   useEffect(() => {
     if (expanded && accordionRefs.current[expanded]) {
       accordionRefs.current[expanded]?.scrollIntoView({
@@ -129,9 +130,10 @@ export default function GWASLandingPage() {
     {
       field: "total_ld_blocks",
       headerName: "Total LD blocks",
-    },
+    }
   ];
   const onNodeClicked = (node: any) => {
+    
     const label = node.label;
     const isTerminal = ["Other disease", "Other trait", "Other measurement"].includes(label);
 
@@ -160,6 +162,7 @@ export default function GWASLandingPage() {
       >
         <Treemap
           onNodeClicked={onNodeClicked}
+           key={activeCategory || "root"}
           tooltipBody={(node) => (
             <Box maxWidth={300}>
               <div>
@@ -177,7 +180,7 @@ export default function GWASLandingPage() {
         />
       </Box>
       <Box sx={{ width: "100%", margin: "auto", mt: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 1 }}>
-        {gwasStudyMetadata.loading && <CircularProgress />}
+        {gwasStudyMetadata.loading && <><CircularProgress size={20}/> <span>Fetching GWAS Studies…</span></>}
         {sortedCategories && !activeCategory &&
           sortedCategories.map(([term, studies]) => (
             <Accordion

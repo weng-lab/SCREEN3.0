@@ -62,7 +62,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
         loading={loadingGWASMetadata}
         error={!!errorGWASMetadata}
       />
-      <TwoPaneLayout
+      {dataGWASEnrichment && dataGWASEnrichment.length > 0 && <TwoPaneLayout
         TableComponent={
           <BiosampleEnrichmentTable
             enrichmentdata={{ data: dataGWASEnrichment, loading: loadingGWASEnrichment, error: errorGWASEnrichment }}
@@ -92,7 +92,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
             ref: lollipopRef,
           },
         ]}
-      />
+      />}
     </>
   );
 };
