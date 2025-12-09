@@ -6,37 +6,63 @@ import { Box, Button, IconButton, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // @weng-lab
-import { Browser, BrowserStoreInstance, TrackStoreInstance } from "@weng-lab/genomebrowser";
+import { BigWigConfig, Browser, createTrackStoreMemo, DisplayMode, TrackType } from "@weng-lab/genomebrowser";
 import { GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
+import { ASSAY_COLORS } from "common/colors";
+import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { GenomicRange } from "common/types/globalTypes";
+import useLocalBrowser from "./Context/useBrowserStore";
 import HighlightDialog from "./Dialogs/HighlightDialog";
 import { expandCoordinates, randomColor, SearchToScreenTypes } from "./utils";
-import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 
 // icons
 import PageviewIcon from "@mui/icons-material/Pageview";
-import DomainDisplay from "./Controls/DomainDisplay";
 import ControlButtons from "./Controls/ControlButtons";
+import DomainDisplay from "./Controls/DomainDisplay";
 import TrackSelect from "./TrackSelect/TrackSelect";
 
 type GenomeBrowserViewProps = EntityViewComponentProps & {
   entityCoordinates: GenomicRange;
-  browserStore: BrowserStoreInstance;
-  trackStore: TrackStoreInstance;
 };
 
-export default function GenomeBrowserView({
-  entity,
-  entityCoordinates,
-  browserStore,
-  trackStore,
-}: GenomeBrowserViewProps) {
+export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeBrowserViewProps) {
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
   const name = entity.entityType === "region" ? entity.entityID.replace("%3A", ":") : entity.entityID;
+
+  const browserStore = useLocalBrowser(entity.entityID, entityCoordinates, entity.entityType);
+
+  // Initialize track store with interaction functions (on click, on hover, etc)
+  const trackStore = createTrackStoreMemo(
+    [
+      {
+        id: "gene-track",
+        title: "GENCODE Genes",
+        trackType: TrackType.Transcript,
+        displayMode: DisplayMode.Squish,
+        color: "#2E8B57",
+        titleSize: 12,
+        height: 100,
+        assembly: "GRCh38",
+        version: 40,
+      },
+      {
+        id: "default-dnase",
+        title: "Agregated DNase-seq signal, all Registry biosamples",
+        shortLabel: "DNase",
+        titleSize: 12,
+        trackType: TrackType.BigWig,
+        displayMode: DisplayMode.Full,
+        color: ASSAY_COLORS.dnase,
+        height: 50,
+        url: "https://downloads.wenglab.org/DNAse_All_ENCODE_MAR20_2024_merged.bw",
+      } as BigWigConfig,
+    ],
+    []
+  );
 
   const addHighlight = browserStore((state) => state.addHighlight);
   const setDomain = browserStore((state) => state.setDomain);

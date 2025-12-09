@@ -3,7 +3,6 @@ import { Alert, CircularProgress } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { useMemo } from "react";
-import useLocalBrowser from "./Context/useBrowserStore";
 import GenomeBrowserView from "./GenomeBrowserView";
 
 export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
@@ -16,8 +15,6 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
     } else return data.coordinates;
   }, [data]);
 
-  const { browserStore, trackStore } = useLocalBrowser(entity.entityID, coordinates, entity.entityType);
-
   if (loading) return <CircularProgress />;
   if (error)
     return (
@@ -26,12 +23,5 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
       </Alert>
     );
 
-  return (
-    <GenomeBrowserView
-      entity={entity}
-      entityCoordinates={coordinates}
-      browserStore={browserStore}
-      trackStore={trackStore}
-    />
-  );
+  return <GenomeBrowserView entity={entity} entityCoordinates={coordinates} />;
 }
