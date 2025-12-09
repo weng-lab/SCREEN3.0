@@ -144,6 +144,6 @@ export const HumanColorMap: Record<
   "cls-ovary": { fill: "#6fa3cc", activeFill: "#ffa092" },
   "cls-testis": { fill: "#6fa3cc", activeFill: "#ffa092" },
   "cls-lg-intestine": { fill: "#1f659e", activeFill: "#c10000" },
-  "cls-epiglottis": { fill: "#3a709c", activeFill: "#f55f66" },
+  // "cls-epiglottis": { fill: "#3a709c", activeFill: "#f55f66" },
   "cls-breast": { fill: "#c7d9e7", activeFill: "#c77f37" },
 };

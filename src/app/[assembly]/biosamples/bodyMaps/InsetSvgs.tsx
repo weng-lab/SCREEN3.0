@@ -49,7 +49,7 @@ const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelect
     >
       {Object.keys(cellsList).map((organ) => {
         const active = isSelected(organ);
-        const src = `/insetSVGs/${imagePrefix}${organ.replace(" ", "_")}${active ? "" : "_deselected"}.svg`;
+        const src = `/insetSVGs/${imagePrefix}${organ.replace(/ /g, "_").toLowerCase()}${active ? "" : "_deselected"}.svg`;
 
         return (
           <Tooltip key={organ} title={capitalizeWords(organ)} arrow>

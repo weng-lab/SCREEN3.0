@@ -4453,13 +4453,13 @@ export const humanPaths: SvgElement[] = [
       d: "M268.17,111.29a7.35,7.35,0,0,0-8.34,3.33",
     },
   },
-  {
-    tag: "path",
-    props: {
-      className: "cls-epiglottis",
-      d: "M295.62,138.27s-.29,6.41,4.35,6.1S295.3,135.49,295.62,138.27Z",
-    },
-  },
+  // {
+  //   tag: "path",
+  //   props: {
+  //     className: "cls-epiglottis",
+  //     d: "M295.62,138.27s-.29,6.41,4.35,6.1S295.3,135.49,295.62,138.27Z",
+  //   },
+  // },
   {
     tag: "path",
     props: {
