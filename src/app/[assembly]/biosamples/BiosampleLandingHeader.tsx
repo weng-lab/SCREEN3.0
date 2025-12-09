@@ -7,11 +7,7 @@ type BiosampleLandingHeaderProps = {
 };
 
 const BiosampleLandingHeader = ({ assembly }: BiosampleLandingHeaderProps) => {
-  const link =
-    assembly === "GRCh38"
-      ? `https://www.encodeproject.org/reference-epigenome-matrix/?type=Experiment&control_type!=*&related_series.@type=ReferenceEpigenome&status=released&replicates.library.biosample.donor.organism.scientific_name=Homo+sapiens`
-      : `https://www.encodeproject.org/reference-epigenome-matrix/?type=Experiment&control_type!=*&related_series.@type=ReferenceEpigenome&status=released&replicates.library.biosample.donor.organism.scientific_name=Mus+musculus`;
-
+  const link = `https://www.encodeproject.org/reference-epigenome-matrix/?type=Experiment&control_type!=*&related_series.@type=ReferenceEpigenome&status=released&replicates.library.biosample.donor.organism.scientific_name=${assembly === "GRCh38" ? "Homo+sapiens" : "Mus+musculus"}`;
   return (
     <Stack
       sx={{ p: 1, mb: 2 }}
