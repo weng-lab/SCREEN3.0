@@ -17,7 +17,6 @@ export type EntityDetailsHeaderProps = {
 
 export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
   const { data: entityMetadata, loading, error: _ } = useEntityMetadata({ assembly, entityType, entityID });
-  console.log(entityMetadata);
   const c =
     entityMetadata?.__typename !== "GwasStudiesMetadata" &&
     (entityMetadata?.__typename === "SCREENSearchResult"
