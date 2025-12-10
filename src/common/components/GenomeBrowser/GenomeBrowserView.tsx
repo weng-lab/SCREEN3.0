@@ -63,7 +63,7 @@ const expansionPercentages: Record<AnyEntityType, number> = {
   ccre: 20,
   gene: 0.2,
   variant: 5.0,
-  region: 0.25,
+  region: 0,
   gwas: 0.2,
 };
 
@@ -313,7 +313,7 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
             onSearchSubmit={handeSearchSubmit}
             queries={["Gene", "SNP", "cCRE", "Coordinate"]}
             geneLimit={3}
-            sx={{ minWidth: "200px", width: "350px", flexShrink: 1 }}
+            sx={{ minWidth: "250px", width: "450px", flexShrink: 1 }}
             slots={{
               button: (
                 <IconButton sx={{ color: theme.palette.primary.main }}>

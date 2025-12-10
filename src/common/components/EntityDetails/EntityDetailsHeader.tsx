@@ -35,16 +35,12 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
 
   //All data used in the subtitle of the element header based on the element type
   const geneID = entityMetadata?.__typename === "Gene" ? entityMetadata?.id : "";
+  const strand = entityMetadata?.__typename === "Gene" ? entityMetadata.strand : "";
   const ccreClass = entityMetadata?.__typename === "SCREENSearchResult" ? entityMetadata?.pct : "";
   const ref =
     entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.ref : "";
   const alt =
     entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.alt : "";
-
-  const strand = entityMetadata?.__typename === "Gene" ? entityMetadata.strand : "";
-
-  // Plus one to include both end and start bases ()
-  const len = (c && c.end - c.start + 1) || -1;
 
   /**
    * @todo this should be put in a utils file
@@ -79,7 +75,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
     >
       <Grid size={{ xs: 12, sm: 9 }}>
         <Stack>
-          {/*<Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>*/}
+          <Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>
           <Typography variant="h4">
             {entityType === "gene" ? <i>{entityID}</i> : entityID}
             {/* Loading skeleton for gene description */}
@@ -127,9 +123,6 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
                 />
               </Button>
             </Grid>
-          </Grid>
-          <Grid display={"flex"} justifyContent={{ xs: "flex-starrt", sm: "flex-end" }} order={{ xs: 1, sm: 2 }}>
-            {/*<Typography>{loading ? <Skeleton width={215} /> : coordinatesDisplay}</Typography>*/}
           </Grid>
         </Grid>
       </Grid>
