@@ -8,7 +8,6 @@ import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { AnyEntityType } from "../../entityTabsConfig";
-import { useMemo } from "react";
 
 export type EntityDetailsHeaderProps = {
   assembly: Assembly;
@@ -17,7 +16,7 @@ export type EntityDetailsHeaderProps = {
 };
 
 export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
-  const { data: entityMetadata, loading, error } = useEntityMetadata({ assembly, entityType, entityID });
+  const { data: entityMetadata, loading, error: _ } = useEntityMetadata({ assembly, entityType, entityID });
   console.log(entityMetadata);
   const c =
     entityMetadata?.__typename !== "GwasStudiesMetadata" &&
