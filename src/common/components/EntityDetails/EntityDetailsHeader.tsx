@@ -53,7 +53,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
 
   const subtitle =
     entityType === "gene" ? (
-      "Ensebml ID: " + geneID + ' | Orientation: "' + strand + '" | Size: ' + len.toLocaleString() + " bases"
+      geneID + " | " + (strand === "+" ? "Plus strand" : "Minus strand")
     ) : entityType === "ccre" ? (
       <>{ccreClassDescriptions[ccreClass] ?? ""}</>
     ) : entityType === "variant" ? (
@@ -79,7 +79,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
     >
       <Grid size={{ xs: 12, sm: 9 }}>
         <Stack>
-          <Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>
+          {/*<Typography variant="subtitle1">{formatPortal(entityType)} Details</Typography>*/}
           <Typography variant="h4">
             {entityType === "gene" ? <i>{entityID}</i> : entityID}
             {/* Loading skeleton for gene description */}
@@ -90,6 +90,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             ) : (
               ""
             )}
+            <Typography>{loading ? <Skeleton width={215} /> : coordinatesDisplay}</Typography>
           </Typography>
           <Typography>{loading ? <Skeleton width={215} /> : subtitle}</Typography>
         </Stack>
@@ -128,7 +129,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             </Grid>
           </Grid>
           <Grid display={"flex"} justifyContent={{ xs: "flex-starrt", sm: "flex-end" }} order={{ xs: 1, sm: 2 }}>
-            <Typography>{loading ? <Skeleton width={215} /> : coordinatesDisplay}</Typography>
+            {/*<Typography>{loading ? <Skeleton width={215} /> : coordinatesDisplay}</Typography>*/}
           </Grid>
         </Grid>
       </Grid>
