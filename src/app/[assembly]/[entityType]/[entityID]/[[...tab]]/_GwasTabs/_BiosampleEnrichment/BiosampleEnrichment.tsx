@@ -7,13 +7,23 @@ import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnric
 import { BarData, DownloadPlotHandle } from "@weng-lab/visualization";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-
+import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
+import { Table } from "@weng-lab/ui-components";
+import { LinkComponent } from "common/components/LinkComponent";
 const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
   const {
     data: dataGWASEnrichment,
     loading: loadingGWASEnrichment,
     error: errorGWASEnrichment,
   } = useGWASEnrichmentData({ study: entity.entityID });
+
+  const {
+    data: dataGWASMetadata,
+    loading: loadingGWASMetadata,
+    error: errorGWASMetadata,
+  } = useGWASStudyMetaData({ studyid: [entity.entityID], entityType: "gwas" });
+
+
   const [selected, setSelected] = useState<GWASEnrichment[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<GWASEnrichment[]>([]);
 
@@ -31,7 +41,28 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
 
   return (
     <>
-      <TwoPaneLayout
+      <Table
+        label={`GWAS Study Metadata`}
+        columns={[
+          {
+            headerName: "Platform",
+            field: "platform",
+          },
+          {
+            headerName: "Initial sample size",
+            field: "initial_sample_size",
+
+          },
+          {
+            headerName: "Replication sample size",
+            field: "replication_sample_size",
+          }
+        ]}
+        rows={dataGWASMetadata}
+        loading={loadingGWASMetadata}
+        error={!!errorGWASMetadata}
+      />
+      {dataGWASEnrichment && dataGWASEnrichment.length > 0 && <TwoPaneLayout
         TableComponent={
           <BiosampleEnrichmentTable
             enrichmentdata={{ data: dataGWASEnrichment, loading: loadingGWASEnrichment, error: errorGWASEnrichment }}
@@ -61,7 +92,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
             ref: lollipopRef,
           },
         ]}
-      />
+      />}
     </>
   );
 };

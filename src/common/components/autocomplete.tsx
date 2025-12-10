@@ -116,9 +116,10 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
       case "SNP":
         url = `/${props.assembly}/variant/${r.title}`;
         break;
-      case "Study": {
-        const be = r.description?.split("\n").pop().trim();
-        url = be !== "Biosample Enrichment" ? `/GRCh38/gwas/${r.id}/variants` : `/GRCh38/gwas/${r.id}`;
+      case "Study":
+        //let be = r.description?.split("\n").pop().trim();
+        //url = be !== "Biosample Enrichment" ? `/GRCh38/gwas/${r.id}/variants` : `/GRCh38/gwas/${r.id}`;
+        url = `/GRCh38/gwas/${r.id}`;
         break;
       }
     }
