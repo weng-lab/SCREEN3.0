@@ -62,6 +62,10 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
       ""
     );
 
+  /**
+   * @todo this layout is too complicated, simplify
+   */
+
   return (
     <Grid
       sx={{ p: 1 }}
@@ -89,40 +93,31 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           <Typography>{loading ? <Skeleton width={215} /> : subtitle}</Typography>
         </Stack>
       </Grid>
-      {/**
-       * @todo this layout is too complicated, simplify
-       */}
-      <Grid size={{ xs: 12, sm: 3 }}>
-        <Grid container direction="column" spacing={1} sx={{ height: "100%" }} textAlign={"right"}>
-          <Grid container spacing={1} sx={{ flexGrow: 1 }} order={{ xs: 2, sm: 1 }} justifyContent={"flex-end"}>
-            <Grid size={12} display={entityType === "ccre" ? "none" : "flex"} height={{ xs: 65, sm: "auto" }}>
-              <Button
-                variant="contained"
-                href={
-                  entityID
-                    ? entityType === "gene"
-                      ? "https://www.genecards.org/cgi-bin/carddisp.pl?gene=" + entityID
-                      : `https://www.ncbi.nlm.nih.gov/snp/${entityID}`
-                    : undefined
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ width: "100%", height: "100%", backgroundColor: "white" }}
-              >
-                <Image
-                  style={{ objectFit: "contain" }}
-                  src={
-                    entityType === "gene"
-                      ? "https://geneanalytics.genecards.org/media/81632/gc.png"
-                      : "https://www.ncbi.nlm.nih.gov/core/assets/style-guide/img/NLM-square-logo.png"
-                  }
-                  fill
-                  alt="genecard-snpcard-button"
-                />
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid>
+      <Grid size={{ xs: 12, sm: 3 }} display={entityType === "ccre" ? "none" : "flex"} height={{ xs: 65 }}>
+        <Button
+          variant="contained"
+          href={
+            entityID
+              ? entityType === "gene"
+                ? "https://www.genecards.org/cgi-bin/carddisp.pl?gene=" + entityID
+                : `https://www.ncbi.nlm.nih.gov/snp/${entityID}`
+              : undefined
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ width: "100%", height: "100%", backgroundColor: "white" }}
+        >
+          <Image
+            style={{ objectFit: "contain" }}
+            src={
+              entityType === "gene"
+                ? "https://geneanalytics.genecards.org/media/81632/gc.png"
+                : "https://www.ncbi.nlm.nih.gov/core/assets/style-guide/img/NLM-square-logo.png"
+            }
+            fill
+            alt="genecard-snpcard-button"
+          />
+        </Button>
       </Grid>
     </Grid>
   );

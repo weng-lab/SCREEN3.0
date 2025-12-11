@@ -305,7 +305,7 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
   return (
     <Stack>
       <Stack direction={{ xs: "column", md: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
-        <Box display="flex" gap={2} alignItems="center">
+        <Box display="flex" gap={2} alignItems="center" flex={1}>
           <GenomeSearch
             size="small"
             assembly={entity.assembly}
@@ -313,7 +313,7 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
             onSearchSubmit={handeSearchSubmit}
             queries={["Gene", "SNP", "cCRE", "Coordinate"]}
             geneLimit={3}
-            sx={{ minWidth: "250px", width: "450px", flexShrink: 1 }}
+            sx={{ minWidth: 300, maxWidth: 450, flex: 1 }}
             slots={{
               button: (
                 <IconButton sx={{ color: theme.palette.primary.main }}>
