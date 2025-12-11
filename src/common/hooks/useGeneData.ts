@@ -31,6 +31,22 @@ const GENE_Query = gql(`
   }
 `);
 
+const BED_GENE_Query = gql(`
+  query getGenesByListofCoords($assembly: String!, $range: [ChromRange]) {
+  gene(assembly: $assembly, range: $range) {
+    id
+    gene_type
+    coordinates {
+      start
+      chromosome
+      end
+    }
+    id
+    name
+  }
+}
+  `);
+
 /**
  * Currently the backend does not support querying for genes in multiple regions,
  * which limits the input here to GenomicRange and not also GenomicRange[]
@@ -38,7 +54,13 @@ const GENE_Query = gql(`
 
 export type UseGeneDataParams =
   | { name: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly: Assembly; skip?: boolean }
-  | { coordinates: GenomicRange; name?: never; entityType?: AnyEntityType; assembly: Assembly; skip?: boolean };
+  | {
+      coordinates: GenomicRange | GenomicRange[];
+      name?: never;
+      entityType?: AnyEntityType;
+      assembly: Assembly;
+      skip?: boolean;
+    };
 
 export type UseGeneDataReturn<T extends UseGeneDataParams> = T extends
   | { coordinates: GenomicRange | GenomicRange[] }
@@ -54,47 +76,65 @@ export const useGeneData = <T extends UseGeneDataParams>({
   skip,
 }: T): UseGeneDataReturn<T> => {
   const shouldQueryBothVersions = assembly === "GRCh38" && !skip && (entityType === undefined || entityType === "gene");
+  const singleCoord = coordinates && !Array.isArray(coordinates) ? coordinates : undefined;
 
   const v29Query = useQuery(GENE_Query, {
     variables: {
-      chromosome: coordinates?.chromosome,
-      start: coordinates?.start,
-      end: coordinates?.end,
+      chromosome: singleCoord?.chromosome,
+      start: singleCoord?.start,
+      end: singleCoord?.end,
       assembly,
       version: 29,
       name,
     },
-    skip: !shouldQueryBothVersions,
+    skip: !shouldQueryBothVersions || Array.isArray(coordinates),
   });
 
   const v40Query = useQuery(GENE_Query, {
     variables: {
-      chromosome: coordinates?.chromosome,
-      start: coordinates?.start,
-      end: coordinates?.end,
+      chromosome: singleCoord?.chromosome,
+      start: singleCoord?.start,
+      end: singleCoord?.end,
       assembly,
       version: 40,
       name,
     },
-    skip: !shouldQueryBothVersions,
+    skip: !shouldQueryBothVersions || Array.isArray(coordinates),
   });
 
-  // For mouse, just use v25
   const mouseQuery = useQuery(GENE_Query, {
     variables: {
-      chromosome: coordinates?.chromosome,
-      start: coordinates?.start,
-      end: coordinates?.end,
+      chromosome: singleCoord?.chromosome,
+      start: singleCoord?.start,
+      end: singleCoord?.end,
       assembly,
       version: 25,
       name,
     },
-    skip: assembly !== "mm10" || skip || (entityType !== undefined && entityType !== "gene"),
+    skip:
+      Array.isArray(coordinates) || assembly !== "mm10" || skip || (entityType !== undefined && entityType !== "gene"),
+  });
+
+  const toBedRange = (c: GenomicRange) => ({
+    chromosome: c.chromosome,
+    start: c.start,
+    stop: c.end, //differnt name
+  });
+
+  const bedQuery = useQuery(BED_GENE_Query, {
+    variables: {
+      assembly,
+      range: Array.isArray(coordinates) ? coordinates.map(toBedRange) : singleCoord ? [toBedRange(singleCoord)] : [],
+    },
+    skip: !coordinates || !Array.isArray(coordinates) || skip || (entityType !== undefined && entityType !== "gene"),
   });
 
   // Combine and deduplicate results for human, keeping v40 when duplicates exist
   const processedData = useMemo(() => {
-    if (assembly === "GRCh38") {
+    if (!singleCoord && Array.isArray(coordinates)) {
+      // Process BED query results
+      return bedQuery.data?.gene;
+    } else if (assembly === "GRCh38") {
       if (v29Query.loading || v40Query.loading) return undefined;
       if (!v29Query.data?.gene && !v40Query.data?.gene) return undefined;
 
@@ -116,11 +156,22 @@ export const useGeneData = <T extends UseGeneDataParams>({
     } else {
       return mouseQuery.data?.gene;
     }
-  }, [assembly, v29Query.data, v40Query.data, mouseQuery.data, v29Query.loading, v40Query.loading]);
+  }, [
+    singleCoord,
+    coordinates,
+    assembly,
+    bedQuery.data?.gene,
+    v29Query.loading,
+    v29Query.data?.gene,
+    v40Query.loading,
+    v40Query.data?.gene,
+    mouseQuery.data?.gene,
+  ]);
 
-  const isLoading = assembly === "GRCh38" ? v29Query.loading || v40Query.loading : mouseQuery.loading;
+  const isLoading =
+    assembly === "GRCh38" ? v29Query.loading || v40Query.loading : mouseQuery.loading || bedQuery.loading;
 
-  const error = assembly === "GRCh38" ? v29Query.error || v40Query.error : mouseQuery.error;
+  const error = assembly === "GRCh38" ? v29Query.error || v40Query.error : mouseQuery.error || bedQuery.error;
 
   return {
     /**

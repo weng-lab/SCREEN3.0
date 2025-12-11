@@ -1,23 +1,18 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 import Image from "next/image";
-import Link from "next/link";
 
 export const InfoCard = ({
   icon,
   label,
   value,
-  path,
   loading,
 }: {
   icon: string;
   label: string;
   value: number;
-  path: string;
   loading: boolean;
 }) => (
   <Box
-    component={Link}
-    href={path}
     sx={{
       p: 2,
       borderRadius: 2,
