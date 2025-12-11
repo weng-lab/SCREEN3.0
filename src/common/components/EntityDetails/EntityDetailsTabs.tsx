@@ -16,6 +16,7 @@ function CloneProps(props) {
 }
 
 export type ElementDetailsTabsProps = {
+  ref?: React.RefObject<HTMLDivElement>;
   assembly: Assembly;
   entityType: AnyEntityType;
   entityID: string;
@@ -24,6 +25,7 @@ export type ElementDetailsTabsProps = {
 };
 
 const EntityDetailsTabs = ({
+  ref,
   assembly,
   entityType,
   entityID,
@@ -88,6 +90,7 @@ const EntityDetailsTabs = ({
   return (
     <>
       <Tabs
+        ref={ref}
         value={tabVal}
         onChange={handleChange}
         aria-label="Tabs"
