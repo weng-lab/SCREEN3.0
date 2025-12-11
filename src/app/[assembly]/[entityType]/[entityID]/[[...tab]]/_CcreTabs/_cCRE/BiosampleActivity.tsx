@@ -10,7 +10,7 @@ import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
-import { AssayWheel } from "common/components/BiosampleTables/AssayWheel";
+import { AssayWheel } from "@weng-lab/ui-components";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { CCRE_CLASSES } from "common/consts";
 import { BiosampleRow } from "./types";
