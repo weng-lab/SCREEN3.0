@@ -47,50 +47,6 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
     [domain, setDomain]
   );
 
-  type ButtonConfig = { label: string; onClick: (value: number) => void; value: number };
-
-  // Reusable button group component
-  const ButtonGroup = ({ buttons }: { buttons: ButtonConfig[] }) => (
-    <MuiButtonGroup>
-      {buttons.map((btn, index) => {
-        return (
-          <Button
-            key={index}
-            variant="outlined"
-            size="small"
-            onClick={() => btn.onClick(btn.value)}
-            sx={{
-              padding: "2px 8px",
-              minWidth: "30px",
-              fontSize: "0.8rem",
-            }}
-          >
-            {btn.label}
-          </Button>
-        );
-      })}
-    </MuiButtonGroup>
-  );
-
-  const TwoSidedControl = ({
-    leftButtons,
-    rightButtons,
-    label,
-  }: {
-    leftButtons: ButtonConfig[];
-    rightButtons: ButtonConfig[];
-    label: string;
-  }) => (
-    <Stack alignItems={"center"}>
-      <Typography variant="body2">{label}</Typography>
-      <Stack direction={"row"} spacing={0.5}>
-        <ButtonGroup buttons={leftButtons} />
-        <Divider orientation="vertical" flexItem />
-        <ButtonGroup buttons={rightButtons} />
-      </Stack>
-    </Stack>
-  );
-
   const width = domain.end - domain.start;
 
   const buttonGroups = {
@@ -104,17 +60,17 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
       { label: "►►", onClick: shift, value: Math.round(width / 2) },
       { label: "►►►", onClick: shift, value: width },
     ],
-    zoomOut: [
-      { label: "-100x", onClick: zoom, value: 100 },
-      { label: "-10x", onClick: zoom, value: 10 },
-      { label: "-3x", onClick: zoom, value: 3 },
-      { label: "-1.5x", onClick: zoom, value: 1.5 },
-    ],
     zoomIn: [
-      { label: "+1.5x", onClick: zoom, value: 1 / 1.5 },
-      { label: "+3x", onClick: zoom, value: 1 / 3 },
-      { label: "+10x", onClick: zoom, value: 1 / 10 },
-      { label: "+100x", onClick: zoom, value: 1 / 100 },
+      { label: "1.5x", onClick: zoom, value: 1 / 1.5 },
+      { label: "3x", onClick: zoom, value: 1 / 3 },
+      { label: "10x", onClick: zoom, value: 1 / 10 },
+      { label: "100x", onClick: zoom, value: 1 / 100 },
+    ],
+    zoomOut: [
+      { label: "100x", onClick: zoom, value: 100 },
+      { label: "10x", onClick: zoom, value: 10 },
+      { label: "3x", onClick: zoom, value: 3 },
+      { label: "1.5x", onClick: zoom, value: 1.5 },
     ],
   };
 
@@ -128,7 +84,60 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
       gap={2}
     >
       <TwoSidedControl leftButtons={buttonGroups.moveLeft} rightButtons={buttonGroups.moveRight} label="Move" />
-      <TwoSidedControl leftButtons={buttonGroups.zoomOut} rightButtons={buttonGroups.zoomIn} label="Zoom" />
+      <TwoSidedControl leftButtons={buttonGroups.zoomIn} rightButtons={buttonGroups.zoomOut} label="Zoom" />
     </Box>
   );
 }
+
+function TwoSidedControl({
+  leftButtons,
+  rightButtons,
+  label,
+}: {
+  leftButtons: ButtonConfig[];
+  rightButtons: ButtonConfig[];
+  label: string;
+}) {
+  return (
+    <Stack alignItems={"center"}>
+      <Stack width={"100%"} direction={"row"} sx={{ justifyContent: "space-around" }}>
+        <Typography variant="body2">
+          {label} {label === "Zoom" ? "In" : "Left"}
+        </Typography>
+        <Typography variant="body2">
+          {label} {label === "Zoom" ? "Out" : "Right"}
+        </Typography>
+      </Stack>
+      <Stack direction={"row"} spacing={0.5}>
+        <ButtonGroup buttons={leftButtons} />
+        <Divider orientation="vertical" flexItem />
+        <ButtonGroup buttons={rightButtons} />
+      </Stack>
+    </Stack>
+  );
+}
+
+type ButtonConfig = { label: string; onClick: (value: number) => void; value: number };
+
+// Reusable button group component
+const ButtonGroup = ({ buttons }: { buttons: ButtonConfig[] }) => (
+  <MuiButtonGroup>
+    {buttons.map((btn, index) => {
+      return (
+        <Button
+          key={index}
+          variant="outlined"
+          size="small"
+          onClick={() => btn.onClick(btn.value)}
+          sx={{
+            padding: "2px 8px",
+            minWidth: "30px",
+            fontSize: "0.8rem",
+          }}
+        >
+          {btn.label}
+        </Button>
+      );
+    })}
+  </MuiButtonGroup>
+);
