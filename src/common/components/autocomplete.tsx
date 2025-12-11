@@ -117,9 +117,9 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
         url = `/${props.assembly}/variant/${r.title}`;
         break;
       case "Study":
-        let be = r.description?.split("\n").pop().trim();
-
-        url = be !== "Biosample Enrichment" ? `/GRCh38/gwas/${r.id}/variants` : `/GRCh38/gwas/${r.id}`;
+        //let be = r.description?.split("\n").pop().trim();
+        //url = be !== "Biosample Enrichment" ? `/GRCh38/gwas/${r.id}/variants` : `/GRCh38/gwas/${r.id}`;
+        url = `/GRCh38/gwas/${r.id}`;
         break;
     }
     router.push(url, { scroll: false });
