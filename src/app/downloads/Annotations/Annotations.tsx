@@ -72,7 +72,7 @@ const Annotations = () => {
           </StyledTreeItem>
         </SimpleTreeView>
         {/* overflow: visible allows box shadows of buttons to not be clipped */}
-        <Stack flexGrow={1} overflow={"visible"} gap={2}>
+        <Stack flexGrow={1} overflow={"visible"} gap={2} minWidth={0}>
           {assembly !== "other" && <AnnotationsHeader assembly={assembly} />}
           <Content tab={tab} assembly={assembly} />
         </Stack>

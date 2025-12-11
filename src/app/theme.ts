@@ -1,6 +1,6 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
-import type {} from "@weng-lab/ui-components";
+import type {} from "@weng-lab/ui-components"; // provides module augmentation to add DataGrid to theme
 
 export const theme = createTheme({
   palette: {
