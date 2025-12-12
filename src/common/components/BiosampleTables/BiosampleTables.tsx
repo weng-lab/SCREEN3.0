@@ -20,7 +20,7 @@ import {
   Button,
 } from "@mui/material";
 import { DataTable, DataTableColumn } from "@weng-lab/ui-components";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BiosampleData,
   CollectionCheckboxes,
@@ -39,18 +39,23 @@ import { AssayWheel } from "./AssayWheel";
 import { DownloadButton } from "./DownloadButton";
 import { FilterCheckboxGroup } from "./FilterCheckboxGroup";
 import { AggregateDownloadButton } from "./AggregateDownload";
+import { theme } from "app/theme";
 
 export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSelect extends boolean = false>({
   allowMultiSelect = false as AllowMultiSelect,
   assembly,
   selected,
   onChange,
+  onAccordionClick,
+  onAccordionHover,
   preFilterBiosamples = () => true,
   fetchBiosamplesWith = ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"],
   showCheckboxes,
   showRNAseq = false as HasRNASeq,
   showDownloads,
   slotProps,
+  hoveredAccordian,
+  selectedAccordian,
 }: BiosampleTablesProps<HasRNASeq, AllowMultiSelect>) => {
   const [sampleTypeFilter, setSampleTypeFilter] = useState<SampleTypeCheckboxes>({
     "Cell Line": true,
@@ -71,6 +76,17 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
   const [mustHaveRnaSeq, setMustHaveRnaSeq] = useState<boolean>(false);
   const [searchString, setSearchString] = useState<string>("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); //Anchor for dropdown menu
+
+  const refs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (selectedAccordian && refs.current[selectedAccordian]) {
+      refs.current[selectedAccordian]!.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [selectedAccordian]);
 
   const handleSetSampleTypeFilter = (newState: SampleTypeCheckboxes) => {
     setSampleTypeFilter(newState);
@@ -277,6 +293,16 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
       }
     };
 
+    const handleAccordianClick = (ontology: string) => {
+      if (!onAccordionClick) return;
+      onAccordionClick(ontology);
+    };
+
+    const handleAccordianHover = (ontology: string | null) => {
+      if (!onAccordionHover) return;
+      onAccordionHover(ontology);
+    };
+
     const handleModifyAll = (samples: BiosampleData<HasRNASeq>[], action: "select" | "deselect") => {
       if (onChange && typeof onChange === "function") {
         if (action === "select") {
@@ -332,12 +358,26 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
           });
         }
 
+        const accordionProps: Partial<React.ComponentProps<typeof Accordion>> = {
+          slotProps: { transition: { unmountOnExit: true } },
+          disabled: biosamples.length === 0,
+          disableGutters: true,
+        };
+
+        if (selectedAccordian !== undefined) {
+          accordionProps.expanded = selectedAccordian === ontology;
+        }
+
+        const highlighted = hoveredAccordian === ontology;
+        const selected = selectedAccordian === ontology;
+
         return (
           <Accordion
             key={ontology}
-            slotProps={{ transition: { unmountOnExit: true } }}
-            disabled={biosamples.length === 0}
-            disableGutters
+            ref={(el) => {
+              refs.current[ontology] = el;
+            }}
+            {...accordionProps}
           >
             <AccordionSummary
               expandIcon={<KeyboardArrowRightIcon />}
@@ -346,7 +386,12 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
                 "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
                   transform: "rotate(90deg)",
                 },
+                color: highlighted || selected ? theme.palette.primary.light : "text.primary",
+                backgroundColor: highlighted ? theme.palette.secondary.light : "white",
               }}
+              onClick={() => handleAccordianClick(ontology)}
+              onMouseEnter={() => handleAccordianHover(ontology)}
+              onMouseLeave={() => handleAccordianHover(null)}
             >
               <Stack width={"100%"} direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                 {biosamples.length !== unfilteredBiosamples[ontology].length ? (
@@ -358,7 +403,7 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
                     )
                   </Typography>
                 ) : (
-                  <Typography>
+                  <Typography sx={{ fontWeight: selected ? "bold" : "normal" }}>
                     {ontology.charAt(0).toUpperCase() + ontology.slice(1) + ` (${biosamples.length})`}
                   </Typography>
                 )}
@@ -391,9 +436,13 @@ export const BiosampleTables = <HasRNASeq extends boolean = false, AllowMultiSel
     onChange,
     allowMultiSelect,
     selectedSamples,
+    onAccordionClick,
+    onAccordionHover,
     showCheckboxes,
+    hoveredAccordian,
     unfilteredBiosamples,
     assembly,
+    selectedAccordian,
   ]);
 
   const filtersActive: boolean = useMemo(() => {
