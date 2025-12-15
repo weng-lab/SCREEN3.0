@@ -33,11 +33,7 @@ export default function ComputationalLinkedCcres({
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
   const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data.id });
 
-  const {
-    data: dataCompucCREs,
-    loading: loadingCompucCREs,
-    error: errorCompucCREs,
-  } = useCompuLinkedcCREs({
+  const { data: dataCompucCREs, loading: loadingCompucCREs } = useCompuLinkedcCREs({
     geneid: geneData ? [geneData?.data.id.split(".")[0]] : [],
     method,
   });
@@ -246,7 +242,7 @@ export default function ComputationalLinkedCcres({
       columns: CompuLinkedcCREs_columns,
       sortColumn: "score",
       sortDirection: "desc",
-      emptyTableFallback:
+      emptyTableFallback: (
         <Stack
           direction={"row"}
           border={"1px solid #e0e0e0"}
@@ -257,7 +253,11 @@ export default function ComputationalLinkedCcres({
         >
           <Stack direction={"row"} spacing={1}>
             <InfoOutlineRounded />
-            {loadingCompucCREs ? <Typography>Fetching Computational Linked cCREs by {method}</Typography> : <Typography>No Computational Predictions</Typography>}
+            {loadingCompucCREs ? (
+              <Typography>Fetching Computational Linked cCREs by {method}</Typography>
+            ) : (
+              <Typography>No Computational Predictions</Typography>
+            )}
           </Stack>
           <Tooltip title="Advanced Filters">
             <Button variant="outlined" onClick={handleClick}>
@@ -265,13 +265,15 @@ export default function ComputationalLinkedCcres({
             </Button>
           </Tooltip>
         </Stack>
-      ,
-      toolbarSlot: <Tooltip title="Advanced Filters">
-        <Button variant="outlined" onClick={handleClick}>
-          Change Method
-        </Button>
-      </Tooltip>
-    }
+      ),
+      toolbarSlot: (
+        <Tooltip title="Advanced Filters">
+          <Button variant="outlined" onClick={handleClick}>
+            Change Method
+          </Button>
+        </Tooltip>
+      ),
+    },
   ];
 
   return (
