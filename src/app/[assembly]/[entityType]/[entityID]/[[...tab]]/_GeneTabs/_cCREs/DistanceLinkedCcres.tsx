@@ -11,7 +11,7 @@ import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { Assembly } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { calcDistCcreToTSS } from "common/utility";
-import { ccreClassDescriptions } from "common/consts";
+import { CLASS_DESCRIPTIONS } from "common/consts";
 
 export type Transcript = {
   id: string;
@@ -125,7 +125,7 @@ export default function DistanceLinkedCcres({
             </div>
           }
         >
-          <span>{ccreClassDescriptions[params.value] ?? ""}</span>
+          <span>{CLASS_DESCRIPTIONS[params.value] ?? ""}</span>
         </Tooltip>
       ),
     },
