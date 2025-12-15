@@ -1,4 +1,4 @@
-import { Button, Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatGenomicRange, formatPortal } from "common/utility";
 import { CLASS_DESCRIPTIONS } from "common/consts";
@@ -44,10 +44,9 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
    * @todo this should be put in a utils file
    */
   //map descriptions to the class
-
   const subtitle =
     entityType === "gene" ? (
-      geneID + " | " + (strand === "+" ? "Plus strand" : "Minus strand")
+      geneID + " | " + (strand === "+" ? "+ strand" : "- strand")
     ) : entityType === "ccre" ? (
       <>{CLASS_DESCRIPTIONS[ccreClass] ?? ""}</>
     ) : entityType === "variant" ? (
@@ -88,9 +87,11 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             ) : (
               ""
             )}
-            <Typography>{loading ? <Skeleton width={215} /> : coordinatesDisplay}</Typography>
           </Typography>
-          <Typography>{loading ? <Skeleton width={215} /> : subtitle}</Typography>
+          <Box display="flex" flexDirection="row" gap={1}>
+            <Typography>{loading ? <Skeleton width={215} /> : subtitle}</Typography>
+            <Typography>{loading ? <Skeleton width={215} /> : "| " + coordinatesDisplay}</Typography>
+          </Box>
         </Stack>
       </Grid>
       <Grid size={{ xs: 12, sm: 3 }} display={entityType === "ccre" ? "none" : "flex"} height={{ xs: 65 }}>
