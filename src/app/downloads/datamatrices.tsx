@@ -382,12 +382,7 @@ export function DataMatrices() {
 
   return (
     <Grid container mt={1} direction="column" sx={{ paddingX: 5, height: "100%", minHeight: 0, minWidth: 0 }}>
-      <Stack
-        direction="row"
-        spacing={10}
-        sx={{ minHeight: 0, minWidth: 0, maxWidth: "100%", overflow: "scroll" }}
-        id="1234"
-      >
+      <Stack direction="row" spacing={10} sx={{ minHeight: 0, minWidth: 0, maxWidth: "100%", overflow: "auto" }}>
         <Stack direction="column" spacing={2} flex={"1 1"}>
           <Stack direction="row" spacing={20}>
             {/* human section */}
