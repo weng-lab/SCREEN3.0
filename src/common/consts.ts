@@ -23,7 +23,7 @@ export const CLASS_DESCRIPTIONS: Record<CcreClass, string> = {
   CA: "CA",
   TF: "TF",
   noclass: "Unclassified",
-  InActive: "Inactive",
+  InActive: "Low CA",
 };
 
 export const CCRE_ASSAYS = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"] as const;
