@@ -1,15 +1,14 @@
 "use client";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
 import { useMemo, useState } from "react";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, GridColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { CancelRounded } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
-import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
-import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
-import BiosampleSelectModal from "common/components/BiosampleSelectModal";
+import { Typography, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyData } from "common/hooks/useGWASStudyData";
+import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
 
 const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const { data, loading, error } = useGWASStudyData({ studyid: [entity.entityID] });
@@ -38,7 +37,8 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
       setVirtualAnchor(null);
     }
   };
-  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
+  const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);
+
   const {
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
@@ -56,7 +56,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
     cellType: selectedBiosample ? selectedBiosample.name : undefined,
   });
 
-  const handleBiosampleSelected = (biosample: RegistryBiosamplePlusRNA | null) => {
+  const handleBiosampleSelected = (biosample: EncodeBiosample) => {
     setSelectedBiosample(biosample);
   };
 
@@ -77,11 +77,12 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
       promoter_zscore: detailMap.get(gwas.ccre).promoter_zscore,
     }));
   }, [dataGWASSNPscCREs, dataCcreDetails]);
-  const showAtac = selectedBiosample ? (selectedBiosample && selectedBiosample.atac ? true : false) : true;
-  const showCTCF = selectedBiosample ? (selectedBiosample && selectedBiosample.ctcf ? true : false) : true;
-  const showDNase = selectedBiosample ? (selectedBiosample && selectedBiosample.dnase ? true : false) : true;
-  const showH3k27ac = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k27ac ? true : false) : true;
-  const showH3k4me3 = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k4me3 ? true : false) : true;
+
+  const showAtac = !selectedBiosample || !!selectedBiosample.atac_experiment_accession;
+  const showCTCF = !selectedBiosample || !!selectedBiosample.ctcf_experiment_accession;
+  const showDNase = !selectedBiosample || !!selectedBiosample.dnase_experiment_accession;
+  const showH3k27ac = !selectedBiosample || !!selectedBiosample.h3k27ac_experiment_accession;
+  const showH3k4me3 = !selectedBiosample || !!selectedBiosample.h3k4me3_experiment_accession;
 
   const ldblocks_columns: GridColDef<typeof data>[] = useMemo(
     () => [
@@ -171,7 +172,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
               type: "number" as const,
               headerName: selectedBiosample ? "DNase" : "DNase Max Z",
               valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.dnase
+                selectedBiosample && selectedBiosample.dnase_experiment_accession
                   ? row.ctspecific.dnase_zscore.toFixed(2)
                   : row.dnase_zscore.toFixed(2),
             },
@@ -184,7 +185,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
               type: "number" as const,
               headerName: selectedBiosample ? "ATAC" : "ATAC Max Z",
               valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.atac
+                selectedBiosample && selectedBiosample.atac_experiment_accession
                   ? row.ctspecific.atac_zscore.toFixed(2)
                   : row.atac_zscore.toFixed(2),
             },
@@ -197,7 +198,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
               type: "number" as const,
               headerName: selectedBiosample ? "H3K4me3" : "H3K4me3 Max Z",
               valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.h3k4me3
+                selectedBiosample && selectedBiosample.h3k4me3_experiment_accession
                   ? row.ctspecific.h3k4me3_zscore.toFixed(2)
                   : row.promoter_zscore.toFixed(2),
             },
@@ -210,7 +211,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
               type: "number" as const,
               headerName: selectedBiosample ? "H3K27ac" : "H3K27ac Max Z",
               valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.h3k27ac
+                selectedBiosample && selectedBiosample.h3k27ac_experiment_accession
                   ? row.ctspecific.h3k27ac_zscore.toFixed(2)
                   : row.enhancer_zscore.toFixed(2),
             },
@@ -223,7 +224,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
               type: "number" as const,
               headerName: selectedBiosample ? "CTCF" : "CTCF Max Z",
               valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.ctcf
+                selectedBiosample && selectedBiosample.ctcf_experiment_accession
                   ? row.ctspecific.ctcf_zscore.toFixed(2)
                   : row.ctcf_zscore.toFixed(2),
             },
@@ -273,7 +274,6 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
         </Stack>
       )}
       <Table
-        showToolbar
         rows={mergedData}
         columns={columns}
         loading={loadingGWASSNPscCREs || loadingCcreDetails}
@@ -294,19 +294,13 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
           </Tooltip>
         }
       />
-      <Box
-        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-          event.stopPropagation();
-        }}
-      >
-        <BiosampleSelectModal
-          assembly={"GRCh38"}
-          open={Boolean(virtualAnchor)}
-          setOpen={handleClickClose}
-          initialSelected={selectedBiosample ? [selectedBiosample] : []}
-          onChange={(selected) => handleBiosampleSelected(selected[0])}
-        />
-      </Box>
+      <BiosampleSelectDialog
+        assembly={entity.assembly}
+        open={Boolean(virtualAnchor)}
+        onClose={handleClickClose}
+        onSelectionChange={handleBiosampleSelected}
+        selected={selectedBiosample}
+      />
     </>
   );
 };

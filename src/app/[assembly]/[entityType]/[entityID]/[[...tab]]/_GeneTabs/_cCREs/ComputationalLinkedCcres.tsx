@@ -1,4 +1,6 @@
 "use client";
+import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
+import { InfoOutlineRounded } from "@mui/icons-material";
 import { Grid, Skeleton } from "@mui/material";
 import { useLinkedCcres, useLinkedCcresReturn } from "common/hooks/useLinkedCcres";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "../../_CcreTabs/_Genes/columns";
@@ -10,6 +12,10 @@ import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import { classificationFormatting } from "common/components/ClassificationFormatting";
+import { useState } from "react";
+import { useCompuLinkedcCREs } from "common/hooks/useCompuLinkedcCREs";
+import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
+import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 
 export const accessionCol = (assembly: string): GridColDef => ({
   field: "accession",
@@ -24,10 +30,86 @@ export default function ComputationalLinkedCcres({
 }: {
   geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
 }) {
+  const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
+  const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data.id });
+
+  const {
+    data: dataCompucCREs,
+    loading: loadingCompucCREs,
+    error: errorCompucCREs,
+  } = useCompuLinkedcCREs({
+    geneid: geneData ? [geneData?.data.id.split(".")[0]] : [],
+    method,
+  });
+
+  //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
+  //setting the anchorEl to the button
+  const [virtualAnchor, setVirtualAnchor] = useState<{
+    getBoundingClientRect: () => DOMRect;
+  } | null>(null);
+
+  const handleClickClose = () => {
+    if (virtualAnchor) {
+      setVirtualAnchor(null);
+    }
+  };
+
+  const handleMethodSelected = (method: string) => {
+    setMethod(method);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (virtualAnchor) {
+      // If already open, close it
+      setVirtualAnchor(null);
+    } else {
+      // Open it, store the current position
+      const rect = event.currentTarget.getBoundingClientRect();
+      setVirtualAnchor({
+        getBoundingClientRect: () => rect,
+      });
+    }
+  };
+
+  const CompuLinkedcCREs_columns: GridColDef<(typeof dataCompucCREs)[number]>[] = [
+    sharedColumns.accession,
+    {
+      field: "fileaccession",
+      headerName: "File",
+      renderCell: (params) => (
+        <LinkComponent href={`https://www.encodeproject.org/file/${params.value}`} openInNewTab showExternalIcon>
+          {params.value}
+        </LinkComponent>
+      ),
+    },
+    {
+      field: "method",
+      headerName: "Method",
+      valueGetter: (_, row) => row.method.replaceAll("_", " "),
+    },
+    {
+      field: "methodregion",
+      headerName: "Method Region",
+      valueGetter: (_, row) => formatCoord(row.methodregion),
+    },
+    {
+      field: "celltype",
+      headerName: "Biosample",
+      valueGetter: (_, row) =>
+        row.celltype
+          .replaceAll("_", " ")
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
+    },
+    {
+      ...sharedColumns.score,
+      valueGetter: (_, row) => row.score.toFixed(2),
+    },
+  ];
+
   const pathname = usePathname();
   const assembly = pathname.split("/")[1];
-
-  const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data.id });
 
   const {
     data: dataCcres,
@@ -158,7 +240,55 @@ export default function ComputationalLinkedCcres({
       sortDirection: "asc",
       emptyTableFallback: `No cCREs overlap variants associated with significant changes in expression of this gene`,
     },
+    {
+      label: `Computational Predictions by ${method.replaceAll("_", " ")}`,
+      rows: dataCompucCREs,
+      columns: CompuLinkedcCREs_columns,
+      sortColumn: "score",
+      sortDirection: "desc",
+      emptyTableFallback:
+        <Stack
+          direction={"row"}
+          border={"1px solid #e0e0e0"}
+          borderRadius={1}
+          p={2}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          <Stack direction={"row"} spacing={1}>
+            <InfoOutlineRounded />
+            {loadingCompucCREs ? <Typography>Fetching Computational Linked cCREs by {method}</Typography> : <Typography>No Computational Predictions</Typography>}
+          </Stack>
+          <Tooltip title="Advanced Filters">
+            <Button variant="outlined" onClick={handleClick}>
+              Change Method
+            </Button>
+          </Tooltip>
+        </Stack>
+      ,
+      toolbarSlot: <Tooltip title="Advanced Filters">
+        <Button variant="outlined" onClick={handleClick}>
+          Change Method
+        </Button>
+      </Tooltip>
+    }
   ];
 
-  return <LinkedElements tables={tables} />;
+  return (
+    <>
+      <LinkedElements tables={tables} />
+      <Box
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          event.stopPropagation();
+        }}
+      >
+        <SelectCompuGenesMethod
+          method={method}
+          open={Boolean(virtualAnchor)}
+          setOpen={handleClickClose}
+          onMethodSelect={handleMethodSelected}
+        />
+      </Box>
+    </>
+  );
 }

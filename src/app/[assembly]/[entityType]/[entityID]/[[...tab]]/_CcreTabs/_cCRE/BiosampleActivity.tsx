@@ -10,7 +10,7 @@ import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
-import { AssayWheel } from "common/components/BiosampleTables/AssayWheel";
+import { AssayWheel } from "@weng-lab/ui-components";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { CCRE_CLASSES } from "common/consts";
 import { BiosampleRow } from "./types";
@@ -225,7 +225,7 @@ const assayInfo = (row: BiosampleRow) => {
   };
 };
 
-const getAncillaryCols = () => getCoreAndPartialCols().filter((col) => col.field !== "dnase" && col.field !== "group");
+const getAncillaryCols = () => getCoreAndPartialCols().filter((col) => col.field !== "dnase" && col.field !== "class");
 
 export const GET_CCRE_CT_TF = gql(`
   query cCRETF($accession: String!, $assembly: String!) {
@@ -545,26 +545,29 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             hideFooter
             showToolbar={false}
           />
-          {silencersData && silencersData.length>0 &&<Table
-            label="Silencers"
-            rows={ silencersData?.flatMap(item =>
-                            item.silencer_studies.map(study => ({                              
-                              study:  Silencer_Studies.find(s=>s.value==study).study,
-                              pmid: Silencer_Studies.find(s=>s.value==study).pubmed_id,
-                              method: Silencer_Studies.find(s=>s.value==study).method,
-                              pubmed_link: Silencer_Studies.find(s=>s.value==study).pubmed_link
-                            }))
-                          ) || []}
-            columns={silencersDataCols}
-            loading={loadingSilencersData}
-            //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
-            divHeight={!silencersData ? { height: "182px" } : undefined}
-            error={!!errorSilencersData}
-            {...disableCsvEscapeChar}
-            hideFooter
-            //showToolbar={false}
-          />
-          }
+          {silencersData && silencersData.length > 0 && (
+            <Table
+              label="Silencers"
+              rows={
+                silencersData?.flatMap((item) =>
+                  item.silencer_studies.map((study) => ({
+                    study: Silencer_Studies.find((s) => s.value == study).study,
+                    pmid: Silencer_Studies.find((s) => s.value == study).pubmed_id,
+                    method: Silencer_Studies.find((s) => s.value == study).method,
+                    pubmed_link: Silencer_Studies.find((s) => s.value == study).pubmed_link,
+                  }))
+                ) || []
+              }
+              columns={silencersDataCols}
+              loading={loadingSilencersData}
+              //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+              divHeight={!silencersData ? { height: "182px" } : undefined}
+              error={!!errorSilencersData}
+              {...disableCsvEscapeChar}
+              hideFooter
+              //showToolbar={false}
+            />
+          )}
           <div>
             <ProportionsBar
               data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}

@@ -1,22 +1,21 @@
 "use client";
 import Image from "next/image";
-import { Typography, Box, Button, Stack, IconButton, Tooltip } from "@mui/material";
+import { Typography, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, GridColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useState } from "react";
 import { CancelRounded } from "@mui/icons-material";
-import { RegistryBiosamplePlusRNA } from "../../../../../../../common/components/BiosampleTables/types";
-import BiosampleSelectModal from "common/components/BiosampleSelectModal";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { parseGenomicRangeString } from "common/utility";
 import { GROUP_COLOR_MAP } from "common/colors";
 import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
 import { CCRE_CLASSES } from "common/consts";
 import { classificationFormatting } from "common/components/ClassificationFormatting";
+import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
-  const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
+  const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);
 
   const {
     data: dataCcres,
@@ -53,13 +52,13 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       setVirtualAnchor(null);
     }
   };
-  const showAtac = selectedBiosample ? (selectedBiosample && selectedBiosample.atac ? true : false) : true;
-  const showCTCF = selectedBiosample ? (selectedBiosample && selectedBiosample.ctcf ? true : false) : true;
-  const showDNase = selectedBiosample ? (selectedBiosample && selectedBiosample.dnase ? true : false) : true;
-  const showH3k27ac = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k27ac ? true : false) : true;
-  const showH3k4me3 = selectedBiosample ? (selectedBiosample && selectedBiosample.h3k4me3 ? true : false) : true;
+  const showAtac = !selectedBiosample || !!selectedBiosample.atac_experiment_accession;
+  const showCTCF = !selectedBiosample || !!selectedBiosample.ctcf_experiment_accession;
+  const showDNase = !selectedBiosample || !!selectedBiosample.dnase_experiment_accession;
+  const showH3k27ac = !selectedBiosample || !!selectedBiosample.h3k27ac_experiment_accession;
+  const showH3k4me3 = !selectedBiosample || !!selectedBiosample.h3k4me3_experiment_accession;
 
-  const handleBiosampleSelected = (biosample: RegistryBiosamplePlusRNA | null) => {
+  const handleBiosampleSelected = (biosample: EncodeBiosample) => {
     setSelectedBiosample(biosample);
   };
 
@@ -103,7 +102,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
             headerName: "DNase",
             type: "number" as const,
             valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.dnase
+              selectedBiosample && selectedBiosample.dnase_experiment_accession
                 ? row.ctspecific.dnase_zscore.toFixed(2)
                 : row.dnase_zscore.toFixed(2),
           },
@@ -116,7 +115,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
             headerName: "ATAC",
             type: "number" as const,
             valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.atac
+              selectedBiosample && selectedBiosample.atac_experiment_accession
                 ? row.ctspecific.atac_zscore.toFixed(2)
                 : row.atac_zscore.toFixed(2),
           },
@@ -130,7 +129,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
             type: "number" as const,
 
             valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.h3k4me3
+              selectedBiosample && selectedBiosample.h3k4me3_experiment_accession
                 ? row.ctspecific.h3k4me3_zscore.toFixed(2)
                 : row.promoter_zscore.toFixed(2),
           },
@@ -143,7 +142,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
             headerName: "H3K27ac",
             type: "number" as const,
             valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.h3k27ac
+              selectedBiosample && selectedBiosample.h3k27ac_experiment_accession
                 ? row.ctspecific.h3k27ac_zscore.toFixed(2)
                 : row.enhancer_zscore.toFixed(2),
           },
@@ -156,7 +155,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
             headerName: "CTCF",
             type: "number" as const,
             valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.ctcf
+              selectedBiosample && selectedBiosample.ctcf_experiment_accession
                 ? row.ctspecific.ctcf_zscore.toFixed(2)
                 : row.ctcf_zscore.toFixed(2),
           },
@@ -248,19 +247,13 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
         initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
         divHeight={{ maxHeight: "600px" }}
       />
-      <Box
-        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-          event.stopPropagation();
-        }}
-      >
-        <BiosampleSelectModal
-          assembly={entity.assembly}
-          open={Boolean(virtualAnchor)}
-          setOpen={handleClickClose}
-          onChange={(selected) => handleBiosampleSelected(selected[0])}
-          initialSelected={selectedBiosample ? [selectedBiosample] : []}
-        />
-      </Box>
+      <BiosampleSelectDialog
+        assembly={entity.assembly}
+        open={Boolean(virtualAnchor)}
+        onClose={handleClickClose}
+        onSelectionChange={handleBiosampleSelected}
+        selected={selectedBiosample}
+      />
     </Stack>
   );
 };
