@@ -106,7 +106,6 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   //sync the current view to the state
   useEffect(() => {
     if (!isRoutingRef.current && currentEntityState && urlOpenEntity.tab !== currentEntityState.tab) {
-      console.log("updating view to " + urlOpenEntity.tab);
       dispatch({
         type: "updateEntity",
         entity: urlOpenEntity,

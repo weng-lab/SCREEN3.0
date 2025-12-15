@@ -1,7 +1,7 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatGenomicRange, formatPortal } from "common/utility";
-import { ccreClassDescriptions } from "common/consts";
+import { CLASS_DESCRIPTIONS } from "common/consts";
 import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
@@ -50,7 +50,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
     entityType === "gene" ? (
       geneID + " | " + (strand === "+" ? "Plus strand" : "Minus strand")
     ) : entityType === "ccre" ? (
-      <>{ccreClassDescriptions[ccreClass] ?? ""}</>
+      <>{CLASS_DESCRIPTIONS[ccreClass] ?? ""}</>
     ) : entityType === "variant" ? (
       !ref ? (
         <Skeleton width={215} />

@@ -1,5 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { GROUP_COLOR_MAP } from "common/colors";
+import { CLASS_COLORS } from "common/colors";
+import { CLASS_DESCRIPTIONS } from "common/consts";
 import React, { useMemo } from "react";
 
 interface CCRETooltipProps {
@@ -105,7 +106,7 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({ assembly, name, biosample }) 
             y={padding + 3}
             width={10}
             height={10}
-            fill={GROUP_COLOR_MAP.get(data.cCREQuery[0].group)?.split(":")[1] || "#8c8c8c"}
+            fill={CLASS_COLORS[data.cCREQuery[0].group] ?? "#8c8c8c"}
           />
 
           {/* cCRE name */}
@@ -115,7 +116,7 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({ assembly, name, biosample }) 
 
           {/* cCRE group type */}
           <text x={padding} y={startY} fontSize="21" fontFamily="Arial, sans-serif" fill="#000000">
-            {GROUP_COLOR_MAP.get(data.cCREQuery[0].group)?.split(":")[0]}
+            {CLASS_DESCRIPTIONS[data.cCREQuery[0].group]}
           </text>
 
           {/* Click instruction */}
