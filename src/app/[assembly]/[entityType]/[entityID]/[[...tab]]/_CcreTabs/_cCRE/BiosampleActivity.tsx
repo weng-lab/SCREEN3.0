@@ -5,14 +5,14 @@ import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "common/types/generated";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
-import { GROUP_COLOR_MAP } from "common/colors";
+import { CLASS_COLORS } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
 import { AssayWheel } from "@weng-lab/ui-components";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
-import { CCRE_CLASSES } from "common/consts";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { BiosampleRow } from "./types";
 import { useSilencersData } from "common/hooks/useSilencersData";
 import { Silencer_Studies } from "./consts";
@@ -22,7 +22,7 @@ const classifyCcre = (
   scores: { dnase: number; atac: number; h3k4me3: number; h3k27ac: number; ctcf: number; tf: string },
   distanceToTSS: number,
   overlapsTSS: boolean
-) => {
+): CcreClass => {
   let ccreClass: CcreClass;
   if (scores.dnase != -11.0) {
     if (scores.dnase > 1.64) {
@@ -81,11 +81,13 @@ const zScoreFormatting: Partial<GridColDef> = {
 };
 
 const classificationFormatting: Partial<GridColDef> = {
+  type: "singleSelect",
+  valueOptions: CCRE_CLASSES.map((group) => ({ value: group, label: CLASS_DESCRIPTIONS[group] })),
   renderCell: (params: GridRenderCellParams) => {
     const group = params.value;
-    const colormap = GROUP_COLOR_MAP.get(group);
-    const color = colormap ? (group === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
-    const classification = colormap ? colormap.split(":")[0] : "DNase only";
+    // Override the InActive color here since it's being used for coloring text and is too light
+    const color = group === "InActive" ? CLASS_COLORS.noclass : CLASS_COLORS[group];
+    const classification = CLASS_DESCRIPTIONS[group];
     return (
       <span style={{ color }}>
         <strong>{classification}</strong>
@@ -506,7 +508,9 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     let highDNase = 0;
     let lowDNase = 0;
     partialDataCollection.forEach((row) => {
-      row.dnase >= 1.64 ? highDNase++ : lowDNase++;
+      if (row.dnase >= 1.64) {
+        highDNase++;
+      } else lowDNase++;
     });
     return { highDNase, lowDNase };
   }, [partialDataCollection]);
@@ -586,8 +590,8 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}
               label="Classification Proportions, Core Collection:"
               loading={loadingCorePartialAncillary || errorCorePartialAncillary}
-              getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
-              formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
+              getColor={(key) => CLASS_COLORS[key]}
+              formatLabel={(key) => CLASS_DESCRIPTIONS[key]}
               tooltipTitle="Classification Proportions, Core Collection"
               style={{ marginBottom: "8px" }}
             />
