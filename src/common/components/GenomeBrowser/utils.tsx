@@ -20,7 +20,7 @@ const expansionPercentages: Record<AnyEntityType, number> = {
   ccre: 20,
   gene: 0.2,
   variant: 5.0,
-  region: 0.25,
+  region: 0,
   gwas: 0.2,
 };
 

@@ -1,25 +1,28 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
-import { Stack, Tab, Tabs } from "@mui/material";
+import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "common/types/generated";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
-import { GROUP_COLOR_MAP } from "common/colors";
+import { CLASS_COLORS } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcreData } from "common/hooks/useCcreData";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
-import { AssayWheel } from "common/components/BiosampleTables/AssayWheel";
+import { AssayWheel } from "@weng-lab/ui-components";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
-import { CCRE_CLASSES } from "common/consts";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { BiosampleRow } from "./types";
+import { useSilencersData } from "common/hooks/useSilencersData";
+import { Silencer_Studies } from "./consts";
+import { LinkComponent } from "common/components/LinkComponent";
 
 const classifyCcre = (
   scores: { dnase: number; atac: number; h3k4me3: number; h3k27ac: number; ctcf: number; tf: string },
   distanceToTSS: number,
   overlapsTSS: boolean
-) => {
+): CcreClass => {
   let ccreClass: CcreClass;
   if (scores.dnase != -11.0) {
     if (scores.dnase > 1.64) {
@@ -78,11 +81,13 @@ const zScoreFormatting: Partial<GridColDef> = {
 };
 
 const classificationFormatting: Partial<GridColDef> = {
+  type: "singleSelect",
+  valueOptions: CCRE_CLASSES.map((group) => ({ value: group, label: CLASS_DESCRIPTIONS[group] })),
   renderCell: (params: GridRenderCellParams) => {
     const group = params.value;
-    const colormap = GROUP_COLOR_MAP.get(group);
-    const color = colormap ? (group === "InActive" ? "gray" : colormap.split(":")[1]) : "#06da93";
-    const classification = colormap ? colormap.split(":")[0] : "DNase only";
+    // Override the InActive color here since it's being used for coloring text and is too light
+    const color = group === "InActive" ? CLASS_COLORS.noclass : CLASS_COLORS[group];
+    const classification = CLASS_DESCRIPTIONS[group];
     return (
       <span style={{ color }}>
         <strong>{classification}</strong>
@@ -124,6 +129,28 @@ const ctAgnosticCols: GridColDef[] = [
   },
 ];
 
+const silencersDataCols: GridColDef[] = [
+  {
+    headerName: "Study",
+    field: "study",
+    valueGetter: (value, row) => row.study,
+  },
+  {
+    headerName: "PMID",
+    field: "pmid",
+    valueGetter: (value, row) => row.pmid,
+    renderCell: (params) => (
+      <LinkComponent href={params.row.pubmed_link} showExternalIcon openInNewTab>
+        {params.row.pmid}
+      </LinkComponent>
+    ),
+  },
+  {
+    headerName: "Method",
+    field: "method",
+    valueGetter: (value, row) => row.method,
+  },
+];
 //This is used to prevent sorting from happening when clicking on the header checkbox
 const StopPropagationWrapper = (params) => (
   <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
@@ -213,7 +240,7 @@ const assayInfo = (row: BiosampleRow) => {
   };
 };
 
-const getAncillaryCols = () => getCoreAndPartialCols().filter((col) => col.field !== "dnase" && col.field !== "group");
+const getAncillaryCols = () => getCoreAndPartialCols().filter((col) => col.field !== "dnase" && col.field !== "class");
 
 export const GET_CCRE_CT_TF = gql(`
   query cCRETF($accession: String!, $assembly: String!) {
@@ -313,11 +340,16 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     setTab(newValue as "tables" | "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf");
   };
 
+  const { data: cCREdata, error: errorCcreData } = useCcreData({
+    accession: entity.entityID,
+    assembly: entity.assembly,
+  });
+
   const {
-    data: cCREdata,
-    loading: loadingCcreData,
-    error: errorCcreData,
-  } = useCcreData({ accession: entity.entityID, assembly: entity.assembly });
+    data: silencersData,
+    loading: loadingSilencersData,
+    error: errorSilencersData,
+  } = useSilencersData({ accession: [entity.entityID], assembly: entity.assembly });
 
   const coordinates: GenomicRange = {
     chromosome: cCREdata?.chrom,
@@ -341,11 +373,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     },
   });
 
-  const {
-    data: data_biosampleZs,
-    loading: loading_biosampleZs,
-    error: error_biosampleZs,
-  } = useQuery(BIOSAMPLE_Zs, {
+  const { data: data_biosampleZs, error: error_biosampleZs } = useQuery(BIOSAMPLE_Zs, {
     variables: {
       assembly: entity.assembly.toLowerCase(),
       accession: entity.entityID,
@@ -355,11 +383,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   /**
    * Fetch mapping between biosample and if cCRE is TF in that sample, displayed in table and used for classification
    */
-  const {
-    data: data_ccre_tf,
-    loading: loading_ccre_tf,
-    error: error_ccre_tf,
-  } = useQuery(GET_CCRE_CT_TF, {
+  const { data: data_ccre_tf, error: error_ccre_tf } = useQuery(GET_CCRE_CT_TF, {
     variables: {
       assembly: entity.assembly.toLowerCase() === "mm10" ? "mm10" : "GRCh38",
       accession: entity.entityID,
@@ -369,11 +393,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   /**
    * fetch genes within 2M bp region to find distance to nearest TSS, used for classification.
    */
-  const {
-    loading: loadingNearbyGenes,
-    data: dataNearbyGenes,
-    error: errorNearbyGenes,
-  } = useQuery(NEARBY_GENES, {
+  const { data: dataNearbyGenes, error: errorNearbyGenes } = useQuery(NEARBY_GENES, {
     variables: {
       assembly: entity.assembly.toLowerCase(),
       geneSearchChrom: coordinates.chromosome,
@@ -488,7 +508,9 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     let highDNase = 0;
     let lowDNase = 0;
     partialDataCollection.forEach((row) => {
-      row.dnase >= 1.64 ? highDNase++ : lowDNase++;
+      if (row.dnase >= 1.64) {
+        highDNase++;
+      } else lowDNase++;
     });
     return { highDNase, lowDNase };
   }, [partialDataCollection]);
@@ -516,8 +538,20 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
       </Tabs>
       {tab === "tables" ? (
         <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
+          <Typography
+            variant="body1"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 400,
+              color: "text.primary",
+              pl: 1,
+              ml: 0, // match table start
+            }}
+          >
+            Cell Type Agnostic Classification
+          </Typography>
           <Table
-            label="Cell type agnostic classification"
             rows={ctAgnosticRow}
             columns={ctAgnosticCols}
             loading={loading_Ct_Agnostic}
@@ -525,14 +559,39 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
             error={!!error_Ct_Agnostic}
             {...disableCsvEscapeChar}
+            hideFooter
+            showToolbar={false}
           />
+          {silencersData && silencersData.length > 0 && (
+            <Table
+              label="Silencers"
+              rows={
+                silencersData?.flatMap((item) =>
+                  item.silencer_studies.map((study) => ({
+                    study: Silencer_Studies.find((s) => s.value == study).study,
+                    pmid: Silencer_Studies.find((s) => s.value == study).pubmed_id,
+                    method: Silencer_Studies.find((s) => s.value == study).method,
+                    pubmed_link: Silencer_Studies.find((s) => s.value == study).pubmed_link,
+                  }))
+                ) || []
+              }
+              columns={silencersDataCols}
+              loading={loadingSilencersData}
+              //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+              divHeight={!silencersData ? { height: "182px" } : undefined}
+              error={!!errorSilencersData}
+              {...disableCsvEscapeChar}
+              hideFooter
+              //showToolbar={false}
+            />
+          )}
           <div>
             <ProportionsBar
               data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}
               label="Classification Proportions, Core Collection:"
               loading={loadingCorePartialAncillary || errorCorePartialAncillary}
-              getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
-              formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
+              getColor={(key) => CLASS_COLORS[key]}
+              formatLabel={(key) => CLASS_DESCRIPTIONS[key]}
               tooltipTitle="Classification Proportions, Core Collection"
               style={{ marginBottom: "8px" }}
             />

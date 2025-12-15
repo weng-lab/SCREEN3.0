@@ -54,6 +54,7 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({ assembly }) => {
                   ? `/GRCh38/gwas/36810956-GCST90296476-astrocytoma`
                   : `/${assembly}/${entity.entity.toLowerCase()}/${entity.name}`
               }
+              scroll={true}
               sx={{
                 position: "relative",
                 display: "flex",

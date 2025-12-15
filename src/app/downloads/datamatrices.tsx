@@ -11,21 +11,19 @@ import {
   MenuItem,
   SelectChangeEvent,
   IconButton,
-  Paper,
 } from "@mui/material";
 import { useQuery } from "@apollo/client";
 import Grid from "@mui/material/Grid";
-import { Download, Visibility, CancelRounded } from "@mui/icons-material";
+import { Download } from "@mui/icons-material";
 import Image from "next/image";
 import humanTransparentIcon from "../../../public/Transparent_HumanIcon.png";
 import mouseTransparentIcon from "../../../public/Transparent_MouseIcon.png";
-import { DataTable, DataTableColumn } from "@weng-lab/ui-components";
+import { allColsHidden, BiosampleTable, EncodeBiosample, GridColumnVisibilityModel } from "@weng-lab/ui-components";
 import { ScatterPlot, Point } from "@weng-lab/visualization";
 import Config from "common/config.json";
-import { BiosampleUMAP, PointMetaData } from "./types";
+import { PointMetaData } from "./types";
 import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/colors";
 import { UMAP_QUERY } from "./queries";
-import BiosampleTables from "../../common/components/BiosampleTables/BiosampleTables";
 
 type Selected = {
   assembly: "Human" | "Mouse";
@@ -53,16 +51,6 @@ function colorMap(strings) {
   return [colors, counts];
 }
 
-// Styling for selected biosamples modal
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80%",
-  boxShadow: 24,
-};
-
 // Styling for download modal
 const downloadStyle = {
   position: "absolute",
@@ -78,6 +66,24 @@ const downloadStyle = {
 
 export function DataMatrices() {
   const [selectedAssay, setSelectedAssay] = useState<Selected>({ assembly: "Human", assay: "DNase" });
+  const [bounds, setBounds] = useState(undefined);
+  const [lifeStage, setLifeStage] = useState("all");
+  const [colorBy, setColorBy] = useState<"ontology" | "sampleType">("ontology");
+
+  const [selectedBiosamples, setSelectedBiosamples] = useState<string[]>([]);
+
+  // const [searchedBiosample, setSearchedBiosample] = useState<EncodeBiosample>(null);
+  // const [selectedBiosamples, setSelectedBiosamples] = useState<BiosampleUMAP[]>([]);
+
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const graphContainerRef = useRef(null);
+
+  const handleSetSelectedAssay = (newSelected: Selected) => {
+    if (JSON.stringify(newSelected) !== JSON.stringify(selectedAssay)) {
+      setSelectedBiosamples([]); // clear umap selection when assay changes
+      setSelectedAssay(newSelected);
+    }
+  };
 
   const { data: umapData, loading: umapLoading } = useQuery(UMAP_QUERY, {
     variables: {
@@ -88,13 +94,6 @@ export function DataMatrices() {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-  const [bounds, setBounds] = useState(undefined);
-  const [lifeStage, setLifeStage] = useState("all");
-  const [colorBy, setColorBy] = useState<"ontology" | "sampleType">("ontology");
-  const [searched, setSearched] = useState<string>(null);
-  const [biosamples, setBiosamples] = useState<BiosampleUMAP[]>([]);
-  const [openModalType, setOpenModalType] = useState<null | "biosamples" | "download">(null);
-  const graphContainerRef = useRef(null);
 
   useEffect(() => {
     const graphElement = graphContainerRef.current;
@@ -113,25 +112,17 @@ export function DataMatrices() {
     };
   }, []);
 
-  const handleSetSelectedSample = (selected) => {
-    setSearched(selected.displayname);
-  };
-
-  const handleOpenModal = () => {
-    if (biosamples.length !== 0) {
-      setOpenModalType("biosamples");
-    }
+  const handleSetTableSelection = (biosamples: EncodeBiosample[]) => {
+    setSelectedBiosamples(biosamples.map((x) => x.name));
   };
 
   const handleOpenDownloadModal = () => {
-    setOpenModalType("download");
+    setOpenModal(true);
   };
 
   const handleCloseModal = () => {
-    setOpenModalType(null);
+    setOpenModal(false);
   };
-
-  useEffect(() => setBiosamples([]), [selectedAssay]);
 
   const map = {
     position: {
@@ -216,7 +207,7 @@ export function DataMatrices() {
     [umapData, isInbounds]
   );
 
-  const handleSelectionChange = (selectedPoints) => {
+  const handleSelectionChange = (selectedPoints: Point<PointMetaData>[]) => {
     const selected = selectedPoints.map((point) => point.x);
     const selectedBiosamples = fData
       .filter((biosample) => selected.includes(biosample.umap_coordinates[0]) && biosample.umap_coordinates)
@@ -229,25 +220,25 @@ export function DataMatrices() {
         umap_coordinates: biosample.umap_coordinates!,
         experimentAccession: biosample.experimentAccession,
       }));
-    setBiosamples(selectedBiosamples);
+    setSelectedBiosamples(selectedBiosamples.map((x) => x.name));
   };
 
   const scatterData: Point<PointMetaData>[] = useMemo(() => {
     if (!fData) return [];
-    const biosampleIds = biosamples.map((sample) => sample.umap_coordinates);
 
     return fData.map((x) => {
-      const isInBiosample = biosampleIds.includes(x.umap_coordinates);
+      const anySelected = selectedBiosamples.length > 0;
+      const isSelected = selectedBiosamples.includes(x.name);
 
       return {
         x: x.umap_coordinates![0],
         y: x.umap_coordinates![1],
-        r: searched && x.displayname === searched ? 5 : 2,
+        r: anySelected && isSelected ? 3 : 2,
         color:
-          searched === null || x.displayname === searched
+          !anySelected || isSelected
             ? (colorBy === "sampleType" ? sampleTypeColors : ontologyColors)[x[colorBy]]
             : "#aaaaaa",
-        opacity: biosampleIds.length === 0 ? 1 : isInBiosample ? 1 : 0.1,
+        opacity: !anySelected || isSelected ? 1 : 0.1,
         shape: "circle",
         metaData: {
           name: x.displayname,
@@ -255,7 +246,7 @@ export function DataMatrices() {
         },
       };
     });
-  }, [fData, searched, colorBy, sampleTypeColors, ontologyColors, biosamples]);
+  }, [fData, colorBy, sampleTypeColors, ontologyColors, selectedBiosamples]);
 
   const legendEntries = useMemo(() => {
     // Create a color-count map based on scatterData
@@ -276,6 +267,7 @@ export function DataMatrices() {
         color,
         value: count,
       }))
+      .filter((x) => x.label !== "#aaaaaa") // quick fix for removing greyed out points from legend. Should be setup differently than this (why do we need to do this)
       .sort((a, b) => b.value - a.value);
   }, [scatterData, colorBy, sampleTypeColors, ontologyColors]);
 
@@ -304,7 +296,7 @@ export function DataMatrices() {
         fullWidth
         onClick={() => {
           setBounds(undefined);
-          setSelectedAssay(variant);
+          handleSetSelectedAssay(variant);
         }}
         sx={{
           mb: 1,
@@ -366,29 +358,35 @@ export function DataMatrices() {
     return matrices[selectedAssay.assembly][variant][selectedAssay.assay];
   };
 
-  // Columns for selected biosample modal
-  const modalCols: DataTableColumn<BiosampleUMAP>[] = [
-    {
-      header: "Experimental Accession",
-      value: (row: BiosampleUMAP) => row.experimentAccession,
-    },
-    {
-      header: "Biosample Name",
-      value: (row: BiosampleUMAP) => row.displayname,
-    },
-    {
-      header: "Tissue",
-      value: (row: BiosampleUMAP) => row.ontology ?? "",
-    },
-  ];
+  const biosampleHasAssay = (biosample: EncodeBiosample, assay: Selected["assay"]) => {
+    switch (assay) {
+      case "DNase":
+        return !!biosample.dnase_experiment_accession;
+      case "H3K4me3":
+        return !!biosample.h3k4me3_experiment_accession;
+      case "H3K27ac":
+        return !!biosample.h3k27ac_experiment_accession;
+      case "CTCF":
+        return !!biosample.ctcf_experiment_accession;
+    }
+  };
+
+  const columnVisibilityModel: GridColumnVisibilityModel = useMemo(
+    () => ({
+      ...allColsHidden,
+      assays: true,
+      [`${selectedAssay.assay.toLowerCase()}_experiment_accession`]: true,
+    }),
+    [selectedAssay]
+  );
 
   return (
-    <Grid container mt={1} direction="column" sx={{ paddingX: 5 }}>
-      <Stack direction="row" spacing={10}>
-        <Stack direction="column" spacing={2}>
+    <Grid container mt={1} direction="column" sx={{ paddingX: 5, height: "100%", minHeight: 0, minWidth: 0 }}>
+      <Stack direction="row" spacing={10} sx={{ minHeight: 0, minWidth: 0, maxWidth: "100%", overflow: "auto" }}>
+        <Stack direction="column" spacing={2} flex={"1 1"}>
           <Stack direction="row" spacing={20}>
             {/* human section */}
-            <Stack direction="column" spacing={1}>
+            <Stack spacing={1}>
               <Grid container direction="row" alignItems="flex-start" spacing={2}>
                 <Grid>
                   <Image
@@ -456,7 +454,7 @@ export function DataMatrices() {
             </Stack>
 
             {/* mouse section */}
-            <Stack direction="column" spacing={1}>
+            <Stack spacing={1}>
               <Grid container direction="row" alignItems="flex-start" spacing={2}>
                 <Grid>
                   <Image
@@ -513,17 +511,6 @@ export function DataMatrices() {
             padding={1}
             sx={{ border: "2px solid", borderColor: "grey.400", borderRadius: "8px" }}
           >
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              mt={1}
-              sx={{ backgroundColor: "#dbdefc", borderRadius: "8px", zIndex: 10 }}
-            >
-              <Button endIcon={biosamples.length !== 0 && <Visibility />} onClick={handleOpenModal}>
-                {`${biosamples.length} Experiments Selected`}
-              </Button>
-              <Button onClick={() => setBiosamples([])}>Clear Selection</Button>
-            </Stack>
             <ScatterPlot
               pointData={scatterData}
               loading={umapLoading}
@@ -543,36 +530,22 @@ export function DataMatrices() {
             />
           </Stack>
         </Stack>
-
-        {/* biosample table*/}
-        <Grid paddingBottom={0} sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          {searched && (
-            <Paper sx={{ mb: 1 }}>
-              <Stack
-                borderRadius={1}
-                direction={"row"}
-                spacing={3}
-                sx={{ backgroundColor: (theme) => theme.palette.secondary.light }}
-                alignItems={"center"}
-              >
-                <Typography flexGrow={1} sx={{ color: "#2C5BA0", pl: 1 }}>
-                  {searched}
-                </Typography>
-                <IconButton onClick={() => setSearched(null)} sx={{ m: "auto", flexGrow: 0 }}>
-                  <CancelRounded />
-                </IconButton>
-              </Stack>
-            </Paper>
-          )}
-          <BiosampleTables
-            assembly={selectedAssay?.assembly === "Human" ? "GRCh38" : "mm10"}
-            fetchBiosamplesWith={[selectedAssay.assay.toLowerCase() as "dnase" | "h3k4me3" | "h3k27ac" | "ctcf"]}
-            onChange={handleSetSelectedSample}
-            slotProps={{
-              paperStack: { overflow: "hidden", flexGrow: 1 },
-            }}
+        <div style={{ minWidth: 300, overflow: "auto" }}>
+          <BiosampleTable
+            label={"Find Biosamples"}
+            assembly={selectedAssay.assembly === "Human" ? "GRCh38" : "mm10"}
+            checkboxSelection
+            onSelectionChange={handleSetTableSelection}
+            selected={selectedBiosamples}
+            prefilterBiosamples={(biosample) => biosampleHasAssay(biosample, selectedAssay.assay)}
+            columnVisibilityModel={columnVisibilityModel}
+            // temporary fix while other tables are not setup to group rows
+            disableRowGrouping={false}
+            // I gave up on figuring out how to make this grow and shrink to the correct size
+            // This layout desperately needs to be cleaned
+            divHeight={{ height: 600 }}
           />
-        </Grid>
+        </div>
       </Stack>
 
       {/* legend section */}
@@ -612,28 +585,8 @@ export function DataMatrices() {
           ))}
         </Box>
       </Box>
-
-      {/* modals */}
       <Modal
-        open={openModalType === "biosamples"}
-        onClose={handleCloseModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <DataTable
-            sortDescending
-            searchable
-            tableTitle={"Selected Biosamples"}
-            columns={modalCols}
-            rows={biosamples}
-            itemsPerPage={7}
-          />
-        </Box>
-      </Modal>
-
-      <Modal
-        open={openModalType === "download"}
+        open={openModal}
         onClose={handleCloseModal}
         aria-labelledby="download-modal-title"
         aria-describedby="download-modal-description"
