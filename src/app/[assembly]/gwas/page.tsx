@@ -441,10 +441,18 @@ export default function GWASLandingPage() {
                     >
                       <Typography variant="h6">
                         {term.charAt(0).toUpperCase() + term.slice(1)}{" "}
-                        <span style={{ textDecoration: "line-through", opacity: 0.6 }}>
-                          {total.toLocaleString()}
-                        </span>{" "}
-                        ({studies.length.toLocaleString()})
+                         (
+                        {studies.length.toLocaleString()}
+                        {search && studies.length !== total && (
+                          <>
+                            {" "} {/* <-- explicit space */}
+                            <span style={{ textDecoration: "line-through", opacity: 0.6 }}>
+                              {total.toLocaleString()}
+                            </span>
+                          </>
+                        )}
+                        )
+                       
                       </Typography>
                     </AccordionSummary>
 
