@@ -1,5 +1,5 @@
 "use client";
-import { Stack } from "@mui/material";
+import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";
@@ -7,9 +7,15 @@ import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import useClosestGenes from "common/hooks/useClosestGenes";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { useCompuLinkedGenes } from "common/hooks/useCompuLinkedGenes";
+import { useState } from "react";
+import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
+import { InfoOutlineRounded } from "@mui/icons-material";
+import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 
 export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
   const isHuman = entity.assembly === "GRCh38";
+  const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
 
   const {
     data: linkedGenes,
@@ -22,6 +28,46 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
     loading: loadingClosest,
     error: errorClosest,
   } = useClosestGenes(entity.entityID, entity.assembly);
+
+  const {
+    data: dataCompuGenes,
+    loading: loadingCompuGenes,
+    error: errorCompuGenes,
+  } = useCompuLinkedGenes({
+    accessions: [entity.entityID],
+    method,
+  });
+
+  //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
+  //setting the anchorEl to the button
+  const [virtualAnchor, setVirtualAnchor] = useState<{
+    getBoundingClientRect: () => DOMRect;
+  } | null>(null);
+
+  const handleClickClose = () => {
+    if (virtualAnchor) {
+      setVirtualAnchor(null);
+    }
+  };
+
+  const handleMethodSelected = (method: string) => {
+    setMethod(method);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (virtualAnchor) {
+      // If already open, close it
+      setVirtualAnchor(null);
+    } else {
+      // Open it, store the current position
+      const rect = event.currentTarget.getBoundingClientRect();
+      setVirtualAnchor({
+        getBoundingClientRect: () => rect,
+      });
+    }
+  };
+
+
 
   // make types for the data
   const HiCLinked = linkedGenes
@@ -48,6 +94,48 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       ...x,
       id: index.toString(),
     }));
+
+  const CompuLinkedGenes_columns: GridColDef<(typeof dataCompuGenes)[number]>[] = [
+    {
+      field: "fileaccession",
+      headerName: "File",
+      renderCell: (params) => (
+        <LinkComponent href={`https://www.encodeproject.org/file/${params.value}`} openInNewTab showExternalIcon>
+          {params.value}
+        </LinkComponent>
+      ),
+    },
+    sharedColumns.genename,
+    {
+      field: "geneid",
+      headerName: "Gene ID",
+    },
+    sharedColumns.genetype,
+    {
+      field: "method",
+      headerName: "Method",
+      valueGetter: (_, row) => row.method.replaceAll("_", " "),
+    },
+    {
+      field: "methodregion",
+      headerName: "Method Region",
+      valueGetter: (_, row) => formatCoord(row.methodregion),
+    },
+    {
+      field: "celltype",
+      headerName: "Biosample",
+      valueGetter: (_, row) =>
+        row.celltype
+          .replaceAll("_", " ")
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
+    },
+    {
+      ...sharedColumns.score,
+      valueGetter: (_, row) => row.score.toFixed(2),
+    },
+  ];
 
   const tables: TableDef<LinkedGeneInfo>[] = [
     {
@@ -90,6 +178,38 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       loading: loadingLinkedGenes,
       error: !!errorLinkedGenes,
     },
+    {
+      label: `Computational Predictions by ${method.replaceAll("_", " ")}`,
+      rows: dataCompuGenes,
+      columns: CompuLinkedGenes_columns,
+      sortColumn: "score",
+      sortDirection: "desc",
+      emptyTableFallback:
+        <Stack
+          direction={"row"}
+          border={"1px solid #e0e0e0"}
+          borderRadius={1}
+          p={2}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          <Stack direction={"row"} spacing={1}>
+            <InfoOutlineRounded />
+            {loadingCompuGenes ? <Typography>Fetching Computational Linked Genes by {method}</Typography> : <Typography>No Computational Predictions</Typography>}
+          </Stack>
+          <Tooltip title="Advanced Filters">
+            <Button variant="outlined" onClick={handleClick}>
+              Change Method
+            </Button>
+          </Tooltip>
+        </Stack>
+      ,
+      toolbarSlot: <Tooltip title="Advanced Filters">
+        <Button variant="outlined" onClick={handleClick}>
+          Change Method
+        </Button>
+      </Tooltip>
+    }
   ];
 
   const closestGenesCols: GridColDef[] = [
@@ -124,6 +244,18 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
         error={!!errorClosest}
       />
       {isHuman && <LinkedElements tables={tables} />}
+      <Box
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          event.stopPropagation();
+        }}
+      >
+        <SelectCompuGenesMethod
+          method={method}
+          open={Boolean(virtualAnchor)}
+          setOpen={handleClickClose}
+          onMethodSelect={handleMethodSelected}
+        />
+      </Box>
     </Stack>
   );
 }

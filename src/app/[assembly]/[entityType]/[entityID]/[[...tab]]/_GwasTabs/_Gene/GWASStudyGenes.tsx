@@ -12,13 +12,13 @@ import { useCompuLinkedGenes } from "common/hooks/useCompuLinkedGenes";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
-function formatCoord(str: string) {
+export function formatCoord(str: string) {
   const [chrom, start, end] = str.split("_");
   return `${chrom}:${start}-${end}`;
 }
 
 // Shared column definitions
-const sharedColumns: { [key: string]: GridColDef } = {
+export const sharedColumns: { [key: string]: GridColDef } = {
   accession: {
     field: "accession",
     headerName: "Accession",
@@ -103,7 +103,6 @@ const sharedColumns: { [key: string]: GridColDef } = {
 
 export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
-
   const {
     data: dataGWASSNPscCREs,
     loading: loadingGWASSNPscCREs,
