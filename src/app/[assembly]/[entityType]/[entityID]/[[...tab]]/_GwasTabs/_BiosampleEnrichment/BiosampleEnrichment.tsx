@@ -8,8 +8,9 @@ import { BarData, DownloadPlotHandle } from "@weng-lab/visualization";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
-import { Table } from "@weng-lab/ui-components";
+import { Table, useGridEventPriority } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
+import { Typography } from "@mui/material";
 const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
   const {
     data: dataGWASEnrichment,
@@ -39,6 +40,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
     } else setSelected([...selected, bar.metadata]);
   };
 
+  
   return (
     <>
       <Table
@@ -62,6 +64,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
         loading={loadingGWASMetadata}
         error={!!errorGWASMetadata}
       />
+      {dataGWASEnrichment && dataGWASEnrichment.length === 0 && <Typography variant="h6">There is no biosample enrichment data for this study</Typography>}
       {dataGWASEnrichment && dataGWASEnrichment.length > 0 && <TwoPaneLayout
         TableComponent={
           <BiosampleEnrichmentTable
