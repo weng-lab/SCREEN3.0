@@ -128,18 +128,18 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "numCcres",
-      headerName: "Overlaping cCREs",
+      headerName: "Overlapping cCREs",
       aggregable: true,
       valueFormatter: (value: number) => value.toLocaleString(),
     },
     {
       field: "numGenes",
-      headerName: "Overlaping Genes",
+      headerName: "Overlapping Genes",
       valueFormatter: (value: number) => value.toLocaleString(),
     },
     {
       field: "numSnps",
-      headerName: "Overlaping Snps",
+      headerName: "Overlapping Variants",
       valueFormatter: (value: number) => value.toLocaleString(),
     },
     {
