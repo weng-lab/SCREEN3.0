@@ -1,10 +1,11 @@
-import { Chromosome } from "@weng-lab/genomebrowser";
+import { Chromosome, Vibrant } from "@weng-lab/genomebrowser";
 import { Result } from "@weng-lab/ui-components";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
 
 export function randomColor() {
-  return "#" + Math.floor(Math.random() * 16777215).toString(16);
+  const idx = Math.floor(Math.random() * Vibrant.length);
+  return Vibrant[idx];
 }
 
 export const SearchToScreenTypes: Record<Result["type"], AnyEntityType> = {

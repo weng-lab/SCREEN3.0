@@ -6,7 +6,7 @@ import { Box, Button, IconButton, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // @weng-lab
-import { BigWigConfig, Browser, createTrackStoreMemo, DisplayMode, TrackType } from "@weng-lab/genomebrowser";
+import { BigWigConfig, Browser, createTrackStoreMemo, DisplayMode, Rect, TrackType } from "@weng-lab/genomebrowser";
 import { GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
@@ -21,7 +21,8 @@ import { expandCoordinates, randomColor, SearchToScreenTypes } from "./utils";
 import PageviewIcon from "@mui/icons-material/Pageview";
 import ControlButtons from "./Controls/ControlButtons";
 import DomainDisplay from "./Controls/DomainDisplay";
-import TrackSelect from "./TrackSelect/TrackSelect";
+// import TrackSelect from "./TrackSelect/TrackSelect";
+import CCRETooltip from "./Tooltips/CcreTooltip";
 
 type GenomeBrowserViewProps = EntityViewComponentProps & { entityCoordinates: GenomicRange };
 
@@ -32,7 +33,6 @@ export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeB
   const name = entity.entityType === "region" ? entity.entityID.replace("%3A", ":") : entity.entityID;
 
   const browserStore = useLocalBrowser(entity.entityID, entityCoordinates, entity.entityType);
-
   // Initialize track store with interaction functions (on click, on hover, etc)
   const trackStore = createTrackStoreMemo(
     [
@@ -46,6 +46,28 @@ export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeB
         height: 100,
         assembly: "GRCh38",
         version: 40,
+        canonicalName: "",
+      },
+      {
+        id: "ccre-track",
+        title: "All cCREs colored by group",
+        titleSize: 12,
+        height: 20,
+        color: "#D05F45",
+        trackType: TrackType.BigBed,
+        displayMode: DisplayMode.Dense,
+        url: `https://downloads.wenglab.org/${entity.assembly}-cCREs.DCC.bigBed`,
+        onHover: (rect) => {
+          addHighlight({
+            id: rect.name + "-temp" || "ccre-highlight",
+            domain: { start: rect.start, end: rect.end },
+            color: rect.color || "blue",
+          });
+        },
+        onLeave: (rect) => {
+          removeHighlight(rect.name + "-temp" || "ccre-highlight");
+        },
+        tooltip: (rect: Rect) => <CCRETooltip assembly={entity.assembly} name={rect.name || ""} {...rect} />,
       },
       {
         id: "default-dnase",
@@ -63,6 +85,7 @@ export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeB
   );
 
   const addHighlight = browserStore((state) => state.addHighlight);
+  const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
   const editTrack = trackStore((state) => state.editTrack);
 
@@ -133,7 +156,7 @@ export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeB
         </Box>
         <Box display="flex" gap={2} alignItems="center">
           <HighlightDialog browserStore={browserStore} />
-          <TrackSelect trackStore={trackStore} />
+          {/*<TrackSelect trackStore={trackStore} />*/}
         </Box>
         {/* Add new track select button and modal here */}
       </Stack>

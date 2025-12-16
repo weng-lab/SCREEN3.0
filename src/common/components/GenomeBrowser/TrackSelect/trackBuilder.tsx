@@ -1,4 +1,4 @@
-import { Track, BigWigConfig, TrackType, DisplayMode, BigBedConfig, TranscriptConfig } from "@weng-lab/genomebrowser";
+import { BigWigConfig, TrackType, DisplayMode, BigBedConfig, TranscriptConfig } from "@weng-lab/genomebrowser";
 
 // temporary until we implement the UI
 type Selection = {
@@ -6,7 +6,7 @@ type Selection = {
   url: string;
 };
 
-export function buildBigWig(selection: Selection): Track {
+export function buildBigWig(selection: Selection): BigWigConfig {
   const bigWigTrack: BigWigConfig = {
     title: selection.name,
     trackType: TrackType.BigWig,
@@ -18,7 +18,7 @@ export function buildBigWig(selection: Selection): Track {
   return bigWigTrack;
 }
 
-export function buildBigBed(selection: Selection, onHover, onLeave, onClick): Track {
+export function buildBigBed(selection: Selection, onHover, onLeave, onClick): BigBedConfig {
   const bigBedTrack: BigBedConfig = {
     title: selection.name,
     trackType: TrackType.BigBed,
@@ -33,7 +33,7 @@ export function buildBigBed(selection: Selection, onHover, onLeave, onClick): Tr
   return bigBedTrack;
 }
 
-export function buildTranscript() {
+export function buildTranscript(): TranscriptConfig {
   const transriptTrack: TranscriptConfig = {
     title: "GENCODE Genes",
     id: "gene",
@@ -42,6 +42,7 @@ export function buildTranscript() {
     assembly: "hg38",
     version: 40,
     height: 100,
+    canonicalName: "",
   };
   return transriptTrack;
 }
