@@ -11,11 +11,11 @@ import { Assembly } from "common/types/globalTypes";
 import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
-import { classificationFormatting } from "common/components/ClassificationFormatting";
 import { useState } from "react";
 import { useCompuLinkedcCREs } from "common/hooks/useCompuLinkedcCREs";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
 export const accessionCol = (assembly: string): GridColDef => ({
   field: "accession",
@@ -180,7 +180,7 @@ export default function ComputationalLinkedCcres({
         {
           field: "class",
           headerName: "Classification",
-          ...classificationFormatting,
+          ...ClassificationFormatting,
         },
         ...IntactHiCLoopsCols.slice(2),
       ],
@@ -196,7 +196,7 @@ export default function ComputationalLinkedCcres({
         {
           field: "class",
           headerName: "Classification",
-          ...classificationFormatting,
+          ...ClassificationFormatting,
         },
         ...ChIAPETCols.slice(2),
       ],
@@ -212,7 +212,7 @@ export default function ComputationalLinkedCcres({
         {
           field: "class",
           headerName: "Classification",
-          ...classificationFormatting,
+          ...ClassificationFormatting,
         },
         ...CrisprFlowFISHCols.slice(2),
       ],
@@ -228,7 +228,7 @@ export default function ComputationalLinkedCcres({
         {
           field: "class",
           headerName: "Classification",
-          ...classificationFormatting,
+          ...ClassificationFormatting,
         },
         ...eQTLCols.slice(2),
       ],

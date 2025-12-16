@@ -12,10 +12,10 @@ import { decodeRegions } from "common/utility";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { GenomicRange } from "common/types/generated/graphql";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
-import { GROUP_COLOR_MAP } from "common/colors";
-import { CCRE_CLASSES } from "common/consts";
-import { classificationFormatting } from "common/components/ClassificationFormatting";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
+import { CLASS_COLORS } from "common/colors";
 
 const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<RegistryBiosamplePlusRNA | null>(null);
@@ -83,7 +83,7 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     {
       field: "pct",
       headerName: "Classification",
-      ...classificationFormatting,
+      ...ClassificationFormatting,
     },
     {
       field: "chrom",
@@ -226,8 +226,8 @@ const BedIntersectingCcres = ({ entity }: EntityViewComponentProps) => {
         data={getProportionsFromArray(dataCcres, "pct", CCRE_CLASSES)}
         label="Classification Proportions"
         loading={loadingCcres || !!errorCcres}
-        getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
-        formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
+        getColor={(key) => CLASS_COLORS[key]}
+        formatLabel={(key) => CLASS_DESCRIPTIONS[key]}
         tooltipTitle="Classification Proportions, Core Collection"
         sortDescending
       />

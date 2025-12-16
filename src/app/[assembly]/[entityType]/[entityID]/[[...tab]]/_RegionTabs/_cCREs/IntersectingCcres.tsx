@@ -8,11 +8,11 @@ import { useState } from "react";
 import { CancelRounded } from "@mui/icons-material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { parseGenomicRangeString } from "common/utility";
-import { GROUP_COLOR_MAP } from "common/colors";
-import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
-import { CCRE_CLASSES } from "common/consts";
-import { classificationFormatting } from "common/components/ClassificationFormatting";
 import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
+import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
+import { CLASS_COLORS } from "common/colors";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);
@@ -76,7 +76,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     {
       field: "pct",
       headerName: "Classification",
-      ...classificationFormatting,
+      ...ClassificationFormatting,
     },
     {
       field: "chrom",
@@ -224,8 +224,8 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
         data={getProportionsFromArray(dataCcres, "pct", CCRE_CLASSES)}
         label="Classification Proportions"
         loading={loadingCcres || !!errorCcres}
-        getColor={(key) => GROUP_COLOR_MAP.get(key).split(":")[1] ?? "black"}
-        formatLabel={(key) => GROUP_COLOR_MAP.get(key).split(":")[0] ?? key}
+        getColor={(key) => CLASS_COLORS[key]}
+        formatLabel={(key) => CLASS_DESCRIPTIONS[key]}
         tooltipTitle="Classification Proportions, Core Collection"
         sortDescending
       />

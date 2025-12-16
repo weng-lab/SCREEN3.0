@@ -9,7 +9,7 @@ import { useMemo, useState } from "react";
 import { DistanceSlider } from "./DistanceSlider";
 import { calcSignedDistRegionToRegion } from "common/utility";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { classificationFormatting } from "common/components/ClassificationFormatting";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
 const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
   const {
@@ -67,7 +67,7 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
     {
       field: "group",
       headerName: "Classification",
-      ...classificationFormatting,
+      ...ClassificationFormatting,
     },
     {
       field: "chromosome",
