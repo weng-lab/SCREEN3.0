@@ -141,17 +141,33 @@ const classDownloads: {
   ],
 };
 
+const otherAssemblies: DownloadButtonProps[] = [
+  {
+    href: "",
+    label: "GRCh37/hg19 (Liftover from GRCh38/hg38)",
+    fileSize: "X MB",
+    bordercolor: "#0c184a",
+  },
+];
+
 interface NewAnnotationsByClassProps {
   assembly: Assembly;
 }
 
 const AnnotationsByClass: React.FC<NewAnnotationsByClassProps> = ({ assembly }) => {
   return (
-    <DownloadContentLayout title="cCREs by Class (.bed)">
-      {classDownloads[assembly].map((item) => (
-        <DownloadButton key={item.label} {...item} />
-      ))}
-    </DownloadContentLayout>
+    <>
+      <DownloadContentLayout title="cCREs by Class (.bed)">
+        {classDownloads[assembly].map((item) => (
+          <DownloadButton key={item.label} {...item} />
+        ))}
+      </DownloadContentLayout>
+      <DownloadContentLayout title="cCREs in Other Assemblies">
+        {otherAssemblies.map((item) => (
+          <DownloadButton key={item.label} {...item} />
+        ))}
+      </DownloadContentLayout>
+    </>
   );
 };
 
