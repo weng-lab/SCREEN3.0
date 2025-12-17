@@ -190,7 +190,7 @@ export const humanCcreTabs = [
   },
   {
     route: "tf",
-    label: "TF Binding",
+    label: "TF Motifs",
     component: TfBinding,
   },
 ] as const satisfies TabConfig[];
