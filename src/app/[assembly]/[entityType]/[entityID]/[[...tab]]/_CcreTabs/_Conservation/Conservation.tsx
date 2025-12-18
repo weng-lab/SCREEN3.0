@@ -38,12 +38,14 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-   const {
-      data: dataCcre,
-      loading: loadingCcre,
-      error: errorCcre,
-    } = useCcreData({ assembly: entity.assembly, accession: [entity.entityID] });
-
+  const {
+    data: dataCcre,
+    loading: loadingCcre,
+    error: errorCcre,
+  } = useCcreData({
+    assembly: entity.assembly,
+    accession: [entity.entityID],
+  });
 
   const ortholog: orthologRow[] = [];
   if (data && data.orthologQuery.length > 0) {
