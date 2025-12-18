@@ -19,9 +19,10 @@ import GWASGenomeBrowserView from "app/[assembly]/[entityType]/[entityID]/[[...t
 import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
+import { TfBinding } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_TF/TfBinding";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
-import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
+// import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -186,6 +187,11 @@ export const humanCcreTabs = [
     route: "additional-chromatin-signatures",
     label: "Additional Chromatin Signatures",
     component: AdditionalChromatinSignatures,
+  },
+  {
+    route: "tf",
+    label: "TF Motifs",
+    component: TfBinding,
   },
 ] as const satisfies TabConfig[];
 
