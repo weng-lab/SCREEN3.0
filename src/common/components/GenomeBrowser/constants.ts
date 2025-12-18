@@ -46,7 +46,7 @@ export const humanDefaultTracks: Track[] = [
   } as BigWigConfig,
   {
     id: "default-atac",
-    title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
+    title: "Aggregated ATAC-seq signal, all Registry biosamples",
     titleSize: 12,
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
@@ -99,7 +99,7 @@ export const mouseDefaultTracks: Track[] = [
   } as BigWigConfig,
   {
     id: "default-atac",
-    title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
+    title: "Aggregated ATAC-seq signal, all Registry biosamples",
     titleSize: 12,
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,

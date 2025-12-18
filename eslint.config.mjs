@@ -13,6 +13,7 @@ import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
@@ -32,7 +33,6 @@ export default defineConfig([
         "prettier"
       )
     ),
-
     plugins: {
       react: fixupPluginRules(react),
       "react-hooks": fixupPluginRules(reactHooks),
@@ -40,33 +40,27 @@ export default defineConfig([
       "unused-imports": unusedImports,
       prettier: fixupPluginRules(prettier),
     },
-
     languageOptions: {
       parser: tsParser,
       ecmaVersion: 2020,
       sourceType: "module",
-
       parserOptions: {
         ecmaFeatures: {
           jsx: true,
         },
-
         project: "./tsconfig.json",
+        tsconfigRootDir: __dirname,
       },
     },
-
     ignores: ["node_modules", ".next", ".vscode", ".yarn"],
-
     settings: {
       react: {
         version: "detect",
       },
     },
-
     rules: {
       "prettier/prettier": "warn",
       "unused-imports/no-unused-imports": "error",
-
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
