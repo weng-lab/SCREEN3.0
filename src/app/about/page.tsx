@@ -258,6 +258,41 @@ export default function About() {
                 </li>
               </ul>
             </Grid>
+            <Grid size={12} id="legacy">
+              <Typography variant="h5">SCREEN Legacy Sites</Typography>
+              <Typography display={"inline"} variant="body1" paragraph>
+                Early versions of SCREEN remain available for reference, as this is the third and most recent version of
+                the site. Legacy sites are no longer actively updated, so users should be aware that some data and
+                features may be deprecated. Links to the legacy versions of SCREEN are provided below, as they may be
+                useful for reproducing analyses based on earlier releases.
+              </Typography>
+              <ul style={{ listStyleType: "circle", listStylePosition: "inside" }}>
+                <li>
+                  <Typography
+                    display={"inline"}
+                    variant="body1"
+                    paragraph
+                    component={Link}
+                    href="https://screen.encodeproject.org/"
+                  >
+                    SCREEN
+                  </Typography>
+                </li>
+              </ul>
+              <ul style={{ listStyleType: "circle", listStylePosition: "inside" }}>
+                <li>
+                  <Typography
+                    display={"inline"}
+                    variant="body1"
+                    paragraph
+                    component={Link}
+                    href="https://screen.wenglab.org/"
+                  >
+                    SCREEN2.0
+                  </Typography>
+                </li>
+              </ul>
+            </Grid>
           </Grid>
           {/* API Documentation */}
           <Grid id="api-documentation" size={12}>
