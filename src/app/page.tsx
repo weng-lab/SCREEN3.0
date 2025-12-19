@@ -134,17 +134,25 @@ export default function Home() {
         </Typography>
         <PopularSearches assembly={assembly} />
       </Box>
-      <Box
+      {/* <Box
         width={"100%"}
         justifyContent={"center"}
         alignItems={"flex-start"}
         display={"flex"}
         flexDirection={"column"}
         sx={{ paddingY: 5, paddingX: { xs: 5, md: 20 } }}
+      > */}
+      <Box
+        width={"100%"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        display={"flex"}
+        flexDirection={"column"}
+        sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}
       >
-        <Typography variant="h4" sx={{ fontWeight: 550 }}>
+        {/* <Typography variant="h4" sx={{ fontWeight: 550 }}>
           Explore All Biosamples and GWAS
-        </Typography>
+        </Typography> */}
         <ExploreMore />
       </Box>
       <Box
