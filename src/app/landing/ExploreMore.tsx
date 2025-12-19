@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid, Grow, Box, Stack, Typography, Button, Tooltip } from "@mui/material";
 import Link from "next/link";
-import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
-import { theme } from "app/theme";
+// import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
+// import { theme } from "app/theme";
 
 const cards = [
   {
@@ -35,7 +35,7 @@ const cards = [
 ];
 
 const ExploreMore: React.FC = () => {
-  const { visible: visible, refs: popularRefs } = useGrowOnScroll(cards.length);
+  // const { visible: visible, refs: popularRefs } = useGrowOnScroll(cards.length);
   const GWASCard = cards[0];
 
   return (
@@ -115,7 +115,7 @@ const ExploreMore: React.FC = () => {
           </Grow>
         ))}
       </Grid> */}
-      <Grid container width="100%" justifyContent="space-around" alignItems={"center"}>
+      <Grid container width="100%" justifyContent="space-around">
         <Grid size={6} width={"auto"}>
           <Stack spacing={1}>
             <Box
@@ -166,22 +166,24 @@ const ExploreMore: React.FC = () => {
             </Typography>
           </Stack>
         </Grid>
-        <Grid size={6} width={"auto"} alignItems={"center"} justifyContent={"center"}>
-          <Typography variant="h4" sx={{ fontWeight: 550, mb: 2 }}>
-            Genome Wide Associated Studies
-          </Typography>
-          <Typography variant="body1" maxWidth={500} mb={2}>
-            Explore all Genome Wide Associated Studies (GWAS) and search studies by category.
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: (theme) => theme.palette.primary.light, width: "fit-content", px: 2 }}
-            component={Link}
-            href={GWASCard.link}
-            disabled={GWASCard.disabled}
-          >
-            Explore
-          </Button>
+        <Grid size={6} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }} width={"auto"}>
+          <Box sx={{ maxWidth: 325, width: "100%", mt: { xs: 10, md: 0 } }}>
+            <Typography variant="h6" sx={{ fontWeight: 550 }} gutterBottom>
+              Genome Wide Associated Studies
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Explore all Genome Wide Associated Studies (GWAS) and search studies by category.
+            </Typography>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: (theme) => theme.palette.primary.light, width: "fit-content", px: 2 }}
+              component={Link}
+              href={GWASCard.link}
+              disabled={GWASCard.disabled}
+            >
+              Explore
+            </Button>
+          </Box>
         </Grid>
       </Grid>
     </>
