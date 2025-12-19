@@ -62,6 +62,7 @@ const toBedRange = (c: GenomicRange): ChromRange => ({
 });
 
 const convertCoordsToQueryFormat = (coordinates: GenomicRange | GenomicRange[]): ChromRange | ChromRange[] => {
+  if (!coordinates) return undefined
   if (Array.isArray(coordinates)) {
     return coordinates.map(toBedRange);
   } else return toBedRange(coordinates);

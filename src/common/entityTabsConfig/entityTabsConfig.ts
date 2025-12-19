@@ -20,7 +20,6 @@ import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
 import { TfBinding } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_TF/TfBinding";
-import BedIntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_cCREs/BedIntersectingCcres";
 import BedIntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Variants/BedIntersectingSnps";
 import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Overview/BedOverview";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
@@ -236,7 +235,7 @@ export const humanBedTabs = [
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,
-    component: BedIntersectingCcres,
+    component: IntersectingCcres,
   },
   {
     route: "genes",
@@ -345,7 +344,7 @@ export const mouseBedTabs = [
     route: "ccres",
     label: "cCREs",
     iconPath: CcreIconPath,
-    component: BedIntersectingCcres,
+    component: IntersectingCcres,
   },
   {
     route: "genes",
