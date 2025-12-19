@@ -10,10 +10,12 @@ import { usePathname } from "next/navigation";
 import { Assembly } from "common/types/globalTypes";
 import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
+import { useCcreData } from "common/hooks/useCcreData";
 import { useState } from "react";
 import { useCompuLinkedcCREs } from "common/hooks/useCompuLinkedcCREs";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
 export const accessionCol = (assembly: string): GridColDef => ({
   field: "accession",
@@ -31,11 +33,7 @@ export default function ComputationalLinkedCcres({
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
   const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data.id });
 
-  const {
-    data: dataCompucCREs,
-    loading: loadingCompucCREs,
-    error: errorCompucCREs,
-  } = useCompuLinkedcCREs({
+  const { data: dataCompucCREs, loading: loadingCompucCREs } = useCompuLinkedcCREs({
     geneid: geneData ? [geneData?.data.id.split(".")[0]] : [],
     method,
   });
@@ -109,7 +107,19 @@ export default function ComputationalLinkedCcres({
   const pathname = usePathname();
   const assembly = pathname.split("/")[1];
 
-  if (geneData.loading || loading) {
+  const {
+    data: dataCcres,
+    loading: loadingCcres,
+    error: errorCcres,
+  } = useCcreData({
+    accession: data?.map((acc) => acc.accession),
+    assembly: assembly as Assembly,
+    skip: !data,
+  });
+
+  const classByAccession = Object.fromEntries(dataCcres?.map((c) => [c.info.accession, c.pct]) ?? []);
+
+  if (geneData.loading || loading || loadingCcres) {
     return (
       <Grid container spacing={2} width={"100%"}>
         <Grid size={12}>
@@ -128,7 +138,7 @@ export default function ComputationalLinkedCcres({
     );
   }
 
-  if (error) {
+  if (error || errorCcres) {
     throw new Error(JSON.stringify(error));
   }
 
@@ -137,31 +147,43 @@ export default function ComputationalLinkedCcres({
     .map((x, index: number) => ({
       ...x,
       id: index.toString(),
+      class: classByAccession[x.accession] ?? "Unclassifed",
     }));
   const ChIAPETLinked = data
     .filter((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
     .map((x, index: number) => ({
       ...x,
       id: index.toString(),
+      class: classByAccession[x.accession] ?? "Unclassifed",
     }));
   const crisprLinked = data
     .filter((x) => x.method === "CRISPR")
     .map((x, index: number) => ({
       ...x,
       id: index.toString(),
+      class: classByAccession[x.accession] ?? "Unclassifed",
     }));
   const eqtlLinked = data
     .filter((x) => x.method === "eQTLs")
     .map((x, index: number) => ({
       ...x,
       id: index.toString(),
+      class: classByAccession[x.accession] ?? "Unclassifed",
     }));
 
   const tables: TableDef<useLinkedCcresReturn["data"][number]>[] = [
     {
       label: "Intact Hi-C Loops",
       rows: HiCLinked,
-      columns: [accessionCol(assembly), ...IntactHiCLoopsCols.slice(2)],
+      columns: [
+        accessionCol(assembly),
+        {
+          field: "class",
+          headerName: "Classification",
+          ...ClassificationFormatting,
+        },
+        ...IntactHiCLoopsCols.slice(2),
+      ],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No intact Hi-C loops overlap a cCRE and the promoter of this gene`,
@@ -169,7 +191,15 @@ export default function ComputationalLinkedCcres({
     {
       label: "ChIA-PET",
       rows: ChIAPETLinked,
-      columns: [accessionCol(assembly), ...ChIAPETCols.slice(2)],
+      columns: [
+        accessionCol(assembly),
+        {
+          field: "class",
+          headerName: "Classification",
+          ...ClassificationFormatting,
+        },
+        ...ChIAPETCols.slice(2),
+      ],
       sortColumn: "score",
       sortDirection: "desc",
       emptyTableFallback: `No ChIA-PET interactions overlap a cCRE and the promoter of this gene`,
@@ -177,7 +207,15 @@ export default function ComputationalLinkedCcres({
     {
       label: "CRISPRi-FlowFISH",
       rows: crisprLinked,
-      columns: [accessionCol(assembly), ...CrisprFlowFISHCols.slice(2)],
+      columns: [
+        accessionCol(assembly),
+        {
+          field: "class",
+          headerName: "Classification",
+          ...ClassificationFormatting,
+        },
+        ...CrisprFlowFISHCols.slice(2),
+      ],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No cCREs targeted in a CRISPRi-FlowFISH experiment were linked to this gene`,
@@ -185,7 +223,15 @@ export default function ComputationalLinkedCcres({
     {
       label: "eQTLs",
       rows: eqtlLinked,
-      columns: [accessionCol(assembly), ...eQTLCols.slice(2)],
+      columns: [
+        accessionCol(assembly),
+        {
+          field: "class",
+          headerName: "Classification",
+          ...ClassificationFormatting,
+        },
+        ...eQTLCols.slice(2),
+      ],
       sortColumn: "p_val",
       sortDirection: "asc",
       emptyTableFallback: `No cCREs overlap variants associated with significant changes in expression of this gene`,
@@ -196,7 +242,7 @@ export default function ComputationalLinkedCcres({
       columns: CompuLinkedcCREs_columns,
       sortColumn: "score",
       sortDirection: "desc",
-      emptyTableFallback:
+      emptyTableFallback: (
         <Stack
           direction={"row"}
           border={"1px solid #e0e0e0"}
@@ -207,7 +253,11 @@ export default function ComputationalLinkedCcres({
         >
           <Stack direction={"row"} spacing={1}>
             <InfoOutlineRounded />
-            {loadingCompucCREs ? <Typography>Fetching Computational Linked cCREs by {method}</Typography> : <Typography>No Computational Predictions</Typography>}
+            {loadingCompucCREs ? (
+              <Typography>Fetching Computational Linked cCREs by {method}</Typography>
+            ) : (
+              <Typography>No Computational Predictions</Typography>
+            )}
           </Stack>
           <Tooltip title="Advanced Filters">
             <Button variant="outlined" onClick={handleClick}>
@@ -215,13 +265,15 @@ export default function ComputationalLinkedCcres({
             </Button>
           </Tooltip>
         </Stack>
-      ,
-      toolbarSlot: <Tooltip title="Advanced Filters">
-        <Button variant="outlined" onClick={handleClick}>
-          Change Method
-        </Button>
-      </Tooltip>
-    }
+      ),
+      toolbarSlot: (
+        <Tooltip title="Advanced Filters">
+          <Button variant="outlined" onClick={handleClick}>
+            Change Method
+          </Button>
+        </Tooltip>
+      ),
+    },
   ];
 
   return (

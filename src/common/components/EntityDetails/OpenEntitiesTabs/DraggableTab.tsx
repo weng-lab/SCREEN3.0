@@ -60,7 +60,7 @@ export const DraggableTab = ({
   const labelEl = useMemo(() => {
     if (loading) return <CircularProgress size={26} />;
     if (error) return <Error fontSize="small" />;
-    if (entity.entityType === "gwas") return truncateString(label as string, 20);
+    if (["bed", "gwas"].includes(entity.entityType)) return truncateString(label as string, 25);
     else return label;
   }, [entity.entityType, error, label, loading]);
 
@@ -82,7 +82,10 @@ export const DraggableTab = ({
           : {};
 
         return (
-          <Tooltip title={entity.entityType === "gwas" && (label as string).length > 20 ? label : ""} arrow>
+          <Tooltip
+            title={["bed", "gwas"].includes(entity.entityType) && (label as string).length > 25 ? label : ""}
+            arrow
+          >
             <Tab
               value={index}
               ref={provided.innerRef}

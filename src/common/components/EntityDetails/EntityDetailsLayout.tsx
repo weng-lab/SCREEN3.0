@@ -8,6 +8,7 @@ import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { GwasStudyHeader } from "./GwasStudyHeader";
+import BedUploadHeader from "./BedUploadHeader";
 import { useEffect, useRef, useState } from "react";
 
 export type EntityDetailsLayoutProps = {
@@ -76,6 +77,8 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
             <RegionSearchHeader region={parseGenomicRangeString(entityID)} />
           ) : entityType === "gwas" ? (
             <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} />
+          ) : entityType === "bed" ? (
+            <BedUploadHeader fileName={entityID} />
           ) : (
             <EntityDetailsHeader assembly={assembly} entityType={entityType} entityID={entityID} />
           )}
