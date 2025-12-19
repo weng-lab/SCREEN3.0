@@ -5,16 +5,22 @@ import { Table, GridColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { useMemo } from "react";
+import { decodeRegions } from "common/utility";
 
 const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
+  //fetch coordinates since this is used by cCRE entity for overlapping variants
   const { data: dataCoords, loading: loadingCoords, error: errorCoords } = useEntityMetadata(entity);
 
   const coordinates = useMemo(() => {
-    if (!dataCoords || dataCoords.__typename === "GwasStudiesMetadata" || dataCoords.__typename === "Bed") return null;
+    if (!dataCoords || dataCoords.__typename === "GwasStudiesMetadata") return null;
     if (dataCoords.__typename === "SCREENSearchResult") {
       return { chromosome: dataCoords.chrom, start: dataCoords.start, end: dataCoords.start + dataCoords.len };
+    } else if (dataCoords.__typename === "Bed") {
+      if (typeof window === "undefined") return null;
+      const encoded = sessionStorage.getItem(entity.entityID);
+      return decodeRegions(encoded);
     } else return dataCoords.coordinates;
-  }, [dataCoords]);
+  }, [dataCoords, entity.entityID]);
 
   const {
     data: dataSnps,
@@ -41,13 +47,13 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
       field: "coordinates.start",
       headerName: "Start",
       type: "number",
-      valueGetter: (_, row) => row.coordinates.start.toLocaleString(),
+      valueGetter: (_, row) => row.coordinates.start,
     },
     {
       field: "coordinates.end",
       headerName: "End",
       type: "number",
-      valueGetter: (_, row) => row.coordinates.end.toLocaleString(),
+      valueGetter: (_, row) => row.coordinates.end,
     },
   ];
 

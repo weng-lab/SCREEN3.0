@@ -95,14 +95,12 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       field: "start",
       headerName: "Start",
       type: "number",
-      valueFormatter: (value: number) => value?.toLocaleString(),
     },
     {
       field: "end",
       headerName: "End",
       type: "number",
       valueGetter: (_, row) => row.start + row.len,
-      valueFormatter: (value: number) => value?.toLocaleString(),
     },
     ...(showDNase
       ? [
@@ -240,7 +238,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       />
       <Table
         showToolbar
-        rows={dataCcres || []}
+        rows={dataCcres}
         columns={columns}
         loading={loadingCcres}
         error={!!errorCcres}
