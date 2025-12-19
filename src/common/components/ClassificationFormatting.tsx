@@ -17,12 +17,7 @@ export const ClassificationFormatting: Partial<GridColDef> = {
         title={
           <div>
             See{" "}
-            <LinkComponent
-              openInNewTab
-              color="inherit"
-              showExternalIcon
-              href="https://screen.wenglab.org/about#classifications"
-            >
+            <LinkComponent openInNewTab color="inherit" showExternalIcon href="/about#classifications">
               SCREEN
             </LinkComponent>{" "}
             for Class definitions
