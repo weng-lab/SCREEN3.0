@@ -15,7 +15,6 @@ const GeneExpressionBarPlot = ({
   scale,
   setScale,
   selected,
-  sortedFilteredData,
   setSelected,
   RNAtype,
   setRNAType,

@@ -158,11 +158,7 @@ const crispr_experimentMap: Record<string, CRISPR_ExperimentInfo> = {
 };
 
 export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps) => {
-  const {
-    data: dataCcre,
-    loading: loadingCcre,
-    error: errorCcre,
-  } = useCcreData({ assembly: entity.assembly, accession: entity.entityID });
+  const { data: dataCcre } = useCcreData({ assembly: entity.assembly, accession: entity.entityID });
 
   const coordinates: GenomicRange = dataCcre && {
     chromosome: dataCcre?.chrom,
@@ -267,6 +263,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
     <Stack spacing={2}>
       <Table
         label={`Mouse Transgenic Enhancer Assays`}
+        emptyTableFallback={"No Mouse Transgenic Enhancer Assays"}
         columns={[
           {
             headerName: "Chromosome",
@@ -315,6 +312,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
         <>
           <Table
             label={`MPRA (Region Centric)`}
+            emptyTableFallback={"No MPRA (Region Centric) Data"}
             columns={[
               {
                 headerName: "Chromosome",
@@ -385,6 +383,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           />
           <Table
             label={`STARR-seq (CAPRA quantification) Solo Fragments`}
+            emptyTableFallback={"No STARR-seq (CAPRA quantification) Solo Fragments"}
             columns={[
               {
                 headerName: "Experiment",
@@ -457,6 +456,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           />
           <Table
             label={`STARR-seq (CAPRA quantification) Double Fragments`}
+            emptyTableFallback={"No STARR-seq (CAPRA quantification) Double Fragments"}
             columns={[
               {
                 headerName: "cCRE Pair",
@@ -547,6 +547,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           />
           <Table
             label={`CRISPR Perturbation Data`}
+            emptyTableFallback={"No CRISPR Perturbation Data"}
             columns={[
               {
                 headerName: "Experiment",
