@@ -34,11 +34,6 @@ const GENE_Query = gql(`
   }
 `);
 
-/**
- * Currently the backend does not support querying for genes in multiple regions,
- * which limits the input here to GenomicRange and not also GenomicRange[]
- */
-
 export type UseGeneDataParams =
   | { name: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly: Assembly; skip?: boolean }
   | {
