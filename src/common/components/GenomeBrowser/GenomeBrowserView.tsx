@@ -22,15 +22,20 @@ import DomainDisplay from "./Controls/DomainDisplay";
 // import TrackSelect from "./TrackSelect/TrackSelect";
 import useLocalBrowser, { useLocalTracks } from "./Context/useLocalBrowser";
 
-type GenomeBrowserViewProps = EntityViewComponentProps & { entityCoordinates: GenomicRange };
+type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicRange };
 
-export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeBrowserViewProps) {
+export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowserViewProps) {
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
-  const name = entity.entityType === "region" ? entity.entityID.replace("%3A", ":") : entity.entityID;
+  const name =
+    entity.entityType === "region"
+      ? entity.entityID.replace("%3A", ":")
+      : entity.entityType === "bed"
+        ? `${coordinates[0].chromosome}:${coordinates[0].start}-${coordinates[0].end}`
+        : entity.entityID;
 
-  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, entityCoordinates, entity.entityType);
+  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType);
   // Initialize track store with interaction functions (on click, on hover, etc)
   const trackStore = useLocalTracks(entity.assembly);
 

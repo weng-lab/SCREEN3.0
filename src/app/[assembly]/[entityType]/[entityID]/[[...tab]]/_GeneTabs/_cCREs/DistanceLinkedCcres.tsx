@@ -11,7 +11,7 @@ import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { Assembly } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { calcDistCcreToTSS } from "common/utility";
-import { CLASS_DESCRIPTIONS } from "common/consts";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
 export type Transcript = {
   id: string;
@@ -108,26 +108,7 @@ export default function DistanceLinkedCcres({
     {
       field: "group",
       headerName: "Class",
-      renderCell: (params) => (
-        <Tooltip
-          title={
-            <div>
-              See{" "}
-              <LinkComponent
-                openInNewTab
-                color="inherit"
-                showExternalIcon
-                href="https://screen.wenglab.org/about#classifications"
-              >
-                SCREEN
-              </LinkComponent>{" "}
-              for Class definitions
-            </div>
-          }
-        >
-          <span>{CLASS_DESCRIPTIONS[params.value] ?? ""}</span>
-        </Tooltip>
-      ),
+      ...ClassificationFormatting,
     },
     {
       field: "chromosome",

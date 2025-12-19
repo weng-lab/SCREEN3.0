@@ -1,6 +1,6 @@
 "use client";
 import { InfoOutlineRounded } from "@mui/icons-material";
-import { Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { GridColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
@@ -9,6 +9,7 @@ import { useMemo, useState } from "react";
 import { DistanceSlider } from "./DistanceSlider";
 import { calcSignedDistRegionToRegion } from "common/utility";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
 const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
   const {
@@ -65,27 +66,8 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "group",
-      headerName: "Class",
-      renderCell: (params) => (
-        <Tooltip
-          title={
-            <div>
-              See{" "}
-              <LinkComponent
-                openInNewTab
-                color="inherit"
-                showExternalIcon
-                href="https://screen.wenglab.org/about#classifications"
-              >
-                SCREEN
-              </LinkComponent>{" "}
-              for Class definitions
-            </div>
-          }
-        >
-          <span>{params.value}</span>
-        </Tooltip>
-      ),
+      headerName: "Classification",
+      ...ClassificationFormatting,
     },
     {
       field: "chromosome",

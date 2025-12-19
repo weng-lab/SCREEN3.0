@@ -17,6 +17,7 @@ import { BiosampleRow } from "./types";
 import { useSilencersData } from "common/hooks/useSilencersData";
 import { Silencer_Studies } from "./consts";
 import { LinkComponent } from "common/components/LinkComponent";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
 const classifyCcre = (
   scores: { dnase: number; atac: number; h3k4me3: number; h3k27ac: number; ctcf: number; tf: string },
@@ -80,22 +81,6 @@ const zScoreFormatting: Partial<GridColDef> = {
   type: "number",
 };
 
-const classificationFormatting: Partial<GridColDef> = {
-  type: "singleSelect",
-  valueOptions: CCRE_CLASSES.map((group) => ({ value: group, label: CLASS_DESCRIPTIONS[group] })),
-  renderCell: (params: GridRenderCellParams) => {
-    const group = params.value;
-    // Override the InActive color here since it's being used for coloring text and is too light
-    const color = group === "InActive" ? CLASS_COLORS.noclass : CLASS_COLORS[group];
-    const classification = CLASS_DESCRIPTIONS[group];
-    return (
-      <span style={{ color }}>
-        <strong>{classification}</strong>
-      </span>
-    );
-  },
-};
-
 const ctAgnosticCols: GridColDef[] = [
   {
     headerName: "DNase max-Z",
@@ -125,7 +110,7 @@ const ctAgnosticCols: GridColDef[] = [
   {
     headerName: "Classification",
     field: "group",
-    ...classificationFormatting,
+    ...ClassificationFormatting,
   },
 ];
 
@@ -219,7 +204,7 @@ const getCoreAndPartialCols = (): GridColDef[] => [
   {
     headerName: "Classification",
     field: "class",
-    ...classificationFormatting,
+    ...ClassificationFormatting,
   },
   {
     headerName: "Assays",
