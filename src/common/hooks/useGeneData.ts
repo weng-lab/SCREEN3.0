@@ -3,49 +3,36 @@ import { ApolloError, useQuery } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { useMemo } from "react";
-import { GeneQuery } from "common/types/generated/graphql";
+import { ChromRange, GeneQuery } from "common/types/generated/graphql";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 
 const GENE_Query = gql(`
-  query Gene($chromosome: String, $start: Int, $end: Int, $name: [String], $assembly: String!, $version: Int) {
-    gene(chromosome: $chromosome, start: $start, end: $end, assembly: $assembly, version: $version, name: $name) {
+  query Gene($assembly: String!, $range: [ChromRange], 
+    $name: [String]
+    $version: Int) {
+    gene(assembly: $assembly, range: $range, name: $name, version: $version) {
       name
       id
       strand
+      gene_type
       coordinates {
         chromosome
         end
         start
       }
-        transcripts {
-      coordinates {
-        chromosome
-        end
-        start
+      transcripts {
+        coordinates {
+          chromosome
+          end
+          start
+        }
+        id
+        name
+        strand
       }
-      id
-      name
-      strand
-    }
     }
   }
 `);
-
-const BED_GENE_Query = gql(`
-  query getGenesByListofCoords($assembly: String!, $range: [ChromRange]) {
-  gene(assembly: $assembly, range: $range) {
-    id
-    gene_type
-    coordinates {
-      start
-      chromosome
-      end
-    }
-    id
-    name
-  }
-}
-  `);
 
 /**
  * Currently the backend does not support querying for genes in multiple regions,
@@ -68,6 +55,18 @@ export type UseGeneDataReturn<T extends UseGeneDataParams> = T extends
   ? { data: GeneQuery["gene"] | undefined; loading: boolean; error: ApolloError }
   : { data: GeneQuery["gene"][0] | undefined; loading: boolean; error: ApolloError };
 
+const toBedRange = (c: GenomicRange): ChromRange => ({
+  chromosome: c.chromosome,
+  start: c.start,
+  stop: c.end, //different name
+});
+
+const convertCoordsToQueryFormat = (coordinates: GenomicRange | GenomicRange[]): ChromRange | ChromRange[] => {
+  if (Array.isArray(coordinates)) {
+    return coordinates.map(toBedRange);
+  } else return toBedRange(coordinates);
+};
+
 export const useGeneData = <T extends UseGeneDataParams>({
   name,
   coordinates,
@@ -76,37 +75,30 @@ export const useGeneData = <T extends UseGeneDataParams>({
   skip,
 }: T): UseGeneDataReturn<T> => {
   const shouldQueryBothVersions = assembly === "GRCh38" && !skip && (entityType === undefined || entityType === "gene");
-  const singleCoord = coordinates && !Array.isArray(coordinates) ? coordinates : undefined;
 
   const v29Query = useQuery(GENE_Query, {
     variables: {
-      chromosome: singleCoord?.chromosome,
-      start: singleCoord?.start,
-      end: singleCoord?.end,
+      range: convertCoordsToQueryFormat(coordinates),
       assembly,
       version: 29,
       name,
     },
-    skip: !shouldQueryBothVersions || Array.isArray(coordinates),
+    skip: !shouldQueryBothVersions,
   });
 
   const v40Query = useQuery(GENE_Query, {
     variables: {
-      chromosome: singleCoord?.chromosome,
-      start: singleCoord?.start,
-      end: singleCoord?.end,
+      range: convertCoordsToQueryFormat(coordinates),
       assembly,
       version: 40,
       name,
     },
-    skip: !shouldQueryBothVersions || Array.isArray(coordinates),
+    skip: !shouldQueryBothVersions,
   });
 
   const mouseQuery = useQuery(GENE_Query, {
     variables: {
-      chromosome: singleCoord?.chromosome,
-      start: singleCoord?.start,
-      end: singleCoord?.end,
+      range: convertCoordsToQueryFormat(coordinates),
       assembly,
       version: 25,
       name,
@@ -115,26 +107,9 @@ export const useGeneData = <T extends UseGeneDataParams>({
       Array.isArray(coordinates) || assembly !== "mm10" || skip || (entityType !== undefined && entityType !== "gene"),
   });
 
-  const toBedRange = (c: GenomicRange) => ({
-    chromosome: c.chromosome,
-    start: c.start,
-    stop: c.end, //differnt name
-  });
-
-  const bedQuery = useQuery(BED_GENE_Query, {
-    variables: {
-      assembly,
-      range: Array.isArray(coordinates) ? coordinates.map(toBedRange) : singleCoord ? [toBedRange(singleCoord)] : [],
-    },
-    skip: !coordinates || !Array.isArray(coordinates) || skip || (entityType !== undefined && entityType !== "gene"),
-  });
-
   // Combine and deduplicate results for human, keeping v40 when duplicates exist
   const processedData = useMemo(() => {
-    if (!singleCoord && Array.isArray(coordinates)) {
-      // Process BED query results
-      return bedQuery.data?.gene;
-    } else if (assembly === "GRCh38") {
+    if (assembly === "GRCh38") {
       if (v29Query.loading || v40Query.loading) return undefined;
       if (!v29Query.data?.gene && !v40Query.data?.gene) return undefined;
 
@@ -156,29 +131,17 @@ export const useGeneData = <T extends UseGeneDataParams>({
     } else {
       return mouseQuery.data?.gene;
     }
-  }, [
-    singleCoord,
-    coordinates,
-    assembly,
-    bedQuery.data?.gene,
-    v29Query.loading,
-    v29Query.data?.gene,
-    v40Query.loading,
-    v40Query.data?.gene,
-    mouseQuery.data?.gene,
-  ]);
+  }, [assembly, v29Query.loading, v29Query.data?.gene, v40Query.loading, v40Query.data?.gene, mouseQuery.data?.gene]);
 
-  const isLoading =
-    assembly === "GRCh38" ? v29Query.loading || v40Query.loading : mouseQuery.loading || bedQuery.loading;
-
-  const error = assembly === "GRCh38" ? v29Query.error || v40Query.error : mouseQuery.error || bedQuery.error;
+  const loading = assembly === "GRCh38" ? v29Query.loading || v40Query.loading : mouseQuery.loading;
+  const error = assembly === "GRCh38" ? v29Query.error || v40Query.error : mouseQuery.error;
 
   return {
     /**
      * return either whole array or just first item depending on input
      */
     data: coordinates || typeof name === "object" ? processedData : processedData?.[0],
-    loading: isLoading,
+    loading,
     error,
   } as UseGeneDataReturn<T>;
 };

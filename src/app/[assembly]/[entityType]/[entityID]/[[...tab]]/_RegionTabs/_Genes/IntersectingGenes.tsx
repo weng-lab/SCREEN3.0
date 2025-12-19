@@ -4,6 +4,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { parseGenomicRangeString } from "common/utility";
+
 const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {
   const {
     data: dataGenes,
