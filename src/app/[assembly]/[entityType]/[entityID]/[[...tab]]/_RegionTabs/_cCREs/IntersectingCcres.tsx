@@ -4,21 +4,34 @@ import { Typography, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
 import { Table, GridColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CancelRounded } from "@mui/icons-material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { parseGenomicRangeString } from "common/utility";
+import { decodeRegions, parseGenomicRangeString } from "common/utility";
 import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
+import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
+import { CLASS_COLORS } from "common/colors";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);
+
+  // if bed upload extract from sessionStorage else it's a region so parse from entityID
+  const coordinates = useMemo(() => {
+    if (entity.entityType === "bed") {
+      if (typeof window === "undefined") return null;
+      const encoded = sessionStorage.getItem(entity.entityID);
+      return decodeRegions(encoded);
+    } else if (entity.entityType === "region") return parseGenomicRangeString(entity.entityID);
+  }, [entity.entityID, entity.entityType]);
 
   const {
     data: dataCcres,
     loading: loadingCcres,
     error: errorCcres,
   } = useCcreData({
-    coordinates: parseGenomicRangeString(entity.entityID),
+    coordinates,
     assembly: entity.assembly,
     nearbygeneslimit: 1,
     cellType: selectedBiosample ? selectedBiosample.name : undefined,
@@ -71,15 +84,8 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "pct",
-      headerName: "Class",
-      valueGetter: (_, row) =>
-        row.pct === "PLS"
-          ? "Promoter"
-          : row.pct === "pELS"
-            ? "Proximal Enhancer"
-            : row.pct === "dELS"
-              ? "Distal Enhancer"
-              : row.pct,
+      headerName: "Classification",
+      ...ClassificationFormatting,
     },
     {
       field: "chrom",
@@ -89,14 +95,12 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       field: "start",
       headerName: "Start",
       type: "number",
-      valueFormatter: (value: number) => value?.toLocaleString(),
     },
     {
       field: "end",
       headerName: "End",
       type: "number",
       valueGetter: (_, row) => row.start + row.len,
-      valueFormatter: (value: number) => value?.toLocaleString(),
     },
     ...(showDNase
       ? [
@@ -200,7 +204,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   ];
 
   return (
-    <>
+    <Stack spacing={1}>
       {selectedBiosample && (
         <Stack
           borderRadius={1}
@@ -223,9 +227,18 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
           </IconButton>
         </Stack>
       )}
+      <ProportionsBar
+        data={getProportionsFromArray(dataCcres, "pct", CCRE_CLASSES)}
+        label="Classification Proportions"
+        loading={loadingCcres || !!errorCcres}
+        getColor={(key) => CLASS_COLORS[key]}
+        formatLabel={(key) => CLASS_DESCRIPTIONS[key]}
+        tooltipTitle="Classification Proportions, Core Collection"
+        sortDescending
+      />
       <Table
         showToolbar
-        rows={dataCcres || []}
+        rows={dataCcres}
         columns={columns}
         loading={loadingCcres}
         error={!!errorCcres}
@@ -248,7 +261,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
         onSelectionChange={handleBiosampleSelected}
         selected={selectedBiosample}
       />
-    </>
+    </Stack>
   );
 };
 

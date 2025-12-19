@@ -1,11 +1,13 @@
 import type { Assembly } from "common/types/globalTypes";
 import {
   entityTabsConfig,
+  humanBedTabs,
   humanCcreTabs,
   humanGeneTabs,
   humanGwasTabs,
   humanRegionTabs,
   humanVariantTabs,
+  mouseBedTabs,
   mouseCcreTabs,
   mouseGeneTabs,
   mouseRegionTabs,
@@ -30,10 +32,12 @@ type HumanGeneRoutes = ExtractRoutes<typeof humanGeneTabs>;
 type HumanCcreRoutes = ExtractRoutes<typeof humanCcreTabs>;
 type HumanRegionRoutes = ExtractRoutes<typeof humanRegionTabs>;
 type HumanGwasRoutes = ExtractRoutes<typeof humanGwasTabs>;
+type HumanBedRoutes = ExtractRoutes<typeof humanBedTabs>;
 
 type MouseGeneRoutes = ExtractRoutes<typeof mouseGeneTabs>;
 type MouseCcreRoutes = ExtractRoutes<typeof mouseCcreTabs>;
 type MouseRegionRoutes = ExtractRoutes<typeof mouseRegionTabs>;
+type MouseBedRoutes = ExtractRoutes<typeof mouseBedTabs>;
 
 export type AnyTabRoute =
   | HumanVariantRoutes
@@ -41,9 +45,11 @@ export type AnyTabRoute =
   | HumanCcreRoutes
   | HumanRegionRoutes
   | HumanGwasRoutes
+  | HumanBedRoutes
   | MouseGeneRoutes
   | MouseCcreRoutes
-  | MouseRegionRoutes;
+  | MouseRegionRoutes
+  | MouseBedRoutes;
 
 // Generic type to get routes for any assembly/entity combination
 export type EntityRoute<A extends Assembly, E extends EntityType<A>> = E extends keyof (typeof entityTabsConfig)[A]
@@ -64,12 +70,16 @@ type TabList<A extends Assembly, E extends EntityType<A>> = A extends "GRCh38"
         ? readonly TabConfig<HumanVariantRoutes>[]
         : E extends "gwas"
           ? readonly TabConfig<HumanGwasRoutes>[]
-          : readonly TabConfig<HumanRegionRoutes>[]
+          : E extends "bed"
+            ? readonly TabConfig<HumanBedRoutes>[]
+            : readonly TabConfig<HumanRegionRoutes>[]
   : E extends "ccre"
     ? readonly TabConfig<MouseCcreRoutes>[]
     : E extends "gene"
       ? readonly TabConfig<MouseGeneRoutes>[]
-      : readonly TabConfig<MouseRegionRoutes>[];
+      : E extends "bed"
+        ? readonly TabConfig<MouseBedRoutes>[]
+        : readonly TabConfig<MouseRegionRoutes>[];
 
 export type EntityTabsConfig = {
   readonly [A in Assembly]: {

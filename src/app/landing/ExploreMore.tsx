@@ -1,7 +1,8 @@
 import React from "react";
 import { Grid, Grow, Box, Stack, Typography, Button } from "@mui/material";
 import Link from "next/link";
-import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
+// import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
+// import { theme } from "app/theme";
 
 const cards = [
   {
@@ -31,7 +32,8 @@ const cards = [
 ];
 
 const ExploreMore: React.FC = () => {
-  const { visible: visible, refs: popularRefs } = useGrowOnScroll(cards.length);
+  // const { visible: visible, refs: popularRefs } = useGrowOnScroll(cards.length);
+  const GWASCard = cards[0];
 
   return (
     <Grid container spacing={5} marginTop={6} width={"100%"}>

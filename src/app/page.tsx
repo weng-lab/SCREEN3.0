@@ -1,6 +1,6 @@
 //Home Page
 "use client";
-import { Box, Button, Grid, Link, Stack, Typography } from "@mui/material";
+import { Box, Button, Collapse, Grid, Link, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { theme } from "./theme";
 import { alpha } from "@mui/material/styles";
@@ -9,20 +9,20 @@ import MainSearch from "./landing/mainSearch";
 import PopularSearches from "./landing/popularSearches";
 import TrendingDatasets from "./landing/trendingDatasets";
 import ExploreMore from "./landing/ExploreMore";
+import MultipleRegionSearch from "./landing/multipleRegionSearch";
 
 export default function Home() {
   const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38");
-  // const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
+  const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
 
   const handleAssemblyChange = (asmb: "GRCh38" | "mm10") => {
     setAssembly(asmb);
   };
 
-  // const toggleMultipleRegionSearchVisible = () => {
-  //   setMultipleRegionSearchVisible(!multipleRegionSearchVisible);
-  // };
+  const toggleMultipleRegionSearchVisible = () => {
+    setMultipleRegionSearchVisible(!multipleRegionSearchVisible);
+  };
 
-  //@todo: Add actual download links and desired popular searches
   return (
     <div>
       <Box
@@ -80,7 +80,7 @@ export default function Home() {
         </Stack>
         <MainSearch assembly={assembly} handleAssemblyChange={handleAssemblyChange} />
         {/* Multiple Region Search */}
-        {/* <Box
+        <Box
           sx={{
             width: { xs: "90%", sm: "80%", md: "60%", lg: "45%" },
             display: "flex",
@@ -88,11 +88,7 @@ export default function Home() {
             mx: "auto",
           }}
         >
-          <Typography
-            variant="subtitle2"
-            color="#b2bcf0"
-            textAlign={{ xs: "center", md: "right" }}
-          >
+          <Typography variant="subtitle2" color="#b2bcf0" textAlign={{ xs: "center", md: "right" }}>
             Looking to search multiple regions?{" "}
             <span
               onClick={toggleMultipleRegionSearchVisible}
@@ -103,8 +99,11 @@ export default function Home() {
           </Typography>
         </Box>
         <Collapse in={multipleRegionSearchVisible} sx={{ width: "100%" }} timeout={500}>
-          <MultipleRegionSearch assembly={assembly} toggleMultipleRegionSearchVisible={toggleMultipleRegionSearchVisible} />
-        </Collapse> */}
+          <MultipleRegionSearch
+            assembly={assembly}
+            toggleMultipleRegionSearchVisible={toggleMultipleRegionSearchVisible}
+          />
+        </Collapse>
       </Box>
       <Box
         width={"100%"}
@@ -135,17 +134,25 @@ export default function Home() {
         </Typography>
         <PopularSearches assembly={assembly} />
       </Box>
-      <Box
+      {/* <Box
         width={"100%"}
         justifyContent={"center"}
         alignItems={"flex-start"}
         display={"flex"}
         flexDirection={"column"}
         sx={{ paddingY: 5, paddingX: { xs: 5, md: 20 } }}
+      > */}
+      <Box
+        width={"100%"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        display={"flex"}
+        flexDirection={"column"}
+        sx={{ paddingY: 10, paddingX: { xs: 5, md: 20 } }}
       >
-        <Typography variant="h4" sx={{ fontWeight: 550 }}>
+        {/* <Typography variant="h4" sx={{ fontWeight: 550 }}>
           Explore All Biosamples and GWAS
-        </Typography>
+        </Typography> */}
         <ExploreMore />
       </Box>
       <Box

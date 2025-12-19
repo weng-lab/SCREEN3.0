@@ -19,9 +19,11 @@ import GWASGenomeBrowserView from "app/[assembly]/[entityType]/[entityID]/[[...t
 import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
+import { TfBinding } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_TF/TfBinding";
+import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Overview/BedOverview";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
-import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
+// import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -52,8 +54,8 @@ const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
  */
 
 export const validEntityTypes = {
-  GRCh38: ["ccre", "gene", "variant", "region", "gwas"],
-  mm10: ["ccre", "gene", "region"],
+  GRCh38: ["ccre", "gene", "variant", "region", "gwas", "bed"],
+  mm10: ["ccre", "gene", "region", "bed"],
 } as const;
 
 export const humanVariantTabs = [
@@ -187,9 +189,47 @@ export const humanCcreTabs = [
     label: "Additional Chromatin Signatures",
     component: AdditionalChromatinSignatures,
   },
+  {
+    route: "tf",
+    label: "TF Motifs",
+    component: TfBinding,
+  },
 ] as const satisfies TabConfig[];
 
 export const humanRegionTabs = [
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    component: IntersectingCcres,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    component: IntersectingGenes,
+  },
+  {
+    route: "variants",
+    label: "Variant",
+    iconPath: VariantIconPath,
+    component: IntersectingSNPs,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    component: GenomeBrowser,
+  },
+] as const satisfies TabConfig[];
+
+export const humanBedTabs = [
+  {
+    route: "overview",
+    label: "Overview",
+    iconPath: CcreIconPath,
+    component: BedOverview,
+  },
   {
     route: "ccres",
     label: "cCREs",
@@ -292,6 +332,33 @@ export const mouseRegionTabs = [
   },
 ] as const satisfies TabConfig[];
 
+export const mouseBedTabs = [
+  {
+    route: "overview",
+    label: "Overview",
+    iconPath: CcreIconPath,
+    component: BedOverview,
+  },
+  {
+    route: "ccres",
+    label: "cCREs",
+    iconPath: CcreIconPath,
+    component: IntersectingCcres,
+  },
+  {
+    route: "genes",
+    label: "Genes",
+    iconPath: GeneIconPath,
+    component: IntersectingGenes,
+  },
+  {
+    route: "browser",
+    label: "Genome Browser",
+    iconPath: GbIconPath,
+    component: GenomeBrowser,
+  },
+] as const satisfies TabConfig[];
+
 export const entityTabsConfig: EntityTabsConfig = {
   GRCh38: {
     variant: humanVariantTabs,
@@ -299,10 +366,12 @@ export const entityTabsConfig: EntityTabsConfig = {
     ccre: humanCcreTabs,
     region: humanRegionTabs,
     gwas: humanGwasTabs,
+    bed: humanBedTabs,
   },
   mm10: {
     gene: mouseGeneTabs,
     ccre: mouseCcreTabs,
     region: mouseRegionTabs,
+    bed: mouseBedTabs,
   },
 } as const;
