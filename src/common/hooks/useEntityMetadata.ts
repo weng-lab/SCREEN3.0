@@ -20,6 +20,12 @@ type UseGenomicRangeReturn = {
   error: ApolloError;
 };
 
+type UseBedReturn = {
+  data: { __typename?: "Bed" };
+  loading: boolean;
+  error: ApolloError;
+};
+
 /**
  * This will need to be changed if this file persists and we add entities that are assembly specific
  */
@@ -31,7 +37,9 @@ export type useEntityMetadataReturn<T extends AnyEntityType> = T extends "gene"
       ? UseSnpDataReturn<{ rsID: string; assembly: Assembly }>
       : T extends "gwas"
         ? UseGWASStudyDataReturn
-        : UseGenomicRangeReturn;
+        : T extends "bed"
+          ? UseBedReturn
+          : UseGenomicRangeReturn;
 
 export const useEntityMetadata = <T extends AnyEntityType>({
   assembly,
@@ -66,5 +74,7 @@ export const useEntityMetadata = <T extends AnyEntityType>({
       }
     case "gwas":
       return gwasStudyMetadata as useEntityMetadataReturn<T>;
+    case "bed":
+      return { data: { __typename: "Bed" }, loading: false, error: undefined } as useEntityMetadataReturn<T>;
   }
 };
