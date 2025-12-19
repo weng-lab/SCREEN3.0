@@ -3,14 +3,24 @@ import { useGeneData } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, GridColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { parseGenomicRangeString } from "common/utility";
+import { decodeRegions, parseGenomicRangeString } from "common/utility";
+import { useMemo } from "react";
 
 const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {
+  // if bed upload extract from sessionStorage else it's a region so parse from entityID
+  const coordinates = useMemo(() => {
+    if (entity.entityType === "bed") {
+      if (typeof window === "undefined") return null;
+      const encoded = sessionStorage.getItem(entity.entityID);
+      return decodeRegions(encoded);
+    } else if (entity.entityType === "region") return parseGenomicRangeString(entity.entityID);
+  }, [entity.entityID, entity.entityType]);
+
   const {
     data: dataGenes,
     loading: loadingGenes,
     error: errorGenes,
-  } = useGeneData({ coordinates: parseGenomicRangeString(entity.entityID), assembly: entity.assembly });
+  } = useGeneData({ coordinates, assembly: entity.assembly });
 
   const columns: GridColDef<(typeof dataGenes)[number]>[] = [
     {
