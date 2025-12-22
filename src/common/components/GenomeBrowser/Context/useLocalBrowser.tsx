@@ -1,9 +1,9 @@
-import { Chromosome, createBrowserStoreMemo, InitialBrowserState } from "@weng-lab/genomebrowser";
+import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, InitialBrowserState } from "@weng-lab/genomebrowser";
 import { AnyEntityType } from "common/entityTabsConfig";
-import { getLocalBrowser, setLocalBrowser } from "common/hooks/useLocalStorage";
 import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
 import { expandCoordinates, randomColor } from "../utils";
+import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
 
 /**
  * Pass entity name/id and coordinates to get back the browser and track stores.
@@ -13,8 +13,15 @@ import { expandCoordinates, randomColor } from "../utils";
  * @param coordinates the entity's genomic coordinates
  * @returns a browser store instance
  */
-export default function useLocalBrowser(name: string, coordinates: GenomicRange, type: AnyEntityType) {
-  const localBrowser = useMemo(() => getLocalBrowser(name), [name]);
+export default function useLocalBrowser(
+  name: string,
+  assembly: string,
+  coordinates: GenomicRange,
+  type: AnyEntityType
+) {
+  const localBrowser = useMemo(() => getLocalBrowser(name, assembly), [name, assembly]);
+
+  // initialize the current domain, if not already saved
   const currentDomain =
     localBrowser?.domain != null
       ? localBrowser?.domain
@@ -46,14 +53,33 @@ export default function useLocalBrowser(name: string, coordinates: GenomicRange,
     multiplier: 3,
   };
 
+  // potential infinite loop
   const browserStore = createBrowserStoreMemo(initialBrowserState, [localBrowser]);
 
   const domain = browserStore((state) => state.domain);
   const highlights = browserStore((state) => state.highlights);
 
+  // Any time domain and highlights change, we update the local storage
   useEffect(() => {
-    setLocalBrowser(name, { domain: domain, highlights: highlights });
-  }, [name, domain, highlights]);
+    setLocalBrowser(name, assembly, { domain: domain, highlights: highlights });
+  }, [name, assembly, domain, highlights]);
 
   return browserStore;
+}
+
+export function useLocalTracks(assembly: string) {
+  const localTracks = getLocalTracks(assembly);
+
+  const defaultTracks = [];
+
+  // potential infinite loop
+  const trackStore = createTrackStoreMemo(localTracks || defaultTracks, [localTracks]);
+  const tracks = trackStore((state) => state.tracks);
+
+  // any time the track list changes, update local storage
+  useEffect(() => {
+    setLocalTracks(tracks, assembly);
+  }, [tracks, assembly]);
+
+  return trackStore;
 }

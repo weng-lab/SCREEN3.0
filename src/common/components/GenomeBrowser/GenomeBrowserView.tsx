@@ -6,14 +6,12 @@ import { Box, Button, IconButton, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // @weng-lab
-import { BigWigConfig, Browser, createTrackStoreMemo, DisplayMode, Rect, TrackType } from "@weng-lab/genomebrowser";
+import { Browser } from "@weng-lab/genomebrowser";
 import { GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
-import { ASSAY_COLORS } from "common/colors";
 import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { GenomicRange } from "common/types/globalTypes";
-import useLocalBrowser from "./Context/useBrowserStore";
 import HighlightDialog from "./Dialogs/HighlightDialog";
 import { expandCoordinates, randomColor, SearchToScreenTypes } from "./utils";
 
@@ -22,7 +20,7 @@ import PageviewIcon from "@mui/icons-material/Pageview";
 import ControlButtons from "./Controls/ControlButtons";
 import DomainDisplay from "./Controls/DomainDisplay";
 // import TrackSelect from "./TrackSelect/TrackSelect";
-import CCRETooltip from "./Tooltips/CcreTooltip";
+import useLocalBrowser, { useLocalTracks } from "./Context/useLocalBrowser";
 
 type GenomeBrowserViewProps = EntityViewComponentProps & { entityCoordinates: GenomicRange };
 
@@ -32,57 +30,9 @@ export default function GenomeBrowserView({ entity, entityCoordinates }: GenomeB
    */
   const name = entity.entityType === "region" ? entity.entityID.replace("%3A", ":") : entity.entityID;
 
-  const browserStore = useLocalBrowser(entity.entityID, entityCoordinates, entity.entityType);
+  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, entityCoordinates, entity.entityType);
   // Initialize track store with interaction functions (on click, on hover, etc)
-  const trackStore = createTrackStoreMemo(
-    [
-      {
-        id: "gene-track",
-        title: "GENCODE Genes",
-        trackType: TrackType.Transcript,
-        displayMode: DisplayMode.Squish,
-        color: "#2E8B57",
-        titleSize: 12,
-        height: 100,
-        assembly: "GRCh38",
-        version: 40,
-        canonicalName: "",
-      },
-      {
-        id: "ccre-track",
-        title: "All cCREs colored by group",
-        titleSize: 12,
-        height: 20,
-        color: "#D05F45",
-        trackType: TrackType.BigBed,
-        displayMode: DisplayMode.Dense,
-        url: `https://downloads.wenglab.org/${entity.assembly}-cCREs.DCC.bigBed`,
-        onHover: (rect) => {
-          addHighlight({
-            id: rect.name + "-temp" || "ccre-highlight",
-            domain: { start: rect.start, end: rect.end },
-            color: rect.color || "blue",
-          });
-        },
-        onLeave: (rect) => {
-          removeHighlight(rect.name + "-temp" || "ccre-highlight");
-        },
-        tooltip: (rect: Rect) => <CCRETooltip assembly={entity.assembly} name={rect.name || ""} {...rect} />,
-      },
-      {
-        id: "default-dnase",
-        title: "Agregated DNase-seq signal, all Registry biosamples",
-        shortLabel: "DNase",
-        titleSize: 12,
-        trackType: TrackType.BigWig,
-        displayMode: DisplayMode.Full,
-        color: ASSAY_COLORS.dnase,
-        height: 50,
-        url: "https://downloads.wenglab.org/DNAse_All_ENCODE_MAR20_2024_merged.bw",
-      } as BigWigConfig,
-    ],
-    []
-  );
+  const trackStore = useLocalTracks(entity.assembly);
 
   const addHighlight = browserStore((state) => state.addHighlight);
   const removeHighlight = browserStore((state) => state.removeHighlight);

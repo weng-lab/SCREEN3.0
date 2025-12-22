@@ -65,6 +65,10 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({ assembly, name, biosample }) 
     },
   });
 
+  if (error) {
+    return null;
+  }
+
   const width = 400;
   const height = loading || !data?.cCREQuery?.[0] ? 40 : 210;
   const padding = 16;
