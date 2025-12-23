@@ -51,7 +51,7 @@ export const defaultHumanTracks: Track[] = [
     ...defaultBigWig,
     color: ASSAY_COLORS.atac,
     id: "human-atac-aggregate-ignore",
-    title: "Aggregated H3K4me1 ChIP-seq signal, all Registry biosamples",
+    title: "Aggregated ATAC signal, all Registry biosamples",
     titleSize: 12,
     url: "https://downloads.wenglab.org/ATAC_All_ENCODE_MAR20_2024_merged.bw",
   },
