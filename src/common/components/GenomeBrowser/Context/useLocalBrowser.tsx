@@ -4,7 +4,8 @@ import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
 import { expandCoordinates, randomColor } from "../utils";
 import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
-import { ccreTrack, dnaseTrack, geneTrack } from "../TrackSelect/defaultTracks";
+import { ccreTrack, defaultHumanTracks, defaultMouseTracks, dnaseTrack, geneTrack } from "../TrackSelect/defaultTracks";
+import { defaultHumanResults } from "common/components/autocomplete";
 
 /**
  * Pass entity name/id and coordinates to get back the browser and track stores.
@@ -66,7 +67,7 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
 export function useLocalTracks(assembly: string) {
   const localTracks = getLocalTracks(assembly);
 
-  const defaultTracks = assembly === "GRCh38" ? [geneTrack, ccreTrack, dnaseTrack] : [];
+  const defaultTracks = assembly === "GRCh38" ? defaultHumanTracks : defaultMouseTracks;
 
   // potential infinite loop
   const trackStore = createTrackStoreMemo(localTracks || defaultTracks, []);
