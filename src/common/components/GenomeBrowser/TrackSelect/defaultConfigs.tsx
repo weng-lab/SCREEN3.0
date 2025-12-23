@@ -4,12 +4,14 @@ export const defaultBigWig: Omit<BigWigConfig, "id" | "title" | "url"> = {
   trackType: TrackType.BigWig,
   height: 50,
   displayMode: DisplayMode.Full,
+  titleSize: 12,
 };
 
 export const defaultBigBed: Omit<BigBedConfig, "id" | "title" | "url"> = {
   trackType: TrackType.BigBed,
   height: 20,
   displayMode: DisplayMode.Dense,
+  titleSize: 12,
 };
 
 export const defaultTranscript: Omit<TranscriptConfig, "id" | "assembly" | "version"> = {
@@ -20,4 +22,5 @@ export const defaultTranscript: Omit<TranscriptConfig, "id" | "assembly" | "vers
   color: "#0c184a", // screen theme default
   canonicalColor: "#100e98", // screen theme light
   highlightColor: "#3c69e8", // bright blue
+  titleSize: 12,
 };

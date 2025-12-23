@@ -23,6 +23,7 @@ const expansionPercentages: Record<AnyEntityType, number> = {
   variant: 5.0,
   region: 0,
   gwas: 0.2,
+  bed: 0,
 };
 
 export function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType) {

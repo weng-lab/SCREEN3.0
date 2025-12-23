@@ -22,6 +22,7 @@ export const ASSAY_COLORS = {
   h3k27ac: "#ffcd00",
   ctcf: "#00b0d0",
   atac: "#02c7b9",
+  chromhmm: "#00ff00",
 };
 
 export const CLASS_COLORS: Record<CcreClass, string> = {

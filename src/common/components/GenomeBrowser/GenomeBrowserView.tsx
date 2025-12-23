@@ -14,13 +14,13 @@ import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { GenomicRange } from "common/types/globalTypes";
 import HighlightDialog from "./Dialogs/HighlightDialog";
 import { expandCoordinates, randomColor, SearchToScreenTypes } from "./utils";
+import TrackSelectModal from "./TrackSelect/TrackSelectModal";
+import { useLocalBrowser, useLocalTracks } from "./Context/useLocalBrowser";
 
 // icons
 import PageviewIcon from "@mui/icons-material/Pageview";
 import ControlButtons from "./Controls/ControlButtons";
 import DomainDisplay from "./Controls/DomainDisplay";
-// import TrackSelect from "./TrackSelect/TrackSelect";
-import useLocalBrowser, { useLocalTracks } from "./Context/useLocalBrowser";
 
 type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicRange };
 
@@ -40,13 +40,12 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
   const trackStore = useLocalTracks(entity.assembly);
 
   const addHighlight = browserStore((state) => state.addHighlight);
-  const removeHighlight = browserStore((state) => state.removeHighlight);
   const setDomain = browserStore((state) => state.setDomain);
   const editTrack = trackStore((state) => state.editTrack);
 
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
-      editTrack("gene-track", {
+      editTrack("ignore-gene-track", {
         geneName: r.title,
       });
     }
@@ -104,14 +103,14 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
             startIcon={<PageviewIcon />}
             color="primary"
             size="small"
-            onClick={() => setDomain(expandCoordinates(entityCoordinates, entity.entityType))}
+            onClick={() => setDomain(expandCoordinates(coordinates, entity.entityType))}
           >
             Recenter on {name || "Selected Region"}
           </Button>
         </Box>
         <Box display="flex" gap={2} alignItems="center">
           <HighlightDialog browserStore={browserStore} />
-          {/*<TrackSelect trackStore={trackStore} />*/}
+          <TrackSelectModal trackStore={trackStore} />
         </Box>
         {/* Add new track select button and modal here */}
       </Stack>

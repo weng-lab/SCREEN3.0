@@ -44,7 +44,7 @@ export const theme = createTheme({
     // note: row aggregation and pivoting are currently disabled by default directly in the <Table /> component since we have no clear use case
     MuiDataGrid: {
       defaultProps: {
-        disableRowGrouping: true,
+        disableRowGrouping: false,
       },
     },
   },

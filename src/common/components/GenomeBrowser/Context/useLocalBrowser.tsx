@@ -4,6 +4,7 @@ import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
 import { expandCoordinates, randomColor } from "../utils";
 import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
+import { ccreTrack, dnaseTrack, geneTrack } from "../TrackSelect/defaultTracks";
 
 /**
  * Pass entity name/id and coordinates to get back the browser and track stores.
@@ -13,12 +14,7 @@ import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from
  * @param coordinates the entity's genomic coordinates
  * @returns a browser store instance
  */
-export default function useLocalBrowser(
-  name: string,
-  assembly: string,
-  coordinates: GenomicRange,
-  type: AnyEntityType
-) {
+export function useLocalBrowser(name: string, assembly: string, coordinates: GenomicRange, type: AnyEntityType) {
   const localBrowser = useMemo(() => getLocalBrowser(name, assembly), [name, assembly]);
 
   // initialize the current domain, if not already saved
@@ -70,10 +66,10 @@ export default function useLocalBrowser(
 export function useLocalTracks(assembly: string) {
   const localTracks = getLocalTracks(assembly);
 
-  const defaultTracks = [];
+  const defaultTracks = assembly === "GRCh38" ? [geneTrack, ccreTrack, dnaseTrack] : [];
 
   // potential infinite loop
-  const trackStore = createTrackStoreMemo(localTracks || defaultTracks, [localTracks]);
+  const trackStore = createTrackStoreMemo(localTracks || defaultTracks, []);
   const tracks = trackStore((state) => state.tracks);
 
   // any time the track list changes, update local storage
