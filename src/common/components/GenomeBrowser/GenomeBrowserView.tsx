@@ -110,7 +110,9 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
         </Box>
         <Box display="flex" gap={2} alignItems="center">
           <HighlightDialog browserStore={browserStore} />
-          <TrackSelectModal trackStore={trackStore} />
+          {entity.assembly.toLowerCase() === "grch38" && (
+            <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} />
+          )}
         </Box>
         {/* Add new track select button and modal here */}
       </Stack>

@@ -10,10 +10,10 @@ import { RowInfo } from "@weng-lab/genomebrowser-ui/dist/TrackSelect/types";
 import { defaultBigBed, defaultBigWig } from "./defaultConfigs";
 import { ASSAY_COLORS } from "common/colors";
 
-function getLocalStorage() {
+function getLocalStorage(assembly: string) {
   if (typeof window === "undefined" || !window.sessionStorage) return null;
 
-  const selectedTracks = sessionStorage.getItem("selected-tracks");
+  const selectedTracks = sessionStorage.getItem(assembly + "-selected-tracks");
   if (!selectedTracks) return null;
   const localTracksJson = JSON.parse(selectedTracks);
   const map = new Map<string, RowInfo>(localTracksJson);
@@ -21,18 +21,24 @@ function getLocalStorage() {
   return map;
 }
 
-function setLocalStorage(tracks: Map<string, RowInfo>) {
-  sessionStorage.setItem("selected-tracks", JSON.stringify([...tracks.entries()]));
+function setLocalStorage(tracks: Map<string, RowInfo>, assembly: string) {
+  sessionStorage.setItem(assembly + "-selected-tracks", JSON.stringify([...tracks.entries()]));
 }
 
-export default function TrackSelectModal({ trackStore }: { trackStore: TrackStoreInstance }) {
+export default function TrackSelectModal({
+  trackStore,
+  assembly,
+}: {
+  trackStore: TrackStoreInstance;
+  assembly: string;
+}) {
   const [open, setOpen] = useState(false);
 
   const selectionStore = useMemo(() => {
-    const localTracks = getLocalStorage();
+    const localTracks = getLocalStorage(assembly);
     const map = localTracks != null ? localTracks : new Map<string, RowInfo>();
     return createSelectionStore(map);
-  }, []);
+  }, [assembly]);
 
   const selectedTracks = selectionStore((s) => s.selectedTracks);
 
@@ -64,8 +70,8 @@ export default function TrackSelectModal({ trackStore }: { trackStore: TrackStor
       if (track === null) continue;
       insertTrack(track);
     }
-    setLocalStorage(selectedTracks);
-  }, [selectedTracks, insertTrack, removeTrack]);
+    setLocalStorage(selectedTracks, assembly);
+  }, [selectedTracks, insertTrack, removeTrack, assembly]);
 
   return (
     <>
