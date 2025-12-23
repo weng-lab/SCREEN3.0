@@ -4,8 +4,7 @@ import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
 import { expandCoordinates, randomColor } from "../utils";
 import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
-import { ccreTrack, defaultHumanTracks, defaultMouseTracks, dnaseTrack, geneTrack } from "../TrackSelect/defaultTracks";
-import { defaultHumanResults } from "common/components/autocomplete";
+import { defaultHumanTracks, defaultMouseTracks } from "../TrackSelect/defaultTracks";
 
 /**
  * Pass entity name/id and coordinates to get back the browser and track stores.
