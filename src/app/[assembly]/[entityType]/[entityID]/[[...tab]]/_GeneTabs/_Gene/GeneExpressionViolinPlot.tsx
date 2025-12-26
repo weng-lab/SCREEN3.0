@@ -175,6 +175,8 @@ const GeneExpressionBarPlot = ({
           crossProps={{
             outliers: showPoints ? "all" : "none",
           }}
+          animation="slideUp"
+          animationBuffer={0.01}
           ref={ref}
           downloadFileName={`${entity.entityID}_expression_violin_plot`}
           pointTooltipBody={(point) => {

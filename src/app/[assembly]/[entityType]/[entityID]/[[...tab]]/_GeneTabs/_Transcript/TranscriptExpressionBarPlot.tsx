@@ -102,6 +102,8 @@ const TranscriptExpressionBarPlot = ({
         TooltipContents={PlotTooltip}
         ref={ref}
         downloadFileName={`${entity.entityID}_TSS_bar_plot`}
+        animation="slideRight"
+        animationBuffer={0.01}
       />
     </Box>
   );

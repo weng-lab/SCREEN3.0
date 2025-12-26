@@ -90,6 +90,8 @@ const AssayBarPlot = ({
         TooltipContents={PlotTooltip}
         ref={ref}
         downloadFileName={`${assay}_bar_plot`}
+        animation="slideRight"
+        animationBuffer={0.01}
       />
     </Box>
   );

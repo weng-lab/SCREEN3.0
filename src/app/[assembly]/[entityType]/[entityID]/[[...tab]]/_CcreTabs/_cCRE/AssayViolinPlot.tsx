@@ -149,6 +149,8 @@ const AssayViolinPlot = ({
           crossProps={{
             outliers: showPoints ? "all" : "none",
           }}
+          animation="slideUp"
+          animationBuffer={0.01}
           ref={ref}
           downloadFileName={`${assay}_violin_plot`}
           pointTooltipBody={(point) => {
