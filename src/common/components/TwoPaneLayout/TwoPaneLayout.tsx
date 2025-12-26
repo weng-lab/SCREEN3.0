@@ -16,6 +16,7 @@ import { theme } from "app/theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DownloadModal from "./DownloadModal";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
+import FigurePanel from "./FigurePanel";
 
 export type TwoPanePlotConfig = {
   tabTitle: string;
@@ -150,19 +151,7 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
           </Stack>
           <DownloadButton />
         </Stack>
-        {figures.map((Figure, i) => (
-          <Box
-            display={tabValue === i ? "block" : "none"}
-            key={i}
-            id={"figure_container"}
-            //use table height unless its not open, then set px height for umap so it doesnt slowly resize
-            height={tableOpen ? tableHeight : Figure.title === "UMAP" ? "700px" : "100%"}
-            maxHeight={Figure.title !== "Bar Plot" ? "700px" : "none"}
-            minHeight={"580px"}
-          >
-            {tabValue === i && Figure.component}
-          </Box>
-        ))}
+        <FigurePanel value={tabValue} figures={figures} tableOpen={tableOpen} tableHeight={tableHeight || "100%"} />
         {modalOpen && (
           <DownloadModal
             open={modalOpen}
