@@ -160,7 +160,7 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
             maxHeight={Figure.title !== "Bar Plot" ? "700px" : "none"}
             minHeight={"580px"}
           >
-            {Figure.component}
+            {tabValue === i && Figure.component}
           </Box>
         ))}
         {modalOpen && (

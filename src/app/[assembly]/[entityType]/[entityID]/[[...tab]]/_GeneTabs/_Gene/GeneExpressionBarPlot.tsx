@@ -130,6 +130,8 @@ const GeneExpressionBarPlot = ({
           TooltipContents={PlotTooltip}
           ref={ref}
           downloadFileName={`${entity.entityID}_expression_bar_plot`}
+          animation="slideRight"
+          animationBuffer={0.01}
         />
       )}
     </Box>
