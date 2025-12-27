@@ -5,24 +5,21 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Track, TrackStoreInstance } from "@weng-lab/genomebrowser";
 import { useMemo, useState, useEffect } from "react";
-import { createSelectionStore, TrackSelect } from "@weng-lab/genomebrowser-ui";
-import { RowInfo } from "@weng-lab/genomebrowser-ui/dist/TrackSelect/types";
+import { createSelectionStore, TrackSelect, RowInfo, rowById } from "@weng-lab/genomebrowser-ui";
 import { defaultBigBed, defaultBigWig } from "./defaultConfigs";
 import { ASSAY_COLORS } from "common/colors";
 
-function getLocalStorage(assembly: string) {
+function getLocalStorage(assembly: string): Set<string> | null {
   if (typeof window === "undefined" || !window.sessionStorage) return null;
 
-  const selectedTracks = sessionStorage.getItem(assembly + "-selected-tracks");
-  if (!selectedTracks) return null;
-  const localTracksJson = JSON.parse(selectedTracks);
-  const map = new Map<string, RowInfo>(localTracksJson);
-  console.log(map);
-  return map;
+  const selectedIds = sessionStorage.getItem(assembly + "-selected-tracks");
+  if (!selectedIds) return null;
+  const idsArray = JSON.parse(selectedIds) as string[];
+  return new Set(idsArray);
 }
 
-function setLocalStorage(tracks: Map<string, RowInfo>, assembly: string) {
-  sessionStorage.setItem(assembly + "-selected-tracks", JSON.stringify([...tracks.entries()]));
+function setLocalStorage(trackIds: Set<string>, assembly: string) {
+  sessionStorage.setItem(assembly + "-selected-tracks", JSON.stringify([...trackIds]));
 }
 
 export default function TrackSelectModal({
@@ -35,12 +32,16 @@ export default function TrackSelectModal({
   const [open, setOpen] = useState(false);
 
   const selectionStore = useMemo(() => {
-    const localTracks = getLocalStorage(assembly);
-    const map = localTracks != null ? localTracks : new Map<string, RowInfo>();
-    return createSelectionStore(map);
+    const localIds = getLocalStorage(assembly);
+    const ids = localIds != null ? localIds : new Set<string>();
+    return createSelectionStore(ids);
   }, [assembly]);
 
-  const selectedTracks = selectionStore((s) => s.selectedTracks);
+  const selectedIds = selectionStore((s) => s.selectedIds);
+  const getTrackIds = selectionStore((s) => s.getTrackIds);
+
+  // Get only real track IDs (no auto-generated group IDs)
+  const trackIds = useMemo(() => getTrackIds(), [selectedIds, getTrackIds]);
 
   const tracks = trackStore((state) => state.tracks);
   const removeTrack = trackStore((state) => state.removeTrack);
@@ -49,16 +50,19 @@ export default function TrackSelectModal({
   useEffect(() => {
     const currentIds = new Set(tracks.map((t) => t.id));
 
-    const tracksToAdd = Array.from(selectedTracks.entries())
-      .filter(([id]) => !currentIds.has(id))
-      .map(([_, track]) => track);
+    // Build tracks to add from trackIds + rowById lookup
+    const tracksToAdd = Array.from(trackIds)
+      .filter((id) => !currentIds.has(id))
+      .map((id) => rowById.get(id))
+      .filter((track): track is RowInfo => track !== undefined);
     console.log("attempting to add tracks", tracksToAdd);
 
     const tracksToRemove = tracks.filter((t) => {
       console.log(t);
-      return !t.id.includes("ignore") && !selectedTracks.has(t.id);
+      return !t.id.includes("ignore") && !trackIds.has(t.id);
     });
     console.log("attempting to remove tracks", tracksToRemove);
+
     for (const t of tracksToRemove) {
       console.log("removing track", t.id);
       removeTrack(t.id);
@@ -70,8 +74,10 @@ export default function TrackSelectModal({
       if (track === null) continue;
       insertTrack(track);
     }
-    setLocalStorage(selectedTracks, assembly);
-  }, [selectedTracks, insertTrack, removeTrack, assembly]);
+
+    // Save the track IDs (not the auto-generated group IDs)
+    setLocalStorage(trackIds, assembly);
+  }, [trackIds, insertTrack, removeTrack, assembly]);
 
   return (
     <>
