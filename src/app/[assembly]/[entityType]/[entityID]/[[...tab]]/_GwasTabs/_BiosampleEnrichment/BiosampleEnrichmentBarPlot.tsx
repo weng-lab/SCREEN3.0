@@ -76,6 +76,8 @@ const BiosampleEnrichmentBarPlot = ({
         }}
         ref={ref}
         downloadFileName={`${study}_lollipop_plot`}
+        animation="slideRight"
+        animationBuffer={0.01}
       />
     </Box>
   );
