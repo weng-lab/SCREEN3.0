@@ -38,15 +38,15 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
   //Change query variables and table title based on element type
   if (entityType === "gene") {
     variables = { genes: [entityID] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    gtexTitle = `GTEX eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   } else if (entityType === "ccre") {
     variables = { ccre: [entityID] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    gtexTitle = `GTEX eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   } else {
     variables = { snps: [entityID] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    gtexTitle = `GTEX eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   }
 
@@ -113,9 +113,16 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
     },
     {
       field: "pval_nominal",
-      headerName: "Nominal P",
+      headerName: "Q Value",
       display: "flex",
       renderCell: (params) => toScientificNotationElement(params.value, 2, { variant: "body2" }),
+    },    
+    {
+      field: "celltype",
+      headerName: "Celltype",
+      valueGetter: (_, row) =>
+        row.celltype
+          .replaceAll("_", " ")
     }
   );
 
@@ -221,7 +228,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
               sortModel: [{ field: "pval_nominal", sort: "asc" }],
             },
           }}
-          emptyTableFallback={"No GTEX whole-blood eQTLs found"}
+          emptyTableFallback={"No GTEX eQTLs found"}
           divHeight={{ maxHeight: "400px" }}
         />
       </Box>
