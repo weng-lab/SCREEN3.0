@@ -124,8 +124,8 @@ const GeneExpressionBarPlot = ({
           data={plotData}
           topAxisLabel={
             scale === "linearTPM"
-              ? `${entity.entityID} Expression - TPM`
-              : `${entity.entityID} Expression - log\u2081\u2080(TPM + 1)`
+              ? `${entity.entityID} Expression : TPM`
+              : `${entity.entityID} Expression : log\u2081\u2080(TPM + 1)`
           }
           TooltipContents={PlotTooltip}
           ref={ref}
