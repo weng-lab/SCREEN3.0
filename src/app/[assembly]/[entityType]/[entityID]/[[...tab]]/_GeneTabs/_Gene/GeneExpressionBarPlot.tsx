@@ -36,7 +36,7 @@ const GeneExpressionBarPlot = ({
       name = name.slice(0, maxLength) + "...";
     }
     name = capitalizeFirstLetter(name);
-    return `${tpm.toFixed(2)}, ${name} (${accession}${biorep ? ", rep. " + biorep : ""})`;
+    return `${tpm.toFixed(1)}, ${name} (${accession}${biorep ? ", rep. " + biorep : ""})`;
   };
 
   const plotData: BarData<PointMetadata>[] = useMemo(() => {
@@ -79,14 +79,14 @@ const GeneExpressionBarPlot = ({
           </Typography>
           {scale === "linearTPM" ? (
             <Typography variant="body2">
-              <b>TPM:</b> {bar.value.toFixed(2)}
+              <b>TPM:</b> {bar.value.toFixed(1)}
             </Typography>
           ) : (
             <Typography variant="body2">
               <b>
                 Log<sub>10</sub>(TPM + 1):
               </b>{" "}
-              {bar.value.toFixed(2)}
+              {bar.value.toFixed(1)}
             </Typography>
           )}
         </Box>
@@ -124,8 +124,8 @@ const GeneExpressionBarPlot = ({
           data={plotData}
           topAxisLabel={
             scale === "linearTPM"
-              ? `${entity.entityID} Expression : TPM`
-              : `${entity.entityID} Expression : log\u2081\u2080(TPM + 1)`
+              ? `${entity.entityID} Expression: TPM`
+              : `${entity.entityID} Expression: log\u2081\u2080(TPM + 1)`
           }
           TooltipContents={PlotTooltip}
           ref={ref}
