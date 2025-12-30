@@ -6,22 +6,22 @@ import { ASSAY_COLORS } from "common/colors";
 export const defaultHumanTracks: Track[] = [
   {
     ...defaultTranscript,
-    color: "#D05F45",
+    color: "#0c184a",
     id: "human-genes-ignore",
     assembly: "GRCh38",
     version: 40,
   },
   {
     ...defaultBigBed,
+    color: "#0c184a",
     id: "human-ccre-ignore",
     title: "All cCREs colored by group",
     url: "https://downloads.wenglab.org/GRCh38-cCREs.DCC.bigBed",
-    color: "#D05F45",
     tooltip: (rect: Rect) => <CCRETooltip assembly={"GRCh38"} name={rect.name} {...rect} />,
   },
   {
     ...defaultBigWig,
-    color: "#D05F45",
+    color: ASSAY_COLORS.dnase,
     id: "human-dnase-aggregate-ignore",
     title: "Aggregated DNase signal, all ENCODE biosamples",
     url: "https://downloads.wenglab.org/DNAse_All_ENCODE_MAR20_2024_merged.bw",

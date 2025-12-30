@@ -31,17 +31,27 @@ const TwoSidedControl = ({
   leftButtons,
   rightButtons,
   label,
+  leftLabel,
+  rightLabel,
 }: {
   leftButtons: ButtonConfig[];
   rightButtons: ButtonConfig[];
-  label: string;
+  label?: string;
+  leftLabel?: string;
+  rightLabel?: string;
 }) => (
   <Stack alignItems={"center"}>
-    <Typography variant="body2">{label}</Typography>
-    <Stack direction={"row"} spacing={0.5}>
-      <ButtonGroup buttons={leftButtons} />
+    {label && <Typography variant="body2">{label}</Typography>}
+    <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
+      <Stack direction={"column"} alignItems={"center"}>
+        {leftLabel && <Typography variant="body2">{leftLabel}</Typography>}
+        <ButtonGroup buttons={leftButtons} />
+      </Stack>
       <Divider orientation="vertical" flexItem />
-      <ButtonGroup buttons={rightButtons} />
+      <Stack direction={"column"} alignItems={"center"}>
+        {rightLabel && <Typography variant="body2">{rightLabel}</Typography>}
+        <ButtonGroup buttons={rightButtons} />
+      </Stack>
     </Stack>
   </Stack>
 );
@@ -128,7 +138,12 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
       gap={2}
     >
       <TwoSidedControl leftButtons={buttonGroups.moveLeft} rightButtons={buttonGroups.moveRight} label="Move" />
-      <TwoSidedControl leftButtons={buttonGroups.zoomIn} rightButtons={buttonGroups.zoomOut} label="Zoom" />
+      <TwoSidedControl
+        leftButtons={buttonGroups.zoomIn}
+        rightButtons={buttonGroups.zoomOut}
+        leftLabel="Zoom In"
+        rightLabel="Zoom Out"
+      />
     </Box>
   );
 }
