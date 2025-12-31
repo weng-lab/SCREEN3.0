@@ -95,7 +95,12 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           </Box>
         </Stack>
       </Grid>
-      <Grid size={{ xs: 12, sm: 3 }} display={entityType === "ccre" ? "none" : "flex"} height={{ xs: 65 }}>
+      <Grid
+        size={{ xs: 12, sm: 3 }}
+        display={entityType === "ccre" ? "none" : "flex"}
+        height={{ xs: 60 }}
+        justifyContent={"flex-end"}
+      >
         <Button
           variant="contained"
           href={
@@ -107,7 +112,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           }
           target="_blank"
           rel="noopener noreferrer"
-          sx={{ width: "100%", height: "100%", backgroundColor: "white" }}
+          sx={{ width: "50%", height: "100%", backgroundColor: "white" }}
         >
           <Image
             style={{ objectFit: "contain" }}
