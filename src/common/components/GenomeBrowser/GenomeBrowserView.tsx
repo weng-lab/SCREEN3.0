@@ -6,8 +6,8 @@ import { Box, Button, IconButton, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // @weng-lab
-import { Browser } from "@weng-lab/genomebrowser";
-import { GenomeSearch, Result } from "@weng-lab/ui-components";
+import { Browser, Rect } from "@weng-lab/genomebrowser";
+import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
 import { EntityViewComponentProps } from "common/entityTabsConfig/types";
@@ -21,6 +21,19 @@ import { useLocalBrowser, useLocalTracks } from "./Context/useLocalBrowser";
 import PageviewIcon from "@mui/icons-material/Pageview";
 import ControlButtons from "./Controls/ControlButtons";
 import DomainDisplay from "./Controls/DomainDisplay";
+import { useCallback, useMemo } from "react";
+import { TrackCallbacks } from "./TrackSelect/defaultTracks";
+import { Exon } from "common/types/generated/graphql";
+import { useRouter } from "next/navigation";
+
+interface Transcript {
+  id: string;
+  name: string;
+  coordinates: Domain;
+  strand: string;
+  exons?: Exon[];
+  color?: string;
+}
 
 type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicRange };
 
@@ -36,13 +49,63 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
         : entity.entityID;
 
   const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType);
-  // Initialize track store with interaction functions (on click, on hover, etc)
-  const trackStore = useLocalTracks(entity.assembly);
 
-  const addHighlight = browserStore((state) => state.addHighlight);
-  const setDomain = browserStore((state) => state.setDomain);
+  // interaction callback functions
+  const addHighlight = browserStore((s) => s.addHighlight);
+  const removeHighlight = browserStore((s) => s.removeHighlight);
+  const onHover = useCallback(
+    (item: Rect | Transcript) => {
+      const domain =
+        "start" in item
+          ? { start: item.start, end: item.end }
+          : { start: item.coordinates.start, end: item.coordinates.end };
+
+      addHighlight({
+        id: "hover-highlight",
+        domain,
+        color: item.color || "blue",
+      });
+    },
+    [addHighlight]
+  );
+  const onLeave = useCallback(() => {
+    removeHighlight("hover-highlight");
+  }, [removeHighlight]);
+
+  const router = useRouter();
+  const onCCREClick = useCallback(
+    (item: Rect) => {
+      const accession = item.name;
+      router.push(`/${entity.assembly}/ccre/${accession}`);
+    },
+    [entity.assembly, router]
+  );
+  const onGeneClick = useCallback(
+    (gene: Transcript) => {
+      const name = gene.name;
+      if (name.includes("ENSG")) {
+        return;
+      }
+      router.push(`/${entity.assembly}/gene/${name}`);
+    },
+    [entity.assembly, router]
+  );
+
+  // Bundle callbacks for track injection
+  const callbacks = useMemo<TrackCallbacks>(
+    () => ({
+      onHover,
+      onLeave,
+      onCCREClick,
+      onGeneClick,
+    }),
+    [onHover, onLeave, onCCREClick, onGeneClick]
+  );
+  const trackStore = useLocalTracks(entity.assembly, callbacks);
+
+  //
   const editTrack = trackStore((state) => state.editTrack);
-
+  const setDomain = browserStore((state) => state.setDomain);
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
       editTrack("ignore-gene-track", {
@@ -53,6 +116,7 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
       domain: r.domain,
       color: randomColor(),
       id: r.title,
+      opacity: 0.1,
     });
 
     setDomain(expandCoordinates(r.domain, SearchToScreenTypes[r.type]));
@@ -111,7 +175,7 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
         <Box display="flex" gap={2} alignItems="center">
           <HighlightDialog browserStore={browserStore} />
           {entity.assembly.toLowerCase() === "grch38" && (
-            <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} />
+            <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
           )}
         </Box>
         {/* Add new track select button and modal here */}

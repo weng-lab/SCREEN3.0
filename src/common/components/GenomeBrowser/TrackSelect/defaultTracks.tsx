@@ -1,4 +1,4 @@
-import { Rect, Track } from "@weng-lab/genomebrowser";
+import { Rect, Track, TrackType } from "@weng-lab/genomebrowser";
 import { defaultBigBed, defaultBigWig, defaultTranscript } from "./defaultConfigs";
 import CCRETooltip from "../Tooltips/CcreTooltip";
 import { ASSAY_COLORS } from "common/colors";
@@ -110,3 +110,36 @@ export const defaultMouseTracks: Track[] = [
     url: "https://downloads.wenglab.org/ATAC_MM10_ENCODE_DEC2024_merged_nanrm.bigWig",
   },
 ];
+
+// Callback types for track interactions (using any to avoid type conflicts with library types)
+// add more fields for more things to pass down and adjust injectCallbacks as needed
+export interface TrackCallbacks {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onHover: (item: any) => void;
+  onLeave: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onCCREClick: (item: any) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onGeneClick: (item: any) => void;
+}
+
+// Helper to inject callbacks based on track type
+export function injectCallbacks(track: Track, callbacks: TrackCallbacks): Track {
+  if (track.trackType === TrackType.Transcript) {
+    return {
+      ...track,
+      onHover: callbacks.onHover,
+      onLeave: callbacks.onLeave,
+      onClick: callbacks.onGeneClick,
+    };
+  }
+  if (track.trackType === TrackType.BigBed) {
+    return {
+      ...track,
+      onHover: callbacks.onHover,
+      onLeave: callbacks.onLeave,
+      onClick: callbacks.onCCREClick,
+    };
+  }
+  return track;
+}

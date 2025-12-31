@@ -4,7 +4,7 @@ import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
 import { expandCoordinates, randomColor } from "../utils";
 import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
-import { defaultHumanTracks, defaultMouseTracks } from "../TrackSelect/defaultTracks";
+import { defaultHumanTracks, defaultMouseTracks, injectCallbacks, TrackCallbacks } from "../TrackSelect/defaultTracks";
 
 /**
  * Pass entity name/id and coordinates to get back the browser and track stores.
@@ -63,13 +63,20 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
   return browserStore;
 }
 
-export function useLocalTracks(assembly: string) {
+export function useLocalTracks(assembly: string, callbacks?: TrackCallbacks) {
   const localTracks = getLocalTracks(assembly);
 
   const defaultTracks = assembly === "GRCh38" ? defaultHumanTracks : defaultMouseTracks;
 
-  // potential infinite loop
-  const trackStore = createTrackStoreMemo(localTracks || defaultTracks, []);
+  // Get base tracks (from storage or defaults)
+  let initialTracks = localTracks || defaultTracks;
+
+  // Inject callbacks if provided (callbacks are lost on JSON serialization)
+  if (callbacks) {
+    initialTracks = initialTracks.map((t) => injectCallbacks(t, callbacks));
+  }
+
+  const trackStore = createTrackStoreMemo(initialTracks, []);
   const tracks = trackStore((state) => state.tracks);
 
   // any time the track list changes, update local storage
