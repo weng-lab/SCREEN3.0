@@ -13,12 +13,26 @@ export interface OverviewCardsProps {
   loadingSnps: boolean;
   genes: GenomicRange[];
   loadingGenes: boolean;
+  selectedTotals?: { ccres: number; genes: number; snps: number };
 }
 
-const OverviewCards = ({ entity, ccres, loadingCcres, genes, loadingGenes, snps, loadingSnps }: OverviewCardsProps) => {
+const OverviewCards = ({
+  entity,
+  ccres,
+  loadingCcres,
+  genes,
+  loadingGenes,
+  snps,
+  loadingSnps,
+  selectedTotals,
+}: OverviewCardsProps) => {
   const CcreIconPath = "/assets/CcreIcon.svg";
   const GeneIconPath = "/assets/GeneIcon.svg";
   const VariantIconPath = "/assets/VariantIcon.svg";
+
+  const ccresCount = selectedTotals?.ccres ?? ccres?.length ?? 0;
+  const geneCount = selectedTotals?.genes ?? genes?.length ?? 0;
+  const snpCount = selectedTotals?.snps ?? snps?.length ?? 0;
 
   return (
     <Stack
@@ -27,15 +41,10 @@ const OverviewCards = ({ entity, ccres, loadingCcres, genes, loadingGenes, snps,
       justifyContent={entity.assembly === "GRCh38" ? "space-between" : "flex-start"}
       spacing={2}
     >
-      <InfoCard icon={CcreIconPath} label="Overlapping cCREs" value={ccres?.length} loading={loadingCcres || !ccres} />
-      <InfoCard icon={GeneIconPath} label="Overlapping Genes" value={genes?.length} loading={loadingGenes || !genes} />
+      <InfoCard icon={CcreIconPath} label="Overlapping cCREs" value={ccresCount} loading={loadingCcres || !ccres} />
+      <InfoCard icon={GeneIconPath} label="Overlapping Genes" value={geneCount} loading={loadingGenes || !genes} />
       {entity.assembly === "GRCh38" && (
-        <InfoCard
-          icon={VariantIconPath}
-          label="Overlapping Variants"
-          value={snps?.length}
-          loading={loadingSnps || !snps}
-        />
+        <InfoCard icon={VariantIconPath} label="Overlapping Variants" value={snpCount} loading={loadingSnps || !snps} />
       )}
     </Stack>
   );
