@@ -514,8 +514,8 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
           },
         }}
       >
-        <Tab value="tables" label={silencersData && silencersData.length > 0  ? "Primary Classification" : "Classification"} />
-        {silencersData && silencersData.length > 0 && <Tab value="add_classification" label="Additional Classification" />}
+        <Tab value="tables" label="Primary Classification" />
+        <Tab value="add_classification" label="Additional Classification" />
         <Tab value="dnase" label="DNase" />
         <Tab value="atac" label="ATAC" />
         <Tab value="h3k4me3" label="H3K4me3" />
@@ -610,7 +610,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
         </Stack>
       ) : tab === "add_classification"  ? (<Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
 
-          {silencersData && silencersData.length > 0 && (
+          {silencersData && silencersData.length > 0 ? (
             <Table
               label="Silencers"
               rows={
@@ -630,9 +630,19 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               error={!!errorSilencersData}
               {...disableCsvEscapeChar}
               hideFooter
-              //showToolbar={false}
+              
             />
-          )}
+          ): (<Typography
+            variant="body1"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 400,
+              color: "text.primary",
+              pl: 1,
+              ml: 0, // match table start
+            }}
+          >There is no additional classification available for {entity.entityID}</Typography>)}
       </Stack>):(
         <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
       )}
