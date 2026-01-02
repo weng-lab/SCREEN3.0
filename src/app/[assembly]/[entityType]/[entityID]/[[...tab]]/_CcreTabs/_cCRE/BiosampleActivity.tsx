@@ -642,7 +642,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               pl: 1,
               ml: 0, // match table start
             }}
-          >There is no additional classification available for {entity.entityID}</Typography>)}
+          >No further classification details are available for {entity.entityID}.</Typography>)}
       </Stack>):(
         <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
       )}
