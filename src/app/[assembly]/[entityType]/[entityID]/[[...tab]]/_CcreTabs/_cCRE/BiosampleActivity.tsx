@@ -319,10 +319,10 @@ const ANCILLARY_COLLECTION_TOOLTIP =
 //Cache is not working as expected when switching between open cCREs
 export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   // Assay values are used to index into row object, so need to modify assaySpecificRows if changing assays here
-  const [tab, setTab] = useState<"tables" | CcreAssay>("tables");
+  const [tab, setTab] = useState<"tables" | "add_classification" | CcreAssay>("tables");
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setTab(newValue as "tables" | "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf");
+    setTab(newValue as "tables" | "add_classification" | "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf");
   };
 
   const { data: cCREdata, error: errorCcreData } = useCcreData({
@@ -514,7 +514,8 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
           },
         }}
       >
-        <Tab value="tables" label="Classification" />
+        <Tab value="tables" label="Primary Classification" />
+        <Tab value="add_classification" label="Additional Classification" />
         <Tab value="dnase" label="DNase" />
         <Tab value="atac" label="ATAC" />
         <Tab value="h3k4me3" label="H3K4me3" />
@@ -547,29 +548,6 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             hideFooter
             showToolbar={false}
           />
-          {silencersData && silencersData.length > 0 && (
-            <Table
-              label="Silencers"
-              rows={
-                silencersData?.flatMap((item) =>
-                  item.silencer_studies.map((study) => ({
-                    study: Silencer_Studies.find((s) => s.value == study).study,
-                    pmid: Silencer_Studies.find((s) => s.value == study).pubmed_id,
-                    method: Silencer_Studies.find((s) => s.value == study).method,
-                    pubmed_link: Silencer_Studies.find((s) => s.value == study).pubmed_link,
-                  }))
-                ) || []
-              }
-              columns={silencersDataCols}
-              loading={loadingSilencersData}
-              //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
-              divHeight={!silencersData ? { height: "182px" } : undefined}
-              error={!!errorSilencersData}
-              {...disableCsvEscapeChar}
-              hideFooter
-              //showToolbar={false}
-            />
-          )}
           <div>
             <ProportionsBar
               data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}
@@ -630,7 +608,42 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             {...disableCsvEscapeChar}
           />
         </Stack>
-      ) : (
+      ) : tab === "add_classification"  ? (<Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
+
+          {silencersData && silencersData.length > 0 ? (
+            <Table
+              label="Silencers"
+              rows={
+                silencersData?.flatMap((item) =>
+                  item.silencer_studies.map((study) => ({
+                    study: Silencer_Studies.find((s) => s.value == study).study,
+                    pmid: Silencer_Studies.find((s) => s.value == study).pubmed_id,
+                    method: Silencer_Studies.find((s) => s.value == study).method,
+                    pubmed_link: Silencer_Studies.find((s) => s.value == study).pubmed_link,
+                  }))
+                ) || []
+              }
+              columns={silencersDataCols}
+              loading={loadingSilencersData}
+              //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
+              divHeight={!silencersData ? { height: "182px" } : undefined}
+              error={!!errorSilencersData}
+              {...disableCsvEscapeChar}
+              hideFooter
+              
+            />
+          ): (<Typography
+            variant="body1"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 400,
+              color: "text.primary",
+              pl: 1,
+              ml: 0, // match table start
+            }}
+          >No further classification details are available for {entity.entityID}.</Typography>)}
+      </Stack>):(
         <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
       )}
     </>
