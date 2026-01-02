@@ -32,7 +32,7 @@
     "@weng-lab/genomebrowser": "1.7.3",
     "@weng-lab/genomebrowser-ui": "0.1.11",
     "@weng-lab/ui-components": "^1.2.0",
-    "@weng-lab/visualization": "^1.2.7",
+    "@weng-lab/visualization": "^1.2.10",
     "bpnet-ui": "^0.3.8",
     "d3-scale-chromatic": "^3.1.0",
     "lz-string": "^1.5.0",

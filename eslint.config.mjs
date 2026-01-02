@@ -49,7 +49,6 @@ export default defineConfig([
           jsx: true,
         },
         project: "./tsconfig.json",
-        tsconfigRootDir: __dirname,
       },
     },
     ignores: ["node_modules", ".next", ".vscode", ".yarn"],
