@@ -167,7 +167,9 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
             startIcon={<PageviewIcon />}
             color="primary"
             size="small"
-            onClick={() => setDomain(expandCoordinates(coordinates, entity.entityType))}
+            onClick={() =>
+              setDomain(expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType))
+            }
           >
             Recenter on {name || "Selected Region"}
           </Button>

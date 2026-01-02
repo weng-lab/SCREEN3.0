@@ -145,6 +145,8 @@ const TranscriptExpressionBarPlot = ({
             showAllPoints: showPoints,
             jitter: 10,
           }}
+          animation="slideUp"
+          animationBuffer={0.01}
           crossProps={{
             outliers: showPoints ? "all" : "none",
           }}

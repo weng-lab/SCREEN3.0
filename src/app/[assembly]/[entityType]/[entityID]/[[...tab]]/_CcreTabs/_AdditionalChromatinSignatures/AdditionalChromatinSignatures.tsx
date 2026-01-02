@@ -218,6 +218,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
             loading={loadingEntex}
             error={!!errorEntex}
             initialState={{ sorting: { sortModel: [{ field: "hap1_allele_ratio", sort: "asc" }] } }}
+            emptyTableFallback={"No ENTEx data found for this cCRE"}
           />
           <Table
             label={`ENTEx Active Annotations`}
@@ -226,6 +227,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
             loading={loadingAnnotations}
             error={!!errorAnnotations}
             initialState={{ sorting: { sortModel: [{ field: "tissue", sort: "asc" }] } }}
+            emptyTableFallback={"No ENTEx Active Annotations data found for this cCRE"}
           />
         </Stack>
       </TabPanel>

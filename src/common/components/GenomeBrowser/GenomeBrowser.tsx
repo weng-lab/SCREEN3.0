@@ -4,6 +4,7 @@ import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { useMemo } from "react";
 import GenomeBrowserView from "./GenomeBrowserView";
+import { Alert, CircularProgress } from "@mui/material";
 import { decodeRegions } from "common/utility";
 
 export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
