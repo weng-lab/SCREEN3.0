@@ -2,6 +2,7 @@ import { DisplayMode, Rect, Track, TrackType } from "@weng-lab/genomebrowser";
 import { defaultBigBed, defaultBigWig, defaultTranscript } from "./defaultConfigs";
 import CCRETooltip from "../Tooltips/CcreTooltip";
 import { ASSAY_COLORS } from "common/colors";
+import { JSX } from "react";
 
 export const defaultHumanTracks: Track[] = [
   {
@@ -133,6 +134,7 @@ export interface TrackCallbacks {
   onCCREClick: (item: any) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onGeneClick: (item: any) => void;
+  ccreTooltip: (rect: Rect) => JSX.Element;
 }
 
 // Helper to inject callbacks based on track type
@@ -151,6 +153,7 @@ export function injectCallbacks(track: Track, callbacks: TrackCallbacks): Track 
       onHover: callbacks.onHover,
       onLeave: callbacks.onLeave,
       onClick: callbacks.onCCREClick,
+      tooltip: callbacks.ccreTooltip,
     };
   }
   return track;

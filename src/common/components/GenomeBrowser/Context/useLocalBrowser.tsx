@@ -91,8 +91,9 @@ export function useLocalTracks(assembly: string, entitytype: AnyEntityType, call
 
   // any time the track list changes, update local storage
   useEffect(() => {
+    if (entitytype === "gwas") return;
     setLocalTracks(tracks, assembly);
-  }, [tracks, assembly]);
+  }, [tracks, assembly, entitytype]);
 
   return trackStore;
 }

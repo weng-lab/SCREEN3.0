@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import SelectLdBlock from "./SelectLdBlock";
 import EditIcon from "@mui/icons-material/Edit";
 import { expandCoordinates } from "common/components/GenomeBrowser/utils";
-import { createDataStoreMemo, DataStoreInstance } from "@weng-lab/genomebrowser";
+import { createDataStoreMemo, DataStoreInstance, useCustomData } from "@weng-lab/genomebrowser";
 import { ApolloError } from "@apollo/client";
 import { GwasStudiesSnPs } from "common/types/generated/graphql";
 
@@ -81,7 +81,7 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
 
   const dataStore = createDataStoreMemo();
 
-  useData(
+  useCustomData(
     "ld-track-ignore",
     {
       data: data,
@@ -116,27 +116,4 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
       <GenomeBrowserView entity={entity} coordinates={coordinates} dataStore={dataStore} />
     </>
   );
-}
-
-// custom data hook which ignores isFetching
-function useData(
-  trackId: string,
-  response: {
-    data: GwasStudiesSnPs[];
-    error: ApolloError | undefined;
-    loading: boolean;
-  },
-  dataStore: DataStoreInstance
-) {
-  const setTrackData = dataStore((state) => state.setTrackData);
-
-  useEffect(() => {
-    if (response.loading) {
-      setTrackData(trackId, { data: null, error: null });
-    } else if (response.error) {
-      setTrackData(trackId, { data: null, error: response.error.message });
-    } else if (response.data) {
-      setTrackData(trackId, { data: response.data, error: null });
-    }
-  }, [response.data, response.loading, response.error, trackId, setTrackData]);
 }

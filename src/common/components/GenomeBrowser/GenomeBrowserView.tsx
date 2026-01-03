@@ -25,6 +25,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { TrackCallbacks } from "./TrackSelect/defaultTracks";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
+import CCRETooltip from "./Tooltips/CcreTooltip";
 
 interface Transcript {
   id: string;
@@ -106,8 +107,9 @@ export default function GenomeBrowserView({ entity, coordinates, dataStore }: Ge
       onLeave,
       onCCREClick,
       onGeneClick,
+      ccreTooltip: (item: Rect) => <CCRETooltip assembly={entity.assembly} name={item.name} />,
     }),
-    [onHover, onLeave, onCCREClick, onGeneClick]
+    [onHover, onLeave, onCCREClick, onGeneClick, entity.assembly]
   );
   const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks);
 
@@ -131,8 +133,6 @@ export default function GenomeBrowserView({ entity, coordinates, dataStore }: Ge
   const theme = useTheme();
 
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
-
-  useDataLogger(trackStore, dataStore);
 
   return (
     <Stack>
@@ -209,20 +209,4 @@ export default function GenomeBrowserView({ entity, coordinates, dataStore }: Ge
       <Browser browserStore={browserStore} trackStore={trackStore} externalDataStore={dataStore} />
     </Stack>
   );
-}
-
-function useDataLogger(trackStore: TrackStoreInstance, dataStore: DataStoreInstance) {
-  const ids = trackStore((s) => s.ids);
-
-  useEffect(() => {
-    const unsubscribe = dataStore.subscribe((state) => {
-      console.log("=== Data Store Updated ===");
-      ids.forEach((id) => {
-        const data = state.getTrackData(id);
-        console.log(`Track ${id}:`, data);
-      });
-    });
-
-    return unsubscribe;
-  }, [ids, dataStore]);
 }
