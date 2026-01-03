@@ -1,35 +1,25 @@
 "use client";
 import { Search } from "@mui/icons-material";
+import EditIcon from "@mui/icons-material/Edit";
 import { Box, Button, IconButton } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import EditIcon from "@mui/icons-material/Edit";
 import { useTheme } from "@mui/material/styles";
-import {
-  Browser,
-  Chromosome,
-  createBrowserStore,
-  createDataStore,
-  createTrackStore,
-  DisplayMode,
-  Track,
-  TrackType,
-  useCustomData,
-} from "@weng-lab/genomebrowser";
+import { Browser, Chromosome, DisplayMode, Track, TrackType, useCustomData } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { GenomicRange } from "common/types/globalTypes";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
 //import GenomeBrowserView from "common/gbview/genomebrowserview";
 import ControlButtons from "common/components/GenomeBrowser/Controls/ControlButtons";
+import DomainDisplay from "common/components/GenomeBrowser/Controls/DomainDisplay";
 import HighlightDialog from "common/components/GenomeBrowser/Dialogs/HighlightDialog";
+import CCRETooltip from "common/components/GenomeBrowser/Tooltips/CcreTooltip";
 import { randomColor } from "common/components/GenomeBrowser/utils";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
-import CCRETooltip from "common/components/GenomeBrowser/Tooltips/CcreTooltip";
-import DomainDisplay from "common/components/GenomeBrowser/Controls/DomainDisplay";
-import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import SelectLdBlock from "./SelectLdBlock";
-import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 interface Transcript {
   id: string;

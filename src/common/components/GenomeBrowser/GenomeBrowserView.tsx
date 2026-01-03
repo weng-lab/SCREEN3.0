@@ -6,7 +6,7 @@ import { Box, Button, IconButton, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // @weng-lab
-import { Browser, Rect } from "@weng-lab/genomebrowser";
+import { Browser, Chromosome, DataStoreInstance, Rect, TrackStoreInstance } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
@@ -21,7 +21,7 @@ import { useLocalBrowser, useLocalTracks } from "./Context/useLocalBrowser";
 import PageviewIcon from "@mui/icons-material/Pageview";
 import ControlButtons from "./Controls/ControlButtons";
 import DomainDisplay from "./Controls/DomainDisplay";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { TrackCallbacks } from "./TrackSelect/defaultTracks";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
@@ -35,9 +35,12 @@ interface Transcript {
   color?: string;
 }
 
-type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicRange };
+export type GenomeBrowserViewProps = EntityViewComponentProps & {
+  coordinates: GenomicRange;
+  dataStore?: DataStoreInstance;
+};
 
-export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowserViewProps) {
+export default function GenomeBrowserView({ entity, coordinates, dataStore }: GenomeBrowserViewProps) {
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
@@ -49,6 +52,11 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
         : entity.entityID;
 
   const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType);
+
+  const setDomain = browserStore((s) => s.setDomain);
+  useEffect(() => {
+    setDomain({ ...coordinates, chromosome: coordinates.chromosome as Chromosome });
+  }, [coordinates, setDomain]);
 
   // interaction callback functions
   const addHighlight = browserStore((s) => s.addHighlight);
@@ -101,11 +109,9 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
     }),
     [onHover, onLeave, onCCREClick, onGeneClick]
   );
-  const trackStore = useLocalTracks(entity.assembly, callbacks);
+  const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks);
 
-  //
   const editTrack = trackStore((state) => state.editTrack);
-  const setDomain = browserStore((state) => state.setDomain);
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
       editTrack("ignore-gene-track", {
@@ -125,6 +131,8 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
   const theme = useTheme();
 
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
+
+  useDataLogger(trackStore, dataStore);
 
   return (
     <Stack>
@@ -162,17 +170,21 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
               },
             }}
           />
-          <Button
-            variant="contained"
-            startIcon={<PageviewIcon />}
-            color="primary"
-            size="small"
-            onClick={() =>
-              setDomain(expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType))
-            }
-          >
-            Recenter on {name || "Selected Region"}
-          </Button>
+          {entity.entityType !== "gwas" && (
+            <Button
+              variant="contained"
+              startIcon={<PageviewIcon />}
+              color="primary"
+              size="small"
+              onClick={() =>
+                setDomain(
+                  expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType)
+                )
+              }
+            >
+              Recenter on {name || "Selected Region"}
+            </Button>
+          )}
         </Box>
         <Box display="flex" gap={2} alignItems="center">
           <HighlightDialog browserStore={browserStore} />
@@ -194,7 +206,23 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
         <DomainDisplay browserStore={browserStore} assembly={entity.assembly} />
         <ControlButtons browserStore={browserStore} />
       </Stack>
-      <Browser browserStore={browserStore} trackStore={trackStore} />
+      <Browser browserStore={browserStore} trackStore={trackStore} externalDataStore={dataStore} />
     </Stack>
   );
+}
+
+function useDataLogger(trackStore: TrackStoreInstance, dataStore: DataStoreInstance) {
+  const ids = trackStore((s) => s.ids);
+
+  useEffect(() => {
+    const unsubscribe = dataStore.subscribe((state) => {
+      console.log("=== Data Store Updated ===");
+      ids.forEach((id) => {
+        const data = state.getTrackData(id);
+        console.log(`Track ${id}:`, data);
+      });
+    });
+
+    return unsubscribe;
+  }, [ids, dataStore]);
 }

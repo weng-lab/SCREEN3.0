@@ -4,7 +4,13 @@ import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
 import { expandCoordinates, randomColor } from "../utils";
 import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
-import { defaultHumanTracks, defaultMouseTracks, injectCallbacks, TrackCallbacks } from "../TrackSelect/defaultTracks";
+import {
+  defaultHumanTracks,
+  defaultMouseTracks,
+  gwasTracks,
+  injectCallbacks,
+  TrackCallbacks,
+} from "../TrackSelect/defaultTracks";
 
 /**
  * Pass entity name/id and coordinates to get back the browser and track stores.
@@ -32,18 +38,20 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
 
   const initialBrowserState: InitialBrowserState = {
     domain: currentDomain,
-    highlights: localBrowser?.highlights || [
-      {
-        color: randomColor(),
-        domain: {
-          chromosome: coordinates.chromosome as Chromosome,
-          start: coordinates.start,
-          end: coordinates.end,
+    highlights:
+      localBrowser?.highlights ||
+      (type !== "gwas" && [
+        {
+          color: randomColor(),
+          domain: {
+            chromosome: coordinates.chromosome as Chromosome,
+            start: coordinates.start,
+            end: coordinates.end,
+          },
+          id: name,
+          opacity: 0.2,
         },
-        id: name,
-        opacity: 0.2,
-      },
-    ],
+      ]),
     trackWidth: 1400,
     marginWidth: 100,
     multiplier: 3,
@@ -63,14 +71,16 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
   return browserStore;
 }
 
-export function useLocalTracks(assembly: string, callbacks?: TrackCallbacks) {
+export function useLocalTracks(assembly: string, entitytype: AnyEntityType, callbacks?: TrackCallbacks) {
   const localTracks = getLocalTracks(assembly);
 
   const defaultTracks = assembly === "GRCh38" ? defaultHumanTracks : defaultMouseTracks;
 
   // Get base tracks (from storage or defaults)
   let initialTracks = localTracks || defaultTracks;
-
+  if (entitytype === "gwas") {
+    initialTracks = gwasTracks;
+  }
   // Inject callbacks if provided (callbacks are lost on JSON serialization)
   if (callbacks) {
     initialTracks = initialTracks.map((t) => injectCallbacks(t, callbacks));

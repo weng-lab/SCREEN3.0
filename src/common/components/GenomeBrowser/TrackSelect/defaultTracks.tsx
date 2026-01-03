@@ -1,4 +1,4 @@
-import { Rect, Track, TrackType } from "@weng-lab/genomebrowser";
+import { DisplayMode, Rect, Track, TrackType } from "@weng-lab/genomebrowser";
 import { defaultBigBed, defaultBigWig, defaultTranscript } from "./defaultConfigs";
 import CCRETooltip from "../Tooltips/CcreTooltip";
 import { ASSAY_COLORS } from "common/colors";
@@ -56,7 +56,19 @@ export const defaultHumanTracks: Track[] = [
     url: "https://downloads.wenglab.org/ATAC_All_ENCODE_MAR20_2024_merged.bw",
   },
 ];
-
+export const gwasTracks: Track[] = [
+  defaultHumanTracks[0],
+  defaultHumanTracks[1],
+  {
+    id: "ld-track-ignore",
+    title: "LD",
+    trackType: TrackType.LDTrack,
+    displayMode: DisplayMode.LDBlock,
+    height: 50,
+    titleSize: 12,
+    color: "#ff0000",
+  },
+];
 export const defaultMouseTracks: Track[] = [
   {
     ...defaultTranscript,
