@@ -35,7 +35,6 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
           },
           type
         );
-
   const initialBrowserState: InitialBrowserState = {
     domain: currentDomain,
     highlights:

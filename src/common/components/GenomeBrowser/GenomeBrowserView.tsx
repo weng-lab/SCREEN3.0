@@ -63,8 +63,9 @@ export default function GenomeBrowserView({
 
   const setDomain = browserStore((s) => s.setDomain);
   useEffect(() => {
+    if (entity.entityType !== "gwas") return;
     setDomain({ ...coordinates, chromosome: coordinates.chromosome as Chromosome });
-  }, [coordinates, setDomain]);
+  }, [coordinates, setDomain, entity.entityType]);
 
   // interaction callback functions
   const addHighlight = browserStore((s) => s.addHighlight);

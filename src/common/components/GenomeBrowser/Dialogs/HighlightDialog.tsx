@@ -299,7 +299,7 @@ function HighlightItem({
     >
       <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
         <Typography variant="body1" color={highlight.color}>
-          {highlight.id}
+          {highlight.id.toWellFormed()}
         </Typography>
         <IconButton
           size="small"
