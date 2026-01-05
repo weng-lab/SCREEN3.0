@@ -24,6 +24,7 @@ import Config from "common/config.json";
 import { PointMetaData } from "./types";
 import { DNase_seq, tissueColors, H3K4me3, H3K27ac, CA_CTCF } from "../../common/colors";
 import { UMAP_QUERY } from "./queries";
+import { trackDownload } from "./analytics";
 
 type Selected = {
   assembly: "Human" | "Mouse";
@@ -605,6 +606,11 @@ export function DataMatrices() {
                   color="primary"
                   onClick={() => {
                     const url = matrixDownloadURL(selectedAssay, "signal");
+                    const fileName =
+                      selectedAssay.assay === "DNase"
+                        ? "Read-Depth Normalized Signal Matrix"
+                        : "Fold-Change Signal Matrix";
+                    trackDownload(url, `${selectedAssay.assembly}-${selectedAssay.assay}-${fileName}`, "data-matrices");
                     window.location.href = url;
                   }}
                 >
@@ -623,6 +629,11 @@ export function DataMatrices() {
                   color="primary"
                   onClick={() => {
                     const url = matrixDownloadURL(selectedAssay, "zScore");
+                    trackDownload(
+                      url,
+                      `${selectedAssay.assembly}-${selectedAssay.assay}-Z-Score Matrix`,
+                      "data-matrices"
+                    );
                     window.location.href = url;
                   }}
                 >

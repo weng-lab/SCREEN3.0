@@ -1,6 +1,7 @@
 import { Download } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import { useState } from "react";
+import { trackDownload } from "../analytics";
 
 export type DownloadButtonProps = {
   href: string;
@@ -12,6 +13,10 @@ export type DownloadButtonProps = {
 // Download button for class/gene links files
 export const DownloadButton = (props: DownloadButtonProps) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
+
+  const handleClick = () => {
+    trackDownload(props.href, props.label, "annotations");
+  };
 
   return (
     <Button
@@ -31,6 +36,7 @@ export const DownloadButton = (props: DownloadButtonProps) => {
       fullWidth
       href={props.href}
       download
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

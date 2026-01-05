@@ -27,7 +27,7 @@
     "@mui/x-tree-view": "^8.9.0",
     "@types/d3-scale-chromatic": "^3.1.0",
     "@types/node": "^22",
-    "@vercel/analytics": "^1.5.0",
+    "@vercel/analytics": "^1.6.1",
     "@visx/visx": "^3",
     "@weng-lab/genomebrowser": "1.7.5",
     "@weng-lab/genomebrowser-ui": "0.1.11",

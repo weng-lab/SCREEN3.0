@@ -1,3 +1,5 @@
+import { trackDownload } from "./analytics";
+
 //Imported from old SCREEN
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
@@ -5,6 +7,10 @@ function downloadBlob(blob, filename) {
   downloadLink.href = url;
   downloadLink.download = filename;
   document.body.appendChild(downloadLink);
+
+  // Track the download
+  trackDownload(url, filename, "tsv-export");
+
   downloadLink.click();
   document.body.removeChild(downloadLink);
 }
