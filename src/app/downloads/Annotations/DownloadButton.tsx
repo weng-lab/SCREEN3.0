@@ -8,6 +8,7 @@ export type DownloadButtonProps = {
   label: string;
   fileSize?: string;
   bordercolor?: string;
+  assembly?: string;
 };
 
 // Download button for class/gene links files
@@ -15,7 +16,7 @@ export const DownloadButton = (props: DownloadButtonProps) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const handleClick = () => {
-    trackDownload(props.href, props.label, "annotations");
+    trackDownload(props.href, props.label, "annotations", props.assembly || "unknown");
   };
 
   return (

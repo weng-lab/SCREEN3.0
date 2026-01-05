@@ -610,7 +610,12 @@ export function DataMatrices() {
                       selectedAssay.assay === "DNase"
                         ? "Read-Depth Normalized Signal Matrix"
                         : "Fold-Change Signal Matrix";
-                    trackDownload(url, `${selectedAssay.assembly}-${selectedAssay.assay}-${fileName}`, "data-matrices");
+                    trackDownload(
+                      url,
+                      `${selectedAssay.assembly}-${selectedAssay.assay}-${fileName}`,
+                      "data-matrices",
+                      selectedAssay.assembly
+                    );
                     window.location.href = url;
                   }}
                 >
@@ -632,7 +637,8 @@ export function DataMatrices() {
                     trackDownload(
                       url,
                       `${selectedAssay.assembly}-${selectedAssay.assay}-Z-Score Matrix`,
-                      "data-matrices"
+                      "data-matrices",
+                      selectedAssay.assembly
                     );
                     window.location.href = url;
                   }}

@@ -3,6 +3,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import Config from "common/config.json";
 import { Assembly } from "./Annotations";
+import { trackDownload } from "../analytics";
 
 const ASSEMBLY_CONFIG = {
   GRCh38: {
@@ -54,6 +55,7 @@ const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
         href={config.downloadUrl}
         endIcon={<DownloadIcon />}
         download
+        onClick={() => trackDownload(config.downloadUrl, config.buttonLabel, "annotations-header", assembly)}
         sx={{ whiteSpace: "nowrap" }}
       >
         {config.buttonLabel}

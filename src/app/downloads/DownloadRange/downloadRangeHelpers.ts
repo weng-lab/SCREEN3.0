@@ -261,7 +261,7 @@ export const downloadBED = async (
   document.body.appendChild(link);
 
   // Track the download
-  trackDownload(url, filename, "download-range");
+  trackDownload(url, filename, "download-range", assembly);
 
   // Simulate a click on the link to initiate download
   link.click();
