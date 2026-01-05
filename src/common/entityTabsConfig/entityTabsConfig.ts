@@ -15,7 +15,6 @@ import BiosampleEnrichment from "app/[assembly]/[entityType]/[entityID]/[[...tab
 import { GWASStudySNPs } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Variant/GWASStudySNPs";
 import GWASStudyCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Ccre/GWASStudyCcres";
 import { GWASStudyGenes } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/GWASStudyGenes";
-import GWASGenomeBrowserView from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/gwasgenomebrowserview";
 import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
@@ -23,6 +22,7 @@ import { TfBinding } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_Cc
 import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Overview/BedOverview";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
+import GwasBrowser from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/GwasBrowser";
 // import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
@@ -129,7 +129,7 @@ export const humanGwasTabs = [
     label: "Biosample Enrichment",
     iconPath: BiosampleEnrichmentIconPath,
     component: BiosampleEnrichment,
-   // getIsDisabled: hasNoEnrichmentData,
+    // getIsDisabled: hasNoEnrichmentData,
   },
   {
     route: "variants",
@@ -144,7 +144,7 @@ export const humanGwasTabs = [
     component: GWASStudyCcres,
   },
   { route: "genes", label: "Genes", iconPath: GeneIconPath, component: GWASStudyGenes },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GWASGenomeBrowserView },
+  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GwasBrowser },
 ] as const satisfies TabConfig[];
 
 export const humanCcreTabs = [

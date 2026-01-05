@@ -1,8 +1,7 @@
 "use client";
-import { GridColDef } from "@mui/x-data-grid-pro";
-import { Table } from "@weng-lab/ui-components";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";;
+import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
@@ -105,4 +104,4 @@ export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
       divHeight={{ height: "600px" }}
     />
   );
-}
+};

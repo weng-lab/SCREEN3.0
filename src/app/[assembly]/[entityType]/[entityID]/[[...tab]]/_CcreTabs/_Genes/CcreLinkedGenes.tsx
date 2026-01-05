@@ -32,7 +32,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
   const {
     data: dataCompuGenes,
     loading: loadingCompuGenes,
-    error: errorCompuGenes,
+    error: _,
   } = useCompuLinkedGenes({
     accessions: [entity.entityID],
     method,
@@ -66,8 +66,6 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       });
     }
   };
-
-
 
   // make types for the data
   const HiCLinked = linkedGenes
@@ -184,7 +182,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       columns: CompuLinkedGenes_columns,
       sortColumn: "score",
       sortDirection: "desc",
-      emptyTableFallback:
+      emptyTableFallback: (
         <Stack
           direction={"row"}
           border={"1px solid #e0e0e0"}
@@ -195,7 +193,11 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
         >
           <Stack direction={"row"} spacing={1}>
             <InfoOutlineRounded />
-            {loadingCompuGenes ? <Typography>Fetching Computational Linked Genes by {method}</Typography> : <Typography>No Computational Predictions</Typography>}
+            {loadingCompuGenes ? (
+              <Typography>Fetching Computational Linked Genes by {method}</Typography>
+            ) : (
+              <Typography>No Computational Predictions</Typography>
+            )}
           </Stack>
           <Tooltip title="Advanced Filters">
             <Button variant="outlined" onClick={handleClick}>
@@ -203,13 +205,15 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
             </Button>
           </Tooltip>
         </Stack>
-      ,
-      toolbarSlot: <Tooltip title="Advanced Filters">
-        <Button variant="outlined" onClick={handleClick}>
-          Change Method
-        </Button>
-      </Tooltip>
-    }
+      ),
+      toolbarSlot: (
+        <Tooltip title="Advanced Filters">
+          <Button variant="outlined" onClick={handleClick}>
+            Change Method
+          </Button>
+        </Tooltip>
+      ),
+    },
   ];
 
   const closestGenesCols: GridColDef[] = [

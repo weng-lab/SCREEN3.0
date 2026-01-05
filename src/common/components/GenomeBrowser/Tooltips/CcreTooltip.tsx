@@ -51,7 +51,7 @@ const biosampleExperiments = (x) => [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.at
 const MARKS = ["DNase", "H3K4me3", "H3K27ac", "CTCF", "ATAC"];
 const marks = (x) => [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac].map((x, i) => x && MARKS[i]).filter((xx) => !!xx);
 
-const CCRETooltip: React.FC<CCRETooltipProps> = ({ assembly, name, biosample }) => {
+export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipProps) {
   const experiments = useMemo(
     () => (biosample ? biosampleExperiments(biosample) : ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"]),
     [biosample]
@@ -64,6 +64,10 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({ assembly, name, biosample }) 
       experiments,
     },
   });
+
+  if (error) {
+    return null;
+  }
 
   const width = 400;
   const height = loading || !data?.cCREQuery?.[0] ? 40 : 210;
@@ -158,5 +162,4 @@ const CCRETooltip: React.FC<CCRETooltipProps> = ({ assembly, name, biosample }) 
       )}
     </svg>
   );
-};
-export default CCRETooltip;
+}

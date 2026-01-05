@@ -1,9 +1,16 @@
-import { BigWigConfig, DisplayMode, Track, TrackType } from "@weng-lab/genomebrowser";
+import { BigWigConfig, DisplayMode, Track, TrackType, TranscriptConfig } from "@weng-lab/genomebrowser";
 import { ASSAY_COLORS } from "common/colors";
+import { defaultTranscript } from "./TrackSelect/defaultConfigs";
 
 export const CCRE_TRACK_COLOR = "#D05F45";
+export const GENE_TRACK_COLOR = "#005500";
 
 export const humanDefaultTracks: Track[] = [
+  {
+    ...defaultTranscript,
+    assembly: "GRCh38",
+    version: 40,
+  } as TranscriptConfig,
   {
     id: "default-dnase",
     title: "Agregated DNase-seq signal, all Registry biosamples",
@@ -46,7 +53,7 @@ export const humanDefaultTracks: Track[] = [
   } as BigWigConfig,
   {
     id: "default-atac",
-    title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
+    title: "Aggregated ATAC-seq signal, all Registry biosamples",
     titleSize: 12,
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
@@ -99,7 +106,7 @@ export const mouseDefaultTracks: Track[] = [
   } as BigWigConfig,
   {
     id: "default-atac",
-    title: "Aggregated ATAC ChIP-seq signal, all Registry biosamples",
+    title: "Aggregated ATAC-seq signal, all Registry biosamples",
     titleSize: 12,
     trackType: TrackType.BigWig,
     displayMode: DisplayMode.Full,
