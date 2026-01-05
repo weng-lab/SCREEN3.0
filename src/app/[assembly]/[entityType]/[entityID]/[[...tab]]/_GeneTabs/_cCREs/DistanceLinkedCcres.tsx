@@ -77,8 +77,6 @@ export default function DistanceLinkedCcres({
     assembly: assembly as Assembly,
   });
 
-  console.log(geneData.data.transcripts);
-
   const nearbyccres = dataNearby?.map((d) => {
     const f = dataCcreDetails?.find((c) => c.info.accession === d.ccre);
 
