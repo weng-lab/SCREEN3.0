@@ -1,11 +1,10 @@
 "use client";
 import { Alert, CircularProgress } from "@mui/material";
-import { AnyEntityType, EntityViewComponentProps } from "common/entityTabsConfig";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { decodeRegions } from "common/utility";
 import { useMemo } from "react";
 import GenomeBrowserView from "./GenomeBrowserView";
-import { expandCoordinates } from "./utils";
 
 export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
   const { data, loading, error } = useEntityMetadata(entity);
