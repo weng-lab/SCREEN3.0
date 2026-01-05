@@ -1,15 +1,12 @@
 "use client";
-import { CircularProgress, Alert, Box, Button } from "@mui/material";
+import { CircularProgress, Alert, Box } from "@mui/material";
 import GenomeBrowserView from "common/components/GenomeBrowser/GenomeBrowserView";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import { useEffect, useMemo, useState } from "react";
 import SelectLdBlock from "./SelectLdBlock";
-import EditIcon from "@mui/icons-material/Edit";
 import { expandCoordinates } from "common/components/GenomeBrowser/utils";
-import { createDataStoreMemo, DataStoreInstance, useCustomData } from "@weng-lab/genomebrowser";
-import { ApolloError } from "@apollo/client";
-import { GwasStudiesSnPs } from "common/types/generated/graphql";
+import { createDataStoreMemo, useCustomData } from "@weng-lab/genomebrowser";
 
 export default function GwasBrowser({ entity }: EntityViewComponentProps) {
   const { data: data, loading: loading, error: error } = useGWASSnpsData({ studyid: [entity.entityID] });
@@ -102,9 +99,6 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
   return (
     <>
       <Box display="flex" gap={2}>
-        <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => handleSelectLDblockClick()}>
-          Select Ld Block
-        </Button>
         <SelectLdBlock
           open={ldblockOpen}
           setOpen={handleSelectLDblockClick}
@@ -113,7 +107,12 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
           ldblock={selectedLdBlock ?? null}
         />
       </Box>
-      <GenomeBrowserView entity={entity} coordinates={coordinates} dataStore={dataStore} />
+      <GenomeBrowserView
+        entity={entity}
+        coordinates={coordinates}
+        dataStore={dataStore}
+        handleSelectLDBlock={handleSelectLDblockClick}
+      />
     </>
   );
 }

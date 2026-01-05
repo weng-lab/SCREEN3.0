@@ -4,6 +4,7 @@
 import { Search } from "@mui/icons-material";
 import { Box, Button, IconButton, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import EditIcon from "@mui/icons-material/Edit";
 
 // @weng-lab
 import { Browser, Chromosome, DataStoreInstance, Rect, TrackStoreInstance } from "@weng-lab/genomebrowser";
@@ -39,9 +40,15 @@ interface Transcript {
 export type GenomeBrowserViewProps = EntityViewComponentProps & {
   coordinates: GenomicRange;
   dataStore?: DataStoreInstance;
+  handleSelectLDBlock?: () => void;
 };
 
-export default function GenomeBrowserView({ entity, coordinates, dataStore }: GenomeBrowserViewProps) {
+export default function GenomeBrowserView({
+  entity,
+  coordinates,
+  dataStore,
+  handleSelectLDBlock,
+}: GenomeBrowserViewProps) {
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
@@ -188,6 +195,11 @@ export default function GenomeBrowserView({ entity, coordinates, dataStore }: Ge
         </Box>
         <Box display="flex" gap={2} alignItems="center">
           <HighlightDialog browserStore={browserStore} />
+          {entity.entityType === "gwas" && (
+            <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => handleSelectLDBlock()}>
+              Select LD Block
+            </Button>
+          )}
           <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
         </Box>
         {/* Add new track select button and modal here */}
