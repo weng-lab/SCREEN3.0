@@ -77,22 +77,59 @@ export default function DistanceLinkedCcres({
     assembly: assembly as Assembly,
   });
 
+  console.log(geneData.data.transcripts);
+
   const nearbyccres = dataNearby?.map((d) => {
     const f = dataCcreDetails?.find((c) => c.info.accession === d.ccre);
+
+    if (!f) return d;
+
+    const isBody = calcMethod === "body";
+    const isTss = calcMethod === "tss";
+    const is3Gene = calcMethod === "3gene";
+
+    const ccreRange = {
+      chromosome: f.chrom,
+      start: f.start,
+      end: f.start + f.len,
+    };
+
+    const bodyRange = {
+      chromosome: geneData.data.coordinates.chromosome,
+      start: geneData.data.coordinates.start,
+      end: geneData.data.coordinates.end,
+    };
+
+    const rangeForNearest = isBody ? bodyRange : ccreRange;
+
     const nearestTranscript = calcDistCcreToTSS(
-      { chromosome: f?.chrom, start: f?.start, end: f?.start + f?.len },
+      rangeForNearest,
       geneData.data.transcripts,
       geneData.data.strand as "+" | "-",
       "closest"
     );
+
+    const matchedTranscript = geneData.data.transcripts.find((t) => t.id === nearestTranscript.transcriptId);
+
+    const geneTssDistanceToCcre =
+      isBody && matchedTranscript
+        ? calcDistCcreToTSS(ccreRange, [matchedTranscript], geneData.data.strand as "+" | "-", "closest")
+        : nearestTranscript;
+
+    const distance = is3Gene
+      ? Math.abs(f.start - d.start)
+      : isTss
+        ? nearestTranscript.distance
+        : geneTssDistanceToCcre.distance;
+
+    const direction = isBody ? geneTssDistanceToCcre.direction : nearestTranscript.direction;
+
     return {
       ...d,
-      chromosome: f?.chrom,
-      start: f?.start,
-      end: f?.start + f?.len,
-      group: f?.pct,
-      distance: calcMethod === "tss" ? nearestTranscript.distance : Math.abs(f?.start - d.start) || 0,
-      direction: nearestTranscript.direction,
+      ...ccreRange,
+      group: f.pct,
+      distance,
+      direction,
       tss: nearestTranscript.transcriptId,
     };
   });
@@ -136,11 +173,21 @@ export default function DistanceLinkedCcres({
         return value.toLocaleString();
       },
     },
-    ...(calcMethod === "tss"
+    ...(calcMethod !== "3gene"
       ? [
           {
             field: "tss",
             headerName: "Nearest TSS",
+            renderHeader: () => (
+              <>
+                Nearest&nbsp;<i>TSS</i>
+                {calcMethod === "body" && (
+                  <>
+                    &nbsp; to&nbsp;<i>{geneData?.data?.name}</i>
+                  </>
+                )}
+              </>
+            ),
           },
         ]
       : []),
@@ -149,7 +196,7 @@ export default function DistanceLinkedCcres({
       headerName: "Distance",
       renderHeader: () => (
         <>
-          Distance from&nbsp;<i>{calcMethod === "tss" ? `TSS` : geneData.data.name}</i>
+          Distance from&nbsp;<i>{calcMethod !== "3gene" ? `TSS` : geneData.data.name}</i>
         </>
       ),
       type: "number",
@@ -158,7 +205,7 @@ export default function DistanceLinkedCcres({
           return "";
         }
         const direction =
-          calcMethod === "tss" && params.value !== 0 ? (params.row.direction === "Upstream" ? "+" : "-") : "";
+          calcMethod !== "3gene" && params.value !== 0 ? (params.row.direction === "Upstream" ? "+" : "-") : "";
         return (
           <span>
             {direction}
