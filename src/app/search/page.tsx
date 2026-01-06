@@ -5,7 +5,6 @@ import { Assembly, isValidAssembly } from "common/types/globalTypes";
 import { redirect } from "next/navigation";
 import { use, useMemo } from "react";
 import { Result, useEntityAutocomplete } from "@weng-lab/ui-components";
-import { InfoOutline } from "@mui/icons-material";
 import { makeResultLink } from "common/components/autocomplete";
 import { useV2Ccres } from "./useV2Ccres";
 
