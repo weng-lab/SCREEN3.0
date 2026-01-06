@@ -382,7 +382,7 @@ export default function About() {
           </Grid>
           {/* API Documentation */}
           <Grid id="api-documentation" size={12}>
-            <Typography mb={1} variant="h2">
+            <Typography variant="h5" fontWeight={600}>
               API Documentation
             </Typography>
             <LinkComponent href={"https://weng-lab.github.io/SCREEN2.0/"} showExternalIcon openInNewTab>
@@ -391,7 +391,7 @@ export default function About() {
           </Grid>
           {/* Contact Us */}
           <Grid id="contact-us" size={12}>
-            <Typography mb={1} variant="h2">
+            <Typography variant="h5" fontWeight={600}>
               Contact Us
             </Typography>
             <Typography mb={1} variant="body1">
