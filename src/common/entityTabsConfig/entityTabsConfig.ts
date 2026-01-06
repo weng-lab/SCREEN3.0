@@ -212,7 +212,7 @@ export const humanRegionTabs = [
   },
   {
     route: "variants",
-    label: "Variant",
+    label: "Variants",
     iconPath: VariantIconPath,
     component: IntersectingSNPs,
   },
@@ -245,7 +245,7 @@ export const humanBedTabs = [
   },
   {
     route: "variants",
-    label: "Variant",
+    label: "Variants",
     iconPath: VariantIconPath,
     component: IntersectingSNPs,
   },

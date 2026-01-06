@@ -1,5 +1,6 @@
 "use client";
 import { GenomeSearch, GenomeSearchProps, Result } from "@weng-lab/ui-components";
+import { Assembly } from "common/types/globalTypes";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
@@ -89,6 +90,28 @@ export const defaultMouseResults: Result[] = [
   },
 ];
 
+export function makeResultLink(result: Result, assembly: Assembly){
+  let url = "";
+  switch (result.type) {
+    case "Gene":
+      url = `/${assembly}/gene/${result.title}`;
+      break;
+    case "cCRE":
+      url = `/${assembly}/ccre/${result.title}`;
+      break;
+    case "Coordinate":
+      url = `/${assembly}/region/${result.domain.chromosome}:${result.domain.start}-${result.domain.end}`;
+      break;
+    case "SNP":
+      url = `/${assembly}/variant/${result.title}`;
+      break;
+    case "Study":
+      url = `/GRCh38/gwas/${result.id}`;
+      break;
+  }
+  return url;
+}
+
 /**
  * Redirects the user to the a new page based on the search result
  * @param props - The props for the GenomeSearch component
@@ -101,28 +124,7 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
     if (closeDrawer) {
       closeDrawer();
     }
-
-    let url = "";
-    switch (r.type) {
-      case "Gene":
-        url = `/${props.assembly}/gene/${r.title}`;
-        break;
-      case "cCRE":
-        url = `/${props.assembly}/ccre/${r.title}`;
-        break;
-      case "Coordinate":
-        url = `/${props.assembly}/region/${r.domain.chromosome}:${r.domain.start}-${r.domain.end}`;
-        break;
-      case "SNP":
-        url = `/${props.assembly}/variant/${r.title}`;
-        break;
-      case "Study":
-        //let be = r.description?.split("\n").pop().trim();
-        //url = be !== "Biosample Enrichment" ? `/GRCh38/gwas/${r.id}/variants` : `/GRCh38/gwas/${r.id}`;
-        url = `/GRCh38/gwas/${r.id}`;
-        break;
-    }
-    router.push(url, { scroll: false });
+    router.push(makeResultLink(r, props.assembly), { scroll: false });
   };
 
   const defaultResults: Result[] = useMemo(() => {
