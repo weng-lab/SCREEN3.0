@@ -162,8 +162,8 @@ const GeneExpressionBarPlot = ({
           distributions={violinData}
           axisLabel={
             scale === "linearTPM"
-              ? `${entity.entityID} Expression - TPM`
-              : `${entity.entityID} Expression - Log\u2081\u2080(TPM + 1)`
+              ? `${entity.entityID} Expression: TPM`
+              : `${entity.entityID} Expression: Log\u2081\u2080(TPM + 1)`
           }
           loading={loading}
           labelOrientation="leftDiagonal"
@@ -200,7 +200,7 @@ const GeneExpressionBarPlot = ({
                   <strong>Tissue:</strong> {point.metadata?.tissue}
                 </div>
                 <div>
-                  <strong>{scale === "linearTPM" ? "TPM" : "Log₁₀(TPM + 1)"}:</strong> {displayTPM.toFixed(2)}
+                  <strong>{scale === "linearTPM" ? "TPM" : "Log₁₀(TPM + 1)"}:</strong> {displayTPM.toFixed(1)}
                 </div>
               </Box>
             );
