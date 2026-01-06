@@ -1,10 +1,13 @@
-import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { useGWASStudyData } from "./useGWASStudyData";
 import { parseGenomicRangeString } from "common/utility";
+import { AnyEntityType } from "common/entityTabsConfig";
 
-const useEntityDisplayname = (entity: AnyOpenEntity) => {
-  const { entityID, entityType } = entity;
+type useEntityDisplaynameProps = {
+  entityID: string;
+  entityType: AnyEntityType;
+};
 
+const useEntityDisplayname = ({ entityID, entityType }: useEntityDisplaynameProps) => {
   const { data, loading, error } = useGWASStudyData({ entityType, studyid: [entityID] });
 
   let label: React.ReactNode;
@@ -25,7 +28,7 @@ const useEntityDisplayname = (entity: AnyOpenEntity) => {
       break;
     }
     case "region": {
-      const region = parseGenomicRangeString(entity.entityID);
+      const region = parseGenomicRangeString(entityID);
       label = `${region.chromosome}:${region.start.toLocaleString()}-${region.end.toLocaleString()}`;
     }
   }
