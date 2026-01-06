@@ -79,6 +79,7 @@ export default function Page({
       {data.map((result, i) => (
         <ReturnEl result={result} assembly={assembly} key={i} />
       ))}
+      {data.length === 0 && <Typography>No Results</Typography>}
     </Stack>
   );
 }
