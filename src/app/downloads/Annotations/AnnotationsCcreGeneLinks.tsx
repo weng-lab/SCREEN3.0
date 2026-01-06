@@ -34,7 +34,7 @@ const AnnotationsGeneLinks: React.FC = () => {
   return (
     <DownloadContentLayout title="cCRE-Gene Associations">
       {geneLinkDownloads.map((item) => (
-        <DownloadButton key={item.label} {...item} />
+        <DownloadButton key={item.label} {...item} assembly="GRCh38" />
       ))}
     </DownloadContentLayout>
   );
