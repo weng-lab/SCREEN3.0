@@ -16,20 +16,20 @@ import { makeResultLink } from "common/components/autocomplete";
 const ReturnEl = ({ result, assembly }: { result: Result; assembly: Assembly }) => {
   const url = makeResultLink(result, assembly);
   return (
-    <LinkComponent href={url} sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
-      <Typography>
-        {result.type} - {result.type === "Gene" ? <i>{result.title}</i> : result.title}
-      </Typography>
-      <Tooltip
-        title={
-          <Typography variant="body2" style={{ whiteSpace: "pre-line" }}>
-            {result.description}
-          </Typography>
-        }
-      >
+    <Tooltip
+      placement="right"
+      arrow
+      title={
+        <Typography variant="body2" style={{ whiteSpace: "pre-line" }}>
+          {result.description}
+        </Typography>
+      }
+    >
+      <LinkComponent href={url} sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+        <Typography>{result.type === "Gene" ? <i>{result.title}</i> : result.title}</Typography>
         <InfoOutline fontSize="small" />
-      </Tooltip>
-    </LinkComponent>
+      </LinkComponent>
+    </Tooltip>
   );
 };
 
@@ -66,20 +66,35 @@ export default function Page({
     },
   });
 
+  const results = data ?? [];
+
+  const grouped = results.reduce<Record<string, Result[]>>((acc, r) => {
+    if (!acc[r.type]) acc[r.type] = [];
+    acc[r.type].push(r);
+    return acc;
+  }, {});
+
   return (
-    <Stack spacing={2} margin={{ xs: 2, lg: 3, xl: 4 }} alignItems={"flex-start"}>
+    <Stack spacing={2} margin={{ xs: 2, lg: 3, xl: 4 }}>
       <Typography variant="h3">{`Results matching "${search}"`}</Typography>
       <Typography variant="body2" maxWidth={700}>
         {
-          "Search input is space-separated and terms searched separately. Results are limited to 10 per result type per search term. If you don't see what you're looking, please try to search directly on our site."
+          "Search input is space-separated and terms are searched separately. Results are limited to 10 per result type per search term. If you don't see what you're looking, please try to search directly on our site."
         }
       </Typography>
       {loading && <CircularProgress />}
       {error && <Alert severity="error">{`Error when searching ${search}`}</Alert>}
-      {data.map((result, i) => (
-        <ReturnEl result={result} assembly={assembly} key={i} />
+      {!loading && results.length === 0 && <Typography>No Results</Typography>}
+      {Object.keys(grouped).map((t) => (
+        <div key={t} style={{ width: "100%" }}>
+          <Typography variant="h5">{t}</Typography>
+          <Stack alignItems={"flex-start"}>
+            {grouped[t].map((result, idx) => (
+              <ReturnEl result={result} assembly={assembly} key={`${t}-${idx}`} />
+            ))}
+          </Stack>
+        </div>
       ))}
-      {data.length === 0 && <Typography>No Results</Typography>}
     </Stack>
   );
 }
