@@ -332,7 +332,7 @@ export default function About() {
                       <TableCell>2024</TableCell>
                       <TableCell>
                         <Link href="https://screen-v4.wenglab.org/" target="_blank" rel="noopener">
-                          https://screen-v4.wenglab.org/
+                          screen-v4.wenglab.org
                         </Link>
                       </TableCell>
                       <TableCell rowSpan={2}>
@@ -346,7 +346,7 @@ export default function About() {
                       <TableCell>2020</TableCell>
                       <TableCell>
                         <Link href="https://screen-v3.wenglab.org/" target="_blank" rel="noopener">
-                          https://screen-v3.wenglab.org/
+                          screen-v3.wenglab.org
                         </Link>
                       </TableCell>
                     </TableRow>
@@ -355,7 +355,7 @@ export default function About() {
                       <TableCell>2020</TableCell>
                       <TableCell>
                         <Link href="https://screen-v2.wenglab.org/" target="_blank" rel="noopener">
-                          https://screen-v2.wenglab.org/
+                          screen-v2.wenglab.org
                         </Link>
                       </TableCell>
                       <TableCell rowSpan={2}>
@@ -371,7 +371,7 @@ export default function About() {
                       <TableCell>2018</TableCell>
                       <TableCell>
                         <Link href="https://screen-v10.wenglab.org/" target="_blank" rel="noopener">
-                          https://screen-v10.wenglab.org/
+                          screen-v10.wenglab.org
                         </Link>
                       </TableCell>
                     </TableRow>
