@@ -76,6 +76,12 @@ const classDownloads: {
       fileSize: "14.3 MB (unzipped)",
       bordercolor: "gray",
     },
+    {
+      href: Config.Downloads.HumanDynamicEnhancers,
+      label: "MAFF/MAFK Dynamic Enhancers  (.tar.gz)",
+      fileSize: "827 KB (unzipped)",
+      bordercolor: "gray",
+    },
   ],
   mm10: [
     {

@@ -26,6 +26,7 @@
     "HumanCRISPR": "https://downloads.wenglab.org/human_crispr_functional_characterization.tar.gz",
     "HumanVISTA": "https://downloads.wenglab.org/VISTA-hg38.04-22-2023.bed",
     "HumanChromHMM": "https://downloads.wenglab.org/humanchromhmmchipseq.tsv",
+    "HumanDynamicEnhancers": "https://downloads.wenglab.org/dynamic_enhancers.tar.gz",
 
     "MouseCCREs": "https://downloads.wenglab.org/Registry-V4/mm10-cCREs.bed",
     "MouseCCREsMultimappers": "https://downloads.wenglab.org/mm10-cCREs-All.bed",
