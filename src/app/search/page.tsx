@@ -71,7 +71,7 @@ export default function Page({
       <Typography variant="h3">{`Results matching "${search}"`}</Typography>
       <Typography variant="body2" maxWidth={700}>
         {
-          "Results limited to 10 per result type. Search input is space-separated and terms searched separately. If you don't see what you're looking, please try to search directly on our site."
+          "Search input is space-separated and terms searched separately. Results are limited to 10 per result type per search term. If you don't see what you're looking, please try to search directly on our site."
         }
       </Typography>
       {loading && <CircularProgress />}
