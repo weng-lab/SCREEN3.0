@@ -1,6 +1,5 @@
 "use client";
-import { GridColDef } from "@mui/x-data-grid-pro";
-import { Table } from "@weng-lab/ui-components";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { toScientificNotationElement } from "common/utility";

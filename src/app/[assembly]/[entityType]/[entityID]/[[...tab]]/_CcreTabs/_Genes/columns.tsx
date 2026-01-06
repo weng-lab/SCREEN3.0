@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
+import { GridRenderCellParams, GridColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { LinkedGeneInfo } from "common/hooks/useGWASSnpscCREsGenesData";
 import { toScientificNotationElement } from "common/utility";

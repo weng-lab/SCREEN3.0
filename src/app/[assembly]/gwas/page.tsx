@@ -4,9 +4,16 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import { LinkComponent } from "common/components/LinkComponent";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { GridColDef } from "@mui/x-data-grid-pro";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, CircularProgress, IconButton } from "@mui/material";
-import { Table } from "@weng-lab/ui-components";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  Box,
+  CircularProgress,
+  IconButton,
+} from "@mui/material";
+import { Table, GridColDef } from "@weng-lab/ui-components";
 import { useTheme } from "@mui/material/styles";
 import GWASLandingHeader from "./GWASLandingHeader";
 import { Treemap } from "@weng-lab/visualization";
@@ -25,7 +32,7 @@ export default function GWASLandingPage() {
 
   const gwasStudyMetadata = useGWASStudyMetaData({
     entityType: "gwas",
-    parent_terms: activeCategory ? [activeCategory] : undefined
+    parent_terms: activeCategory ? [activeCategory] : undefined,
   });
 
   useEffect(() => {
@@ -59,8 +66,7 @@ export default function GWASLandingPage() {
     if (!activeCategory || !gwasStudyMetadata?.data) return {};
 
     const studies = gwasStudyMetadata.data;
-    const layer2Nodes =
-      subdisease_treemap?.[activeCategory]?.[0]?.children?.map((c) => c.label) || [];
+    const layer2Nodes = subdisease_treemap?.[activeCategory]?.[0]?.children?.map((c) => c.label) || [];
 
     const result: Record<string, GwasStudiesMetadata[]> = {};
     for (const label of layer2Nodes) result[label] = [];
@@ -133,10 +139,7 @@ export default function GWASLandingPage() {
         return [term, studies] as [string, GwasStudiesMetadata[]];
       }
 
-      return [
-        term,
-        studies.filter((s) => matchesSearch(s, term)),
-      ] as [string, GwasStudiesMetadata[]];
+      return [term, studies.filter((s) => matchesSearch(s, term))] as [string, GwasStudiesMetadata[]];
     });
 
     // --- SORTING LOGIC ---
@@ -165,10 +168,7 @@ export default function GWASLandingPage() {
         return [term, studies] as [string, GwasStudiesMetadata[]];
       }
 
-      return [
-        term,
-        studies.filter((s) => matchesSearch(s, term)),
-      ] as [string, GwasStudiesMetadata[]];
+      return [term, studies.filter((s) => matchesSearch(s, term))] as [string, GwasStudiesMetadata[]];
     });
 
     return mapped.sort(([termA, studiesA], [termB, studiesB]) => {
@@ -185,8 +185,7 @@ export default function GWASLandingPage() {
 
   const noResults =
     normalizedSearch &&
-    ((!activeCategory && filteredCategories.length === 0) ||
-      (activeCategory && filteredActiveCategories.length === 0));
+    ((!activeCategory && filteredCategories.length === 0) || (activeCategory && filteredActiveCategories.length === 0));
 
   /** --------------------------
       TABLE COLUMNS
@@ -197,9 +196,7 @@ export default function GWASLandingPage() {
       field: "disease_trait",
       headerName: "Disease",
       renderCell: (params) => (
-        <LinkComponent href={`/GRCh38/gwas/${params.row.studyid}/biosample_enrichment`}>
-          {params.value}
-        </LinkComponent>
+        <LinkComponent href={`/GRCh38/gwas/${params.row.studyid}/biosample_enrichment`}>{params.value}</LinkComponent>
       ),
     },
     {
@@ -212,11 +209,7 @@ export default function GWASLandingPage() {
       headerName: "PubMed ID",
       valueGetter: (v: string) => v?.split("-")[0],
       renderCell: (params) => (
-        <LinkComponent
-          href={`https://pubmed.ncbi.nlm.nih.gov/${params.value}`}
-          showExternalIcon
-          openInNewTab
-        >
+        <LinkComponent href={`https://pubmed.ncbi.nlm.nih.gov/${params.value}`} showExternalIcon openInNewTab>
           {params.value}
         </LinkComponent>
       ),
@@ -264,10 +257,7 @@ export default function GWASLandingPage() {
 
   return (
     <Box sx={{ marginX: "5%", marginY: 2 }}>
-      <GWASLandingHeader
-        activeCategory={activeCategory}
-        backToGWASHome={backToGWASHome}
-      />
+      <GWASLandingHeader activeCategory={activeCategory} backToGWASHome={backToGWASHome} />
 
       <Box sx={{ height: 400, width: "100%", overflow: "hidden" }}>
         <Treemap
@@ -314,9 +304,7 @@ export default function GWASLandingPage() {
             //variant="outlined"
             label="Disease/Trait, Author, PubMed ID"
             placeholder={
-              !activeCategory
-                ? "Search all categories and studies..."
-                : `Search ${activeCategory} studies...`
+              !activeCategory ? "Search all categories and studies..." : `Search ${activeCategory} studies...`
             }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -371,12 +359,11 @@ export default function GWASLandingPage() {
                       }}
                     >
                       <Typography variant="h6">
-                        {term}{" "}
-                        (
-                        {studies.length.toLocaleString()}
+                        {term} ({studies.length.toLocaleString()}
                         {search && studies.length !== total && (
                           <>
-                            {" "} {/* <-- explicit space */}
+                            {" "}
+                            {/* <-- explicit space */}
                             <span style={{ textDecoration: "line-through", opacity: 0.6 }}>
                               {total.toLocaleString()}
                             </span>
@@ -384,7 +371,6 @@ export default function GWASLandingPage() {
                         )}
                         )
                       </Typography>
-
                     </AccordionSummary>
 
                     <AccordionDetails>
@@ -440,19 +426,17 @@ export default function GWASLandingPage() {
                       }}
                     >
                       <Typography variant="h6">
-                        {term.charAt(0).toUpperCase() + term.slice(1)}{" "}
-                         (
-                        {studies.length.toLocaleString()}
+                        {term.charAt(0).toUpperCase() + term.slice(1)} ({studies.length.toLocaleString()}
                         {search && studies.length !== total && (
                           <>
-                            {" "} {/* <-- explicit space */}
+                            {" "}
+                            {/* <-- explicit space */}
                             <span style={{ textDecoration: "line-through", opacity: 0.6 }}>
                               {total.toLocaleString()}
                             </span>
                           </>
                         )}
                         )
-                       
                       </Typography>
                     </AccordionSummary>
 

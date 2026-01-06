@@ -1,45 +1,32 @@
 "use client";
+
+// @mui
 import { Search } from "@mui/icons-material";
 import { Box, Button, IconButton, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import {
-  Browser,
-  Chromosome,
-  createBrowserStoreMemo,
-  createTrackStoreMemo,
-  DisplayMode,
-  InitialBrowserState,
-  Rect,
-  Track,
-  TrackType,
-} from "@weng-lab/genomebrowser";
+import EditIcon from "@mui/icons-material/Edit";
+
+// @weng-lab
+import { Browser, Chromosome, DataStoreInstance, Rect, TrackStoreInstance } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
-import { useCallback, useEffect, useMemo, useState } from "react";
+
+// internal
+import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { GenomicRange } from "common/types/globalTypes";
-import ControlButtons from "./ControlButtons";
-import HighlightDialog from "./HighlightDialog";
-import { randomColor } from "./utils";
+import HighlightDialog from "./Dialogs/HighlightDialog";
+import { expandCoordinates, randomColor, SearchToScreenTypes } from "./utils";
+import TrackSelectModal from "./TrackSelect/TrackSelectModal";
+import { useLocalBrowser, useLocalTracks } from "./Context/useLocalBrowser";
+
+// icons
+import PageviewIcon from "@mui/icons-material/Pageview";
+import ControlButtons from "./Controls/ControlButtons";
+import DomainDisplay from "./Controls/DomainDisplay";
+import { useCallback, useEffect, useMemo } from "react";
+import { TrackCallbacks } from "./TrackSelect/defaultTracks";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
-import { AnyEntityType, EntityViewComponentProps } from "common/entityTabsConfig";
-import CCRETooltip from "./CcreTooltip";
-import DomainDisplay from "./DomainDisplay";
-import GBButtons from "./GBButtons";
-import { RegistryBiosamplePlusRNA } from "common/components/BiosampleTables/types";
-import { humanDefaultTracks, mouseDefaultTracks } from "./constants";
-import { useBiosampleTracks } from "./Biosample/useBiosampleTracks";
-import { useChromHmmTracks } from "./ChromHMM/useChromHmmTracks";
-import {
-  getLocalBrowser,
-  getLocalTracks,
-  setLocalBrowser,
-  setLocalTracks,
-  getLocalBiosamples,
-  setLocalBiosamples,
-  getLocalChromHmmTissues,
-  setLocalChromHmmTissues,
-} from "common/hooks/useLocalStorage";
-import PageviewIcon from "@mui/icons-material/Pageview";
+import CCRETooltip from "./Tooltips/CcreTooltip";
 
 interface Transcript {
   id: string;
@@ -50,44 +37,18 @@ interface Transcript {
   color?: string;
 }
 
-const SearchToScreenTypes: Record<Result["type"], AnyEntityType> = {
-  Coordinate: "region",
-  Gene: "gene",
-  SNP: "variant",
-  Study: "gwas",
-  cCRE: "ccre",
-  iCRE: "ccre",
+export type GenomeBrowserViewProps = EntityViewComponentProps & {
+  coordinates: GenomicRange;
+  dataStore?: DataStoreInstance;
+  handleSelectLDBlock?: () => void;
 };
 
-const expansionPercentages: Record<AnyEntityType, number> = {
-  ccre: 20,
-  gene: 0.2,
-  variant: 5.0,
-  region: 0,
-  bed: 0.25,
-  gwas: 0.2,
-};
-
-function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType) {
-  let length = coordinates.end - coordinates.start;
-
-  if (length <= 100) {
-    length = 100;
-  }
-
-  const expansionPercentage = expansionPercentages[type];
-  const padding = Math.floor(length * expansionPercentage);
-
-  return {
-    chromosome: coordinates.chromosome as Chromosome,
-    start: Math.max(0, coordinates.start - padding),
-    end: coordinates.end + padding,
-  };
-}
-
-type GenomeBrowserViewProps = EntityViewComponentProps & { coordinates: GenomicRange | GenomicRange[] };
-
-export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowserViewProps) {
+export default function GenomeBrowserView({
+  entity,
+  coordinates,
+  dataStore,
+  handleSelectLDBlock,
+}: GenomeBrowserViewProps) {
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
@@ -98,83 +59,44 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
         ? `${coordinates[0].chromosome}:${coordinates[0].start}-${coordinates[0].end}`
         : entity.entityID;
 
-  const [selectedBiosamples, setSelectedBiosamples] = useState<RegistryBiosamplePlusRNA[] | null>(getLocalBiosamples());
-  const [selectedChromHmmTissues, setSelectedChromHmmTissues] = useState<string[]>(getLocalChromHmmTissues());
+  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType);
 
-  const initialState: InitialBrowserState = useMemo(() => {
-    const coords = Array.isArray(coordinates) ? coordinates[0] : coordinates;
-
-    let defaultHighlights;
-    if (Array.isArray(coordinates)) {
-      defaultHighlights = coordinates.map((c) => ({
-        id: `${c.chromosome}:${c.start}-${c.end}`,
-        domain: {
-          chromosome: c.chromosome,
-          start: c.start,
-          end: c.end,
-        },
-        color: randomColor(),
-      }));
-    } else {
-      defaultHighlights = [
-        {
-          id: `${coordinates.chromosome}:${coordinates.start}-${coordinates.end}`,
-          domain: {
-            chromosome: coordinates.chromosome,
-            start: coordinates.start,
-            end: coordinates.end,
-          },
-          color: randomColor(),
-        },
-      ];
-    }
-    return {
-      domain: getLocalBrowser(name)?.domain ?? expandCoordinates(coords, entity.entityType),
-      marginWidth: 150,
-      trackWidth: 1350,
-      multiplier: 3,
-      highlights: getLocalBrowser(name)?.highlights || defaultHighlights,
-    };
-  }, [name, coordinates, entity.entityType]);
-
-  const browserStore = createBrowserStoreMemo(initialState, [initialState]);
-  const addHighlight = browserStore((state) => state.addHighlight);
-  const removeHighlight = browserStore((state) => state.removeHighlight);
-  const setDomain = browserStore((state) => state.setDomain);
-
-  const domain = browserStore((state) => state.domain);
-  const highlights = browserStore((state) => state.highlights);
-
+  const setDomain = browserStore((s) => s.setDomain);
   useEffect(() => {
-    setLocalBrowser(name, { domain, highlights });
-  }, [domain, highlights, name]);
+    if (entity.entityType !== "gwas") return;
+    setDomain({ ...coordinates, chromosome: coordinates.chromosome as Chromosome });
+  }, [coordinates, setDomain, entity.entityType]);
 
-  useEffect(() => {
-    setLocalBiosamples(selectedBiosamples);
-  }, [selectedBiosamples]);
+  // interaction callback functions
+  const addHighlight = browserStore((s) => s.addHighlight);
+  const removeHighlight = browserStore((s) => s.removeHighlight);
+  const onHover = useCallback(
+    (item: Rect | Transcript) => {
+      const domain =
+        "start" in item
+          ? { start: item.start, end: item.end }
+          : { start: item.coordinates.start, end: item.coordinates.end };
 
-  useEffect(() => {
-    setLocalChromHmmTissues(selectedChromHmmTissues);
-  }, [selectedChromHmmTissues]);
+      addHighlight({
+        id: "hover-highlight",
+        domain,
+        color: item.color || "blue",
+      });
+    },
+    [addHighlight]
+  );
+  const onLeave = useCallback(() => {
+    removeHighlight("hover-highlight");
+  }, [removeHighlight]);
 
   const router = useRouter();
-
-  const onBiosampleSelected = (biosamples: RegistryBiosamplePlusRNA[] | null) => {
-    if (biosamples && biosamples.length === 0) {
-      setSelectedBiosamples(null);
-    } else {
-      setSelectedBiosamples(biosamples);
-    }
-  };
-
-  const onCcreClick = useCallback(
+  const onCCREClick = useCallback(
     (item: Rect) => {
       const accession = item.name;
       router.push(`/${entity.assembly}/ccre/${accession}`);
     },
     [entity.assembly, router]
   );
-
   const onGeneClick = useCallback(
     (gene: Transcript) => {
       const name = gene.name;
@@ -186,138 +108,23 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
     [entity.assembly, router]
   );
 
-  const initialTracks: Track[] = useMemo(() => {
-    const localTracks = getLocalTracks();
-
-    if (localTracks.length > 0) {
-      // Set interaction callbacks for tracks
-      localTracks.forEach((track) => {
-        if (track.trackType === TrackType.Transcript) {
-          track.geneName = name;
-          track.onHover = (item: Transcript) => {
-            addHighlight({
-              id: item.name + "-temp" || "dsadsfd",
-              domain: { start: item.coordinates.start, end: item.coordinates.end },
-              color: item.color || "blue",
-            });
-          };
-          track.onLeave = (item: Transcript) => {
-            removeHighlight(item.name + "-temp" || "dsadsfd");
-          };
-          track.onClick = (item: Transcript) => {
-            onGeneClick(item);
-          };
-        }
-        if (track.trackType === TrackType.BigBed) {
-          track.onHover = (item: Rect) => {
-            addHighlight({
-              id: item.name + "-temp" || "ihqoviun",
-              domain: { start: item.start, end: item.end },
-              color: item.color || "blue",
-            });
-          };
-          track.onLeave = (item: Rect) => {
-            removeHighlight(item.name + "-temp" || "ihqoviun");
-          };
-          track.onClick = (item: Rect) => {
-            onCcreClick(item);
-          };
-          track.tooltip = (item: Rect) => <CCRETooltip assembly={entity.assembly} name={item.name || ""} {...item} />;
-        }
-      });
-      return localTracks;
-    }
-    const tracks = entity.assembly === "GRCh38" ? humanDefaultTracks : mouseDefaultTracks;
-    const defaultTracks: Track[] = [
-      {
-        id: "gene-track",
-        title: "GENCODE genes",
-        titleSize: 12,
-        height: 50,
-        color: "#AAAAAA",
-        trackType: TrackType.Transcript,
-        assembly: entity.assembly,
-        version: entity.assembly === "GRCh38" ? 40 : 25,
-        displayMode: DisplayMode.Squish,
-        geneName: entity.entityType === "gene" ? name : "",
-        onHover: (item: Transcript) => {
-          addHighlight({
-            id: item.name + "-temp" || "dsadsfd",
-            domain: { start: item.coordinates.start, end: item.coordinates.end },
-            color: item.color || "blue",
-          });
-        },
-        onLeave: (item: Transcript) => {
-          removeHighlight(item.name + "-temp" || "dsadsfd");
-        },
-        onClick: (item: Transcript) => {
-          onGeneClick(item);
-        },
-      },
-      {
-        id: "ccre-track",
-        title: "All cCREs colored by group",
-        titleSize: 12,
-        height: 20,
-        color: "#D05F45",
-        trackType: TrackType.BigBed,
-        displayMode: DisplayMode.Dense,
-        url: `https://downloads.wenglab.org/${entity.assembly}-cCREs.DCC.bigBed`,
-        onHover: (rect) => {
-          addHighlight({
-            id: rect.name + "-temp" || "ihqoviun",
-            domain: { start: rect.start, end: rect.end },
-            color: rect.color || "blue",
-          });
-        },
-        onLeave: (rect) => {
-          removeHighlight(rect.name + "-temp" || "ihqoviun");
-        },
-        onClick: (item: Rect) => {
-          onCcreClick(item);
-        },
-        tooltip: (rect: Rect) => <CCRETooltip assembly={entity.assembly} name={rect.name || ""} {...rect} />,
-      },
-    ];
-
-    return [...defaultTracks, ...tracks];
-  }, [entity.assembly, entity.entityType, name, addHighlight, removeHighlight, onGeneClick, onCcreClick]);
-
-  const trackStore = createTrackStoreMemo(initialTracks, [initialTracks]);
-
-  const currentTracks = trackStore((state) => state.tracks);
+  // Bundle callbacks for track injection
+  const callbacks = useMemo<TrackCallbacks>(
+    () => ({
+      onHover,
+      onLeave,
+      onCCREClick,
+      onGeneClick,
+      ccreTooltip: (item: Rect) => <CCRETooltip assembly={entity.assembly} name={item.name} />,
+    }),
+    [onHover, onLeave, onCCREClick, onGeneClick, entity.assembly]
+  );
+  const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks);
 
   const editTrack = trackStore((state) => state.editTrack);
-
-  const onHover = (item: Rect) => {
-    addHighlight({
-      color: item.color || "blue",
-      domain: { start: item.start, end: item.end },
-      id: "tmp-ccre",
-    });
-  };
-
-  const onLeave = () => {
-    removeHighlight("tmp-ccre");
-  };
-
-  useBiosampleTracks(entity.assembly, selectedBiosamples, trackStore, onHover, onLeave, onCcreClick);
-  useChromHmmTracks(
-    selectedChromHmmTissues,
-    Array.isArray(coordinates) ? coordinates[0] : coordinates,
-    entity.assembly,
-    trackStore,
-    addHighlight,
-    removeHighlight
-  );
-
-  useEffect(() => {
-    setLocalTracks(currentTracks);
-  }, [currentTracks]);
-
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
-      editTrack("gene-track", {
+      editTrack("ignore-gene-track", {
         geneName: r.title,
       });
     }
@@ -325,13 +132,13 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
       domain: r.domain,
       color: randomColor(),
       id: r.title,
+      opacity: 0.1,
     });
 
     setDomain(expandCoordinates(r.domain, SearchToScreenTypes[r.type]));
   };
 
   const theme = useTheme();
-  const [highlightDialogOpen, setHighlightDialogOpen] = useState(false);
 
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
 
@@ -371,28 +178,34 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
               },
             }}
           />
-          <Button
-            variant="contained"
-            startIcon={<PageviewIcon />}
-            color="primary"
-            size="small"
-            onClick={() =>
-              setDomain(expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType))
-            }
-          >
-            Recenter on {name || "Selected Region"}
-          </Button>
+          {entity.entityType !== "gwas" && (
+            <Button
+              variant="contained"
+              startIcon={<PageviewIcon />}
+              color="primary"
+              size="small"
+              onClick={() =>
+                setDomain(
+                  expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType)
+                )
+              }
+            >
+              Recenter on {name || "Selected Region"}
+            </Button>
+          )}
         </Box>
-
-        <GBButtons
-          browserStore={browserStore}
-          assembly={entity.assembly}
-          onBiosampleSelected={onBiosampleSelected}
-          selectedBiosamples={selectedBiosamples}
-          selectedChromHmmTissues={selectedChromHmmTissues}
-          setSelectedChromHmmTissues={setSelectedChromHmmTissues}
-        />
+        <Box display="flex" gap={2} alignItems="center">
+          <HighlightDialog browserStore={browserStore} />
+          {entity.entityType === "gwas" && (
+            <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => handleSelectLDBlock()}>
+              Select LD Block
+            </Button>
+          )}
+          <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
+        </Box>
+        {/* Add new track select button and modal here */}
       </Stack>
+      {/* Browser Controls */}
       <Stack
         direction={{ xs: "column", lg: "row" }}
         spacing={2}
@@ -406,8 +219,7 @@ export default function GenomeBrowserView({ entity, coordinates }: GenomeBrowser
         <DomainDisplay browserStore={browserStore} assembly={entity.assembly} />
         <ControlButtons browserStore={browserStore} />
       </Stack>
-      <Browser browserStore={browserStore} trackStore={trackStore} />
-      <HighlightDialog open={highlightDialogOpen} setOpen={setHighlightDialogOpen} browserStore={browserStore} />
+      <Browser browserStore={browserStore} trackStore={trackStore} externalDataStore={dataStore} />
     </Stack>
   );
 }

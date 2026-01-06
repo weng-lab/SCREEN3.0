@@ -15,6 +15,7 @@ import { Dialog } from "@mui/material";
 import { Delete, Add, ExpandMore } from "@mui/icons-material";
 import { BrowserStoreInstance, Highlight as GBHighlight, Chromosome } from "@weng-lab/genomebrowser";
 import { useState } from "react";
+import HighlightIcon from "@mui/icons-material/Highlight";
 
 // Valid chromosome values for human genome (GRCh38)
 const VALID_CHROMOSOMES: Chromosome[] = [
@@ -44,12 +45,21 @@ const VALID_CHROMOSOMES: Chromosome[] = [
   "chrY",
 ];
 
+// Local form state type (using strings for input fields)
+type HighlightFormState = {
+  id: string;
+  chromosome: string;
+  start: string;
+  end: string;
+  color: string;
+};
+
 // Highlight Creation Form Component
 function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreInstance }) {
   const addHighlight = browserStore((state) => state.addHighlight);
   const currentDomain = browserStore((state) => state.domain);
 
-  const [newHighlight, setNewHighlight] = useState({
+  const [newHighlight, setNewHighlight] = useState<HighlightFormState>({
     id: "",
     chromosome: "",
     start: "",
@@ -57,7 +67,7 @@ function HighlightCreationForm({ browserStore }: { browserStore: BrowserStoreIns
     color: "#0000FF",
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<{ chromosome: string; start: string; end: string }>({
     chromosome: "",
     start: "",
     end: "",
@@ -289,7 +299,7 @@ function HighlightItem({
     >
       <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
         <Typography variant="body1" color={highlight.color}>
-          {highlight.id}
+          {decodeURIComponent(highlight.id)}
         </Typography>
         <IconButton
           size="small"
@@ -322,34 +332,28 @@ function HighlightsList({ browserStore }: { browserStore: BrowserStoreInstance }
   return (
     <>
       {highlights.map((highlight, index) => (
-        <HighlightItem
-          key={highlight.id}
-          highlight={{ ...highlight, domain: highlight.domain }}
-          index={index}
-          browserStore={browserStore}
-        />
+        <HighlightItem key={highlight.id} highlight={highlight} index={index} browserStore={browserStore} />
       ))}
     </>
   );
 }
 
 // Main Dialog Component
-export default function HighlightDialog({
-  open,
-  setOpen,
-  browserStore,
-}: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  browserStore: BrowserStoreInstance;
-}) {
+export default function HighlightDialog({ browserStore }: { browserStore: BrowserStoreInstance }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-      <DialogTitle>Current Highlights</DialogTitle>
-      <DialogContent>
-        <HighlightCreationForm browserStore={browserStore} />
-        <HighlightsList browserStore={browserStore} />
-      </DialogContent>
-    </Dialog>
+    <>
+      <Button variant="contained" startIcon={<HighlightIcon />} size="small" onClick={() => setOpen(true)}>
+        Highlights
+      </Button>
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Current Highlights</DialogTitle>
+        <DialogContent>
+          <HighlightCreationForm browserStore={browserStore} />
+          <HighlightsList browserStore={browserStore} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
