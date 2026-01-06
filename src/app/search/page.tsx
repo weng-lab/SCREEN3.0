@@ -1,5 +1,5 @@
 "use client";
-import { Alert, Box, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
+import { Alert, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Assembly, isValidAssembly } from "common/types/globalTypes";
 import { redirect } from "next/navigation";
@@ -114,7 +114,8 @@ export default function Page({
         Search input is space-separated and terms are searched separately. Results are limited to 10 per result type per
         search term. If you don&apos;t see what you&apos;re looking, please try to search directly on our site.
       </Typography>
-      {/* Temporary for supporting current V2 functionality */}
+      {/* Temporary fix for supporting current V2 functionality */}
+      {V2Error && <Alert severity="error">{`Error when searching for v2 legacy cCREs`}</Alert>}
       {V2Data && V2Data.getv2cCREMappings.length !== 0 && (
         <div>
           <Typography variant="h5">Legacy v2 cCREs</Typography>
@@ -166,7 +167,9 @@ export default function Page({
                     ))}
                   </>
                 ) : (
-                  <Typography variant="caption">This cCRE has been deprecated</Typography>
+                  <Typography display={"inline"} ml={1}>
+                    This cCRE has been deprecated
+                  </Typography>
                 )}
               </div>
             ))}
