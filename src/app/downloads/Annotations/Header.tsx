@@ -125,11 +125,18 @@ const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
                   <Typography variant="body1">
                     {opt.buttonLabel} {i === 0 && <strong>&nbsp;(Recommended)</strong>}
                   </Typography>
-                  <IconButton component="a" href={opt.url} download aria-label={`Download ${opt.buttonLabel}`}>
+                  <IconButton
+                    component="a"
+                    href={opt.url}
+                    download
+                    aria-label={`Download ${opt.buttonLabel}`}
+                    onClick={() =>
+                      trackDownload(config.downloadUrl, config.buttonLabel, "annotations-header", assembly)
+                    }
+                  >
                     <DownloadIcon />
                   </IconButton>
                 </Box>
-
                 {i < config.downloads.length - 1 && <Divider />}
               </React.Fragment>
             ))}
