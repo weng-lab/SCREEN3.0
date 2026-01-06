@@ -9,28 +9,19 @@ import { InfoOutline } from "@mui/icons-material";
 import { makeResultLink } from "common/components/autocomplete";
 import { useV2Ccres } from "./useV2Ccres";
 
-/**
- * @todo
- * V2
- */
-
 const ReturnEl = ({ result, assembly }: { result: Result; assembly: Assembly }) => {
   const url = makeResultLink(result, assembly);
   return (
-    <Tooltip
-      placement="right"
-      arrow
-      title={
+    <span>
+      <LinkComponent href={url} sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+        <Typography>{result.type === "Gene" ? <i>{result.title}</i> : result.title}</Typography>
+      </LinkComponent>
+      {result.type !== "Coordinate" && (
         <Typography variant="body2" style={{ whiteSpace: "pre-line" }}>
           {result.description}
         </Typography>
-      }
-    >
-      <LinkComponent href={url} sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
-        <Typography>{result.type === "Gene" ? <i>{result.title}</i> : result.title}</Typography>
-        <InfoOutline fontSize="small" />
-      </LinkComponent>
-    </Tooltip>
+      )}
+    </span>
   );
 };
 
@@ -118,7 +109,7 @@ export default function Page({
       {V2Error && <Alert severity="error">{`Error when searching for v2 legacy cCREs`}</Alert>}
       {V2Data && V2Data.getv2cCREMappings.length !== 0 && (
         <div>
-          <Typography variant="h5">Legacy v2 cCREs</Typography>
+          <Typography variant="h5">Legacy v2 cCRE</Typography>
           <Stack alignItems={"flex-start"}>
             {V2Data.getv2cCREMappings.map((result, idx) => (
               <div key={idx}>
@@ -178,11 +169,13 @@ export default function Page({
       )}
       {loading && <CircularProgress />}
       {error && <Alert severity="error">{`Error when searching ${searchStrings.join(" ")}`}</Alert>}
-      {!loading && results.length === 0 && <Typography>No Results</Typography>}
+      {!loading && results.length === 0 && !(V2Data && V2Data.getv2cCREMappings.length > 0) && (
+        <Typography>No Results</Typography>
+      )}
       {Object.keys(grouped).map((t) => (
         <div key={t}>
           <Typography variant="h5">{t}</Typography>
-          <Stack alignItems={"flex-start"}>
+          <Stack alignItems={"flex-start"} spacing={1}>
             {grouped[t].map((result, idx) => (
               <ReturnEl result={result} assembly={assembly} key={`${t}-${idx}`} />
             ))}
