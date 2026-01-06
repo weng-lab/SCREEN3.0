@@ -16,7 +16,7 @@ const AnnotationsOtherOrthologous: React.FC = () => {
   return (
     <DownloadContentLayout title="Orthologous cCREs">
       {orthologousDownloads.map((item) => (
-        <DownloadButton key={item.label} {...item} />
+        <DownloadButton key={item.label} {...item} assembly="GRCh38-mm10" />
       ))}
     </DownloadContentLayout>
   );

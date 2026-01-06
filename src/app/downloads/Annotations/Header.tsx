@@ -14,6 +14,7 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import Config from "common/config.json";
 import { Assembly } from "./Annotations";
+import { trackDownload } from "../analytics";
 
 const ASSEMBLY_CONFIG = {
   GRCh38: {

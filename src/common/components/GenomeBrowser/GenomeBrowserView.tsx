@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 
 // @weng-lab
-import { Browser, Chromosome, DataStoreInstance, Rect, TrackStoreInstance } from "@weng-lab/genomebrowser";
+import { Browser, Chromosome, DataStoreInstance, Rect } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
