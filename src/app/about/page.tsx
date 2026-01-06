@@ -286,14 +286,24 @@ export default function About() {
                 </ListItem>
               </List>
               <Typography variant="body1" paragraph>
-                Citation: <u>An Expanded Registry of Candidate cis-Regulatory Elements</u>. Moore, J.E., Pratt, H.E.,
-                Fan, K., Phalke, N., Fisher, J., Elhajjajy, S.I., Andrews, G., Gao, M., Shedd, N., Fu, Y., Lacadie,
-                M.C., Meza, J., Khandpekar, M., Ganna, M., Choudhury, E., Swofford, R., Phan, H., Ramirez, C., Campbell,
-                M., Likhite, M., Farrell, N.P., Weimer, A.K., Pampari, A., Ramalingam, V., Reese, F., Borsari, B., Yu,
-                M., Wattenberg, E., Ruiz-Romero, M., Razavi-Mohseni, M., Xu, J., Galeev, T., Colubri, A., Beer, M.A.,
-                Guigó, R., Gerstein, M., Engreitz, J., Ljungman, M., Reddy, T.E., Snyder, M.P., Epstein, C.B., Gaskell,
-                E., Bernstein, B.E., Dickel, D.E., Visel, A., Pennacchio, L.A., Mortazavi, A., Kundaje, A., Weng, Z.
-                (2026) <i>Nature</i>
+                Citation:{" "}
+                <u>
+                  <Link
+                    href="https://www.nature.com/articles/s41586-025-09909-9"
+                    target="_blank"
+                    rel="noopener"
+                    style={{ color: "inherit", textDecoration: "underline" }}
+                  >
+                    An Expanded Registry of Candidate cis-Regulatory Elements
+                  </Link>
+                </u>
+                . Moore, J.E., Pratt, H.E., Fan, K., Phalke, N., Fisher, J., Elhajjajy, S.I., Andrews, G., Gao, M.,
+                Shedd, N., Fu, Y., Lacadie, M.C., Meza, J., Khandpekar, M., Ganna, M., Choudhury, E., Swofford, R.,
+                Phan, H., Ramirez, C., Campbell, M., Likhite, M., Farrell, N.P., Weimer, A.K., Pampari, A., Ramalingam,
+                V., Reese, F., Borsari, B., Yu, M., Wattenberg, E., Ruiz-Romero, M., Razavi-Mohseni, M., Xu, J., Galeev,
+                T., Colubri, A., Beer, M.A., Guigó, R., Gerstein, M., Engreitz, J., Ljungman, M., Reddy, T.E., Snyder,
+                M.P., Epstein, C.B., Gaskell, E., Bernstein, B.E., Dickel, D.E., Visel, A., Pennacchio, L.A., Mortazavi,
+                A., Kundaje, A., Weng, Z. (2026) <i>Nature</i>
               </Typography>
             </Grid>
             <Grid size={12} id="versions">

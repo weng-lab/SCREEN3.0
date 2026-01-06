@@ -15,6 +15,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import Config from "common/config.json";
 import { Assembly } from "./Annotations";
 import { trackDownload } from "../analytics";
+import Link from "next/link";
 
 const ASSEMBLY_CONFIG = {
   GRCh38: {
@@ -153,7 +154,17 @@ const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
         </Dialog>
       </Stack>
       <Typography variant="body2" color="text.secondary">
-        <b>Please cite our latest publication when using downloaded data: Moore...Weng (2026) Nature</b>
+        <b>
+          Please cite our latest publication when using downloaded data:&nbsp;
+          <Link
+            href="https://www.nature.com/articles/s41586-025-09909-9"
+            target="_blank"
+            rel="noopener"
+            style={{ color: "inherit", textDecoration: "underline" }}
+          >
+            Moore...Weng (2026) <i>Nature</i>
+          </Link>
+        </b>
       </Typography>
     </Stack>
   );
