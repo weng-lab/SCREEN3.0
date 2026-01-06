@@ -1,5 +1,6 @@
 import { MainQuery } from "app/downloads/DownloadRange/queries";
 import { MainQueryData, SCREENSearchResult } from "./types";
+import { trackDownload } from "../analytics";
 
 /**
  *
@@ -255,8 +256,12 @@ export const downloadBED = async (
   // Create a link element to trigger the download
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${assembly}-${chromosome}-${start}-${end}${biosampleName ? "-" + biosampleName : ""}.bed`; // File name for download
+  const filename = `${assembly}-${chromosome}-${start}-${end}${biosampleName ? "-" + biosampleName : ""}.bed`;
+  link.download = filename; // File name for download
   document.body.appendChild(link);
+
+  // Track the download
+  trackDownload(url, filename, "download-range", assembly);
 
   // Simulate a click on the link to initiate download
   link.click();

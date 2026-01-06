@@ -76,6 +76,12 @@ const classDownloads: {
       fileSize: "14.3 MB (unzipped)",
       bordercolor: "gray",
     },
+    {
+      href: Config.Downloads.HumanDynamicEnhancers,
+      label: "MAFF/MAFK Dynamic Enhancers  (.tar.gz)",
+      fileSize: "827 KB (unzipped)",
+      bordercolor: "gray",
+    },
   ],
   mm10: [
     {
@@ -141,14 +147,18 @@ const classDownloads: {
   ],
 };
 
-const otherAssemblies: DownloadButtonProps[] = [
-  {
-    href: Config.Downloads.HumanCCREsHg19,
-    label: "GRCh37/hg19 (Lifted down from GRCh38/hg38)",
-    fileSize: "128.8 MB",
-    bordercolor: "#0c184a",
-  },
-];
+const otherAssemblies: { GRCh38: DownloadButtonProps[]; mm10: DownloadButtonProps[] } = {
+  GRCh38: [
+    {
+      href: Config.Downloads.HumanCCREsHg19,
+      label: "GRCh37/hg19 (Lifted down from GRCh38/hg38)",
+      fileSize: "128.8 MB",
+      bordercolor: "#0c184a",
+      assembly: "GRCh37",
+    },
+  ],
+  mm10: [],
+};
 
 interface NewAnnotationsByClassProps {
   assembly: Assembly;
@@ -159,14 +169,16 @@ const AnnotationsByClass: React.FC<NewAnnotationsByClassProps> = ({ assembly }) 
     <>
       <DownloadContentLayout title="cCREs by Class (.bed)">
         {classDownloads[assembly].map((item) => (
-          <DownloadButton key={item.label} {...item} />
+          <DownloadButton key={item.label} {...item} assembly={assembly} />
         ))}
       </DownloadContentLayout>
-      <DownloadContentLayout title="cCREs in Other Assemblies">
-        {otherAssemblies.map((item) => (
-          <DownloadButton key={item.label} {...item} />
-        ))}
-      </DownloadContentLayout>
+      {otherAssemblies[assembly].length != 0 && (
+        <DownloadContentLayout title="cCREs in Other Assemblies">
+          {otherAssemblies[assembly].map((item) => (
+            <DownloadButton key={item.label} {...item} assembly={item.assembly} />
+          ))}
+        </DownloadContentLayout>
+      )}
     </>
   );
 };

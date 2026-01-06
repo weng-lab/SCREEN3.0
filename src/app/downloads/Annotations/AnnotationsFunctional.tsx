@@ -52,7 +52,7 @@ const AnnotationsFunctional: React.FC<AnnotationsFunctional> = ({ assembly }) =>
   return (
     <DownloadContentLayout title="Functional Characterization">
       {classDownloads[assembly].map((item) => (
-        <DownloadButton key={item.label} {...item} />
+        <DownloadButton key={item.label} {...item} assembly={assembly} />
       ))}
     </DownloadContentLayout>
   );

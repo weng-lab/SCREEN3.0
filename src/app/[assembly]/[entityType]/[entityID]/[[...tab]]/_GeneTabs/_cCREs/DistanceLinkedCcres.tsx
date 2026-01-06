@@ -79,19 +79,31 @@ export default function DistanceLinkedCcres({
 
   const nearbyccres = dataNearby?.map((d) => {
     const f = dataCcreDetails?.find((c) => c.info.accession === d.ccre);
+
+    if (!f) return d;
+
+    const is3Gene = calcMethod === "3gene";
+
+    const ccreRange = {
+      chromosome: f.chrom,
+      start: f.start,
+      end: f.start + f.len,
+    };
+
     const nearestTranscript = calcDistCcreToTSS(
-      { chromosome: f?.chrom, start: f?.start, end: f?.start + f?.len },
+      ccreRange,
       geneData.data.transcripts,
       geneData.data.strand as "+" | "-",
       "closest"
     );
+
+    const distance = is3Gene ? Math.abs(f.start - d.start) : nearestTranscript.distance;
+
     return {
       ...d,
-      chromosome: f?.chrom,
-      start: f?.start,
-      end: f?.start + f?.len,
-      group: f?.pct,
-      distance: calcMethod === "tss" ? nearestTranscript.distance : Math.abs(f?.start - d.start) || 0,
+      ...ccreRange,
+      group: f.pct,
+      distance,
       direction: nearestTranscript.direction,
       tss: nearestTranscript.transcriptId,
     };
@@ -136,11 +148,16 @@ export default function DistanceLinkedCcres({
         return value.toLocaleString();
       },
     },
-    ...(calcMethod === "tss"
+    ...(calcMethod !== "3gene"
       ? [
           {
             field: "tss",
             headerName: "Nearest TSS",
+            renderHeader: () => (
+              <>
+                Nearest&nbsp;<i>{geneData?.data?.name} TSS</i>
+              </>
+            ),
           },
         ]
       : []),
@@ -149,7 +166,7 @@ export default function DistanceLinkedCcres({
       headerName: "Distance",
       renderHeader: () => (
         <>
-          Distance from&nbsp;<i>{calcMethod === "tss" ? `TSS` : geneData.data.name}</i>
+          Distance from&nbsp;<i>{calcMethod !== "3gene" ? `TSS` : geneData.data.name}</i>
         </>
       ),
       type: "number",
@@ -158,7 +175,7 @@ export default function DistanceLinkedCcres({
           return "";
         }
         const direction =
-          calcMethod === "tss" && params.value !== 0 ? (params.row.direction === "Upstream" ? "+" : "-") : "";
+          calcMethod !== "3gene" && params.value !== 0 ? (params.row.direction === "Upstream" ? "+" : "-") : "";
         return (
           <span>
             {direction}

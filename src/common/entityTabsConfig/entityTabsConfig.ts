@@ -29,6 +29,7 @@ const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
 const GeneIconPath = "/assets/GeneIcon.svg";
 const VariantIconPath = "/assets/VariantIcon.svg";
+const OverviewIconPath = "/assets/OverviewIcon.svg";
 const BiosampleEnrichmentIconPath = "/assets/BiosampleEnrichmentIcon.svg";
 const ConservationIconPath = "/assets/ConservationIcon.svg";
 const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
@@ -227,7 +228,7 @@ export const humanBedTabs = [
   {
     route: "overview",
     label: "Overview",
-    iconPath: CcreIconPath,
+    iconPath: OverviewIconPath,
     component: BedOverview,
   },
   {

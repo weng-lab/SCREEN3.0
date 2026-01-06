@@ -2,20 +2,20 @@
 import { Stack } from "@mui/system";
 import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { decodeRegions } from "common/utility";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { GenomicRange } from "common/types/generated/graphql";
 import {
-  GRID_CHECKBOX_SELECTION_COL_DEF,
+  // GRID_CHECKBOX_SELECTION_COL_DEF,
   GridColDef,
-  GridRowSelectionModel,
+  // GridRowSelectionModel,
   Table,
-  useGridApiRef,
+  // useGridApiRef,
 } from "@weng-lab/ui-components";
 import { Grid, IconButton } from "@mui/material";
 import { OpenInNew } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import OverviewCards from "./OverviewCards";
-import AutoSortSwitch from "common/components/AutoSortSwitch";
+// import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { useCcreData } from "common/hooks/useCcreData";
 import { useSnpData } from "common/hooks/useSnpData";
 import { useGeneData } from "common/hooks/useGeneData";
@@ -27,8 +27,8 @@ type RegionRow = GenomicRange & {
 };
 
 const BedOverview = ({ entity }: EntityViewComponentProps) => {
-  const [autoSort, setAutoSort] = useState<boolean>(true);
-  const [selected, setSelected] = useState<GenomicRange[]>([]);
+  // const [autoSort, setAutoSort] = useState<boolean>(true);
+  // const [selected, setSelected] = useState<RegionRow[]>([]);
 
   const regions: GenomicRange[] = useMemo(() => {
     if (typeof window === "undefined") return null;
@@ -99,19 +99,19 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
   }, [regions, ccresRanges, geneRanges, snpRanges]);
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
-  const StopPropagationWrapper = (params) => (
-    <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
-      <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
-    </div>
-  );
+  // const StopPropagationWrapper = (params) => (
+  //   <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
+  //     <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
+  //   </div>
+  // );
 
   const columns: GridColDef<RegionRow>[] = [
-    {
-      ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<RegionRow>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
-      sortable: true,
-      hideable: false,
-      renderHeader: StopPropagationWrapper,
-    },
+    // {
+    //   ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<RegionRow>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+    //   sortable: true,
+    //   hideable: false,
+    //   renderHeader: StopPropagationWrapper,
+    // },
     {
       field: "chromosome",
       headerName: "Chromosome",
@@ -161,47 +161,60 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
     },
   ];
 
-  const apiRef = useGridApiRef();
+  // const apiRef = useGridApiRef();
 
-  const AutoSortToolbar = useMemo(() => {
-    return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
-  }, [autoSort]);
+  // const AutoSortToolbar = useMemo(() => {
+  //   return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
+  // }, [autoSort]);
 
-  const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
-    if (newRowSelectionModel.type === "include") {
-      const newIds = Array.from(newRowSelectionModel.ids);
-      const selectedRows = newIds.map((id) => regions.find((row) => row.start === id));
-      setSelected(selectedRows);
-    } else {
-      // if type is exclude, it's always with 0 ids (aka select all)
-      setSelected(regions);
-    }
-  };
+  // const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
+  //   if (!rows) return;
 
-  const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
-    return { type: "include", ids: new Set(selected.map((x) => x.start)) };
-  }, [selected]);
+  //   if (newRowSelectionModel.type === "include") {
+  //     const newIds = Array.from(newRowSelectionModel.ids);
+  //     const selectedRows = rows.filter((row) => newIds.includes(row.start));
+  //     setSelected(selectedRows);
+  //   } else {
+  //     // type === "exclude"  → select all
+  //     setSelected(rows);
+  //   }
+  // };
 
-  // handle auto sorting
-  useEffect(() => {
-    const api = apiRef?.current;
-    if (!api) return;
-    if (!autoSort) {
-      //reset sort if none selected
-      api.setSortModel([]);
-      return;
-    }
+  // const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
+  //   return { type: "include", ids: new Set(selected.map((r) => r.start)) };
+  // }, [selected]);
 
-    //sort by checkboxes if some selected, otherwise sort by tpm
-    api.setSortModel(selected?.length > 0 ? [{ field: "__check__", sort: "desc" }] : []);
-  }, [apiRef, autoSort, selected]);
+  // // handle auto sorting
+  // useEffect(() => {
+  //   const api = apiRef?.current;
+  //   if (!api) return;
+  //   if (!autoSort) {
+  //     //reset sort if none selected
+  //     api.setSortModel([]);
+  //     return;
+  //   }
+
+  //   //sort by checkboxes if some selected, otherwise sort by tpm
+  //   api.setSortModel(selected?.length > 0 ? [{ field: "__check__", sort: "desc" }] : []);
+  // }, [apiRef, autoSort, selected]);
+
+  // const totals = useMemo(() => {
+  //   if (selected.length === 0) {
+  //     return undefined;
+  //   }
+  //   return {
+  //     ccres: selected.reduce((sum, r) => sum + r.numCcres, 0),
+  //     genes: selected.reduce((sum, r) => sum + r.numGenes, 0),
+  //     snps: selected.reduce((sum, r) => sum + r.numSnps, 0),
+  //   };
+  // }, [selected]);
 
   return (
     <Stack spacing={1}>
       <Grid container spacing={2} height={"600px"}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Table
-            apiRef={apiRef}
+            // apiRef={apiRef}
             showToolbar
             rows={rows || []}
             columns={columns}
@@ -209,12 +222,12 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
             label={`Uploaded Regions`}
             emptyTableFallback={"No Regions Uploaded"}
             divHeight={{ maxHeight: "600px" }}
-            checkboxSelection
+            // checkboxSelection
             getRowId={(row: GenomicRange) => row.start}
-            onRowSelectionModelChange={handleRowSelectionModelChange}
-            rowSelectionModel={rowSelectionModel}
+            // onRowSelectionModelChange={handleRowSelectionModelChange}
+            // rowSelectionModel={rowSelectionModel}
             keepNonExistentRowsSelected
-            toolbarSlot={AutoSortToolbar}
+            // toolbarSlot={AutoSortToolbar}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 4 }} height={"100%"}>
@@ -226,6 +239,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
             loadingGenes={loadingGenes}
             snps={snpRanges}
             loadingSnps={loadingSnps}
+            // selectedTotals={totals}
           />
         </Grid>
       </Grid>
