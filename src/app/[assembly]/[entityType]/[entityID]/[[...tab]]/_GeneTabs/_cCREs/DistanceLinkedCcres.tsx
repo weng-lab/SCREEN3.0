@@ -82,8 +82,6 @@ export default function DistanceLinkedCcres({
 
     if (!f) return d;
 
-    const isBody = calcMethod === "body";
-    const isTss = calcMethod === "tss";
     const is3Gene = calcMethod === "3gene";
 
     const ccreRange = {
@@ -92,42 +90,21 @@ export default function DistanceLinkedCcres({
       end: f.start + f.len,
     };
 
-    const bodyRange = {
-      chromosome: geneData.data.coordinates.chromosome,
-      start: geneData.data.coordinates.start,
-      end: geneData.data.coordinates.end,
-    };
-
-    const rangeForNearest = isBody ? bodyRange : ccreRange;
-
     const nearestTranscript = calcDistCcreToTSS(
-      rangeForNearest,
+      ccreRange,
       geneData.data.transcripts,
       geneData.data.strand as "+" | "-",
       "closest"
     );
 
-    const matchedTranscript = geneData.data.transcripts.find((t) => t.id === nearestTranscript.transcriptId);
-
-    const geneTssDistanceToCcre =
-      isBody && matchedTranscript
-        ? calcDistCcreToTSS(ccreRange, [matchedTranscript], geneData.data.strand as "+" | "-", "closest")
-        : nearestTranscript;
-
-    const distance = is3Gene
-      ? Math.abs(f.start - d.start)
-      : isTss
-        ? nearestTranscript.distance
-        : geneTssDistanceToCcre.distance;
-
-    const direction = isBody ? geneTssDistanceToCcre.direction : nearestTranscript.direction;
+    const distance = is3Gene ? Math.abs(f.start - d.start) : nearestTranscript.distance;
 
     return {
       ...d,
       ...ccreRange,
       group: f.pct,
       distance,
-      direction,
+      direction: nearestTranscript.direction,
       tss: nearestTranscript.transcriptId,
     };
   });
@@ -178,12 +155,7 @@ export default function DistanceLinkedCcres({
             headerName: "Nearest TSS",
             renderHeader: () => (
               <>
-                Nearest&nbsp;<i>TSS</i>
-                {calcMethod === "body" && (
-                  <>
-                    &nbsp; to&nbsp;<i>{geneData?.data?.name}</i>
-                  </>
-                )}
+                Nearest&nbsp;<i>{geneData?.data?.name} TSS</i>
               </>
             ),
           },
