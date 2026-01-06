@@ -19,11 +19,10 @@ import {
 import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import EncyclopediaAll from "../../../public/assets/about/images/EncyclopediaAll.png";
-import biosamples from "../../../public/assets/about/images/biosamples.png";
 import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS } from "../../common/colors";
 import ContactForm from "./contactForm";
 import { LinkComponent } from "common/components/LinkComponent";
-// import classifications from "../../../public/assets/about/images/classifications.png";
+import classifications from "../../../public/assets/about/images/classifications.png";
 
 export default function About() {
   return (
@@ -148,7 +147,7 @@ export default function About() {
               is intended to be analogous to gene catalogs, which define genes independently of their expression levels
               in individual cell types.
             </Typography>
-            {/* <Image src={classifications} alt="Classification of cCREs" style={{ width: "100%", height: "auto" }} /> */}
+            <Image src={classifications} alt="Classification of cCREs" style={{ width: "100%", height: "auto" }} />
             <Typography variant="body1" paragraph>
               The major cCRE classes include:
             </Typography>
@@ -235,11 +234,11 @@ export default function About() {
             <Typography variant="body1" paragraph>
               SCREEN clearly labels biosamples by collection to guide appropriate interpretation.
             </Typography>
-            <Image
+            {/* <Image
               src={biosamples}
               style={{ display: "block", maxWidth: "600px", height: "auto", margin: "auto" }}
               alt="Biosample types visual diagram"
-            />
+            /> */}
           </Grid>
           <Grid container size={12}>
             <Grid size={12}>
