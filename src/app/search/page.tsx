@@ -38,16 +38,37 @@ export default function Page({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  // Need to test this with empty q
-  const search = use(searchParams).q;
   const assembly = use(searchParams).assembly;
+  const encodeSearch = use(searchParams).q || "";
+  const oldScreenGene = use(searchParams).gene;
+  const oldScreenAccessions = use(searchParams).accessions || "";
+  const oldScreenSNP = use(searchParams).snpid;
+  const oldScreenChr = use(searchParams).chromosome;
+  const oldScreenStart = use(searchParams).start;
+  const oldScreenEnd = use(searchParams).end;
 
-  //Should never happen, but check to make sure valid assembly just in case
-  if (Array.isArray(search) || Array.isArray(assembly) || !isValidAssembly(assembly)) {
+  const oldScreenCoordinates =
+    oldScreenChr && oldScreenStart && oldScreenEnd ? `${oldScreenChr}:${oldScreenStart}-${oldScreenEnd}` : null;
+
+  //Should never happen, but check to make sure no duplicate entries for params and has valid assembly just in case
+  if (
+    Array.isArray(oldScreenGene) ||
+    Array.isArray(oldScreenAccessions) ||
+    Array.isArray(oldScreenSNP) ||
+    Array.isArray(encodeSearch) ||
+    Array.isArray(assembly) ||
+    !isValidAssembly(assembly)
+  ) {
     redirect("/");
   }
 
-  const searchStrings = search.split(" ");
+  const searchStrings = [
+    ...encodeSearch.split(" "),
+    oldScreenGene,
+    oldScreenSNP,
+    oldScreenCoordinates,
+    ...oldScreenAccessions.split(","),
+  ].filter((x) => x);
 
   const geneVersion = useMemo(() => (assembly === "GRCh38" ? [29, 40] : 25), [assembly]);
 
@@ -76,14 +97,19 @@ export default function Page({
 
   return (
     <Stack spacing={2} margin={{ xs: 2, lg: 3, xl: 4 }}>
-      <Typography variant="h3">{`Results matching "${search}"`}</Typography>
+      <Typography variant="h4">{`Results matching "${searchStrings.join(" ")}"`}</Typography>
       <Typography variant="body2" maxWidth={700}>
-        {
-          "Search input is space-separated and terms are searched separately. Results are limited to 10 per result type per search term. If you don't see what you're looking, please try to search directly on our site."
-        }
+        If you are coming from the ENCODE portal, please find results related to your query below. If you are revising
+        this link saved from a previous version of this site, we have attempted to pulled out some items from the URL
+        which may be relvant to you.{" "}
+        <LinkComponent href={"/about#versions"}>Please see old versions of SCREEN here</LinkComponent>
+      </Typography>
+      <Typography variant="body2" maxWidth={700}>
+        Search input is space-separated and terms are searched separately. Results are limited to 10 per result type per
+        search term. If you don&apos;t see what you&apos;re looking, please try to search directly on our site.
       </Typography>
       {loading && <CircularProgress />}
-      {error && <Alert severity="error">{`Error when searching ${search}`}</Alert>}
+      {error && <Alert severity="error">{`Error when searching ${searchStrings.join(" ")}`}</Alert>}
       {!loading && results.length === 0 && <Typography>No Results</Typography>}
       {Object.keys(grouped).map((t) => (
         <div key={t} style={{ width: "100%" }}>
