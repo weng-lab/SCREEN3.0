@@ -1,5 +1,5 @@
 "use client";
-import { Alert, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Assembly, isValidAssembly } from "common/types/globalTypes";
 import { redirect } from "next/navigation";
@@ -7,6 +7,7 @@ import { use, useMemo } from "react";
 import { Result, useEntityAutocomplete } from "@weng-lab/ui-components";
 import { InfoOutline } from "@mui/icons-material";
 import { makeResultLink } from "common/components/autocomplete";
+import { useV2Ccres } from "./useV2Ccres";
 
 /**
  * @todo
@@ -95,6 +96,11 @@ export default function Page({
     return acc;
   }, {});
 
+  /**
+   * Temporary fix for supporting v2 cCREs
+   */
+  const { data: V2Data, loading: V2Loading, error: V2Error } = useV2Ccres(oldScreenAccessions.split(","), assembly);
+
   return (
     <Stack spacing={2} margin={{ xs: 2, lg: 3, xl: 4 }}>
       <Typography variant="h4">{`Results matching "${searchStrings.join(" ")}"`}</Typography>
@@ -108,11 +114,70 @@ export default function Page({
         Search input is space-separated and terms are searched separately. Results are limited to 10 per result type per
         search term. If you don&apos;t see what you&apos;re looking, please try to search directly on our site.
       </Typography>
+      {/* Temporary for supporting current V2 functionality */}
+      {V2Data && V2Data.getv2cCREMappings.length !== 0 && (
+        <div>
+          <Typography variant="h5">Legacy v2 cCREs</Typography>
+          <Stack alignItems={"flex-start"}>
+            {V2Data.getv2cCREMappings.map((result, idx) => (
+              <div key={idx}>
+                <Typography sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  {result.v2_accession}
+                  <Tooltip
+                    placement="right"
+                    arrow
+                    title={
+                      <Typography variant="body2" style={{ whiteSpace: "pre-line" }}>
+                        {result.v2_region}
+                      </Typography>
+                    }
+                    key={idx}
+                  >
+                    <InfoOutline fontSize="small" />
+                  </Tooltip>
+                </Typography>
+                {result.v4_accession ? (
+                  <>
+                    <Typography display={"inline"} ml={1}>
+                      {`Corresponding v4 cCRE${result.v4_accession.split(",").length > 1 ? "s" : ""}: `}
+                    </Typography>
+                    {result.v4_accession.split(",").map((accession, i, arr) => (
+                      <Tooltip
+                        placement="right"
+                        arrow
+                        title={
+                          <Typography variant="body2" style={{ whiteSpace: "pre-line" }}>
+                            {result.v4_region.split(",")[i]}
+                          </Typography>
+                        }
+                        key={i}
+                      >
+                        <span>
+                          <LinkComponent
+                            href={`/${assembly}/ccre/${accession}`}
+                            sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}
+                          >
+                            {accession}
+                            <InfoOutline fontSize="small" />
+                          </LinkComponent>
+                          {!(i === arr.length - 1) && ", "}
+                        </span>
+                      </Tooltip>
+                    ))}
+                  </>
+                ) : (
+                  <Typography variant="caption">This cCRE has been deprecated</Typography>
+                )}
+              </div>
+            ))}
+          </Stack>
+        </div>
+      )}
       {loading && <CircularProgress />}
       {error && <Alert severity="error">{`Error when searching ${searchStrings.join(" ")}`}</Alert>}
       {!loading && results.length === 0 && <Typography>No Results</Typography>}
       {Object.keys(grouped).map((t) => (
-        <div key={t} style={{ width: "100%" }}>
+        <div key={t}>
           <Typography variant="h5">{t}</Typography>
           <Stack alignItems={"flex-start"}>
             {grouped[t].map((result, idx) => (

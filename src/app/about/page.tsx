@@ -379,8 +379,8 @@ export default function About() {
                       <TableCell>V1 (hg19)</TableCell>
                       <TableCell>2018</TableCell>
                       <TableCell>
-                        <Link href="https://screen-v10.wenglab.org/" target="_blank" rel="noopener">
-                          screen-v10.wenglab.org
+                        <Link href="https://screen-v1.wenglab.org/" target="_blank" rel="noopener">
+                          screen-v1.wenglab.org
                         </Link>
                       </TableCell>
                     </TableRow>
