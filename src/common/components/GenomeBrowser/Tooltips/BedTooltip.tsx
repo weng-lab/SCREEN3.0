@@ -1,4 +1,4 @@
-import { Rect } from "umms-gb/dist/components/tracks/bigbed/types";
+import { Rect } from "@weng-lab/genomebrowser";
 
 export default function BedTooltip(props: Rect) {
   return (
