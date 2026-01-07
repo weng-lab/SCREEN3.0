@@ -41,7 +41,6 @@
     "react": "^19",
     "react-dom": "^19",
     "react-dropzone": "^14.3.8",
-    "umms-gb": "^3.9.14",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
