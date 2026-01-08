@@ -20,7 +20,7 @@ export const defaultTranscript: Omit<TranscriptConfig, "id" | "assembly" | "vers
   displayMode: DisplayMode.Squish,
   height: 100,
   color: "#0c184a", // screen theme default
-  canonicalColor: "#100e98", // screen theme light
+  canonicalColor: "#615fcf", // screen theme light
   highlightColor: "#3c69e8", // bright blue
   titleSize: 12,
 };
