@@ -1,5 +1,5 @@
 "use client";
-import { Box, Stack } from "@mui/material";
+import { Box, Divider, Stack } from "@mui/material";
 import EntityDetailsTabs from "./EntityDetailsTabs";
 import { EntityDetailsHeader } from "./EntityDetailsHeader";
 import RegionSearchHeader from "./RegionSearchHeader";
@@ -40,10 +40,11 @@ const EntityHeader = ({
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
 
+  // We need to measure the heights of the header and entity tabs to give both tabs components the correct top property
   useEffect(() => {
     const updateHeights = () => {
-      const header = document.querySelector<HTMLElement>("header");
-      const entityTabs = document.querySelector<HTMLElement>(".entity-tabs");
+      const header = document.querySelector<HTMLElement>("header"); //AppBar component renders a header component
+      const entityTabs = document.querySelector<HTMLElement>("#entity-tabs"); //Entity tabs given this id
 
       if (header) {
         const headerHeight = header.offsetHeight;
@@ -83,13 +84,47 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
       <Box
         id="split-pane-container"
         display={"grid"}
+        height={"100%"}
         gridTemplateColumns={{ xs: "minmax(0, 1fr)", md: "auto minmax(0, 1fr)" }}
-        gridTemplateRows={{ xs: "auto minmax(0, 1fr)", md: "auto" }}
       >
-        <div id="view-tabs-background" style={{ gridColumn: 1, gridRow: 1, backgroundColor: "#F2F2F2" }} />
-        <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} />
-        <Stack id="main-content" spacing={2} m={2} gridColumn={ {xs: 1, md: 2}} gridRow={{xs: 2, md: 1}}>
+        {/* 
+          Adds shading to vertical tabs. Need to do this outside of the tabs since we need the intrinsic size 
+          of the tabs to not stretch to the footer, but the background color needs to stretch all the way.
+        */}
+        <Box
+          id="view-tabs-background"
+          gridColumn={1}
+          gridRow={1}
+          bgcolor={"#F2F2F2"}
+          display={{ xs: "none", md: "block" }}
+        />
+        {/* 
+          Tabs `orientation` prop is not a ResponsiveStyleValue and would need to either measure using useMediaQuery (causes layout shift)
+          or heavily override the flex/overflow properties of the Tabs component (kinda complex given its built in scrolling functionality).
+          This was simplest way to prevent layout shift:
+        */}
+        <Box
+          id="vertical-view-tabs-container"
+          gridColumn={1}
+          gridRow={1}
+          position={"sticky"}
+          top={"calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))"}
+          maxHeight={"calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px))"}
+          display={{ xs: "none", md: "block" }}
+        >
+          <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" />
+        </Box>
+        <Stack id="main-content" spacing={2} m={2} gridColumn={{ xs: 1, md: 2 }} gridRow={{ xs: 2, md: 1 }}>
           <EntityHeader entityID={entityID} entityType={entityType} assembly={assembly} />
+          <Box id="horizonatal-view-tabs-container" display={{ xs: "block", md: "none" }}>
+            <EntityDetailsTabs
+              assembly={assembly}
+              entityType={entityType}
+              entityID={entityID}
+              orientation="horizontal"
+            />
+            <Divider />
+          </Box>
           {children}
         </Stack>
       </Box>

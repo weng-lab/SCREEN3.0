@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, Tab, Menu, MenuItem, Tooltip, useMediaQuery } from "@mui/material";
+import { Tabs, Tab, Menu, MenuItem, Tooltip, TabsOwnProps } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useMemo } from "react";
@@ -19,9 +19,10 @@ export type ElementDetailsTabsProps = {
   assembly: Assembly;
   entityType: AnyEntityType;
   entityID: string;
+  orientation: TabsOwnProps["orientation"];
 };
 
-const EntityDetailsTabs = ({ assembly, entityType, entityID }: ElementDetailsTabsProps) => {
+const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: ElementDetailsTabsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   // If the route ends with just /entityID (like ccre would), set tab value to empty string, else to end slug of URL
@@ -54,9 +55,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID }: ElementDetailsTab
 
   const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 
-  const isMD = useMediaQuery((theme) => theme.breakpoints.up("md"));
-
-  const verticalTabs = isMD;
+  const verticalTabs = orientation === "vertical";
 
   const iconTabs = useMemo(() => tabs.filter((x) => x.iconPath), [tabs]);
   const moreTabs = useMemo(() => tabs.filter((x) => !x.iconPath), [tabs]);
@@ -84,26 +83,20 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID }: ElementDetailsTab
         value={tabVal}
         onChange={handleChange}
         aria-label="Tabs"
-        orientation={verticalTabs ? "vertical" : "horizontal"}
+        orientation={orientation}
         allowScrollButtonsMobile
         variant="scrollable"
-        scrollButtons={verticalTabs ? false : true}
         sx={{
           "& .MuiTab-root": {
             "&.Mui-selected": {
-              backgroundColor: "rgba(73, 77, 107, .15)",
+              backgroundColor: verticalTabs ? "rgba(73, 77, 107, .15)" : "initial",
             },
           },
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,
           },
           width: verticalTabs ? 100 : "100%",
-          position: isMD ? "sticky" : "initial",
-          top: isMD ? "calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))" : "auto",
-          maxHeight: isMD ? "calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px))" : "none",
-          alignSelf: "start",
-          gridColumn: 1,
-          gridRow: 1,
+          height: "100%",
         }}
       >
         {iconTabs.map((tab) => {

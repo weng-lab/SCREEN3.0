@@ -227,37 +227,39 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   return (
     <TabContext value={tabIndex}>
-      {/* z index of scrollbar in DataGrid is 60 */}
-      <Paper
-        elevation={1}
-        square
-        sx={{ position: "sticky", top: "var(--header-height, 64px)", zIndex: 61 }}
-        className="entity-tabs" //allows the querySelector to find it. Could use id or another selector besides querySelector
-      >
-        <Stack direction={"row"}>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <OpenTabs {...openTabsProps} />
-          </DragDropContext>
-          <Box sx={{ flexGrow: 1, justifyContent: "flex-start", alignContent: "center" }}>
-            <Tooltip title="New Search" placement="right">
-              <IconButton onClick={handleFocusSearch}>
-                <Add fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Box>
-          {/* We need to handle the case where there is one open for each assembly, and sorting should be disabled. */}
-          <OpenEntitiesTabsMenu
-            handleCloseAll={handleCloseAll}
-            disableCloseAll={openEntities.length === 1}
-            handleSort={handleSort}
-            disableSort={openEntities.length === 1}
-          />
-        </Stack>
-      </Paper>
-      {/* Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */}
-      <TabPanel value={tabIndex} sx={{ p: 0 }} id="element-details-TabPanel">
-        {children}
-      </TabPanel>
+      <Box display={"grid"} height={"100%"} gridTemplateRows={"auto minmax(0, 1fr)"}>
+        {/* z index of scrollbar in DataGrid is 60 */}
+        <Paper
+          elevation={1}
+          square
+          sx={{ position: "sticky", top: "var(--header-height, 64px)", zIndex: 61 }}
+          id="entity-tabs" //allows the querySelector in EntityDetailsLayout to find this to measure its height
+        >
+          <Stack direction={"row"}>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <OpenTabs {...openTabsProps} />
+            </DragDropContext>
+            <Box sx={{ flexGrow: 1, justifyContent: "flex-start", alignContent: "center" }}>
+              <Tooltip title="New Search" placement="right">
+                <IconButton onClick={handleFocusSearch}>
+                  <Add fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            {/* We need to handle the case where there is one open for each assembly, and sorting should be disabled. */}
+            <OpenEntitiesTabsMenu
+              handleCloseAll={handleCloseAll}
+              disableCloseAll={openEntities.length === 1}
+              handleSort={handleSort}
+              disableSort={openEntities.length === 1}
+            />
+          </Stack>
+        </Paper>
+        {/* Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */}
+        <TabPanel value={tabIndex} sx={{ p: 0 }} id="element-details-TabPanel">
+          {children}
+        </TabPanel>
+      </Box>
     </TabContext>
   );
 };

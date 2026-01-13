@@ -35,7 +35,7 @@ export default function ClientAppWrapper({ children }: { children: React.ReactNo
   return (
     <Box id="app-wrapper" display={"grid"} gridTemplateRows={"auto 1fr auto"} minHeight={"100vh"}>
       <Header maintenance={maintenance} />
-      {/* Wrap children to enure they will all be slotted together into the 1fr row */}
+      {/* Wrap children to enure they will all be slotted together into the 1fr row if child is a fragment */}
       <div id="main-content-wrapper">{children}</div>
       <Footer />
     </Box>
