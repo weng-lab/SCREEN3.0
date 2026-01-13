@@ -35,6 +35,8 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
     setAnchorEl(event.currentTarget);
   };
 
@@ -95,8 +97,10 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,
           },
+          position: "sticky",
+          top: "calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))",
           width: verticalTabs ? 100 : "100%",
-          height: "100%",
+          maxHeight: '100%'
         }}
       >
         {iconTabs.map((tab) => {

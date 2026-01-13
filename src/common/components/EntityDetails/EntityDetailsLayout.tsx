@@ -60,7 +60,7 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
     // Initial measurement
     updateHeights();
 
-    // Update on window resize
+    // Update on window resize 
     window.addEventListener("resize", updateHeights);
 
     // Observe elements for size changes
@@ -72,12 +72,49 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
     if (header) observer.observe(header);
     if (entityTabs) observer.observe(entityTabs);
 
+    const footer = document.querySelector<HTMLElement>("footer");
+
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // entry.intersectionRatio provides the percentage visible (0.0 to 1.0)
+          const visiblePercentage = Math.floor(entry.intersectionRatio * 100);
+          console.log(`Element visibility: ${visiblePercentage}%`);
+
+          // You can also get the visible height in pixels
+          const visibleHeight = entry.intersectionRect.height;
+          console.log(`Visible height: ${visibleHeight}px`);
+
+        document.documentElement.style.setProperty("--footer-visible-height", `${visibleHeight}px`);
+        });
+      },
+      {
+        root: null, // Observes relative to the viewport
+        rootMargin: "0px",
+        threshold: buildThresholdList(), // Can be a single number or an array of thresholds
+      }
+    );
+
+    function buildThresholdList() {
+      const thresholds = [];
+      for (let i = 0; i <= 1.0; i += 0.005) {
+        thresholds.push(i);
+      }
+      return thresholds;
+    }
+
+    visibilityObserver.observe(footer);
+
     return () => {
       window.removeEventListener("resize", updateHeights);
       observer.disconnect();
     };
   }, []);
-
+        {/* 
+          Tabs `orientation` prop is not a ResponsiveStyleValue and would need to either measure using useMediaQuery (causes layout shift)
+          or heavily override the flex/overflow properties of the Tabs component (kinda complex given its built in scrolling functionality).
+          This was simplest way to prevent layout shift:
+        */}
   return (
     // Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/. Children wrapped in <TabPanel>
     <OpenEntityTabs>
@@ -87,29 +124,16 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
         height={"100%"}
         gridTemplateColumns={{ xs: "minmax(0, 1fr)", md: "auto minmax(0, 1fr)" }}
       >
-        {/* 
-          Adds shading to vertical tabs. Need to do this outside of the tabs since we need the intrinsic size 
-          of the tabs to not stretch to the footer, but the background color needs to stretch all the way.
-        */}
-        <Box
-          id="view-tabs-background"
-          gridColumn={1}
-          gridRow={1}
-          bgcolor={"#F2F2F2"}
-          display={{ xs: "none", md: "block" }}
-        />
-        {/* 
-          Tabs `orientation` prop is not a ResponsiveStyleValue and would need to either measure using useMediaQuery (causes layout shift)
-          or heavily override the flex/overflow properties of the Tabs component (kinda complex given its built in scrolling functionality).
-          This was simplest way to prevent layout shift:
-        */}
         <Box
           id="vertical-view-tabs-container"
           gridColumn={1}
           gridRow={1}
+          bgcolor={"#F2F2F2"}
           position={"sticky"}
           top={"calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))"}
-          maxHeight={"calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px))"}
+          maxHeight={
+            "calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px) - var(--footer-visible-height, 0px))"
+          }
           display={{ xs: "none", md: "block" }}
         >
           <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" />
