@@ -1,7 +1,19 @@
 "use client";
 import React from "react";
 import { useQuery } from "@apollo/client";
-import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
+import { GridColDef, GridRenderCellParams, Table} from "@weng-lab/ui-components";
+import { Box } from "@mui/material";
+import { ScatterChart } from "@mui/x-charts";
+import Image from "next/image";
+import AllcCREs from "../../../../../../../../public/AllcCREs.png";
+import PromoterImg from "../../../../../../../../public/Promoter.png";
+import ProximalEnhancerImg from "../../../../../../../../public/ProximalEnhancer.png";
+import CACTCFImg from "../../../../../../../../public/CA-CTCF.png";
+import CAH3K4me3Img from "../../../../../../../../public/CA-H3K4me3.png";
+import CATFImg from "../../../../../../../../public/CA-TF.png";
+import CAImg from "../../../../../../../../public/CA.png";
+import DistalEnhancerImg from "../../../../../../../../public/DistalEnhancer.png";
+import TFImg from "../../../../../../../../public/TF.png";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
@@ -13,6 +25,7 @@ type orthologRow = {
   start: number;
   stop: number;
 };
+
 
 export const ORTHOLOG_QUERY = gql(`
   query orthologTab($assembly: String!, $accession: [String!]) {
@@ -30,6 +43,26 @@ export const ORTHOLOG_QUERY = gql(`
 `);
 
 export const Conservation = ({ entity }: EntityViewComponentProps) => {
+
+const CONSERVATION_HEATMAP_QUERY = gql(`
+query getconservationHeatmapCoords($accession: [String]!) {
+  conservationHeatmapQuery(accession: $accession) {
+    x_coord
+    y_coord
+    accession
+    ccre_class
+  }
+}
+`);
+
+const {
+  data: heatmapData,
+  loading: heatmapLoading,
+  error: heatmapError,
+} = useQuery(CONSERVATION_HEATMAP_QUERY, {
+  variables: { accession: [entity.entityID] },
+});
+
   const { loading, error, data } = useQuery(ORTHOLOG_QUERY, {
     variables: {
       assembly: entity.assembly === "GRCh38" ? "grch38" : "mm10",
@@ -46,6 +79,70 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     assembly: entity.assembly,
     accession: [entity.entityID],
   });
+    
+  
+  function filtercCREType(type: string) {
+    switch(type) {
+      case "PLS":
+        return "Promoter";
+      case "pELS":
+        return "Proximal Enhancer";
+      case "dELS":
+        return "Distal Enhancer";
+      case "CA":
+        return "CA";
+      case "CA-TF":
+        return "CA-TF";
+      case "CA-CTCF":
+        return "CA-CTCF";
+      case "CA-H3K4me3":
+        return "CA-H3K4me3";
+      case "TF":
+        return "TF";
+      default:
+        return "";
+    }
+  }
+// current cCRE's type to determine which plot to show
+const cCREType = filtercCREType(dataCcre?.[0].pct ?? "");
+
+const imgSrc  =
+  cCREType === "Promoter"
+    ? PromoterImg
+    : cCREType === "Proximal Enhancer" ?
+        ProximalEnhancerImg
+        : cCREType === "CA-CTCF" ?
+          CACTCFImg
+          : cCREType === "CA-H3K4me3" ?
+            CAH3K4me3Img
+            : cCREType === "CA-TF" ?
+              CATFImg
+              : cCREType === "CA" ?
+                CAImg
+                : cCREType === "Distal Enhancer" ?
+                  DistalEnhancerImg
+                    : cCREType === "TF" ?
+                      TFImg
+                      : AllcCREs ;
+
+
+  
+  const imageWidth = 250;
+  const imageHeight = (imageWidth * (imgSrc.height / imgSrc.width)); 
+
+  const scalePoints = {
+    left: -40,
+    right: 5,
+    top: 5,
+    bottom: -22,
+  };
+  
+  const graphData =
+    heatmapData?.conservationHeatmapQuery?.map((row) => ({
+      x: row.x_coord,
+      y: row.y_coord,
+      accession: row.accession
+    })) ?? [];
 
   const ortholog: orthologRow[] = [];
   if (data && data.orthologQuery.length > 0) {
@@ -123,6 +220,44 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
         rows={ortholog}
         emptyTableFallback={"No Orthologous cCREs found"}
       />
+      {graphData.length > 0 && entity.assembly !== "mm10" && (
+      <Box sx={{ display: "flex", gap: 5}}>
+        <Box>
+          <Box>All cCRE Regions</Box>
+          <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
+            <Image src={AllcCREs} alt="All cCRE Regions plot" fill unoptimized />
+              <ScatterChart
+                width={imageWidth}
+                height={imageHeight}
+                margin={scalePoints}
+                hideLegend
+                xAxis={[{ min: 0, max: 240 }]}
+                yAxis={[{ min: 0, max: 240 }]}
+                series={[{ data: graphData,
+                valueFormatter: (v, { dataIndex }) => graphData[dataIndex]?.accession ?? "", 
+                color: 'red' }]}
+              />
+          </Box>
+      </Box>
+      <Box>
+        <Box>{cCREType}</Box>
+          <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
+            <Image src={imgSrc} alt="specific cCRE plot" fill unoptimized />
+              <ScatterChart
+                width={imageWidth}
+                height={imageHeight}
+                margin={scalePoints}
+                hideLegend
+                xAxis={[{ min: 0, max: 240 }]}
+                yAxis={[{ min: 0, max: 240 }]}
+                series={[{ data: graphData, 
+                valueFormatter: (v, { dataIndex }) => graphData[dataIndex]?.accession ?? "", 
+                color: 'red' }]}
+              />
+          </Box>
+        </Box>
+    </Box>
+      )}
     </>
   );
 };
