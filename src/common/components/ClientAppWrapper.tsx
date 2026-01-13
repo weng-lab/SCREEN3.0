@@ -27,13 +27,8 @@ export default function ClientAppWrapper({ children }: { children: React.ReactNo
     checkAPIHealth();
   }, []);
 
-  /**
-   * @todo figure out if we still need the ScrollReset
-   * @todo see if MUI's Grid has syntax that makes this even simpler
-   */
-
   return (
-    <Box id="app-wrapper" display={"grid"} gridTemplateRows={"auto 1fr auto"} minHeight={"100vh"}>
+    <Box id="app-wrapper" display={"grid"} gridTemplateRows={"auto minmax(0, 1fr) auto"} minHeight={"100vh"}>
       <Header maintenance={maintenance} />
       {/* Wrap children to enure they will all be slotted together into the 1fr row if child is a fragment */}
       <div id="main-content-wrapper">{children}</div>
