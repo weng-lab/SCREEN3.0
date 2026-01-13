@@ -228,7 +228,12 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   return (
     <TabContext value={tabIndex}>
       {/* z index of scrollbar in DataGrid is 60 */}
-      <Paper elevation={1} square sx={{ position: "sticky", top: 0, zIndex: 61 }} id="open-elements-tabs">
+      <Paper
+        elevation={1}
+        square
+        sx={{ position: "sticky", top: "var(--header-height, 64px)", zIndex: 61 }}
+        className="entity-tabs" //allows the querySelector to find it. Could use id or another selector besides querySelector
+      >
         <Stack direction={"row"}>
           <DragDropContext onDragEnd={onDragEnd}>
             <OpenTabs {...openTabsProps} />
@@ -250,7 +255,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
         </Stack>
       </Paper>
       {/* Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */}
-      <TabPanel value={tabIndex} sx={{ p: 0, flexGrow: 1, minHeight: 0 }} id="element-details-TabPanel">
+      <TabPanel value={tabIndex} sx={{ p: 0 }} id="element-details-TabPanel">
         {children}
       </TabPanel>
     </TabContext>

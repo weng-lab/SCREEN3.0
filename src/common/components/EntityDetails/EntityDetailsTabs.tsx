@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, Tab, Menu, MenuItem, Tooltip } from "@mui/material";
+import { Tabs, Tab, Menu, MenuItem, Tooltip, useMediaQuery } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useMemo } from "react";
@@ -16,22 +16,12 @@ function CloneProps(props) {
 }
 
 export type ElementDetailsTabsProps = {
-  ref?: React.RefObject<HTMLDivElement>;
   assembly: Assembly;
   entityType: AnyEntityType;
   entityID: string;
-  orientation: "horizontal" | "vertical";
-  verticalTabsWidth?: number;
 };
 
-const EntityDetailsTabs = ({
-  ref,
-  assembly,
-  entityType,
-  entityID,
-  orientation,
-  verticalTabsWidth,
-}: ElementDetailsTabsProps) => {
+const EntityDetailsTabs = ({ assembly, entityType, entityID }: ElementDetailsTabsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   // If the route ends with just /entityID (like ccre would), set tab value to empty string, else to end slug of URL
@@ -64,8 +54,9 @@ const EntityDetailsTabs = ({
 
   const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 
-  const horizontalTabs = orientation === "horizontal";
-  const verticalTabs = orientation === "vertical";
+  const isMD = useMediaQuery((theme) => theme.breakpoints.up("md"));
+
+  const verticalTabs = isMD;
 
   const iconTabs = useMemo(() => tabs.filter((x) => x.iconPath), [tabs]);
   const moreTabs = useMemo(() => tabs.filter((x) => !x.iconPath), [tabs]);
@@ -90,14 +81,13 @@ const EntityDetailsTabs = ({
   return (
     <>
       <Tabs
-        ref={ref}
         value={tabVal}
         onChange={handleChange}
         aria-label="Tabs"
-        orientation={orientation}
+        orientation={verticalTabs ? "vertical" : "horizontal"}
         allowScrollButtonsMobile
         variant="scrollable"
-        scrollButtons={horizontalTabs ? true : false}
+        scrollButtons={verticalTabs ? false : true}
         sx={{
           "& .MuiTab-root": {
             "&.Mui-selected": {
@@ -107,9 +97,13 @@ const EntityDetailsTabs = ({
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,
           },
-          width: verticalTabs ? verticalTabsWidth : "initial",
-          height: "100%",
-          backgroundColor: verticalTabs && "#F2F2F2",
+          width: verticalTabs ? 100 : "100%",
+          position: isMD ? "sticky" : "initial",
+          top: isMD ? "calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))" : "auto",
+          maxHeight: isMD ? "calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px))" : "none",
+          alignSelf: "start",
+          gridColumn: 1,
+          gridRow: 1,
         }}
       >
         {iconTabs.map((tab) => {
