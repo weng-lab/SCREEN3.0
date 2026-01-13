@@ -221,7 +221,7 @@ const imgSrc  =
         emptyTableFallback={"No Orthologous cCREs found"}
       />
       {graphData.length > 0 && entity.assembly !== "mm10" && (
-      <Box sx={{ display: "flex", gap: 5}}>
+      <Box sx={{ display: "flex", gap: 5, flexDirection: { xs: "column", md: "row"}}}>
         <Box>
           <Box>All cCRE Regions</Box>
           <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
