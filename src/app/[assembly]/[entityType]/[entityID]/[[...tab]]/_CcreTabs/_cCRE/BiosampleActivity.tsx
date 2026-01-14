@@ -15,6 +15,7 @@ import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization
 import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { BiosampleRow } from "./types";
 import { useSilencersData } from "common/hooks/useSilencersData";
+import { useDynamicEnhancersData } from "common/hooks/useDynamicEnhacersData";
 import { Silencer_Studies } from "./consts";
 import { LinkComponent } from "common/components/LinkComponent";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
@@ -336,6 +337,13 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     error: errorSilencersData,
   } = useSilencersData({ accession: [entity.entityID], assembly: entity.assembly });
 
+
+  const {
+    data: dynamicEnhancersData,
+    loading: loadingDynamicEnhancersData,
+    error: errorDynamicEnhancersData,
+  } = useDynamicEnhancersData({ accession: [entity.entityID], assembly: entity.assembly });
+
   const coordinates: GenomicRange = {
     chromosome: cCREdata?.chrom,
     start: cCREdata?.start,
@@ -608,9 +616,23 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             {...disableCsvEscapeChar}
           />
         </Stack>
-      ) : tab === "add_classification"  ? (<Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
+      ) : tab === "add_classification" ? (<Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
 
-          {silencersData && silencersData.length > 0 ? (
+        {dynamicEnhancersData && dynamicEnhancersData.length > 0 ? (<><Typography
+          variant="body1"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 400,
+            color: "text.primary",
+            pl: 1,
+            ml: 0,
+          }}
+        >{entity.entityID} is classified as MAFF/MAFK+ cCRE in{" "}
+          {dynamicEnhancersData.length === 2
+            ? `${dynamicEnhancersData[0].celltype} and ${dynamicEnhancersData[1].celltype}`
+            : dynamicEnhancersData[0]?.celltype}{" "}
+          cells</Typography><br /></>) : silencersData && silencersData.length > 0 ? (
             <Table
               label="Silencers"
               rows={
@@ -630,9 +652,9 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               error={!!errorSilencersData}
               {...disableCsvEscapeChar}
               hideFooter
-              
+
             />
-          ): (<Typography
+          ) : (<Typography
             variant="body1"
             sx={{
               display: "flex",
@@ -643,7 +665,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               ml: 0, // match table start
             }}
           >No further classification details are available for {entity.entityID}.</Typography>)}
-      </Stack>):(
+      </Stack>) : (
         <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
       )}
     </>
