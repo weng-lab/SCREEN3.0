@@ -4,7 +4,7 @@ import { useEffect } from "react";
  * This measures the height of the header, entity tabs, and amount of footer visible for proper positioning of all elements.
  * I really, really wanted to make this layout simpler while making it work as I wanted but here we are.
  */
-export const useOvercomplicatedLayout = () => {
+export const useElementHeights = () => {
   useEffect(() => {
     const updateHeights = () => {
       const header = document.querySelector<HTMLElement>("header"); //AppBar component renders a header component

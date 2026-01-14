@@ -9,7 +9,8 @@ import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { GwasStudyHeader } from "./GwasStudyHeader";
 import BedUploadHeader from "./BedUploadHeader";
-import { useOvercomplicatedLayout } from "./useOvercomplicatedLayout";
+import { useElementHeights } from "./useElementHeights";
+import useScrollReset from "common/hooks/useScrollReset";
 
 export type EntityDetailsLayoutProps = {
   assembly: Assembly;
@@ -40,7 +41,8 @@ const EntityHeader = ({
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
 
-  useOvercomplicatedLayout();
+  useElementHeights();
+  useScrollReset();
 
   return (
     // Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/. Children wrapped in <TabPanel>

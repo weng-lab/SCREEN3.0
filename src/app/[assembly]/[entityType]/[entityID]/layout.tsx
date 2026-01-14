@@ -3,7 +3,6 @@ import EntityDetailsLayout from "common/components/EntityDetails/EntityDetailsLa
 import { isValidAssembly } from "common/types/globalTypes";
 import { use } from "react";
 import { isValidEntityType } from "common/entityTabsConfig";
-import useScrollReset from "common/hooks/useScrollReset";
 
 export default function Layout({
   children,
@@ -13,8 +12,6 @@ export default function Layout({
   params: Promise<{ assembly: string; entityType: string; entityID: string }>;
 }) {
   const { assembly, entityType, entityID } = use(params);
-
-  useScrollReset();
 
   if (!isValidAssembly(assembly)) {
     throw new Error(`Unknown assembly: ${assembly}`);
