@@ -153,7 +153,7 @@ const GeneExpression = ({ entity }: GeneExpressionProps) => {
   );
 
   return (
-    <>
+    <div id="uniwu">
       {isV40 && <VersionFallback gene={entity.entityID} />}
       <TwoPaneLayout
         TableComponent={<GeneExpressionTable {...SharedGeneExpressionPlotProps} />}
@@ -179,7 +179,7 @@ const GeneExpression = ({ entity }: GeneExpressionProps) => {
         ]}
         isV40={isV40}
       />
-    </>
+    </div>
   );
 };
 
