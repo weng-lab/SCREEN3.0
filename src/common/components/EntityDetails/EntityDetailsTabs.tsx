@@ -79,8 +79,6 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
 
   const tabVal = useMemo(() => (iconTabs.some((x) => x.route === value) ? value : "more"), [iconTabs, value]);
 
-  // const { tabsRootProps, scrollerSlotProps, scrollButtonsSlotProps, maskSx } = useTabsOverflowMask(orientation);
-
   return (
     <>
       <Tabs
