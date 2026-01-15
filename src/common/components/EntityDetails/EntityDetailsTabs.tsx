@@ -3,7 +3,7 @@
 import { Tabs, Tab, Menu, MenuItem, Tooltip, TabsOwnProps } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo  } from "react";
 import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -79,6 +79,8 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
 
   const tabVal = useMemo(() => (iconTabs.some((x) => x.route === value) ? value : "more"), [iconTabs, value]);
 
+  // const { tabsRootProps, scrollerSlotProps, scrollButtonsSlotProps, maskSx } = useTabsOverflowMask(orientation);
+
   return (
     <>
       <Tabs
@@ -87,20 +89,71 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
         aria-label="Tabs"
         orientation={orientation}
         allowScrollButtonsMobile
+        slotProps={{
+          startScrollButtonIcon: { className: "start-scroll-icon" },
+          endScrollButtonIcon: { className: "end-scroll-icon" },
+        }}
         variant="scrollable"
         sx={{
-          "& .MuiTab-root": {
-            "&.Mui-selected": {
-              backgroundColor: verticalTabs ? "rgba(73, 77, 107, .15)" : "initial",
-            },
+          "& .MuiTab-root.Mui-selected": {
+            backgroundColor: verticalTabs ? "rgba(73, 77, 107, .15)" : "initial",
           },
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,
           },
+          "&.MuiTabs-root:has(.MuiTabScrollButton-root:not(.Mui-disabled) .start-scroll-icon)  .MuiTabs-scroller": {
+            // Start edge blur (left/top)
+            "&::before": {
+              content: '""',
+              position: "fixed",
+              zIndex: 1,
+              pointerEvents: "none",
+              ...(orientation === "horizontal"
+                ? {
+                    top: 0,
+                    bottom: 0,
+                    left: 40,
+                    width: 15,
+                    background: "linear-gradient(to right, #fff 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
+                  }
+                : {
+                    left: 0,
+                    right: 0,
+                    top: 40,
+                    height: 15,
+                    background: "linear-gradient(to bottom, #F2F2F2 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
+                  }),
+            },
+          },
+          "&.MuiTabs-root:has(.MuiTabScrollButton-root:not(.Mui-disabled) .end-scroll-icon)  .MuiTabs-scroller": {
+            // End edge blur (right/bottom)
+            "&::after": {
+              content: '""',
+              position: "fixed",
+              zIndex: 1,
+              pointerEvents: "none",
+              ...(orientation === "horizontal"
+                ? {
+                    top: 0,
+                    bottom: 0,
+                    right: 40,
+                    width: 15,
+                    background: "linear-gradient(to left, #fff 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
+                  }
+                : {
+                    left: 0,
+                    right: 0,
+                    bottom: 40,
+                    height: 15,
+                    background: "linear-gradient(to top, #F2F2F2 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
+                  }),
+            },
+          },
+          contain: "layout",
           position: "sticky",
           top: "calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))",
           width: verticalTabs ? 100 : "100%",
-          maxHeight: '100%'
+          maxHeight: "100%",
         }}
       >
         {iconTabs.map((tab) => {
@@ -148,6 +201,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
           />
         )}
       </Tabs>
+      {/* </BlurTabsContainer> */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}

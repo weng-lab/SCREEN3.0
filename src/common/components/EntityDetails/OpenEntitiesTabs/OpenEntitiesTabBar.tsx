@@ -227,7 +227,12 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   return (
     <TabContext value={tabIndex}>
-      <Box display={"grid"} height={"100%"} gridTemplateRows={"auto minmax(0, 1fr)"}>
+      <Box
+        display={"grid"}
+        height={"100%"}
+        gridTemplateRows={"auto minmax(0, 1fr)"}
+        gridTemplateColumns={"minmax(0, 1fr)"}
+      >
         {/* z index of scrollbar in DataGrid is 60 */}
         <Paper
           elevation={1}
