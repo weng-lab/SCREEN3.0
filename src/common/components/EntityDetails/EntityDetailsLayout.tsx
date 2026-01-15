@@ -1,5 +1,5 @@
 "use client";
-import { Box, Stack } from "@mui/material";
+import { Box, Divider, Stack } from "@mui/material";
 import EntityDetailsTabs from "./EntityDetailsTabs";
 import { EntityDetailsHeader } from "./EntityDetailsHeader";
 import RegionSearchHeader from "./RegionSearchHeader";
@@ -9,7 +9,8 @@ import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { GwasStudyHeader } from "./GwasStudyHeader";
 import BedUploadHeader from "./BedUploadHeader";
-import { useEffect, useRef, useState } from "react";
+import { useElementHeights } from "./useElementHeights";
+import useScrollReset from "common/hooks/useScrollReset";
 
 export type EntityDetailsLayoutProps = {
   assembly: Assembly;
@@ -17,86 +18,69 @@ export type EntityDetailsLayoutProps = {
   entityID: string;
 } & { children: React.ReactNode };
 
+const EntityHeader = ({
+  entityType,
+  entityID,
+  assembly,
+}: {
+  entityType: AnyEntityType;
+  entityID: string;
+  assembly: Assembly;
+}) => {
+  switch (entityType) {
+    case "region":
+      return <RegionSearchHeader region={parseGenomicRangeString(entityID)} />;
+    case "gwas":
+      return <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} />;
+    case "bed":
+      return <BedUploadHeader fileName={entityID} />;
+    default:
+      return <EntityDetailsHeader assembly={assembly} entityType={entityType} entityID={entityID} />;
+  }
+};
+
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
-  const verticalTabsWidth = 100;
 
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const [tabsHeight, setTabsHeight] = useState<number>(0);
-  const [openEntityTabsHeight, setOpenEntityTabsHeight] = useState<number>(0);
-
-  useEffect(() => {
-    if (tabsRef.current) {
-      setTabsHeight(tabsRef.current.getBoundingClientRect().height);
-    }
-  }, [tabsRef]);
-
-  useEffect(() => {
-    const openTabsElement = document.getElementById("open-elements-tabs");
-    if (openTabsElement) {
-      setOpenEntityTabsHeight(openTabsElement.getBoundingClientRect().height);
-    }
-  }, []);
+  useElementHeights();
+  useScrollReset();
 
   return (
     // Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/. Children wrapped in <TabPanel>
     <OpenEntityTabs>
-      {/* Everything below the open elements tabs */}
-      <Stack direction={"row"} id="element-details-wrapper" height={"100%"} minHeight={`${tabsHeight}px` || 0}>
-        {/* View tabs, shown only on desktop */}
-        <Box sx={{ display: { xs: "none", md: "initial" } }} id="element-details-desktop-tabs">
-          <Box
-            sx={{
-              position: "sticky",
-              top: openEntityTabsHeight,
-              width: verticalTabsWidth,
-              height: `calc(100vh + ${openEntityTabsHeight}px)`,
-            }}
-          >
-            <EntityDetailsTabs
-              ref={tabsRef}
-              assembly={assembly}
-              entityType={entityType}
-              entityID={entityID}
-              orientation="vertical"
-              verticalTabsWidth={verticalTabsWidth}
-            />
-          </Box>
-        </Box>
-        <Stack
-          width={"100%"}
-          height={"100%"}
-          overflow={"auto"}
-          // minWidth of 0 needed to properly constrain children when resizing
-          minWidth={0}
-          boxSizing={"border-box"}
-          spacing={2}
-          p={2}
-          id="element-details-main-content"
+      <Box
+        id="split-pane-container"
+        display={"grid"}
+        height={"100%"}
+        gridTemplateColumns={{ xs: "minmax(0, 1fr)", md: "auto minmax(0, 1fr)" }}
+      >
+        <Box
+          id="vertical-view-tabs-container"
+          gridColumn={1}
+          gridRow={1}
+          bgcolor={"#F2F2F2"}
+          position={"sticky"}
+          top={"calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))"}
+          maxHeight={
+            "calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px) - var(--footer-visible-height, 0px))"
+          }
+          display={{ xs: "none", md: "block" }}
         >
-          {entityType === "region" ? (
-            <RegionSearchHeader region={parseGenomicRangeString(entityID)} />
-          ) : entityType === "gwas" ? (
-            <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} />
-          ) : entityType === "bed" ? (
-            <BedUploadHeader fileName={entityID} />
-          ) : (
-            <EntityDetailsHeader assembly={assembly} entityType={entityType} entityID={entityID} />
-          )}
-          {/* View tabs, shown only on mobile */}
-          <Box
-            sx={{ display: { xs: "initial", md: "none" }, borderBottom: 1, borderColor: "divider" }}
-            id="element-details-desktop-tabs"
-          >
+          <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" />
+        </Box>
+        <Stack id="main-content" spacing={2} m={2} gridColumn={{ xs: 1, md: 2 }} gridRow={{ xs: 2, md: 1 }}>
+          <EntityHeader entityID={entityID} entityType={entityType} assembly={assembly} />
+          <Box id="horizonatal-view-tabs-container" display={{ xs: "block", md: "none" }}>
             <EntityDetailsTabs
               assembly={assembly}
               entityType={entityType}
               entityID={entityID}
               orientation="horizontal"
             />
+            <Divider />
           </Box>
           {children}
         </Stack>
-      </Stack>
+      </Box>
     </OpenEntityTabs>
   );
 }

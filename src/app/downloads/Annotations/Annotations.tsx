@@ -47,7 +47,7 @@ const Annotations = () => {
   const [assembly, tab] = selectedTab.split("/") as [Assembly, string];
 
   return (
-    <Stack gap={2} height={"100%"} justifyContent={"space-between"}>
+    <Stack gap={2} justifyContent={"space-between"}>
       <Stack direction={{ xs: "column", md: "row" }} gap={2}>
         <SimpleTreeView
           multiSelect={false}

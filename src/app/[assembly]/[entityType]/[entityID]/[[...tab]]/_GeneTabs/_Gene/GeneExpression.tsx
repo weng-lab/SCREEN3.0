@@ -14,7 +14,7 @@ import { useGeneData } from "common/hooks/useGeneData";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
-export interface GeneExpressionProps extends EntityViewComponentProps {}
+export type GeneExpressionProps = EntityViewComponentProps;
 
 export type SharedGeneExpressionPlotProps = EntityViewComponentProps & {
   rows: PointMetadata[];

@@ -22,7 +22,7 @@ export default function Downloads() {
   };
 
   return (
-    <Stack sx={{ marginX: "5%", marginY: 2, height: "100%" }} gap={2}>
+    <Stack sx={{ marginX: "5%", marginY: 2 }} gap={2}>
       <Box>
         <Tabs
           value={page}

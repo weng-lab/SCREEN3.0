@@ -1,9 +1,9 @@
 "use client";
 
-import { Tabs, Tab, Menu, MenuItem, Tooltip } from "@mui/material";
+import { Tabs, Tab, Menu, MenuItem, Tooltip, TabsOwnProps } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo  } from "react";
 import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -16,22 +16,13 @@ function CloneProps(props) {
 }
 
 export type ElementDetailsTabsProps = {
-  ref?: React.RefObject<HTMLDivElement>;
   assembly: Assembly;
   entityType: AnyEntityType;
   entityID: string;
-  orientation: "horizontal" | "vertical";
-  verticalTabsWidth?: number;
+  orientation: TabsOwnProps["orientation"];
 };
 
-const EntityDetailsTabs = ({
-  ref,
-  assembly,
-  entityType,
-  entityID,
-  orientation,
-  verticalTabsWidth,
-}: ElementDetailsTabsProps) => {
+const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: ElementDetailsTabsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   // If the route ends with just /entityID (like ccre would), set tab value to empty string, else to end slug of URL
@@ -44,6 +35,8 @@ const EntityDetailsTabs = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
     setAnchorEl(event.currentTarget);
   };
 
@@ -64,7 +57,6 @@ const EntityDetailsTabs = ({
 
   const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 
-  const horizontalTabs = orientation === "horizontal";
   const verticalTabs = orientation === "vertical";
 
   const iconTabs = useMemo(() => tabs.filter((x) => x.iconPath), [tabs]);
@@ -90,26 +82,76 @@ const EntityDetailsTabs = ({
   return (
     <>
       <Tabs
-        ref={ref}
         value={tabVal}
         onChange={handleChange}
         aria-label="Tabs"
         orientation={orientation}
         allowScrollButtonsMobile
+        slotProps={{
+          startScrollButtonIcon: { className: "start-scroll-icon" },
+          endScrollButtonIcon: { className: "end-scroll-icon" },
+        }}
         variant="scrollable"
-        scrollButtons={horizontalTabs ? true : false}
         sx={{
-          "& .MuiTab-root": {
-            "&.Mui-selected": {
-              backgroundColor: "rgba(73, 77, 107, .15)",
-            },
+          "& .MuiTab-root.Mui-selected": {
+            backgroundColor: verticalTabs ? "rgba(73, 77, 107, .15)" : "initial",
           },
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,
           },
-          width: verticalTabs ? verticalTabsWidth : "initial",
-          height: "100%",
-          backgroundColor: verticalTabs && "#F2F2F2",
+          "&.MuiTabs-root:has(.MuiTabScrollButton-root:not(.Mui-disabled) .start-scroll-icon)  .MuiTabs-scroller": {
+            // Start edge blur (left/top)
+            "&::before": {
+              content: '""',
+              position: "fixed",
+              zIndex: 1,
+              pointerEvents: "none",
+              ...(orientation === "horizontal"
+                ? {
+                    top: 0,
+                    bottom: 0,
+                    left: 40,
+                    width: 15,
+                    background: "linear-gradient(to right, #fff 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
+                  }
+                : {
+                    left: 0,
+                    right: 0,
+                    top: 40,
+                    height: 15,
+                    background: "linear-gradient(to bottom, #F2F2F2 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
+                  }),
+            },
+          },
+          "&.MuiTabs-root:has(.MuiTabScrollButton-root:not(.Mui-disabled) .end-scroll-icon)  .MuiTabs-scroller": {
+            // End edge blur (right/bottom)
+            "&::after": {
+              content: '""',
+              position: "fixed",
+              zIndex: 1,
+              pointerEvents: "none",
+              ...(orientation === "horizontal"
+                ? {
+                    top: 0,
+                    bottom: 0,
+                    right: 40,
+                    width: 15,
+                    background: "linear-gradient(to left, #fff 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
+                  }
+                : {
+                    left: 0,
+                    right: 0,
+                    bottom: 40,
+                    height: 15,
+                    background: "linear-gradient(to top, #F2F2F2 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
+                  }),
+            },
+          },
+          contain: "layout",
+          position: "sticky",
+          top: "calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))",
+          width: verticalTabs ? 100 : "100%",
+          maxHeight: "100%",
         }}
       >
         {iconTabs.map((tab) => {
@@ -157,6 +199,7 @@ const EntityDetailsTabs = ({
           />
         )}
       </Tabs>
+      {/* </BlurTabsContainer> */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}

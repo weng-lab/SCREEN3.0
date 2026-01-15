@@ -138,7 +138,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
   };
 
   return (
-    <Box position={"sticky"} top={0} zIndex={1}>
+    <AppBar sx={{ position: "sticky", top: 0 }}>
       <Stack
         direction={"row"}
         style={{
@@ -159,7 +159,6 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
         </Typography>
         <WarningAmberIcon />
       </Stack>
-      <AppBar position="static">
         <Toolbar sx={{ justifyContent: "space-between", backgroundColor: "primary.main" }}>
           {/* Main navigation items for desktop */}
           <Stack direction={"row"} spacing={1}>
@@ -321,7 +320,6 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
           <MobileMenu pageLinks={pageLinks} />
         </Toolbar>
       </AppBar>
-    </Box>
   );
 }
 export default Header;

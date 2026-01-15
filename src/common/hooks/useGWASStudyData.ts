@@ -53,7 +53,6 @@ export const useGWASStudyData = ({
       studyid: studyid
     },
     skip: entityType !== undefined && entityType !== "gwas",
-    fetchPolicy: "cache-and-network",
   });
 
   return {
