@@ -239,8 +239,8 @@ query getconservationHeatmapCoords($accession: [String]!) {
                 height={imageHeight}
                 margin={scalePoints}
                 hideLegend
-                xAxis={[{ min: 0, max: 240 }]}
-                yAxis={[{ min: 0, max: 240 }]}
+                xAxis={[{ min: 0, max: 240, tickSize: 0,  tickLabelStyle: { display: "none" }}]}
+                yAxis={[{ min: 0, max: 240, tickSize: 0,  tickLabelStyle: { display: "none" } }]}
                 series={[
                   {
                     data: graphData,
@@ -260,8 +260,8 @@ query getconservationHeatmapCoords($accession: [String]!) {
                 height={imageHeight}
                 margin={scalePoints}
                 hideLegend
-                xAxis={[{ min: 0, max: 240 }]}
-                yAxis={[{ min: 0, max: 240 }]}
+                xAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
+                yAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
                 series={[
                   {
                     data: graphData,
