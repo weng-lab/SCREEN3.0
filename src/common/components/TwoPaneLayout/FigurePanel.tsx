@@ -28,7 +28,7 @@ export default function FigurePanel({ value, figures, tableOpen, tableHeight }: 
 
         return (
           <Box
-            key={i}
+            key={`figure-${i}`}
             display={isActive ? "block" : "none"}
             id="figure_container"
             //use table height unless its not open, then set px height for umap so it doesnt slowly resize

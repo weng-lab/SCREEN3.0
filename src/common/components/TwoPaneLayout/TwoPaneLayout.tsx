@@ -39,6 +39,7 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMd = useMediaQuery(theme.breakpoints.down("lg"));
 
   //listens for changes in the size of the table component and passes that height into the figure container
   useEffect(() => {
@@ -127,7 +128,7 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
           {/* Used to force this container to have the same height as the below tabs. Prevents layout shift when closing the table */}
           <Tab sx={{ visibility: "hidden", minWidth: 0, px: 0 }} />
         </Stack>
-        <div ref={tableRef} style={{ height: "60vh" }}>
+        <div ref={tableRef} style={{ height: isMd ? "580px" : "60vh" }}>
           {TableComponent}
         </div>
       </Box>
