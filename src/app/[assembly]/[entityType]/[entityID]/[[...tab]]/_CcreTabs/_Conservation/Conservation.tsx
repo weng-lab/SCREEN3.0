@@ -19,7 +19,8 @@ import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import Button from "@mui/material/Button";
+import { useScreenshot } from "use-react-screenshot";
 
 type orthologRow = {
   accession: string;
@@ -32,7 +33,7 @@ type graphDataRow = {
   x: number;
   y: number;
   accession: string;
-}
+};
 
 export const ORTHOLOG_QUERY = gql(`
   query orthologTab($assembly: String!, $accession: [String!]) {
@@ -60,6 +61,20 @@ query getconservationHeatmapCoords($accession: [String]!) {
   }
 }
 `);
+
+  const heatmapsRef = React.useRef<HTMLDivElement>(null);
+  const [_, takeScreenshot] = useScreenshot();
+
+  const download = () => {
+    if (!heatmapsRef.current) return;
+
+    takeScreenshot(heatmapsRef.current).then((img) => {
+      const a = document.createElement("a");
+      a.href = img;
+      a.download = `${entity.entityID}.png`;
+      a.click();
+    });
+  };
 
   const {
     data: heatmapData,
@@ -224,52 +239,63 @@ query getconservationHeatmapCoords($accession: [String]!) {
         emptyTableFallback={"No Orthologous cCREs found"}
       />
       {heatmapLoading && entity.assembly !== "mm10" && (
-        <Box sx={{ display: "flex"}}>
+        <Box sx={{ display: "flex" }}>
           <CircularProgress />
-      </Box>
+        </Box>
       )}
-     {graphData.length > 0 && entity.assembly !== "mm10" && (
-        <Box sx={{ display: "flex", gap: 5, flexDirection: { xs: "column", md: "row" } }}>
-          <Box>
-            <Box>All cCRE Regions</Box>
-            <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
-              <Image src={AllcCREs} alt="All cCRE Regions plot" fill unoptimized />
-              <ScatterChart
-                width={imageWidth}
-                height={imageHeight}
-                margin={scalePoints}
-                hideLegend
-                xAxis={[{ min: 0, max: 240, tickSize: 0,  tickLabelStyle: { display: "none" }}]}
-                yAxis={[{ min: 0, max: 240, tickSize: 0,  tickLabelStyle: { display: "none" } }]}
-                series={[
-                  {
-                    data: graphData,
-                    valueFormatter: (v: graphDataRow) => v?.accession ?? "", 
-                    color: "red",
-                  },
-                ]}
-              />
-            </Box>
+      {graphData.length > 0 && entity.assembly !== "mm10" && (
+        <Box>
+          <Box sx={{ marginBottom: "5px" }}>
+            <Button variant="outlined" color="primary" size="small" onClick={download}>
+              Download Plots
+            </Button>
           </Box>
-          <Box>
-            <Box>{cCREType}</Box>
-            <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
-              <Image src={imgSrc} alt="specific cCRE plot" fill unoptimized />
-              <ScatterChart
-                width={imageWidth}
-                height={imageHeight}
-                margin={scalePoints}
-                hideLegend
-                xAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
-                yAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
-                series={[
-                  {
-                    data: graphData,
-                    valueFormatter: (v: graphDataRow) => v?.accession ?? "", 
-                    color: "red",
-                  },
-                ]}
-                />
+          <Box ref={heatmapsRef}>
+            <Box sx={{ display: "flex", gap: 5, flexDirection: { xs: "column", md: "row" } }}>
+              <Box>
+                <Box>All cCRE Regions</Box>
+                <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
+                  <Image src={AllcCREs} alt="All cCRE Regions plot" fill unoptimized />
+                  <ScatterChart
+                    width={imageWidth}
+                    height={imageHeight}
+                    margin={scalePoints}
+                    hideLegend
+                    xAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
+                    yAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
+                    series={[
+                      {
+                        data: graphData,
+                        valueFormatter: (v: graphDataRow) => v?.accession ?? "",
+                        color: "red",
+                        highlightScope: { highlight: "item" },
+                      },
+                    ]}
+                  />
+                </Box>
+              </Box>
+              <Box>
+                <Box>{cCREType}</Box>
+                <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
+                  <Image src={imgSrc} alt="specific cCRE plot" fill unoptimized />
+                  <ScatterChart
+                    width={imageWidth}
+                    height={imageHeight}
+                    margin={scalePoints}
+                    hideLegend
+                    xAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
+                    yAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
+                    series={[
+                      {
+                        data: graphData,
+                        valueFormatter: (v: graphDataRow) => v?.accession ?? "",
+                        color: "red",
+                        highlightScope: { highlight: "item" },
+                      },
+                    ]}
+                  />
+                </Box>
+              </Box>
             </Box>
           </Box>
         </Box>

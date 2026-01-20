@@ -23,6 +23,7 @@
     "@mui/material": "^7",
     "@mui/material-nextjs": "^7",
     "@mui/system": "^7",
+    "@mui/x-charts": "^8.25.0",
     "@mui/x-data-grid-premium": "^8",
     "@mui/x-tree-view": "^8.9.0",
     "@types/d3-scale-chromatic": "^3.1.0",
@@ -42,6 +43,7 @@
     "react-dom": "^19",
     "react-dropzone": "^14.3.8",
     "umms-gb": "^3.9.14",
+    "use-react-screenshot": "^4.0.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
