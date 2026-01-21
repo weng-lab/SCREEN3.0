@@ -201,7 +201,9 @@ export default function GenomeBrowserView({
               Select LD Block
             </Button>
           )}
-          <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
+          {entity.entityType !== "gwas" && (
+            <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
+          )}
         </Box>
         {/* Add new track select button and modal here */}
       </Stack>
