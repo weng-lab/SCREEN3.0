@@ -155,7 +155,22 @@ function generateTrack(
   // Handle biosample folders
   const sel = row as BiosampleRowInfo;
   const color = ASSAY_COLORS[sel.assay.toLowerCase()] || "#000000";
+  const isAggregate = sel.id.includes("aggregate");
   let track: Track;
+
+  // Generate display title
+  let title = sel.displayName;
+  if (isAggregate) {
+    if (sel.assay.toLowerCase() === "ccre") {
+      title = "All ENCODE cCREs colored by group";
+    } else {
+      // Replace "data" with "{assay} signal"
+      title = sel.displayName.replace("data", `${sel.assay} signal`);
+    }
+  } else {
+    // Append assay at the end for non-aggregate tracks
+    title = `${sel.displayName}, ${sel.assay}`;
+  }
 
   switch (sel.assay.toLowerCase()) {
     case "chromhmm":
@@ -164,7 +179,7 @@ function generateTrack(
         ...defaultBigBed,
         id: sel.id,
         url: sel.url,
-        title: sel.displayName,
+        title,
         color,
       };
       break;
@@ -173,7 +188,7 @@ function generateTrack(
         ...defaultBigWig,
         id: sel.id,
         url: sel.url,
-        title: sel.displayName,
+        title,
         color,
       };
   }
