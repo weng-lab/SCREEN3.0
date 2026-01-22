@@ -174,17 +174,15 @@ export default function Page({
     },
   });
 
-  const results = data ?? [];
-
-  const grouped = results.reduce<Record<string, Result[]>>((acc, r) => {
+  const grouped = data?.reduce<Record<string, Result[]>>((acc, r) => {
     if (!acc[r.type]) acc[r.type] = [];
     acc[r.type].push(r);
     return acc;
   }, {});
 
-  const resultTypes = Object.keys(grouped);
+  const resultTypes = grouped ? Object.keys(grouped) : [];
 
-  const noResults = !resultTypes.length;
+  const noResults = data && !data.length;
 
   return (
     <Stack spacing={2} margin={{ xs: 2, lg: 3, xl: 4 }}>
@@ -195,29 +193,43 @@ export default function Page({
             : `Results matching "${searchStrings.join(" ")}"`
         }
       />
-      <AlertSection type={noResults ? "no-results" : encodeSearch ? "encode" : "old-screen"} />
-      {loading && <CircularProgress />}
+      {<AlertSection type={noResults ? "no-results" : encodeSearch ? "encode" : "old-screen"} />}
       {error && <Alert severity="error">{`Error when searching ${searchStrings.join(" ")}`}</Alert>}
-      <TabContext value={tabValue}>
-        <TabList onChange={handleChange} aria-label="lab API tabs example">
+      {loading ? (
+        <CircularProgress />
+      ) : noResults ? (
+        <div>
+          <Typography>Try Searching for:</Typography>
+          <ul style={{ margin: 0 }}>
+            <Typography component={"li"}>A gene name (e.g., &quot;SP1&quot;)</Typography>
+            <Typography component={"li"}>Genomic coordinates (e.g., &quot;chr12:53380176-53385176&quot;)</Typography>
+            <Typography component={"li"}>A cCRE accession or rsID</Typography>
+          </ul>
+        </div>
+      ) : (
+        <TabContext value={tabValue}>
+          <TabList onChange={handleChange} aria-label="lab API tabs example">
+            {resultTypes.map((x, i) => (
+              <Tab key={i} label={`${x} (${grouped[x].length})`} value={i} />
+            ))}
+          </TabList>
           {resultTypes.map((x, i) => (
-            <Tab key={i} label={`${x} (${grouped[x].length})`} value={i} />
+            <TabPanel key={i} value={i} sx={{ p: 0 }}>
+              <Stack spacing={2}>
+                {grouped[x].map((result, idx) =>
+                  result.type === "Legacy cCRE" ? (
+                    <LegacyCcreReturnEl result={result} assembly={assembly} key={`${x}-${idx}`} />
+                  ) : (
+                    <ReturnEl result={result} assembly={assembly} key={`${x}-${idx}`} />
+                  )
+                )}
+              </Stack>
+            </TabPanel>
           ))}
-        </TabList>
-        {resultTypes.map((x, i) => (
-          <TabPanel key={i} value={i} sx={{ p: 0 }}>
-            <Stack spacing={2}>
-              {grouped[x].map((result, idx) =>
-                result.type === "Legacy cCRE" ? (
-                  <LegacyCcreReturnEl result={result} assembly={assembly} key={`${x}-${idx}`} />
-                ) : (
-                  <ReturnEl result={result} assembly={assembly} key={`${x}-${idx}`} />
-                )
-              )}
-            </Stack>
-          </TabPanel>
-        ))}
-      </TabContext>
+        </TabContext>
+      )}
     </Stack>
   );
 }
+
+
