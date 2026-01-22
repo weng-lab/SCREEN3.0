@@ -4,13 +4,7 @@ import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
 import { expandCoordinates, randomColor } from "../utils";
 import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
-import {
-  defaultHumanTracks,
-  defaultMouseTracks,
-  gwasTracks,
-  injectCallbacks,
-  TrackCallbacks,
-} from "../TrackSelect/defaultTracks";
+import { gwasTracks, injectCallbacks, TrackCallbacks } from "../TrackSelect/defaultTracks";
 
 /**
  * Pass entity name/id and coordinates to get back the browser and track stores.
@@ -73,10 +67,8 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
 export function useLocalTracks(assembly: string, entitytype: AnyEntityType, callbacks?: TrackCallbacks) {
   const localTracks = getLocalTracks(assembly);
 
-  const defaultTracks = assembly === "GRCh38" ? defaultHumanTracks : defaultMouseTracks;
-
-  // Get base tracks (from storage or defaults)
-  let initialTracks = localTracks || defaultTracks;
+  // Start empty if no stored tracks - TrackSelect will populate defaults via initialSelection
+  let initialTracks = localTracks || [];
   if (entitytype === "gwas") {
     initialTracks = gwasTracks;
   }

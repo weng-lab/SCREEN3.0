@@ -1,30 +1,43 @@
-import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
-import { IconButton } from "@mui/material";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
 import { Track, TrackStoreInstance } from "@weng-lab/genomebrowser";
-import { createSelectionStore, RowInfo, TrackSelect } from "@weng-lab/genomebrowser-ui";
-import { Assembly } from "@weng-lab/genomebrowser-ui/dist/TrackSelect/consts";
+import { BiosampleRowInfo, foldersByAssembly, GeneRowInfo, TrackSelect } from "@weng-lab/genomebrowser-ui";
 import { ASSAY_COLORS } from "common/colors";
-import { useCallback, useMemo, useState } from "react";
-import { defaultBigBed, defaultBigWig } from "./defaultConfigs";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { defaultBigBed, defaultBigWig, defaultTranscript } from "./defaultConfigs";
 import { injectCallbacks, TrackCallbacks } from "./defaultTracks";
 
-function getLocalStorage(assembly: string): Set<string> | null {
-  if (typeof window === "undefined" || !window.sessionStorage) return null;
+type Assembly = "GRCh38" | "mm10";
 
-  const selectedIds = sessionStorage.getItem(assembly + "-selected-tracks");
-  if (!selectedIds) return null;
-  const idsArray = JSON.parse(selectedIds) as string[];
-  return new Set(idsArray);
-}
+const defaultHumanSelections = new Map<string, Set<string>>([
+  ["human-genes", new Set(["gencode-basic"])],
+  [
+    "human-biosamples",
+    new Set([
+      "ccre-aggregate",
+      "dnase-aggregate",
+      "h3k4me3-aggregate",
+      "h3k27ac-aggregate",
+      "ctcf-aggregate",
+      "atac-aggregate",
+    ]),
+  ],
+]);
 
-function setLocalStorage(trackIds: Set<string>, assembly: string) {
-  sessionStorage.setItem(assembly + "-selected-tracks", JSON.stringify([...trackIds]));
-}
+const defaultMouseSelections = new Map<string, Set<string>>([
+  ["mouse-genes", new Set(["gencode-basic"])],
+  [
+    "mouse-biosamples",
+    new Set([
+      "ccre-aggregate",
+      "dnase-aggregate",
+      "h3k4me3-aggregate",
+      "h3k27ac-aggregate",
+      "ctcf-aggregate",
+      "atac-aggregate",
+    ]),
+  ],
+]);
 
 export default function TrackSelectModal({
   trackStore,
@@ -41,113 +54,132 @@ export default function TrackSelectModal({
   const insertTrack = trackStore((s) => s.insertTrack);
   const removeTrack = trackStore((s) => s.removeTrack);
 
-  const selectionStore = useMemo(() => {
-    const localIds = getLocalStorage(assembly);
-    const ids = localIds != null ? localIds : new Set<string>();
-    return createSelectionStore(assembly as Assembly, ids);
-  }, [assembly]);
+  const folders = useMemo(() => foldersByAssembly[assembly as Assembly], [assembly]);
 
-  const rowById = selectionStore((s) => s.rowById);
+  const storageKey = `${assembly}-selected-tracks`;
+
+  const initialSelection = useMemo(
+    () => (assembly === "GRCh38" ? defaultHumanSelections : defaultMouseSelections),
+    [assembly]
+  );
 
   const handleSubmit = useCallback(
-    (newTrackIds: Set<string>) => {
+    (selectedByFolder: Map<string, Set<string>>) => {
       const currentIds = new Set(tracks.map((t) => t.id));
+      const selectedIds = new Set<string>();
+      const tracksToAdd: Array<{ row: BiosampleRowInfo | GeneRowInfo; folderId: string }> = [];
 
-      // Build tracks to add from newTrackIds + rowById lookup
-      const tracksToAdd = Array.from(newTrackIds)
-        .filter((id) => !currentIds.has(id)) // not in current track list
-        .map((id) => rowById.get(id)) // get RowInfo object
-        .filter((track): track is RowInfo => track !== undefined); // filter out undefined
+      for (const folder of folders) {
+        const folderSelection = selectedByFolder.get(folder.id) ?? new Set<string>();
+        folderSelection.forEach((id) => {
+          selectedIds.add(id);
+          if (!currentIds.has(id)) {
+            const row = folder.rowById.get(id);
+            if (row) {
+              tracksToAdd.push({ row, folderId: folder.id });
+            }
+          }
+        });
+      }
 
-      const tracksToRemove = tracks.filter((t) => {
-        return !t.id.includes("ignore") && !newTrackIds.has(t.id);
-      });
-
-      console.log("removing", tracksToRemove);
+      // Remove tracks not in selection (except those with "ignore" in ID)
+      const tracksToRemove = tracks.filter((t) => !t.id.includes("ignore") && !selectedIds.has(t.id));
       for (const t of tracksToRemove) {
         removeTrack(t.id);
       }
 
-      for (const s of tracksToAdd) {
-        const track = generateTrack(s, callbacks);
-        if (track === null) continue;
-        insertTrack(track);
+      // Add new tracks
+      for (const { row, folderId } of tracksToAdd) {
+        const track = generateTrack(row, folderId, assembly as Assembly, callbacks);
+        if (track) insertTrack(track);
       }
-
-      // Save the track IDs (not the auto-generated group IDs)
-      setLocalStorage(newTrackIds, assembly);
-      // Close the dialog
-      setOpen(false);
     },
-    [tracks, removeTrack, insertTrack, callbacks, assembly, rowById]
+    [tracks, removeTrack, insertTrack, callbacks, folders, assembly]
   );
 
-  const handleCancel = () => {
-    setOpen(false);
-  };
-
-  // Handle reset: clear selections and remove non-default tracks
-  const handleReset = () => {
-    // Clear the selection store
-    selectionStore.getState().clear();
-
-    // Remove all non-default tracks from the browser
-    const tracksToRemove = tracks.filter((t) => !t.id.includes("ignore"));
-    for (const t of tracksToRemove) {
-      removeTrack(t.id);
+  const handleClear = useCallback(() => {
+    for (const t of tracks) {
+      if (!t.id.includes("ignore")) {
+        removeTrack(t.id);
+      }
     }
+  }, [tracks, removeTrack]);
 
-    // Clear localStorage for selected tracks
-    setLocalStorage(new Set(), assembly);
-  };
+  // On first load, apply initial selection if no stored selection exists
+  useEffect(() => {
+    const stored = sessionStorage.getItem(storageKey);
+    if (!stored) {
+      handleSubmit(initialSelection);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
       <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => setOpen(true)}>
         Select Tracks
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="lg" fullWidth>
-        <DialogTitle
-          bgcolor="#0c184a"
-          color="white"
-          display={"flex"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          fontWeight={"bold"}
-        >
-          Biosample Tracks
-          <IconButton size="large" onClick={() => setOpen(false)} sx={{ color: "white", padding: 0 }}>
-            <CloseIcon fontSize="large" />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <TrackSelect store={selectionStore} onSubmit={handleSubmit} onCancel={handleCancel} onReset={handleReset} />
-        </DialogContent>
-      </Dialog>
+      <TrackSelect
+        folders={folders}
+        storageKey={storageKey}
+        initialSelection={initialSelection}
+        onSubmit={handleSubmit}
+        onClear={handleClear}
+        maxTracks={30}
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Track Selection"
+      />
     </>
   );
 }
 
-function generateTrack(sel: RowInfo, callbacks?: TrackCallbacks): Track {
+function generateTrack(
+  row: BiosampleRowInfo | GeneRowInfo,
+  folderId: string,
+  assembly: Assembly,
+  callbacks?: TrackCallbacks
+): Track | null {
+  // Handle gene folders
+  if (folderId.includes("genes")) {
+    const geneRow = row as GeneRowInfo;
+    const track: Track = {
+      ...defaultTranscript,
+      id: geneRow.id,
+      assembly,
+      version: geneRow.versions[geneRow.versions.length - 1], // latest version
+    };
+    return callbacks ? injectCallbacks(track, callbacks) : track;
+  }
+
+  // Handle biosample folders
+  const sel = row as BiosampleRowInfo;
   const color = ASSAY_COLORS[sel.assay.toLowerCase()] || "#000000";
+  const isAggregate = sel.id.includes("aggregate");
   let track: Track;
+
+  // Generate display title
+  let title = sel.displayName;
+  if (isAggregate) {
+    if (sel.assay.toLowerCase() === "ccre") {
+      title = "All ENCODE cCREs colored by group";
+    } else {
+      // Replace "data" with "{assay} signal"
+      title = sel.displayName.replace("data", `${sel.assay} signal`);
+    }
+  } else {
+    // Append assay at the end for non-aggregate tracks
+    title = `${sel.displayName}, ${sel.assay}`;
+  }
 
   switch (sel.assay.toLowerCase()) {
     case "chromhmm":
-      track = {
-        ...defaultBigBed,
-        id: sel.id,
-        url: sel.url,
-        title: sel.displayname,
-        color,
-      };
-      break;
     case "ccre":
       track = {
         ...defaultBigBed,
         id: sel.id,
         url: sel.url,
-        title: sel.displayname,
+        title,
         color,
       };
       break;
@@ -156,7 +188,7 @@ function generateTrack(sel: RowInfo, callbacks?: TrackCallbacks): Track {
         ...defaultBigWig,
         id: sel.id,
         url: sel.url,
-        title: sel.displayname,
+        title,
         color,
       };
   }
