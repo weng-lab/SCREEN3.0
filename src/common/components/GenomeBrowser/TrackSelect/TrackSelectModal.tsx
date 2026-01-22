@@ -11,7 +11,7 @@ type Assembly = "GRCh38" | "mm10";
 
 const defaultHumanSelections = new Map<string, Set<string>>([
   ["human-genes", new Set(["gencode-basic"])],
-  [age 
+  [
     "human-biosamples",
     new Set([
       "ccre-aggregate",
