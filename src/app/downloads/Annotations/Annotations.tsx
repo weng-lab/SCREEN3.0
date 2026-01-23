@@ -1,4 +1,4 @@
-import { Stack, styled } from "@mui/material";
+import { Box, Stack, styled } from "@mui/material";
 import React, { useState } from "react";
 import AnnotationsHeader from "./Header";
 import AnnotationsByClass from "./AnnotationsByClass";
@@ -47,8 +47,13 @@ const Annotations = () => {
   const [assembly, tab] = selectedTab.split("/") as [Assembly, string];
 
   return (
-    <Stack gap={2} justifyContent={"space-between"}>
-      <Stack direction={{ xs: "column", md: "row" }} gap={2}>
+    <Box display={"grid"} height={"stretch"} gridTemplateRows={"1fr auto"} gap={2}>
+      <Box
+        display={"grid"}
+        gridTemplateColumns={{ xs: "auto", md: "auto 1fr" }}
+        gridTemplateRows={{ xs: "auto 1fr", md: "auto" }}
+        gap={2}
+      >
         <SimpleTreeView
           multiSelect={false}
           selectedItems={selectedTab}
@@ -72,13 +77,13 @@ const Annotations = () => {
           </StyledTreeItem>
         </SimpleTreeView>
         {/* overflow: visible allows box shadows of buttons to not be clipped */}
-        <Stack flexGrow={1} overflow={"visible"} gap={2} minWidth={0}>
+        <Stack overflow={"visible"} gap={2} minWidth={0}>
           {assembly !== "other" && <AnnotationsHeader assembly={assembly} />}
           <Content tab={tab} assembly={assembly} />
         </Stack>
-      </Stack>
+      </Box>
       <AnnotationsContactUs />
-    </Stack>
+    </Box>
   );
 };
 
