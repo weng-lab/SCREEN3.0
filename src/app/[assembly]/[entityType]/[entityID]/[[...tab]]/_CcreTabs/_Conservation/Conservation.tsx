@@ -148,11 +148,11 @@ query getconservationHeatmapCoords($accession: [String]!) {
   const imageWidth = 250;
   const imageHeight = imageWidth * (imgSrc.height / imgSrc.width);
 
-  const scalePoints = {
-    left: -40,
-    right: 5,
-    top: 5,
-    bottom: -22,
+  const heatmapMargins = {
+    left: -50,
+    right: 30,
+    top: 6,
+    bottom: -6,
   };
 
   const graphData: graphDataRow[] =
@@ -252,49 +252,110 @@ query getconservationHeatmapCoords($accession: [String]!) {
           </Box>
           <Box ref={heatmapsRef}>
             <Box sx={{ display: "flex", gap: 5, flexDirection: { xs: "column", md: "row" } }}>
-              <Box>
+              <Box
+                sx={{
+                  position: "relative",
+                  overflow: "visible",
+                }}
+              >
                 <Box>All cCRE Regions</Box>
-                <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
-                  <Image src={AllcCREs} alt="All cCRE Regions plot" fill unoptimized />
-                  <ScatterChart
-                    width={imageWidth}
-                    height={imageHeight}
-                    margin={scalePoints}
-                    hideLegend
-                    xAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
-                    yAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
-                    series={[
-                      {
-                        data: graphData,
-                        valueFormatter: (v: graphDataRow) => v?.accession ?? "",
-                        color: "red",
-                        highlightScope: { highlight: "item" },
-                      },
-                    ]}
-                  />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    width: imageWidth,
+                    height: imageHeight,
+                    overflow: "visible",
+                  }}
+                >
+                  <Image style={{ marginLeft: "10px" }} src={AllcCREs} alt="All cCRE Regions plot" fill unoptimized />
                 </Box>
+                <ScatterChart
+                  width={imageWidth }
+                  height={imageHeight + 36}
+                  margin={heatmapMargins}
+                  hideLegend
+                  xAxis={[
+                    {
+                      min: 0,
+                      max: 240,
+                      tickSize: 0,
+                      label: "x-axis",
+                      labelStyle: {
+                        transform: "translateY(-25px)",
+                      },
+                      tickLabelStyle: { display: "none" },
+                    },
+                  ]}
+                  yAxis={[
+                    {
+                      min: 0,
+                      max: 240,
+                      tickSize: 0,
+                      label: "y-axis",
+                      labelStyle: {
+                        transform: "rotate(-90deg) translateY(-125px) translateX(-35px)",
+                      },
+                      tickLabelStyle: { display: "none" },
+                    },
+                  ]}
+                  series={[
+                    {
+                      data: graphData,
+                      label: entity.entityID,
+                      color: "red",
+                      highlightScope: { highlight: "item" },
+                    },
+                  ]}
+                />
               </Box>
-              <Box>
+              <Box
+                sx={{
+                  position: "relative",
+                  overflow: "visible",
+                }}
+              >
                 <Box>{cCREType}</Box>
-                <Box sx={{ position: "relative", width: imageWidth, height: imageHeight }}>
-                  <Image src={imgSrc} alt="specific cCRE plot" fill unoptimized />
-                  <ScatterChart
-                    width={imageWidth}
-                    height={imageHeight}
-                    margin={scalePoints}
-                    hideLegend
-                    xAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
-                    yAxis={[{ min: 0, max: 240, tickSize: 0, tickLabelStyle: { display: "none" } }]}
-                    series={[
-                      {
-                        data: graphData,
-                        valueFormatter: (v: graphDataRow) => v?.accession ?? "",
-                        color: "red",
-                        highlightScope: { highlight: "item" },
-                      },
-                    ]}
-                  />
+                <Box sx={{ position: "absolute", width: imageWidth, height: imageHeight, overflow: "visible" }}>
+                  <Image style={{ marginLeft: "10px" }} src={imgSrc} alt="specific cCRE plot" fill unoptimized />
                 </Box>
+                <ScatterChart
+                  width={imageWidth + 36}
+                  height={imageHeight + 36}
+                  margin={heatmapMargins}
+                  hideLegend
+                  xAxis={[
+                    {
+                      min: 0,
+                      max: 240,
+                      tickSize: 0,
+                      labelStyle: {
+                        transform: "translateY(-25px)",
+                      },
+                      label: "x-axis",
+                      tickLabelStyle: { display: "none" },
+                    },
+                  ]}
+                  yAxis={[
+                    {
+                      min: 0,
+                      max: 240,
+                      tickSize: 0,
+                      label: "y-axis",
+                      labelStyle: {
+                        transform: "rotate(-90deg) translateY(-125px) translateX(-35px)",
+                      },
+                      tickLabelStyle: { display: "none" },
+                    },
+                  ]}
+                  series={[
+                    {
+                      data: graphData,
+                      label: entity.entityID,
+                      color: "red",
+                      highlightScope: { highlight: "item" },
+                    },
+                  ]}
+                />
               </Box>
             </Box>
           </Box>
