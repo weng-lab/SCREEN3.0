@@ -344,7 +344,13 @@ export default function HighlightDialog({ browserStore }: { browserStore: Browse
 
   return (
     <>
-      <Button variant="contained" startIcon={<HighlightIcon />} size="small" onClick={() => setOpen(true)}>
+      <Button
+        variant="contained"
+        startIcon={<HighlightIcon />}
+        size="small"
+        onClick={() => setOpen(true)}
+        sx={{ minHeight: 44 }}
+      >
         Highlights
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>

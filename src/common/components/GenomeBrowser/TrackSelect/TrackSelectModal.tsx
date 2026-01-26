@@ -116,7 +116,13 @@ export default function TrackSelectModal({
 
   return (
     <>
-      <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => setOpen(true)}>
+      <Button
+        variant="contained"
+        startIcon={<EditIcon />}
+        size="small"
+        onClick={() => setOpen(true)}
+        sx={{ minHeight: 44 }}
+      >
         Select Tracks
       </Button>
       <TrackSelect

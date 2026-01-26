@@ -143,9 +143,15 @@ export default function GenomeBrowserView({
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
 
   return (
-    <Stack>
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
-        <Box display="flex" gap={2} alignItems="center" flex={1}>
+    <Stack sx={{ overflow: "hidden" }}>
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={2}
+        justifyContent={"space-between"}
+        alignItems={{ xs: "stretch", md: "center" }}
+        sx={{ width: "100%", maxWidth: "100%" }}
+      >
+        <Box sx={{ width: { xs: "100%", md: "auto" }, minWidth: { md: 300 }, maxWidth: { md: 450 }, flex: { md: 1 } }}>
           <GenomeSearch
             size="small"
             assembly={entity.assembly}
@@ -153,7 +159,7 @@ export default function GenomeBrowserView({
             onSearchSubmit={handeSearchSubmit}
             queries={["Gene", "SNP", "cCRE", "Coordinate"]}
             geneLimit={3}
-            sx={{ minWidth: 300, maxWidth: 450, flex: 1 }}
+            sx={{ width: "100%" }}
             slots={{
               button: (
                 <IconButton sx={{ color: theme.palette.primary.main }}>
@@ -178,34 +184,46 @@ export default function GenomeBrowserView({
               },
             }}
           />
-          {entity.entityType !== "gwas" && (
-            <Button
-              variant="contained"
-              startIcon={<PageviewIcon />}
-              color="primary"
-              size="small"
-              onClick={() =>
-                setDomain(
-                  expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType)
-                )
-              }
-            >
-              Recenter on {name || "Selected Region"}
-            </Button>
-          )}
         </Box>
-        <Box display="flex" gap={2} alignItems="center">
+        {entity.entityType !== "gwas" && (
+          <Button
+            variant="contained"
+            startIcon={<PageviewIcon />}
+            color="primary"
+            size="small"
+            onClick={() =>
+              setDomain(expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType))
+            }
+            sx={{
+              width: { xs: "100%", md: "auto" },
+              whiteSpace: "nowrap",
+              minHeight: 44,
+            }}
+          >
+            Recenter on {name || "Selected Region"}
+          </Button>
+        )}
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            width: { xs: "100%", md: "auto" },
+            justifyContent: { xs: "stretch", md: "flex-end" },
+            "& > button": {
+              flex: { xs: 1, md: "none" },
+            },
+          }}
+        >
           <HighlightDialog browserStore={browserStore} />
           {entity.entityType === "gwas" && (
-            <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => handleSelectLDBlock()}>
+            <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => handleSelectLDBlock?.()}>
               Select LD Block
             </Button>
           )}
           {entity.entityType !== "gwas" && (
             <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
           )}
-        </Box>
-        {/* Add new track select button and modal here */}
+        </Stack>
       </Stack>
       {/* Browser Controls */}
       <Stack
