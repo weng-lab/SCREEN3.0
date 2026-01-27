@@ -8,7 +8,7 @@ import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/useGeneDescription";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { AnyEntityType } from "../../entityTabsConfig";
-
+import { expandCoordinates } from "../GenomeBrowser/utils";
 export type EntityDetailsHeaderProps = {
   assembly: Assembly;
   entityType: AnyEntityType;
@@ -17,18 +17,20 @@ export type EntityDetailsHeaderProps = {
 
 export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDetailsHeaderProps) => {
   const { data: entityMetadata, loading, error: _ } = useEntityMetadata({ assembly, entityType, entityID });
+  const assemblyDb = assembly === "mm10" ? "mm10" : "hg38";
+  const ucscTrack = assembly === "mm10" ? "encodeCcreCombined" : "cCREs";
   const c =
     entityMetadata?.__typename !== "GwasStudiesMetadata" &&
     entityMetadata?.__typename !== "Bed" &&
     (entityMetadata?.__typename === "SCREENSearchResult"
       ? {
-          chromosome: entityMetadata?.chrom,
-          start: entityMetadata?.start,
-          end: entityMetadata?.start + entityMetadata?.len,
-        }
+        chromosome: entityMetadata?.chrom,
+        start: entityMetadata?.start,
+        end: entityMetadata?.start + entityMetadata?.len,
+      }
       : entityMetadata?.coordinates);
   const coordinatesDisplay = c && formatGenomicRange(c);
-
+  const coordinatesGenomeBrowser = c && formatGenomicRange(expandCoordinates(c, entityType))
   const description = useGeneDescription(entityID, entityType).description;
   const SnpAlleleFrequencies = useSnpFrequencies([entityID], entityType);
 
@@ -97,11 +99,12 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
       </Grid>
       <Grid
         size={{ xs: 12, sm: 3 }}
-        display={entityType === "ccre" ? "none" : "flex"}
+        display={entityType === "ccre" ? "flex" : "flex"}
         height={{ xs: 60 }}
         justifyContent={"flex-end"}
+       
       >
-        <Button
+        {entityType !== "ccre" && <Button
           variant="contained"
           href={
             entityID
@@ -124,6 +127,29 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             fill
             alt="genecard-snpcard-button"
           />
+        </Button>}
+        <Button
+          variant="contained"
+          href={
+            //https://users.wenglab.org/niship/ucsc_gb_icon.png
+            coordinatesGenomeBrowser
+              ? `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=${assemblyDb}&g=${ucscTrack}&position=${coordinatesGenomeBrowser}`
+              //: `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cCREs&position=chr19:50,417,519-50,417,853`
+              : `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=${assemblyDb}&g=${ucscTrack}&position=default`
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ width: "48%", height: "100%", backgroundColor: "white" }}
+        >
+          <Image
+            style={{ objectFit: "contain" }}
+            src={"https://genome.ucsc.edu/images/ucscHelixLogo.png"}
+            fill
+            unoptimized
+            alt="ucsc-gb-icon"
+          />
+
+          Open in UCSC
         </Button>
       </Grid>
     </Grid>

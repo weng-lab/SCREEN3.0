@@ -1,5 +1,5 @@
 "use client";
-import React, {useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import {
   DataTable,
@@ -17,7 +17,8 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "common/types/globalTypes";
-import { Stack } from "@mui/material";
+import { Stack, Tabs, Tab } from "@mui/material";
+import { useCcreRpeaks } from "common/hooks/useCcreRpeaks";
 
 type TFBindData = {
   name: string;
@@ -112,8 +113,22 @@ const TF_EXPERIMENT_TOTALS = gql(`
 //How much slower is it to do all in one?
 
 export const TfBinding = ({ entity }: EntityViewComponentProps) => {
+ const [tab, setTab] = useState<"binding_tfs" | "overlapping_peaks">("binding_tfs") ;
   const assembly = entity.assembly;
+ 
 
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setTab(newValue as "binding_tfs" | "overlapping_peaks");
+  };
+
+  const {
+    data: dataCcreRPeaks,
+    loading: loadingCcreRPeaks,
+    error: errorCcreRPeaks,
+  } = useCcreRpeaks({
+    assembly: entity.assembly,
+    accession: [entity.entityID],
+  });
   const {
     data: dataCcre,
     loading: loadingCcre,
@@ -173,22 +188,66 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
     () =>
       tfBindingData
         ? Array.from(
-            new Map(
-              tfBindingData.peaks.peaks.map((x) => {
-                const obj = {
-                  tf: x.dataset.target,
-                  biosample: x.dataset.biosample,
-                  expID: x.experiment_accession,
-                  fileID: x.file_accession,
-                };
-                return [`${obj.expID}}`, obj]; // Use expID as unique ID to deduplicate
-              })
-            ).values()
-          )
+          new Map(
+            tfBindingData.peaks.peaks.map((x) => {
+              const obj = {
+                tf: x.dataset.target,
+                biosample: x.dataset.biosample,
+                expID: x.experiment_accession,
+                fileID: x.file_accession,
+              };
+              return [`${obj.expID}}`, obj]; // Use expID as unique ID to deduplicate
+            })
+          ).values()
+        )
         : undefined,
     [tfBindingData]
   );
-
+  const overlappingPeaksCols: GridColDef[] = [
+    {
+      field: "tf",
+      headerName: "Transcription Factor",
+       renderCell: (params) => (
+        <LinkComponent
+          href={`https://www.factorbook.org/tf/human/${params.value}/function`}
+          openInNewTab
+          showExternalIcon
+          underline="hover"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {params.value}
+        </LinkComponent>
+      ),
+    },
+    {
+      field: "rpeak_chromosome",
+      headerName: "Chromosome"
+    },
+    {
+      headerName: "Start",
+      field: "rpeak_start",
+      valueFormatter: (value: number) => value?.toLocaleString(),
+    },
+    {
+      headerName: "Stop",
+      field: "rpeak_stop",
+      valueFormatter: (value: number) => value?.toLocaleString(),
+    },
+    {
+      field: "decorator_chromosome",
+      headerName: "Motif Site Chromosome"
+    },
+    {
+      headerName: "Motif Site Start",
+      field: "decorator_start",
+      valueFormatter: (value: number) => value?.toLocaleString(),
+    },
+    {
+      headerName: "Motif Site Stop",
+      field: "decorator_stop",
+      valueFormatter: (value: number) => value?.toLocaleString(),
+    },
+  ];
   const columns: GridColDef<(typeof rows)[number]>[] = [
     {
       field: "tf",
@@ -290,24 +349,59 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
   );
 
   return (
-    <Table
-      apiRef={apiRef}
-      rows={rows}
-      columns={columns}
-      loading={loadingTfBinding}
-      error={!!errorTfBindingData}
-      label={`TFs that bind to ${entity.entityID}`}
-      disableRowGrouping={false}
-      divHeight={{ height: 600 }}
-      groupingColDef={groupingColDef}
-      initialState={{
-        rowGrouping: {
-          model: ["tf"],
-        },
-        sorting: {
-          sortModel: [{ field: GRID_ROW_GROUPING_SINGLE_GROUPING_FIELD, sort: "desc" }],
-        },
-      }}
-    />
+    <>
+     <Tabs
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
+        value={tab}
+        onChange={handleChange}
+        sx={{
+          "& .MuiTabs-scrollButtons.Mui-disabled": {
+            opacity: 0.3,
+          },
+        }}
+      >
+        <Tab value="binding_tfs" label="Binding Transcription" />
+        <Tab value="overlapping_peaks" label="Overlapping Representative ChIP-seq Peaks" />
+      </Tabs>
+      {tab==="binding_tfs" ?<Table
+        apiRef={apiRef}
+        rows={rows}
+        columns={columns}
+        loading={loadingTfBinding}
+        error={!!errorTfBindingData}
+        label={`TFs that bind to ${entity.entityID}`}
+        disableRowGrouping={false}
+        divHeight={{ height: 600 }}
+        groupingColDef={groupingColDef}
+        initialState={{
+          rowGrouping: {
+            model: ["tf"],
+          },
+          sorting: {
+            sortModel: [{ field: GRID_ROW_GROUPING_SINGLE_GROUPING_FIELD, sort: "desc" }],
+          },
+        }}
+      />:
+      <Table
+        label={`Overlapping Representative ChIP-seq Peaks for transcription factors and other DNA-associated proteins`}
+        loading={loadingCcreRPeaks}
+        error={!!errorCcreRPeaks}
+        columns={overlappingPeaksCols}
+        rows={dataCcreRPeaks}
+        emptyTableFallback={"No Overlapping Representative ChIP-seq Peaks found"}
+        disableRowGrouping={false}
+        groupingColDef={groupingColDef}
+         initialState={{
+          rowGrouping: {
+            model: ["tf"],
+          },
+          sorting: {
+            sortModel: [{ field: GRID_ROW_GROUPING_SINGLE_GROUPING_FIELD, sort: "desc" }],
+          },
+        }}
+      />}
+    </>
   );
 };

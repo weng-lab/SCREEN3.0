@@ -29,7 +29,7 @@ const EntityHeader = ({
 }) => {
   switch (entityType) {
     case "region":
-      return <RegionSearchHeader region={parseGenomicRangeString(entityID)} />;
+      return <RegionSearchHeader assembly={assembly} region={parseGenomicRangeString(entityID)} />;
     case "gwas":
       return <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} />;
     case "bed":

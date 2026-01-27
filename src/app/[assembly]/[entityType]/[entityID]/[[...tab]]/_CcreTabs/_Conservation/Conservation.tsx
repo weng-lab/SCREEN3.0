@@ -6,6 +6,7 @@ import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
+import { useConservationData } from "../../../../../../../common/hooks/useConservationData";
 
 type orthologRow = {
   accession: string;
@@ -39,10 +40,10 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     nextFetchPolicy: "cache-first",
   });
   const {
-    data: dataCcre,
-    loading: loadingCcre,
-    error: errorCcre,
-  } = useCcreData({
+    data: dataConservation,
+    loading: loadingConservation,
+    error: errorConservation,
+  } = useConservationData({
     assembly: entity.assembly,
     accession: [entity.entityID],
   });
@@ -84,18 +85,23 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
   ];
 
   const conservationCols: GridColDef[] = [
+     {
+      field: "metric",
+      headerName: "",
+      sortable: false,
+    },
     {
-      headerName: "Vertebrates",
+      headerName: "Vertebrates (100)",
       field: "vertebrates",
       valueFormatter: (value: number) => value.toFixed(2),
     },
     {
-      headerName: "Mammals",
+      headerName: "Mammals (241)",
       field: "mammals",
       valueFormatter: (value: number) => value.toFixed(2),
     },
     {
-      headerName: "Primates",
+      headerName: "Primates (43)",
       field: "primates",
       valueFormatter: (value: number) => value.toFixed(2),
     },
@@ -103,13 +109,19 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
 
   return (
     <>
-      {entity.assembly == "GRCh38" && dataCcre && (
+      {entity.assembly == "GRCh38" && dataConservation && (
         <Table
           label={`Conservation`}
-          loading={loadingCcre}
-          error={!!errorCcre}
+          loading={loadingConservation}
+          error={!!errorConservation}
           columns={conservationCols}
-          rows={dataCcre}
+          rows={["PhyloP", "PhastCons"].map((metric) => ({
+            id: metric,
+            metric: metric,
+            primates: dataConservation[0][`primates_43_${metric?.toLowerCase()}`],
+            mammals: dataConservation[0][`mammals_241_${metric?.toLowerCase()}`],
+            vertebrates: dataConservation[0][`vertebrates_100_${metric?.toLowerCase()}`],
+          }))}
           hideFooter
           //showToolbar={false}
           emptyTableFallback={"No Conservation data found"}
