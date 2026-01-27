@@ -149,60 +149,71 @@ export default function GenomeBrowserView({
         spacing={2}
         justifyContent={"space-between"}
         alignItems={{ xs: "stretch", md: "center" }}
-        sx={{ width: "100%", maxWidth: "100%" }}
+        sx={{ width: "100%", maxWidth: "100%", pt: 1 }}
       >
-        <Box sx={{ width: { xs: "100%", md: "auto" }, minWidth: { md: 300 }, maxWidth: { md: 450 }, flex: { md: 1 } }}>
-          <GenomeSearch
-            size="small"
-            assembly={entity.assembly}
-            geneVersion={geneVersion}
-            onSearchSubmit={handeSearchSubmit}
-            queries={["Gene", "SNP", "cCRE", "Coordinate"]}
-            geneLimit={3}
-            sx={{ width: "100%" }}
-            slots={{
-              button: (
-                <IconButton sx={{ color: theme.palette.primary.main }}>
-                  <Search />
-                </IconButton>
-              ),
-            }}
-            slotProps={{
-              input: {
-                label: "Change Browser Region",
-                sx: {
-                  backgroundColor: "white",
-                  "& label.Mui-focused": {
-                    color: theme.palette.primary.main,
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: theme.palette.primary.main,
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={2}
+          alignItems={{ xs: "stretch", md: "center" }}
+          sx={{ width: { xs: "100%", md: "auto" }, flex: { md: 1 }, maxWidth: { md: 600 } }}
+        >
+          <Box
+            sx={{ width: { xs: "100%", md: "auto" }, minWidth: { md: 300 }, maxWidth: { md: 450 }, flex: { md: 1 } }}
+          >
+            <GenomeSearch
+              size="small"
+              assembly={entity.assembly}
+              geneVersion={geneVersion}
+              onSearchSubmit={handeSearchSubmit}
+              queries={["Gene", "SNP", "cCRE", "Coordinate"]}
+              geneLimit={3}
+              sx={{ width: "100%" }}
+              slots={{
+                button: (
+                  <IconButton sx={{ color: theme.palette.primary.main }}>
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+              slotProps={{
+                input: {
+                  label: "Change Browser Region",
+                  sx: {
+                    backgroundColor: "white",
+                    "& label.Mui-focused": {
+                      color: theme.palette.primary.main,
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: theme.palette.primary.main,
+                      },
                     },
                   },
                 },
-              },
-            }}
-          />
-        </Box>
-        {entity.entityType !== "gwas" && (
-          <Button
-            variant="contained"
-            startIcon={<PageviewIcon />}
-            color="primary"
-            size="small"
-            onClick={() =>
-              setDomain(expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType))
-            }
-            sx={{
-              width: { xs: "100%", md: "auto" },
-              whiteSpace: "nowrap",
-              minHeight: 44,
-            }}
-          >
-            Recenter on {name || "Selected Region"}
-          </Button>
-        )}
+              }}
+            />
+          </Box>
+          {entity.entityType !== "gwas" && (
+            <Button
+              variant="contained"
+              startIcon={<PageviewIcon />}
+              color="primary"
+              size="small"
+              onClick={() =>
+                setDomain(
+                  expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType)
+                )
+              }
+              sx={{
+                width: { xs: "100%", md: "auto" },
+                whiteSpace: "nowrap",
+                minHeight: 44,
+              }}
+            >
+              Recenter on {name || "Selected Region"}
+            </Button>
+          )}
+        </Stack>
         <Stack
           direction="row"
           spacing={1}
