@@ -118,10 +118,8 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
       { label: "1.5x", onClick: zoom, value: 1 / 1.5 },
       { label: "3x", onClick: zoom, value: 1 / 3 },
       { label: "10x", onClick: zoom, value: 1 / 10 },
-      { label: "100x", onClick: zoom, value: 1 / 100 },
     ],
     zoomOut: [
-      { label: "100x", onClick: zoom, value: 100 },
       { label: "10x", onClick: zoom, value: 10 },
       { label: "3x", onClick: zoom, value: 3 },
       { label: "1.5x", onClick: zoom, value: 1.5 },
@@ -129,14 +127,7 @@ export default function ControlButtons({ browserStore }: { browserStore: Browser
   };
 
   return (
-    //only allow wrapping on xs-md, since that's then the parent layout is in a column. Nowrap forces cytoband to shrink instead when arranged in a row
-    <Box
-      display={"flex"}
-      flexDirection={"row"}
-      flexWrap={{ xs: "wrap", lg: "nowrap" }}
-      justifyContent={"center"}
-      gap={2}
-    >
+    <Box display={"flex"} flexDirection={"row"} flexWrap={"wrap"} justifyContent={"center"} gap={2}>
       <TwoSidedControl leftButtons={buttonGroups.moveLeft} rightButtons={buttonGroups.moveRight} label="Move" />
       <TwoSidedControl
         leftButtons={buttonGroups.zoomIn}
