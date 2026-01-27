@@ -13,9 +13,9 @@ import {
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import Config from "common/config.json";
-import { Assembly } from "./Annotations";
 import { trackDownload } from "../analytics";
 import Link from "next/link";
+import { Assembly } from "common/types/globalTypes";
 
 const ASSEMBLY_CONFIG = {
   GRCh38: {
@@ -48,7 +48,7 @@ const ASSEMBLY_CONFIG = {
       },
     ],
   },
-} as const;
+};
 
 type AnnotationsHeaderProps = {
   assembly: Assembly;
@@ -131,9 +131,7 @@ const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
                     href={opt.url}
                     download
                     aria-label={`Download ${opt.buttonLabel}`}
-                    onClick={() =>
-                      trackDownload(config.downloadUrl, config.buttonLabel, "annotations-header", assembly)
-                    }
+                    onClick={() => trackDownload(opt.url, opt.buttonLabel, "annotations-header", assembly)}
                   >
                     <DownloadIcon />
                   </IconButton>
