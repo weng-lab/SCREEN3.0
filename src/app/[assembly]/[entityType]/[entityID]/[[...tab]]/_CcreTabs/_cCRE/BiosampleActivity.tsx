@@ -241,11 +241,10 @@ export const BIOSAMPLE_Zs = gql(`
   query biosampleZScores($accession: [String!], $assembly: String!) {
     ccREBiosampleQuery(assembly: $assembly) {
       biosamples {
-        id: name  # Add a unique identifier for each biosample
         sampleType
         displayname
         lifeStage
-        cCREZScores(accession: $accession) @nonreactive {  # Mark this field as non-reactive to prevent unnecessary re-renders
+        cCREZScores(accession: $accession) {
           score
           assay
           experiment_accession
@@ -309,15 +308,14 @@ export const NEARBY_GENES = gql(`
 `);
 
 const CORE_COLLECTION_TOOLTIP =
-  "Thanks to the extensive coordination efforts by the ENCODE4 Biosample Working Group, 171 biosamples have DNase, H3K4me3, H3K27ac, and CTCF data. We refer to these samples as the biosample-specific Core Collection of cCREs. These samples cover a variety of tissues and organs and primarily comprise primary tissues and cells. We suggest that users prioritize these samples for their analysis as they contain all the relevant marks for the most complete annotation of cCREs.";
+  "Thanks to the extensive coordination efforts by the ENCODE4 Biosample Working Group, 170 biosamples have DNase, H3K4me3, H3K27ac, and CTCF data. We refer to these samples as the biosample-specific Core Collection of cCREs. These samples cover a variety of tissues and organs and primarily comprise primary tissues and cells. We suggest that users prioritize these samples for their analysis as they contain all the relevant marks for the most complete annotation of cCREs.";
 
 const PARTIAL_COLLECTION_TOOLTIP =
-  "To supplement the Core Collection, 1,154 biosamples have DNase in addition to various combinations of the other marks (but not all three). Though we are unable to annotate the full spectrum of cCRE classes in these biosamples, having DNase enables us to annotate element boundaries with high resolution. Therefore, we refer to this group as the Partial Data Collection. In these biosamples, we classify elements using the available marks. For example, if a sample lacks H3K27ac and CTCF, its cCREs can only be assigned to the promoter, CA-H3K4me3, and CA groups, not the enhancer or CA-CTCF groups. The Partial Data Collection contains some unique tissues and cell states that are not represented in the Core Collection, such as fetal brain tissue and stimulated immune cells that may be of high interest to some researchers. Therefore, if users are interested in cCRE annotations in such biosamples, we suggest leveraging the cell type-agnostic annotations or annotations from similar biosamples in the Core Collection, to supplement their analyses.";
+  "To supplement the Core Collection, 1,155 biosamples have DNase in addition to various combinations of the other marks (but not all three). Though we are unable to annotate the full spectrum of cCRE classes in these biosamples, having DNase enables us to annotate element boundaries with high resolution. Therefore, we refer to this group as the Partial Data Collection. In these biosamples, we classify elements using the available marks. For example, if a sample lacks H3K27ac and CTCF, its cCREs can only be assigned to the promoter, CA-H3K4me3, and CA groups, not the enhancer or CA-CTCF groups. The Partial Data Collection contains some unique tissues and cell states that are not represented in the Core Collection, such as fetal brain tissue and stimulated immune cells that may be of high interest to some researchers. Therefore, if users are interested in cCRE annotations in such biosamples, we suggest leveraging the cell type-agnostic annotations or annotations from similar biosamples in the Core Collection, to supplement their analyses.";
 
 const ANCILLARY_COLLECTION_TOOLTIP =
-  "For the 563 biosamples lacking DNase data, we do not have the resolution to identify specific elements and we refer to these annotations as the Ancillary Collection. In these biosamples, we simply label cCREs as having a high or low signal for every available assay. We highly suggest that users do not use annotations from the Ancillary Collection unless they are anchoring their analysis on cCREs from the Core Collection or Partial Data Collection.";
+  "For the 562 biosamples lacking DNase data, we do not have the resolution to identify specific elements and we refer to these annotations as the Ancillary Collection. In these biosamples, we simply label cCREs as having a high or low signal for every available assay. We highly suggest that users do not use annotations from the Ancillary Collection unless they are anchoring their analysis on cCREs from the Core Collection or Partial Data Collection.";
 
-//Cache is not working as expected when switching between open cCREs
 export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   // Assay values are used to index into row object, so need to modify assaySpecificRows if changing assays here
   const [tab, setTab] = useState<"tables" | "add_classification" | CcreAssay>("tables");
@@ -337,7 +335,6 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     error: errorSilencersData,
   } = useSilencersData({ accession: [entity.entityID], assembly: entity.assembly });
 
-
   const {
     data: dynamicEnhancersData,
     loading: loadingDynamicEnhancersData,
@@ -350,11 +347,6 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     end: cCREdata?.start + cCREdata?.len,
   };
 
-  /**
-   * Fetch biosample specific assay scores as well as max-Z for celltype agnostic classification
-   * So, right here I can fetch the biosample's umap coordinates. Feels wrong to fetch here since it's not needed and slows down everything
-   * BUT, would eliminate a separate fetch. These rows would contain the coordinates for the selected assay, which is then passed down.
-   */
   const {
     data: data_Ct_Agnostic,
     loading: loading_Ct_Agnostic,
@@ -412,57 +404,69 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   //need to extract the experiment from this
   const biosampleRows: BiosampleRow[] = useMemo(() => {
     if (!data_biosampleZs || !data_ccre_tf) return null;
-    return data_biosampleZs?.ccREBiosampleQuery.biosamples.map((sample) => {
-      const dnase = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "dnase")?.score || -11;
-      const dnaseAccession = sample.cCREZScores.find(
-        (exp) => exp.assay.toLowerCase() === "dnase"
-      )?.experiment_accession;
-      const atac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "atac")?.score || -11;
-      const atacAccession = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "atac")?.experiment_accession;
+    return data_biosampleZs?.ccREBiosampleQuery.biosamples
+      .filter((sample) => sample.name !== "GM12866_ENCDO000ABQ") // This sample has only one H3K4me3 exp that was not processed
+      .map((sample) => {
+        const dnase = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "dnase")?.score || -11;
+        const dnaseAccession = sample.cCREZScores.find(
+          (exp) => exp.assay.toLowerCase() === "dnase"
+        )?.experiment_accession;
+        const atac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "atac")?.score || -11;
+        const atacAccession = sample.cCREZScores.find(
+          (exp) => exp.assay.toLowerCase() === "atac"
+        )?.experiment_accession;
 
-      const h3k4me3 = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k4me3")?.score || -11;
-      const h3k4me3Accession = sample.cCREZScores.find(
-        (exp) => exp.assay.toLowerCase() === "h3k4me3"
-      )?.experiment_accession;
+        let h3k4me3 = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k4me3")?.score || -11;
+        let h3k4me3Accession = sample.cCREZScores.find(
+          (exp) => exp.assay.toLowerCase() === "h3k4me3"
+        )?.experiment_accession;
 
-      const h3k27ac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k27ac")?.score || -11;
-      const h3k27acAccession = sample.cCREZScores.find(
-        (exp) => exp.assay.toLowerCase() === "h3k27ac"
-      )?.experiment_accession;
-      const ctcf = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "ctcf")?.score || -11;
-      const ctcfAccession = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "ctcf")?.experiment_accession;
-      const tf = data_ccre_tf.getcCRETFQuery.find((x) => sample.name === x.celltype)?.tf.toString();
+        // Similar to GM12866 this H3K4me3 experiment was not run through ENCODE pipeline
+        if (sample.name === "neural_crest_cell_ENCDO222AAA") {
+          h3k4me3 = -11;
+          h3k4me3Accession = undefined;
+        }
 
-      const scores = {
-        dnase,
-        dnaseAccession,
-        atac,
-        atacAccession,
-        h3k4me3,
-        h3k4me3Accession,
-        h3k27ac,
-        h3k27acAccession,
-        ctcf,
-        ctcfAccession,
-        tf,
-      };
+        const h3k27ac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k27ac")?.score || -11;
+        const h3k27acAccession = sample.cCREZScores.find(
+          (exp) => exp.assay.toLowerCase() === "h3k27ac"
+        )?.experiment_accession;
+        const ctcf = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "ctcf")?.score || -11;
+        const ctcfAccession = sample.cCREZScores.find(
+          (exp) => exp.assay.toLowerCase() === "ctcf"
+        )?.experiment_accession;
+        const tf = data_ccre_tf.getcCRETFQuery.find((x) => sample.name === x.celltype)?.tf.toString();
 
-      const classification = classifyCcre(scores, distanceToTSS, overlapsTSS);
+        const scores = {
+          dnase,
+          dnaseAccession,
+          atac,
+          atacAccession,
+          h3k4me3,
+          h3k4me3Accession,
+          h3k27ac,
+          h3k27acAccession,
+          ctcf,
+          ctcfAccession,
+          tf,
+        };
 
-      const collection: "core" | "partial" | "ancillary" =
-        dnase === -11.0 ? "ancillary" : ctcf !== -11.0 && h3k27ac !== -11.0 && h3k4me3 !== -11.0 ? "core" : "partial";
+        const classification = classifyCcre(scores, distanceToTSS, overlapsTSS);
 
-      return {
-        name: sample.name,
-        ontology: sample.ontology,
-        sampleType: sample.sampleType,
-        displayname: sample.displayname,
-        lifeStage: sample.lifeStage,
-        class: classification,
-        collection,
-        ...scores,
-      };
-    });
+        const collection: "core" | "partial" | "ancillary" =
+          dnase === -11.0 ? "ancillary" : ctcf !== -11.0 && h3k27ac !== -11.0 && h3k4me3 !== -11.0 ? "core" : "partial";
+
+        return {
+          name: sample.name,
+          ontology: sample.ontology,
+          sampleType: sample.sampleType,
+          displayname: sample.displayname,
+          lifeStage: sample.lifeStage,
+          class: classification,
+          collection,
+          ...scores,
+        };
+      });
   }, [data_ccre_tf, data_biosampleZs, distanceToTSS, overlapsTSS]);
 
   const coreCollection: BiosampleRow[] = useMemo(() => {
@@ -616,23 +620,30 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             {...disableCsvEscapeChar}
           />
         </Stack>
-      ) : tab === "add_classification" ? (<Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
-
-        {dynamicEnhancersData && dynamicEnhancersData.length > 0 ? (<><Typography
-          variant="body1"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            fontWeight: 400,
-            color: "text.primary",
-            pl: 1,
-            ml: 0,
-          }}
-        >{entity.entityID} is classified as MAFF/MAFK+ cCRE in{" "}
-          {dynamicEnhancersData.length === 2
-            ? `${dynamicEnhancersData[0].celltype} and ${dynamicEnhancersData[1].celltype}`
-            : dynamicEnhancersData[0]?.celltype}{" "}
-          cells</Typography><br /></>) : silencersData && silencersData.length > 0 ? (
+      ) : tab === "add_classification" ? (
+        <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
+          {dynamicEnhancersData && dynamicEnhancersData.length > 0 ? (
+            <>
+              <Typography
+                variant="body1"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontWeight: 400,
+                  color: "text.primary",
+                  pl: 1,
+                  ml: 0,
+                }}
+              >
+                {entity.entityID} is classified as MAFF/MAFK+ cCRE in{" "}
+                {dynamicEnhancersData.length === 2
+                  ? `${dynamicEnhancersData[0].celltype} and ${dynamicEnhancersData[1].celltype}`
+                  : dynamicEnhancersData[0]?.celltype}{" "}
+                cells
+              </Typography>
+              <br />
+            </>
+          ) : silencersData && silencersData.length > 0 ? (
             <Table
               label="Silencers"
               rows={
@@ -652,20 +663,24 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               error={!!errorSilencersData}
               {...disableCsvEscapeChar}
               hideFooter
-
             />
-          ) : (<Typography
-            variant="body1"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 400,
-              color: "text.primary",
-              pl: 1,
-              ml: 0, // match table start
-            }}
-          >No further classification details are available for {entity.entityID}.</Typography>)}
-      </Stack>) : (
+          ) : (
+            <Typography
+              variant="body1"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                fontWeight: 400,
+                color: "text.primary",
+                pl: 1,
+                ml: 0, // match table start
+              }}
+            >
+              No further classification details are available for {entity.entityID}.
+            </Typography>
+          )}
+        </Stack>
+      ) : (
         <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
       )}
     </>

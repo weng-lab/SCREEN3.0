@@ -108,6 +108,8 @@ export function makeResultLink(result: Result, assembly: Assembly){
     case "Study":
       url = `/GRCh38/gwas/${result.id}`;
       break;
+    case "Legacy cCRE":
+      url = `/search?q=${result.title}&assembly=${assembly}`;
   }
   return url;
 }
@@ -141,7 +143,7 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
       geneVersion={geneVersion}
       ccreLimit={3}
       showiCREFlag={false}
-      queries={["Gene", "cCRE", "SNP", "Coordinate", "Study"]}
+      queries={["Gene", "cCRE", "SNP", "Coordinate", "Study", "Legacy cCRE"]}
       onSearchSubmit={handleSearchSubmit}
       //This is needed to prevent the enter key press from triggering the onClick of the Menu IconButton
       onKeyDown={(e) => {

@@ -15,6 +15,7 @@ export const SearchToScreenTypes: Record<Result["type"], AnyEntityType> = {
   Study: "gwas",
   cCRE: "ccre",
   iCRE: "ccre",
+  "Legacy cCRE": "ccre",
 };
 
 const expansionPercentages: Record<AnyEntityType, number> = {

@@ -39,20 +39,22 @@ const AnnotationsByCelltype: React.FC<NewAnnotationsByCelltypeProps> = ({ assemb
         details.api.setColumnVisibilityModel({
           ...currentVisibilityModel,
           assays: true,
+          collection: true,
           dnaseZ: true,
           atacZ: true,
           h3k4me3Z: true,
-          h3k27ac: true,
+          h3k27acZ: true,
           ctcfZ: true,
         });
       } else {
         details.api.setColumnVisibilityModel({
           ...currentVisibilityModel,
           assays: false,
+          collection: false,
           dnaseZ: false,
           atacZ: false,
           h3k4me3Z: false,
-          h3k27ac: false,
+          h3k27acZ: false,
           ctcfZ: false,
         });
       }

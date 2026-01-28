@@ -22,7 +22,14 @@ export default function Downloads() {
   };
 
   return (
-    <Stack sx={{ marginX: "5%", marginY: 2 }} gap={2}>
+    <Box
+      display={"grid"}
+      height={"stretch"}
+      gridTemplateRows={"auto 1fr"}
+      boxSizing={"content-box"}
+      sx={{ marginX: "5%", marginY: 2 }}
+      gap={2}
+    >
       <Box>
         <Tabs
           value={page}
@@ -37,11 +44,11 @@ export default function Downloads() {
         </Tabs>
         <Divider />
       </Box>
-      <Box flexGrow={1}>
+      <Box minWidth={0} minHeight={0}>
         {page === 0 && <Annotations />}
         {page === 1 && <DataMatrices />}
         {page === 2 && <DownloadRange />}
       </Box>
-    </Stack>
+    </Box>
   );
 }
