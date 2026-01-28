@@ -39,6 +39,7 @@ const AnnotationsByCelltype: React.FC<NewAnnotationsByCelltypeProps> = ({ assemb
         details.api.setColumnVisibilityModel({
           ...currentVisibilityModel,
           assays: true,
+          collection: true,
           dnaseZ: true,
           atacZ: true,
           h3k4me3Z: true,
@@ -49,6 +50,7 @@ const AnnotationsByCelltype: React.FC<NewAnnotationsByCelltypeProps> = ({ assemb
         details.api.setColumnVisibilityModel({
           ...currentVisibilityModel,
           assays: false,
+          collection: false,
           dnaseZ: false,
           atacZ: false,
           h3k4me3Z: false,
