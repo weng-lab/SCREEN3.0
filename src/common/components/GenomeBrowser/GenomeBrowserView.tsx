@@ -124,7 +124,7 @@ export default function GenomeBrowserView({
     }),
     [onHover, onLeave, onCCREClick, onGeneClick, entity.assembly]
   );
-  const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks, breakpoint);
+  const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks);
 
   const editTrack = trackStore((state) => state.editTrack);
   const handeSearchSubmit = (r: Result) => {
@@ -235,12 +235,7 @@ export default function GenomeBrowserView({
             </Button>
           )}
           {entity.entityType !== "gwas" && (
-            <TrackSelectModal
-              trackStore={trackStore}
-              assembly={entity.assembly}
-              callbacks={callbacks}
-              breakpoint={breakpoint}
-            />
+            <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
           )}
         </Stack>
       </Stack>
