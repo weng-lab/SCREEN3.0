@@ -50,7 +50,9 @@ export default function GenomeBrowserView({
   handleSelectLDBlock,
 }: GenomeBrowserViewProps) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMedium = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const breakpoint: "sm" | "md" | undefined = isSmall ? "sm" : isMedium ? "md" : undefined;
 
   /**
    * @todo when refactoring this to include GWAS need to change this logic
@@ -62,7 +64,7 @@ export default function GenomeBrowserView({
         ? `${coordinates[0].chromosome}:${coordinates[0].start}-${coordinates[0].end}`
         : entity.entityID;
 
-  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType);
+  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType, breakpoint);
 
   const setDomain = browserStore((s) => s.setDomain);
   useEffect(() => {
@@ -122,7 +124,7 @@ export default function GenomeBrowserView({
     }),
     [onHover, onLeave, onCCREClick, onGeneClick, entity.assembly]
   );
-  const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks, isMobile);
+  const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks, breakpoint);
 
   const editTrack = trackStore((state) => state.editTrack);
   const handeSearchSubmit = (r: Result) => {
@@ -237,7 +239,7 @@ export default function GenomeBrowserView({
               trackStore={trackStore}
               assembly={entity.assembly}
               callbacks={callbacks}
-              isMobile={isMobile}
+              breakpoint={breakpoint}
             />
           )}
         </Stack>

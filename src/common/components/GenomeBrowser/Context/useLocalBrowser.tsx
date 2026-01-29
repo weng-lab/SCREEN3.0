@@ -1,5 +1,3 @@
-import { useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, InitialBrowserState } from "@weng-lab/genomebrowser";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
@@ -16,9 +14,14 @@ import { gwasTracks, injectCallbacks, TrackCallbacks } from "../TrackSelect/defa
  * @param coordinates the entity's genomic coordinates
  * @returns a browser store instance
  */
-export function useLocalBrowser(name: string, assembly: string, coordinates: GenomicRange, type: AnyEntityType) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+export function useLocalBrowser(
+  name: string,
+  assembly: string,
+  coordinates: GenomicRange,
+  type: AnyEntityType,
+  breakpoint?: "sm" | "md"
+) {
+  const trackWidth = breakpoint === "sm" ? 500 : breakpoint === "md" ? 900 : 1400;
 
   const localBrowser = useMemo(() => getLocalBrowser(name, assembly), [name, assembly]);
 
@@ -50,7 +53,7 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
           opacity: 0.2,
         },
       ]),
-    trackWidth: isMobile ? 500 : 1400,
+    trackWidth: trackWidth,
     marginWidth: 100,
     multiplier: 3,
   };
@@ -73,15 +76,14 @@ export function useLocalTracks(
   assembly: string,
   entitytype: AnyEntityType,
   callbacks?: TrackCallbacks,
-  isMobile = false
+  breakpoint?: "sm" | "md"
 ) {
   const localTracks = getLocalTracks(assembly);
-  const heightMultiplier = isMobile ? 1.5 : 1;
+  const heightMultiplier = breakpoint === "sm" ? 1.5 : 1;
 
   // Start empty if no stored tracks - TrackSelect will populate defaults via initialSelection
   let initialTracks = localTracks || [];
   if (entitytype === "gwas") {
-    // Apply mobile height and titleSize multiplier to GWAS tracks
     initialTracks = gwasTracks.map((t) => ({
       ...t,
       height: t.height ? Math.round(t.height * heightMultiplier) : t.height,

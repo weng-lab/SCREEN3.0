@@ -43,12 +43,12 @@ export default function TrackSelectModal({
   trackStore,
   assembly,
   callbacks,
-  isMobile = false,
+  breakpoint,
 }: {
   trackStore: TrackStoreInstance;
   assembly: string;
   callbacks: TrackCallbacks;
-  isMobile?: boolean;
+  breakpoint?: "sm" | "md";
 }) {
   const [open, setOpen] = useState(false);
 
@@ -92,11 +92,11 @@ export default function TrackSelectModal({
 
       // Add new tracks
       for (const { row, folderId } of tracksToAdd) {
-        const track = generateTrack(row, folderId, assembly as Assembly, callbacks, isMobile);
+        const track = generateTrack(row, folderId, assembly as Assembly, callbacks, breakpoint);
         if (track) insertTrack(track);
       }
     },
-    [tracks, removeTrack, insertTrack, callbacks, folders, assembly, isMobile]
+    [tracks, removeTrack, insertTrack, callbacks, folders, assembly, breakpoint]
   );
 
   const handleClear = useCallback(() => {
@@ -147,9 +147,9 @@ function generateTrack(
   folderId: string,
   assembly: Assembly,
   callbacks?: TrackCallbacks,
-  isMobile = false
+  breakpoint?: "sm" | "md"
 ): Track | null {
-  const heightMultiplier = isMobile ? 1.5 : 1;
+  const heightMultiplier = breakpoint === "sm" ? 1.5 : 1;
   // Handle gene folders
   if (folderId.includes("genes")) {
     const geneRow = row as GeneRowInfo;
