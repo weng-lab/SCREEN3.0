@@ -1,4 +1,4 @@
-import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, InitialBrowserState } from "@weng-lab/genomebrowser";
+import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo } from "@weng-lab/genomebrowser";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
@@ -14,44 +14,64 @@ import { gwasTracks, injectCallbacks, TrackCallbacks } from "../TrackSelect/defa
  * @param coordinates the entity's genomic coordinates
  * @returns a browser store instance
  */
-export function useLocalBrowser(name: string, assembly: string, coordinates: GenomicRange, type: AnyEntityType) {
+export function useLocalBrowser(
+  name: string,
+  assembly: string,
+  coordinates: GenomicRange,
+  type: AnyEntityType,
+  breakpoint?: "sm" | "md"
+) {
+  const trackWidth = breakpoint === "sm" ? 500 : breakpoint === "md" ? 900 : 1400;
+
   const localBrowser = useMemo(() => getLocalBrowser(name, assembly), [name, assembly]);
 
-  // initialize the current domain, if not already saved
-  const currentDomain =
-    localBrowser?.domain != null
-      ? localBrowser?.domain
-      : expandCoordinates(
-          {
-            chromosome: coordinates.chromosome as Chromosome,
-            start: coordinates.start,
-            end: coordinates.end,
-          },
-          type
-        );
-  const initialBrowserState: InitialBrowserState = {
-    domain: currentDomain,
-    highlights:
-      localBrowser?.highlights ||
-      (type !== "gwas" && [
-        {
-          color: randomColor(),
-          domain: {
-            chromosome: coordinates.chromosome as Chromosome,
-            start: coordinates.start,
-            end: coordinates.end,
-          },
-          id: name,
-          opacity: 0.2,
-        },
-      ]),
-    trackWidth: 1400,
-    marginWidth: 100,
-    multiplier: 3,
-  };
-
   // potential infinite loop
-  const browserStore = createBrowserStoreMemo(initialBrowserState, [localBrowser]);
+  const browserStore = createBrowserStoreMemo(
+    {
+      domain:
+        localBrowser?.domain != null
+          ? localBrowser?.domain
+          : expandCoordinates(
+              {
+                chromosome: coordinates.chromosome as Chromosome,
+                start: coordinates.start,
+                end: coordinates.end,
+              },
+              type
+            ),
+      highlights:
+        localBrowser?.highlights ||
+        (type !== "gwas" && [
+          {
+            color: randomColor(),
+            domain: {
+              chromosome: coordinates.chromosome as Chromosome,
+              start: coordinates.start,
+              end: coordinates.end,
+            },
+            id: name,
+            opacity: 0.2,
+          },
+        ]),
+      trackWidth: trackWidth,
+      marginWidth: 100,
+      multiplier: 3,
+    },
+    [localBrowser]
+  );
+
+  // Responsive breakpoint handling
+  const setTrackWidth = browserStore((s) => s.setTrackWidth);
+  const setTitleSize = browserStore((s) => s.setTitleSize);
+  const setFontSize = browserStore((s) => s.setFontSize);
+
+  useEffect(() => {
+    const width = breakpoint === "sm" ? 500 : breakpoint === "md" ? 900 : 1400;
+    const titleSize = breakpoint === "sm" ? 18 : breakpoint === "md" ? 14 : 12;
+    setTrackWidth(width);
+    setTitleSize(titleSize);
+    setFontSize(titleSize - 2);
+  }, [breakpoint, setTrackWidth, setTitleSize, setFontSize]);
 
   const domain = browserStore((state) => state.domain);
   const highlights = browserStore((state) => state.highlights);

@@ -2,7 +2,7 @@
 
 // @mui
 import { Search } from "@mui/icons-material";
-import { Box, Button, IconButton, Stack } from "@mui/material";
+import { Box, Button, IconButton, Stack, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 
@@ -49,6 +49,11 @@ export default function GenomeBrowserView({
   dataStore,
   handleSelectLDBlock,
 }: GenomeBrowserViewProps) {
+  const theme = useTheme();
+  const isMedium = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const breakpoint: "sm" | "md" | undefined = isSmall ? "sm" : isMedium ? "md" : undefined;
+
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
@@ -59,7 +64,7 @@ export default function GenomeBrowserView({
         ? `${coordinates[0].chromosome}:${coordinates[0].start}-${coordinates[0].end}`
         : entity.entityID;
 
-  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType);
+  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType, breakpoint);
 
   const setDomain = browserStore((s) => s.setDomain);
   useEffect(() => {
@@ -137,8 +142,6 @@ export default function GenomeBrowserView({
 
     setDomain(expandCoordinates(r.domain, SearchToScreenTypes[r.type]));
   };
-
-  const theme = useTheme();
 
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
 
