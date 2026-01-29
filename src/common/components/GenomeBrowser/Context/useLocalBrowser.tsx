@@ -1,3 +1,5 @@
+import { useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, InitialBrowserState } from "@weng-lab/genomebrowser";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
@@ -15,6 +17,9 @@ import { gwasTracks, injectCallbacks, TrackCallbacks } from "../TrackSelect/defa
  * @returns a browser store instance
  */
 export function useLocalBrowser(name: string, assembly: string, coordinates: GenomicRange, type: AnyEntityType) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const localBrowser = useMemo(() => getLocalBrowser(name, assembly), [name, assembly]);
 
   // initialize the current domain, if not already saved
@@ -45,7 +50,7 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
           opacity: 0.2,
         },
       ]),
-    trackWidth: 1400,
+    trackWidth: isMobile ? 500 : 1400,
     marginWidth: 100,
     multiplier: 3,
   };
@@ -64,13 +69,24 @@ export function useLocalBrowser(name: string, assembly: string, coordinates: Gen
   return browserStore;
 }
 
-export function useLocalTracks(assembly: string, entitytype: AnyEntityType, callbacks?: TrackCallbacks) {
+export function useLocalTracks(
+  assembly: string,
+  entitytype: AnyEntityType,
+  callbacks?: TrackCallbacks,
+  isMobile = false
+) {
   const localTracks = getLocalTracks(assembly);
+  const heightMultiplier = isMobile ? 1.5 : 1;
 
   // Start empty if no stored tracks - TrackSelect will populate defaults via initialSelection
   let initialTracks = localTracks || [];
   if (entitytype === "gwas") {
-    initialTracks = gwasTracks;
+    // Apply mobile height and titleSize multiplier to GWAS tracks
+    initialTracks = gwasTracks.map((t) => ({
+      ...t,
+      height: t.height ? Math.round(t.height * heightMultiplier) : t.height,
+      titleSize: t.titleSize ? Math.round(t.titleSize * heightMultiplier) : t.titleSize,
+    }));
   }
   // Inject callbacks if provided (callbacks are lost on JSON serialization)
   if (callbacks) {

@@ -43,10 +43,12 @@ export default function TrackSelectModal({
   trackStore,
   assembly,
   callbacks,
+  isMobile = false,
 }: {
   trackStore: TrackStoreInstance;
   assembly: string;
   callbacks: TrackCallbacks;
+  isMobile?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -90,11 +92,11 @@ export default function TrackSelectModal({
 
       // Add new tracks
       for (const { row, folderId } of tracksToAdd) {
-        const track = generateTrack(row, folderId, assembly as Assembly, callbacks);
+        const track = generateTrack(row, folderId, assembly as Assembly, callbacks, isMobile);
         if (track) insertTrack(track);
       }
     },
-    [tracks, removeTrack, insertTrack, callbacks, folders, assembly]
+    [tracks, removeTrack, insertTrack, callbacks, folders, assembly, isMobile]
   );
 
   const handleClear = useCallback(() => {
@@ -144,8 +146,10 @@ function generateTrack(
   row: BiosampleRowInfo | GeneRowInfo,
   folderId: string,
   assembly: Assembly,
-  callbacks?: TrackCallbacks
+  callbacks?: TrackCallbacks,
+  isMobile = false
 ): Track | null {
+  const heightMultiplier = isMobile ? 1.5 : 1;
   // Handle gene folders
   if (folderId.includes("genes")) {
     const geneRow = row as GeneRowInfo;
@@ -154,6 +158,8 @@ function generateTrack(
       id: geneRow.id,
       assembly,
       version: geneRow.versions[geneRow.versions.length - 1], // latest version
+      height: Math.round(defaultTranscript.height * heightMultiplier),
+      titleSize: Math.round(defaultTranscript.titleSize * heightMultiplier),
     };
     return callbacks ? injectCallbacks(track, callbacks) : track;
   }
@@ -187,6 +193,8 @@ function generateTrack(
         url: sel.url,
         title,
         color,
+        height: Math.round(defaultBigBed.height * heightMultiplier),
+        titleSize: Math.round(defaultBigBed.titleSize * heightMultiplier),
       };
       break;
     default:
@@ -196,6 +204,8 @@ function generateTrack(
         url: sel.url,
         title,
         color,
+        height: Math.round(defaultBigWig.height * heightMultiplier),
+        titleSize: Math.round(defaultBigWig.titleSize * heightMultiplier),
       };
   }
 

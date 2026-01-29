@@ -2,7 +2,7 @@
 
 // @mui
 import { Search } from "@mui/icons-material";
-import { Box, Button, IconButton, Stack } from "@mui/material";
+import { Box, Button, IconButton, Stack, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 
@@ -49,6 +49,9 @@ export default function GenomeBrowserView({
   dataStore,
   handleSelectLDBlock,
 }: GenomeBrowserViewProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
@@ -119,7 +122,7 @@ export default function GenomeBrowserView({
     }),
     [onHover, onLeave, onCCREClick, onGeneClick, entity.assembly]
   );
-  const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks);
+  const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks, isMobile);
 
   const editTrack = trackStore((state) => state.editTrack);
   const handeSearchSubmit = (r: Result) => {
@@ -137,8 +140,6 @@ export default function GenomeBrowserView({
 
     setDomain(expandCoordinates(r.domain, SearchToScreenTypes[r.type]));
   };
-
-  const theme = useTheme();
 
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
 
@@ -232,7 +233,12 @@ export default function GenomeBrowserView({
             </Button>
           )}
           {entity.entityType !== "gwas" && (
-            <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
+            <TrackSelectModal
+              trackStore={trackStore}
+              assembly={entity.assembly}
+              callbacks={callbacks}
+              isMobile={isMobile}
+            />
           )}
         </Stack>
       </Stack>
