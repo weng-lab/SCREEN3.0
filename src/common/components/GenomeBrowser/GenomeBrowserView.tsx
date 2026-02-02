@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 
 // @weng-lab
-import { Browser, Chromosome, DataStoreInstance, Rect } from "@weng-lab/genomebrowser";
+import { Browser, BulkBedRect, Chromosome, DataStoreInstance, Rect } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
@@ -27,6 +27,7 @@ import { TrackCallbacks } from "./TrackSelect/defaultTracks";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
 import CCRETooltip from "./Tooltips/CcreTooltip";
+import ChromHmmTooltip from "./Tooltips/ChromHMMTooltip";
 
 interface Transcript {
   id: string;
@@ -121,6 +122,9 @@ export default function GenomeBrowserView({
       onCCREClick,
       onGeneClick,
       ccreTooltip: (item: Rect) => <CCRETooltip assembly={entity.assembly} name={item.name} />,
+      chromHmmTooltip: (rect: BulkBedRect, tissue: string, displayName: string) => (
+        <ChromHmmTooltip rect={rect} tissue={tissue} displayName={displayName} />
+      ),
     }),
     [onHover, onLeave, onCCREClick, onGeneClick, entity.assembly]
   );

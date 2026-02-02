@@ -189,6 +189,15 @@ function generateTrack(
         color,
       };
       break;
+    case "rna-seq":
+      track = {
+        ...defaultBigWig,
+        id: sel.id,
+        url: sel.url,
+        title,
+        color,
+      };
+      break;
     default:
       track = {
         ...defaultBigWig,
@@ -196,6 +205,7 @@ function generateTrack(
         url: sel.url,
         title,
         color,
+        fillWithZero: true,
       };
   }
 
