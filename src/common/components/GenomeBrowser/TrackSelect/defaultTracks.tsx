@@ -56,9 +56,7 @@ export function injectCallbacks(track: Track, callbacks: TrackCallbacks): Track 
     };
   }
   if (track.trackType === TrackType.BigBed) {
-    // ChromHMM tracks get their own tooltip - detect by ID containing "chromhmm"
     if (track.id.toLowerCase().includes("chromhmm")) {
-      // Extract tissue/displayName from track title (format: "displayName, ChromHMM")
       const displayName = track.title?.replace(/, chromhmm$/i, "") || "";
       return {
         ...track,
@@ -67,7 +65,6 @@ export function injectCallbacks(track: Track, callbacks: TrackCallbacks): Track 
         tooltip: (rect: BulkBedRect) => callbacks.chromHmmTooltip(rect, displayName, displayName),
       };
     }
-    // Default: ccre tracks
     return {
       ...track,
       onHover: callbacks.onHover,
