@@ -1,4 +1,4 @@
-import { DisplayMode, Rect, Track, TrackType } from "@weng-lab/genomebrowser";
+import { BulkBedRect, DisplayMode, Rect, Track, TrackType } from "@weng-lab/genomebrowser";
 import { defaultBigBed, defaultTranscript } from "./defaultConfigs";
 import CCRETooltip from "../Tooltips/CcreTooltip";
 import { JSX } from "react";
@@ -42,6 +42,7 @@ export interface TrackCallbacks {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onGeneClick: (item: any) => void;
   ccreTooltip: (rect: Rect) => JSX.Element;
+  chromHmmTooltip: (rect: BulkBedRect, tissue: string, displayName: string) => JSX.Element;
 }
 
 // Helper to inject callbacks based on track type
@@ -55,6 +56,15 @@ export function injectCallbacks(track: Track, callbacks: TrackCallbacks): Track 
     };
   }
   if (track.trackType === TrackType.BigBed) {
+    if (track.id.toLowerCase().includes("chromhmm")) {
+      const displayName = track.title?.replace(/, chromhmm$/i, "") || "";
+      return {
+        ...track,
+        onHover: callbacks.onHover,
+        onLeave: callbacks.onLeave,
+        tooltip: (rect: BulkBedRect) => callbacks.chromHmmTooltip(rect, displayName, displayName),
+      };
+    }
     return {
       ...track,
       onHover: callbacks.onHover,

@@ -21,7 +21,7 @@ export function useLocalBrowser(
   type: AnyEntityType,
   breakpoint?: "sm" | "md"
 ) {
-  const trackWidth = breakpoint === "sm" ? 500 : breakpoint === "md" ? 900 : 1400;
+  const trackWidth = breakpoint === "sm" ? 550 : breakpoint === "md" ? 950 : 1450;
 
   const localBrowser = useMemo(() => getLocalBrowser(name, assembly), [name, assembly]);
 
@@ -54,7 +54,7 @@ export function useLocalBrowser(
           },
         ]),
       trackWidth: trackWidth,
-      marginWidth: 100,
+      marginWidth: 50,
       multiplier: 3,
     },
     [localBrowser]
