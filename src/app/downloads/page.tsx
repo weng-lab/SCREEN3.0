@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Tabs, Tab, Divider, Stack, Box } from "@mui/material";
-import { DataMatrices } from "./datamatrices";
+import { Tabs, Tab, Divider, Box } from "@mui/material";
+import { DataMatrices } from "./DataMatricies/DataMatricies";
 import { useState } from "react";
 import { DownloadRange } from "./DownloadRange/downloadrange";
 import Annotations from "./Annotations/Annotations";
