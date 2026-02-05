@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Tabs, Tab, Divider, Stack, Box } from "@mui/material";
-import { DataMatrices } from "./datamatrices";
+import { DataMatrices } from "./DataMatricies/datamatricess";
 import { useState } from "react";
 import { DownloadRange } from "./DownloadRange/downloadrange";
 import Annotations from "./Annotations/Annotations";

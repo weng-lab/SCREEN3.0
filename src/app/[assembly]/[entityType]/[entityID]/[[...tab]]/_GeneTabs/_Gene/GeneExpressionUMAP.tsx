@@ -177,6 +177,9 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
                 bottomAxisLabel="UMAP-1"
                 ref={ref}
                 downloadFileName={`${entity.entityID}_expression_UMAP`}
+                animation="scale"
+                animationBuffer={0.01}
+                animationGroupSize={15}
               />
             </Box>
           </>
