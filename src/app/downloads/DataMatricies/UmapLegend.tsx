@@ -45,6 +45,7 @@ const UmapLegend = ({ scatterData, colorBy, sampleTypeColors, ontologyColors }: 
           display: "flex",
           justifyContent: legendEntries.length / 6 >= 3 ? "space-between" : "flex-start",
           gap: legendEntries.length / 6 >= 4 ? 0 : 10,
+          flexWrap: "wrap",
         }}
       >
         {Array.from({ length: Math.ceil(legendEntries.length / 6) }, (_, colIndex) => (

@@ -53,12 +53,10 @@ const AssemblyControls = ({ assembly, setSelected, selectedAssay }: AssemblyCont
       <Button
         key={`${variant.assembly}-${variant.assay}`}
         variant="text"
-        fullWidth
         onClick={() => {
           setSelected(variant);
         }}
         sx={{
-          mb: 1,
           textTransform: "none",
           backgroundColor: `${selectedAssay && selectedAssay.assembly === variant.assembly && selectedAssay.assay === variant.assay ? borderColor(variant.assay) : "initial"}`,
           borderLeft: `0.40rem solid ${borderColor(variant.assay)}`,
@@ -94,7 +92,7 @@ const AssemblyControls = ({ assembly, setSelected, selectedAssay }: AssemblyCont
           </Stack>
         </Stack>
       </Stack>
-      <Stack direction="row" spacing={2} alignItems="center">
+      <Stack direction={"row"} spacing={{ xs: 1, md: 2 }} alignItems="center">
         {assays.map((assay) =>
           selectorButton({
             assembly,

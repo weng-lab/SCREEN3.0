@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { Button, Stack, InputLabel, Select, MenuItem, SelectChangeEvent } from "@mui/material";
+import { Button, Stack, InputLabel, Select, MenuItem, SelectChangeEvent, Box } from "@mui/material";
 import { useQuery } from "@apollo/client";
-import Grid from "@mui/material/Grid";
 import { Download } from "@mui/icons-material";
 import { allColsHidden, BiosampleTable, EncodeBiosample, GridColumnVisibilityModel } from "@weng-lab/ui-components";
 import { ScatterPlot, Point } from "@weng-lab/visualization";
@@ -11,6 +10,8 @@ import { UMAP_QUERY } from "../queries";
 import AssemblyControls, { Selected } from "./AssemblyControls";
 import UmapLegend from "./UmapLegend";
 import DownloadModal from "./DownloadModal";
+
+const assemblies: Array<"Human" | "Mouse"> = ["Human", "Mouse"];
 
 // Direct copy from old SCREEN
 function colorMap(strings) {
@@ -185,119 +186,161 @@ export function DataMatrices() {
   );
 
   return (
-    <Grid container mt={1} direction="column" sx={{ paddingX: 5, height: "100%", minHeight: 0, minWidth: 0 }}>
-      <Stack direction="row" spacing={10} sx={{ minHeight: 0, minWidth: 0, maxWidth: "100%", overflow: "auto" }}>
-        <Stack direction="column" spacing={2} flex={"1 1"}>
-          <Stack direction="row" justifyContent={"space-between"}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr",
+          md: "minmax(0, 1100px) minmax(350px, 1fr)",
+        },
+        columnGap: { xs: 0, md: 4 },
+        rowGap: 1,
+        minHeight: 0,
+      }}
+    >
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateRows: {
+            xs: "auto auto auto",
+            md: "auto auto 1fr",
+          },
+          gap: 2,
+          minHeight: 0,
+          minWidth: 0,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 2,
+            justifyContent: { md: "space-between" },
+            flexWrap: "wrap",
+          }}
+        >
+          {assemblies.map((assembly) => (
             <AssemblyControls
-              assembly={"Human"}
+              key={assembly}
+              assembly={assembly}
               selectedAssay={selectedAssay}
-              setSelected={(selected) => handleSetSelectedAssay(selected)}
+              setSelected={handleSetSelectedAssay}
             />
-            <AssemblyControls
-              assembly={"Mouse"}
-              selectedAssay={selectedAssay}
-              setSelected={(selected) => handleSetSelectedAssay(selected)}
-            />
-          </Stack>
-          <Stack direction="row" alignItems="flex-end">
-            <Stack direction="row" spacing={2}>
-              <Stack>
-                <InputLabel id="color-by-label">Color By</InputLabel>
-                <Select
-                  size="small"
-                  id="color-by"
-                  value={colorBy}
-                  onChange={(event: SelectChangeEvent) => {
-                    setColorBy(event.target.value as "ontology" | "sampleType");
-                  }}
-                  sx={{ minWidth: 180 }}
-                >
-                  <MenuItem value="ontology">Tissue/Organ</MenuItem>
-                  <MenuItem value="sampleType">Biosample Type</MenuItem>
-                </Select>
-              </Stack>
-              <Stack>
-                <InputLabel id="show-label">Show</InputLabel>
-                <Select
-                  size="small"
-                  id="show"
-                  value={lifeStage}
-                  onChange={(event: SelectChangeEvent) => {
-                    setLifeStage(event.target.value as "all" | "adult" | "embryonic");
-                  }}
-                  sx={{ minWidth: 160 }}
-                >
-                  <MenuItem value="all">All</MenuItem>
-                  <MenuItem value="adult">Adult</MenuItem>
-                  <MenuItem value="embryonic">Embryonic</MenuItem>
-                </Select>
-              </Stack>
-            </Stack>
-            <Button
-              sx={{ ml: "auto", height: 40, textTransform: "none" }}
-              variant="contained"
-              endIcon={<Download />}
-              onClick={handleOpenDownloadModal}
-            >
-              Download Data
-            </Button>
-          </Stack>
-
-          {/* graph section */}
-          <Stack
-            height={"57vh"}
-            width={"auto"}
-            padding={1}
-            sx={{ border: "2px solid", borderColor: "grey.400", borderRadius: "8px" }}
+          ))}
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: { xs: "stretch", md: "flex-end" },
+            gap: 2,
+            flexWrap: "wrap",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2,
+            }}
           >
-            <ScatterPlot
-              pointData={scatterData}
-              loading={umapLoading}
-              selectable
-              onSelectionChange={handleSelectionChange}
-              miniMap={map}
-              leftAxisLabel="UMAP-2"
-              bottomAxisLabel="UMAP-1"
-              initialState={{
-                minimap: {
-                  open: true,
-                },
-                controls: {
-                  selectionType: "pan",
-                },
-              }}
-              animation="scale"
-              animationBuffer={0.01}
-              //Only human DNAse will be animaited since its first shown
-              animationGroupSize={65}
-            />
-          </Stack>
-        </Stack>
-        <div style={{ minWidth: 300, overflow: "auto" }}>
-          <BiosampleTable
-            label={"Find Biosamples"}
-            assembly={selectedAssay.assembly === "Human" ? "GRCh38" : "mm10"}
-            checkboxSelection
-            onSelectionChange={handleSetTableSelection}
-            selected={selectedBiosamples}
-            prefilterBiosamples={(biosample) => biosampleHasAssay(biosample, selectedAssay.assay)}
-            columnVisibilityModel={columnVisibilityModel}
-            // temporary fix while other tables are not setup to group rows
-            disableRowGrouping={false}
-            // I gave up on figuring out how to make this grow and shrink to the correct size
-            // This layout desperately needs to be cleaned
-            divHeight={{ height: 600 }}
+            <Stack>
+              <InputLabel id="color-by-label">Color By</InputLabel>
+              <Select
+                size="small"
+                id="color-by"
+                value={colorBy}
+                onChange={(event: SelectChangeEvent) => {
+                  setColorBy(event.target.value as "ontology" | "sampleType");
+                }}
+                sx={{ width: 180 }}
+              >
+                <MenuItem value="ontology">Tissue/Organ</MenuItem>
+                <MenuItem value="sampleType">Biosample Type</MenuItem>
+              </Select>
+            </Stack>
+            <Stack>
+              <InputLabel id="show-label">Show</InputLabel>
+              <Select
+                size="small"
+                id="show"
+                value={lifeStage}
+                onChange={(event: SelectChangeEvent) => {
+                  setLifeStage(event.target.value as "all" | "adult" | "embryonic");
+                }}
+                sx={{ width: 160 }}
+              >
+                <MenuItem value="all">All</MenuItem>
+                <MenuItem value="adult">Adult</MenuItem>
+                <MenuItem value="embryonic">Embryonic</MenuItem>
+              </Select>
+            </Stack>
+          </Box>
+          <Button
+            sx={{ ml: { xs: 0, md: "auto" }, height: 40, textTransform: "none", width: 160 }}
+            variant="contained"
+            endIcon={<Download />}
+            onClick={handleOpenDownloadModal}
+          >
+            Download Data
+          </Button>
+        </Box>
+        <Box
+          sx={{
+            minHeight: 500,
+            minWidth: 0,
+            p: 1,
+            border: "2px solid",
+            borderColor: "grey.400",
+            borderRadius: 2,
+          }}
+        >
+          <ScatterPlot
+            pointData={scatterData}
+            loading={umapLoading}
+            selectable
+            onSelectionChange={handleSelectionChange}
+            miniMap={map}
+            leftAxisLabel="UMAP-2"
+            bottomAxisLabel="UMAP-1"
+            initialState={{
+              minimap: {
+                open: true,
+              },
+              controls: {
+                selectionType: "pan",
+              },
+            }}
+            animation="scale"
+            animationBuffer={0.01}
+            //Only human DNAse will be animaited since its first shown
+            animationGroupSize={65}
           />
-        </div>
-      </Stack>
-      <UmapLegend
-        scatterData={scatterData}
-        colorBy={colorBy}
-        sampleTypeColors={sampleTypeColors}
-        ontologyColors={ontologyColors}
-      />
+        </Box>
+      </Box>
+      <Box sx={{ minHeight: 0, overflow: "auto" }}>
+        <BiosampleTable
+          label={"Find Biosamples"}
+          assembly={selectedAssay.assembly === "Human" ? "GRCh38" : "mm10"}
+          checkboxSelection
+          onSelectionChange={handleSetTableSelection}
+          selected={selectedBiosamples}
+          prefilterBiosamples={(biosample) => biosampleHasAssay(biosample, selectedAssay.assay)}
+          columnVisibilityModel={columnVisibilityModel}
+          // temporary fix while other tables are not setup to group rows
+          disableRowGrouping={false}
+          divHeight={{ height: 750 }}
+        />
+      </Box>
+      <Box sx={{ gridColumn: "1 / -1" }}>
+        <UmapLegend
+          scatterData={scatterData}
+          colorBy={colorBy}
+          sampleTypeColors={sampleTypeColors}
+          ontologyColors={ontologyColors}
+        />
+      </Box>
       <DownloadModal openModal={openModal} handleCloseModal={handleCloseModal} selectedAssay={selectedAssay} />
-    </Grid>
+    </Box>
   );
 }
