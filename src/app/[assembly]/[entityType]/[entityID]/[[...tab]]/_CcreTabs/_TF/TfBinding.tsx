@@ -410,11 +410,10 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
           },
         }}
       >
-        <Tab value="overlapping_peaks" label="Overlapping ChIP-seq Peaks" />
-        <Tab value="binding_tfs" label="Bound Transcription Factors" />
-        
+        <Tab value="binding_tfs" label="Overlapping ChIP-seq Peaks" />
+        <Tab value="overlapping_peaks" label="Bound Transcription Factors" />
       </Tabs>
-      {tab==="overlapping_peaks" ? <Table
+      {tab==="binding_tfs" ? <Table
         apiRef={apiRef}
         rows={rows}
         columns={columns}
