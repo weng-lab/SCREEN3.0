@@ -2,12 +2,12 @@
 
 // @mui
 import { Search } from "@mui/icons-material";
-import { Box, Button, IconButton, Stack } from "@mui/material";
+import { Box, Button, IconButton, Stack, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 
 // @weng-lab
-import { Browser, Chromosome, DataStoreInstance, Rect } from "@weng-lab/genomebrowser";
+import { Browser, BulkBedRect, Chromosome, DataStoreInstance, Rect } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
@@ -27,6 +27,7 @@ import { TrackCallbacks } from "./TrackSelect/defaultTracks";
 import { Exon } from "common/types/generated/graphql";
 import { useRouter } from "next/navigation";
 import CCRETooltip from "./Tooltips/CcreTooltip";
+import ChromHmmTooltip from "./Tooltips/ChromHMMTooltip";
 
 interface Transcript {
   id: string;
@@ -49,6 +50,11 @@ export default function GenomeBrowserView({
   dataStore,
   handleSelectLDBlock,
 }: GenomeBrowserViewProps) {
+  const theme = useTheme();
+  const isMedium = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const breakpoint: "sm" | "md" | undefined = isSmall ? "sm" : isMedium ? "md" : undefined;
+
   /**
    * @todo when refactoring this to include GWAS need to change this logic
    */
@@ -59,7 +65,7 @@ export default function GenomeBrowserView({
         ? `${coordinates[0].chromosome}:${coordinates[0].start}-${coordinates[0].end}`
         : entity.entityID;
 
-  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType);
+  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType, breakpoint);
 
   const setDomain = browserStore((s) => s.setDomain);
   useEffect(() => {
@@ -116,6 +122,9 @@ export default function GenomeBrowserView({
       onCCREClick,
       onGeneClick,
       ccreTooltip: (item: Rect) => <CCRETooltip assembly={entity.assembly} name={item.name} />,
+      chromHmmTooltip: (rect: BulkBedRect, tissue: string, displayName: string) => (
+        <ChromHmmTooltip rect={rect} tissue={tissue} displayName={displayName} />
+      ),
     }),
     [onHover, onLeave, onCCREClick, onGeneClick, entity.assembly]
   );
@@ -138,46 +147,59 @@ export default function GenomeBrowserView({
     setDomain(expandCoordinates(r.domain, SearchToScreenTypes[r.type]));
   };
 
-  const theme = useTheme();
-
   const geneVersion = entity.assembly === "GRCh38" ? [29, 40] : 25;
 
   return (
-    <Stack>
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2} justifyContent={"space-between"} alignItems={"center"}>
-        <Box display="flex" gap={2} alignItems="center" flex={1}>
-          <GenomeSearch
-            size="small"
-            assembly={entity.assembly}
-            geneVersion={geneVersion}
-            onSearchSubmit={handeSearchSubmit}
-            queries={["Gene", "SNP", "cCRE", "Coordinate"]}
-            geneLimit={3}
-            sx={{ minWidth: 300, maxWidth: 450, flex: 1 }}
-            slots={{
-              button: (
-                <IconButton sx={{ color: theme.palette.primary.main }}>
-                  <Search />
-                </IconButton>
-              ),
-            }}
-            slotProps={{
-              input: {
-                label: "Change Browser Region",
-                sx: {
-                  backgroundColor: "white",
-                  "& label.Mui-focused": {
-                    color: theme.palette.primary.main,
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: theme.palette.primary.main,
+    <Stack sx={{ overflow: "hidden" }}>
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={2}
+        justifyContent={"space-between"}
+        alignItems={{ xs: "stretch", md: "center" }}
+        sx={{ width: "100%", maxWidth: "100%", pt: 1 }}
+      >
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={2}
+          alignItems={{ xs: "stretch", md: "center" }}
+          sx={{ width: { xs: "100%", md: "auto" }, flex: { md: 1 }, maxWidth: { md: 600 } }}
+        >
+          <Box
+            sx={{ width: { xs: "100%", md: "auto" }, minWidth: { md: 300 }, maxWidth: { md: 450 }, flex: { md: 1 } }}
+          >
+            <GenomeSearch
+              size="small"
+              assembly={entity.assembly}
+              geneVersion={geneVersion}
+              onSearchSubmit={handeSearchSubmit}
+              queries={["Gene", "SNP", "cCRE", "Coordinate"]}
+              geneLimit={3}
+              sx={{ width: "100%" }}
+              slots={{
+                button: (
+                  <IconButton sx={{ color: theme.palette.primary.main }}>
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+              slotProps={{
+                input: {
+                  label: "Change Browser Region",
+                  sx: {
+                    backgroundColor: "white",
+                    "& label.Mui-focused": {
+                      color: theme.palette.primary.main,
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: theme.palette.primary.main,
+                      },
                     },
                   },
                 },
-              },
-            }}
-          />
+              }}
+            />
+          </Box>
           {entity.entityType !== "gwas" && (
             <Button
               variant="contained"
@@ -189,21 +211,37 @@ export default function GenomeBrowserView({
                   expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType)
                 )
               }
+              sx={{
+                width: { xs: "100%", md: "auto" },
+                whiteSpace: "nowrap",
+                minHeight: 44,
+              }}
             >
               Recenter on {name || "Selected Region"}
             </Button>
           )}
-        </Box>
-        <Box display="flex" gap={2} alignItems="center">
+        </Stack>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            width: { xs: "100%", md: "auto" },
+            justifyContent: { xs: "stretch", md: "flex-end" },
+            "& > button": {
+              flex: { xs: 1, md: "none" },
+            },
+          }}
+        >
           <HighlightDialog browserStore={browserStore} />
           {entity.entityType === "gwas" && (
-            <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => handleSelectLDBlock()}>
+            <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={() => handleSelectLDBlock?.()}>
               Select LD Block
             </Button>
           )}
-          <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
-        </Box>
-        {/* Add new track select button and modal here */}
+          {entity.entityType !== "gwas" && (
+            <TrackSelectModal trackStore={trackStore} assembly={entity.assembly} callbacks={callbacks} />
+          )}
+        </Stack>
       </Stack>
       {/* Browser Controls */}
       <Stack

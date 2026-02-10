@@ -3,7 +3,7 @@
 import { Tabs, Tab, Menu, MenuItem, Tooltip, TabsOwnProps } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import React, { useEffect, useState, useMemo  } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -35,8 +35,6 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation()
-    event.preventDefault()
     setAnchorEl(event.currentTarget);
   };
 
@@ -44,16 +42,23 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
     setAnchorEl(null);
   };
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    if (newValue === "more") return; // prevent more tab from being selected on initial click
     setValue(newValue);
   };
 
-  //If we ever use parallel routes to nest multiple elements in the same view, this will probably break
+  const handleMoreSelection = (newValue: string) => {
+    setValue(newValue);
+    handleClose();
+  };
+
+  // Sync value to route on initial mount
+  // Could we move this to a location where it has access to the route through layout params?
   useEffect(() => {
     if (currentTab !== value) {
       setValue(currentTab);
     }
-  }, [currentTab, value]);
+  }, []);
 
   const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 
@@ -77,13 +82,14 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
     if (tabsDisabledInfo === null) fetchTabInfo(tabs);
   }, [entityID, tabsDisabledInfo, tabs]);
 
+  // Show the "more" tab as selected when an iconless tab is selected
   const tabVal = useMemo(() => (iconTabs.some((x) => x.route === value) ? value : "more"), [iconTabs, value]);
 
   return (
     <>
       <Tabs
         value={tabVal}
-        onChange={handleChange}
+        onChange={handleTabChange}
         aria-label="Tabs"
         orientation={orientation}
         allowScrollButtonsMobile
@@ -218,7 +224,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
             key={tab.label}
             component={Link}
             href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
-            onClick={handleClose}
+            onClick={() => handleMoreSelection(tab.route)}
             disabled={tabsDisabledInfo?.find((x) => x.route === tab.route).isDisabled}
           >
             {tab.label}

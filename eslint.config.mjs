@@ -48,7 +48,8 @@ export default defineConfig([
         ecmaFeatures: {
           jsx: true,
         },
-        project: "./tsconfig.json",
+        project: path.join(__dirname, "tsconfig.json"),
+        tsconfigRootDir: __dirname
       },
     },
     ignores: ["node_modules", ".next", ".vscode", ".yarn"],

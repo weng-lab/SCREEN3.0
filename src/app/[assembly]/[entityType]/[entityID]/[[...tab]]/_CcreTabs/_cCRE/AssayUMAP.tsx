@@ -198,10 +198,14 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
           tooltipBody={(point) => <TooltipBody metaData={point.metaData} assay={assay} />}
           ref={ref}
           downloadFileName={`${assay}_UMAP`}
+          animation="scale"
+          animationBuffer={0.01}
+          animationGroupSize={assay === "ctcf" ? 15 : assay === "dnase" ? 65 : 30}
         />
       </Box>
     </Stack>
   );
 };
+//15, 30, 30, 65
 
 export default AssayUMAP;

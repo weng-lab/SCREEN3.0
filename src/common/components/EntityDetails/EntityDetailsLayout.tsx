@@ -60,9 +60,7 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
           bgcolor={"#F2F2F2"}
           position={"sticky"}
           top={"calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))"}
-          maxHeight={
-            "calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px) - var(--footer-visible-height, 0px))"
-          }
+          maxHeight={"calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px))"}
           display={{ xs: "none", md: "block" }}
         >
           <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" />

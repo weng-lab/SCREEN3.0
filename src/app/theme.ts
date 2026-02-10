@@ -16,16 +16,6 @@ export const theme = createTheme({
     },
   },
   components: {
-    //This came with file, not sure what it does
-    MuiAlert: {
-      styleOverrides: {
-        root: ({ ownerState }) => ({
-          ...(ownerState.severity === "info" && {
-            backgroundColor: "#60a5fa",
-          }),
-        }),
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {
