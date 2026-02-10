@@ -155,6 +155,13 @@ const otherAssemblies: { GRCh38: DownloadButtonProps[]; mm10: DownloadButtonProp
       fileSize: "128.8 MB",
       bordercolor: "#0c184a",
       assembly: "GRCh37",
+    }, 
+    {
+      href: Config.Downloads.HumanT2TcCREs,
+      label: "T2T CHM13v2.0/hs1 cCREs (Lifted down from GRCh38/hg38)",
+      fileSize: "123 MB",
+      bordercolor: "#0c184a",
+      assembly: "GRCh38",
     },
   ],
   mm10: [],
