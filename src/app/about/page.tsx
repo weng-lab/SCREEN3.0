@@ -417,7 +417,7 @@ export default function About() {
               </Typography>
               <Link
                 display={"inline"}
-                href="https://github.com/weng-lab/SCREEN2.0/issues"
+                href="https://github.com/weng-lab/SCREEN3.0/issues"
                 target="_blank"
                 rel="noopener noreferrer"
               >
