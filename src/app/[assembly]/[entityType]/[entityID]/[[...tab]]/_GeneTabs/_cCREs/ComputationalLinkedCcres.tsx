@@ -31,10 +31,10 @@ export default function ComputationalLinkedCcres({
   geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
 }) {
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
-  const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data.id });
+  const { data, loading, error } = useLinkedCcres({ geneid: geneData?.data?.id });
 
   const { data: dataCompucCREs, loading: loadingCompucCREs } = useCompuLinkedcCREs({
-    geneid: geneData ? [geneData?.data.id.split(".")[0]] : [],
+    geneid: geneData.data ? [geneData?.data?.id.split(".")[0]] : [],
     method,
   });
 
