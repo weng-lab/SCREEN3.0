@@ -66,7 +66,7 @@ export function useLocalBrowser(
   const setFontSize = browserStore((s) => s.setFontSize);
 
   useEffect(() => {
-    const width = breakpoint === "sm" ? 500 : breakpoint === "md" ? 900 : 1400;
+    const width = breakpoint === "sm" ? 550 : breakpoint === "md" ? 950 : 1450;
     const titleSize = breakpoint === "sm" ? 18 : breakpoint === "md" ? 14 : 12;
     setTrackWidth(width);
     setTitleSize(titleSize);
