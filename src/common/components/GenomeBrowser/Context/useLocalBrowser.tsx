@@ -66,12 +66,11 @@ export function useLocalBrowser(
   const setFontSize = browserStore((s) => s.setFontSize);
 
   useEffect(() => {
-    const width = breakpoint === "sm" ? 550 : breakpoint === "md" ? 950 : 1450;
     const titleSize = breakpoint === "sm" ? 18 : breakpoint === "md" ? 14 : 12;
-    setTrackWidth(width);
+    setTrackWidth(trackWidth);
     setTitleSize(titleSize);
     setFontSize(titleSize - 2);
-  }, [breakpoint, setTrackWidth, setTitleSize, setFontSize]);
+  }, [breakpoint, trackWidth, setTrackWidth, setTitleSize, setFontSize]);
 
   const domain = browserStore((state) => state.domain);
   const highlights = browserStore((state) => state.highlights);
