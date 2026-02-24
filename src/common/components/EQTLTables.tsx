@@ -38,15 +38,15 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
   //Change query variables and table title based on element type
   if (entityType === "gene") {
     variables = { genes: [entityID] };
-    gtexTitle = `GTEX eQTLs for ${entityID}`;
+    gtexTitle = `GTEx eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   } else if (entityType === "ccre") {
     variables = { ccre: [entityID] };
-    gtexTitle = `GTEX eQTLs for ${entityID}`;
+    gtexTitle = `GTEx eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   } else {
     variables = { snps: [entityID] };
-    gtexTitle = `GTEX eQTLs for ${entityID}`;
+    gtexTitle = `GTEx eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   }
 
@@ -129,7 +129,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
   if (entityType === "gene" || entityType === "variant") {
     gtexColumns.push({
       field: "ccre",
-      headerName: "ccre",
+      headerName: "cCRE",
       renderCell: (params) =>
         params.value === "." ? (
           <>{params.value}</>
@@ -204,7 +204,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
   if (entityType === "gene" || entityType === "variant") {
     oneK1KColumns.push({
       field: "ccre",
-      headerName: "ccre",
+      headerName: "cCRE",
       renderCell: (params) =>
         params.value === "." ? (
           <>{params.value}</>
@@ -228,7 +228,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
               sortModel: [{ field: "pval_nominal", sort: "asc" }],
             },
           }}
-          emptyTableFallback={"No GTEX eQTLs found"}
+          emptyTableFallback={"No GTEx eQTLs found"}
           divHeight={{ maxHeight: "400px" }}
         />
       </Box>
