@@ -6,6 +6,7 @@ import {
   foldersByAssembly,
   GeneRowInfo,
   OtherTrackInfo,
+  tfPeaksTrack,
   TrackSelect,
 } from "@weng-lab/genomebrowser-ui";
 import { ASSAY_COLORS } from "common/colors";
