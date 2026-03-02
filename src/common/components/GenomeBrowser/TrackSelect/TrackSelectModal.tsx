@@ -6,7 +6,6 @@ import {
   foldersByAssembly,
   GeneRowInfo,
   OtherTrackInfo,
-  tfPeaksTrack,
   TrackSelect,
 } from "@weng-lab/genomebrowser-ui";
 import { ASSAY_COLORS } from "common/colors";
@@ -167,7 +166,7 @@ function generateTrack(
 
   if (folderId.includes("other-tracks")) {
     if (row.id === "tf-peaks") {
-      return { ...tfPeaksTrack };
+      return { ...tfPeaksTrack, title: "TF ChIP-seq Peaks and Motifs" };
     }
     return null;
   }
