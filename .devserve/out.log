@@ -1,0 +1,45 @@
+   ▲ Next.js 15.5.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.181:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 627ms
+ ○ Compiling / ...
+ ✓ Compiled / in 5.5s
+ GET / 200 in 6424ms
+ ✓ Compiled /icon.svg in 262ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 498ms
+ ○ Compiling /[assembly]/[entityType]/[entityID]/[[...tab]] ...
+ ✓ Compiled /[assembly]/[entityType]/[entityID]/[[...tab]] in 1416ms
+ GET /GRCh38/gene/SOX4 200 in 1811ms
+ GET /GRCh38/gene/SOX4?open=BYegjCDKDyAaAsIAMQ 200 in 210ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 218ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIAMQ 200 in 192ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIAMQ 200 in 172ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 187ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 216ms
+ GET / 200 in 323ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 370ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 220ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 187ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 214ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 373ms
+ ✓ Compiled /[assembly]/[entityType]/[entityID]/[[...tab]] in 13ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 289ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 236ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 45ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 315ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 224ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 202ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 216ms
+ ✓ Compiled in 665ms
+ ✓ Compiled /[assembly]/[entityType]/[entityID]/[[...tab]] in 184ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 443ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 179ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 215ms
+ ✓ Compiled in 296ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 799ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 218ms
+ GET /GRCh38/gene/SOX4/browser?open=BYegjCDKDyAaAsIDMQ 200 in 218ms
+ GET /icon.svg?icon.529c8faa.svg 200 in 217ms
