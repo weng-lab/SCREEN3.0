@@ -14,7 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\nquery ENTEXQuery($accession: String!){\n  entexQuery(accession: $accession){\n    assay\n    accession\n    hap1_count\n    hap2_count\n    hap1_allele_ratio\n    p_betabinom\n    experiment_accession\n    tissue\n    donor    \n    imbalance_significance\n  }\n}\n": typeof types.EntexQueryDocument,
+    "\nquery ENTEXQuery($accession: String!){\n  entexQuery(accession: $accession){\n    assay\n    accession\n    hap1_count\n    hap2_count\n    hap1_allele_ratio\n    p_betabinom\n    experiment_accession\n    tissue\n    donor\n    imbalance_significance\n  }\n}\n": typeof types.EntexQueryDocument,
     "\nquery entexActiveAnnotationsQuery( $coordinates: GenomicRangeInput! ) {\n    entexActiveAnnotationsQuery(coordinates: $coordinates) {\n        tissue\n        assay_score\n    }\n\n}": typeof types.EntexActiveAnnotationsQueryDocument,
     "\n  query orthologTab($assembly: String!, $accession: [String!]) {\n    orthologQuery(accession: $accession, assembly: $assembly) {\n      assembly\n      accession\n      ortholog {\n        stop\n        start\n        chromosome\n        accession\n      }\n    }\n  }\n": typeof types.OrthologTabDocument,
     "\nquery functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {\n  functionalCharacterizationQuery(assembly: $assembly, coordinates: $coordinates) {\n    tissues\n    element_id\n    assay_result\n    chromosome\n    stop\n    start\n  }\n}\n": typeof types.FunctionalCharacterizationQueryDocument,
@@ -70,7 +70,7 @@ type Documents = {
     "\n  query tssRampage($gene: String!) {\n  tssrampageQuery(genename: $gene) {\n    start    \n    organ   \n    strand\n    peakId\n    biosampleName\n    biosampleType\n    biosampleSummary\n    peakType\n    expAccession\n    value\n    start\n    end \n    chrom    \n    genes {\n      geneName\n        locusType\n    }\n  }\n}": typeof types.TssRampageDocument,
 };
 const documents: Documents = {
-    "\nquery ENTEXQuery($accession: String!){\n  entexQuery(accession: $accession){\n    assay\n    accession\n    hap1_count\n    hap2_count\n    hap1_allele_ratio\n    p_betabinom\n    experiment_accession\n    tissue\n    donor    \n    imbalance_significance\n  }\n}\n": types.EntexQueryDocument,
+    "\nquery ENTEXQuery($accession: String!){\n  entexQuery(accession: $accession){\n    assay\n    accession\n    hap1_count\n    hap2_count\n    hap1_allele_ratio\n    p_betabinom\n    experiment_accession\n    tissue\n    donor\n    imbalance_significance\n  }\n}\n": types.EntexQueryDocument,
     "\nquery entexActiveAnnotationsQuery( $coordinates: GenomicRangeInput! ) {\n    entexActiveAnnotationsQuery(coordinates: $coordinates) {\n        tissue\n        assay_score\n    }\n\n}": types.EntexActiveAnnotationsQueryDocument,
     "\n  query orthologTab($assembly: String!, $accession: [String!]) {\n    orthologQuery(accession: $accession, assembly: $assembly) {\n      assembly\n      accession\n      ortholog {\n        stop\n        start\n        chromosome\n        accession\n      }\n    }\n  }\n": types.OrthologTabDocument,
     "\nquery functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {\n  functionalCharacterizationQuery(assembly: $assembly, coordinates: $coordinates) {\n    tissues\n    element_id\n    assay_result\n    chromosome\n    stop\n    start\n  }\n}\n": types.FunctionalCharacterizationQueryDocument,
@@ -143,7 +143,7 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nquery ENTEXQuery($accession: String!){\n  entexQuery(accession: $accession){\n    assay\n    accession\n    hap1_count\n    hap2_count\n    hap1_allele_ratio\n    p_betabinom\n    experiment_accession\n    tissue\n    donor    \n    imbalance_significance\n  }\n}\n"): (typeof documents)["\nquery ENTEXQuery($accession: String!){\n  entexQuery(accession: $accession){\n    assay\n    accession\n    hap1_count\n    hap2_count\n    hap1_allele_ratio\n    p_betabinom\n    experiment_accession\n    tissue\n    donor    \n    imbalance_significance\n  }\n}\n"];
+export function gql(source: "\nquery ENTEXQuery($accession: String!){\n  entexQuery(accession: $accession){\n    assay\n    accession\n    hap1_count\n    hap2_count\n    hap1_allele_ratio\n    p_betabinom\n    experiment_accession\n    tissue\n    donor\n    imbalance_significance\n  }\n}\n"): (typeof documents)["\nquery ENTEXQuery($accession: String!){\n  entexQuery(accession: $accession){\n    assay\n    accession\n    hap1_count\n    hap2_count\n    hap1_allele_ratio\n    p_betabinom\n    experiment_accession\n    tissue\n    donor\n    imbalance_significance\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

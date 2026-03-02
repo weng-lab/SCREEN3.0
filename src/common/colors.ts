@@ -25,6 +25,7 @@ export const ASSAY_COLORS: Record<string, string> = {
   "rna-seq": "#00aa00",
   chromhmm: "#00ff00",
   ccre: "#0c184a",
+  wgbs: "#648bd8",
 };
 
 export const CLASS_COLORS: Record<CcreClass, string> = {

@@ -351,6 +351,12 @@ export type CcreNodeGroups = {
   ccre_group: Scalars['String']['output'];
 };
 
+export type CcreSequenceAlignmentData = {
+  __typename?: 'CcreSequenceAlignmentData';
+  accession: Scalars['String']['output'];
+  sequence_alignment?: Maybe<Array<Maybe<Array<Maybe<Scalars['Int']['output']>>>>>;
+};
+
 export type CellTypeEnrichment = {
   __typename?: 'CellTypeEnrichment';
   encodeid: Scalars['String']['output'];
@@ -467,6 +473,20 @@ export type ConservationAggregate = {
   peaks_accession: Scalars['String']['output'];
   peaks_dataset_accession: Scalars['String']['output'];
   values: Array<Scalars['Float']['output']>;
+};
+
+export type ConservationData = {
+  __typename?: 'ConservationData';
+  accession: Scalars['String']['output'];
+  mammals?: Maybe<Scalars['Float']['output']>;
+  mammals_241_phastcons?: Maybe<Scalars['Float']['output']>;
+  mammals_241_phylop?: Maybe<Scalars['Float']['output']>;
+  primates?: Maybe<Scalars['Float']['output']>;
+  primates_43_phastcons?: Maybe<Scalars['Float']['output']>;
+  primates_43_phylop?: Maybe<Scalars['Float']['output']>;
+  vertebrates?: Maybe<Scalars['Float']['output']>;
+  vertebrates_100_phastcons?: Maybe<Scalars['Float']['output']>;
+  vertebrates_100_phylop?: Maybe<Scalars['Float']['output']>;
 };
 
 export type ConservationHeatmapData = {
@@ -2252,6 +2272,7 @@ export type Query = {
   capraFccSoloQuery?: Maybe<Array<Maybe<Caprafccsolodata>>>;
   caqtls?: Maybe<Array<Maybe<CaQtls>>>;
   ccREBiosampleQuery: RegistryBiosampleCollection;
+  ccreSequenceAlignmentQuery?: Maybe<Array<Maybe<CcreSequenceAlignmentData>>>;
   ccreTranscriptionQuery?: Maybe<Array<Maybe<CcreTranscription>>>;
   celltype?: Maybe<Array<Maybe<Celltype>>>;
   chromlengths?: Maybe<Array<Maybe<ChromLength>>>;
@@ -2303,8 +2324,10 @@ export type Query = {
   getSNPAllele?: Maybe<Array<Maybe<AlleleResult>>>;
   getSNPsforGWASStudies?: Maybe<Array<Maybe<GwasStudySnPs>>>;
   getSNPsforGivenGWASStudy?: Maybe<Array<Maybe<GwasStudiesSnPs>>>;
+  getcCREConservationDataQuery?: Maybe<Array<Maybe<ConservationData>>>;
   getcCRELinksQuery?: Maybe<CcreLinksDetails>;
   getcCRENodeCelltypes?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  getcCRERPeaksQuery?: Maybe<Array<Maybe<CCrerPeaksData>>>;
   getcCRETFQuery?: Maybe<Array<Maybe<CelltypeTf>>>;
   getcartAccessionsQuery?: Maybe<Array<Scalars['String']['output']>>;
   gettssRampagePeaks?: Maybe<Array<Maybe<TssPeaksResponse>>>;
@@ -2556,6 +2579,12 @@ export type QueryCcReBiosampleQueryArgs = {
   assembly: Scalars['String']['input'];
   name?: InputMaybe<Array<Scalars['String']['input']>>;
   umap_coordinates?: InputMaybe<Array<Scalars['Float']['input']>>;
+};
+
+
+export type QueryCcreSequenceAlignmentQueryArgs = {
+  accession: Array<InputMaybe<Scalars['String']['input']>>;
+  assembly: Scalars['String']['input'];
 };
 
 
@@ -2905,6 +2934,7 @@ export type QueryGetCcresforGivenGwasStudyArgs = {
 
 export type QueryGetClosest3GenesTocCreQueryArgs = {
   accession?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  assembly: Scalars['String']['input'];
   gene_id?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   gene_name?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
@@ -2974,6 +3004,11 @@ export type QueryGetSnPsforGivenGwasStudyArgs = {
 };
 
 
+export type QueryGetcCreConservationDataQueryArgs = {
+  accession: Array<InputMaybe<Scalars['String']['input']>>;
+};
+
+
 export type QueryGetcCreLinksQueryArgs = {
   accession: Scalars['String']['input'];
   celltype: Scalars['String']['input'];
@@ -2985,6 +3020,11 @@ export type QueryGetcCreLinksQueryArgs = {
 export type QueryGetcCreNodeCelltypesArgs = {
   accession: Scalars['String']['input'];
   method?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetcCrerPeaksQueryArgs = {
+  accession: Array<InputMaybe<Scalars['String']['input']>>;
 };
 
 
@@ -3007,7 +3047,6 @@ export type QueryGettssRampagePeaksArgs = {
 export type QueryGetv2cCreMappingsArgs = {
   accession_prefix?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   assembly: Scalars['String']['input'];
-  ccre_version?: InputMaybe<Scalars['String']['input']>;
   v2_accession?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
@@ -4402,6 +4441,22 @@ export type ZScoreHistogramBin = {
   __typename?: 'ZScoreHistogramBin';
   bin: Scalars['Float']['output'];
   count: Scalars['Int']['output'];
+};
+
+export type CCrerPeaksData = {
+  __typename?: 'cCRERPeaksData';
+  accession?: Maybe<Scalars['String']['output']>;
+  decorator_chromosome?: Maybe<Scalars['String']['output']>;
+  decorator_start?: Maybe<Scalars['Int']['output']>;
+  decorator_stop?: Maybe<Scalars['Int']['output']>;
+  decorator_tf_number?: Maybe<Scalars['String']['output']>;
+  rpeak_chromosome?: Maybe<Scalars['String']['output']>;
+  rpeak_id?: Maybe<Scalars['String']['output']>;
+  rpeak_start?: Maybe<Scalars['Int']['output']>;
+  rpeak_stop?: Maybe<Scalars['Int']['output']>;
+  strand?: Maybe<Scalars['String']['output']>;
+  tf?: Maybe<Scalars['String']['output']>;
+  tf_number?: Maybe<Scalars['String']['output']>;
 };
 
 export type CQtl = {
