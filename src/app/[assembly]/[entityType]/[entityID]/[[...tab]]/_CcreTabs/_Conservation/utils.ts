@@ -798,7 +798,6 @@ export const getColor = (id: string) => {
   return color;
 };
 
-
 type TestDataNode = { name: string; branch_length: number | null; children?: TestDataNode[] };
 
 export const formatNode = (node: TestDataNode): TreeItem => {

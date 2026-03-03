@@ -7,8 +7,8 @@ import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { CircularProgress, Slider, styled, Tab, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import { CircularProgress, Slider, styled, Tab, Tooltip, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { ParentSize } from "@visx/responsive";
 import { PhyloTree, SequenceAlignmentPlot, TooltipData } from "@weng-lab/visualization";
 import { data as data241 } from "./241_mammals_treedata";
@@ -22,6 +22,7 @@ import {
   SPECIES_ORDER_IN_API_RETURN,
 } from "./utils";
 import { capitalizeFirstLetter } from "common/utility";
+import { InfoOutline } from "@mui/icons-material";
 
 type orthologRow = {
   accession: string;
@@ -248,7 +249,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <TabList onChange={handleChange} aria-label="lab API tabs example">
           <Tab label="Overview" value={0} />
-          <Tab label="Conservation across species" value={1} />
+          <Tab label="Coverage across 241 Mammals" value={1} />
         </TabList>
       </Box>
       <StyledTabPanel value={0}>
@@ -275,18 +276,29 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
         />
       </StyledTabPanel>
       <StyledTabPanel value={1}>
-        <Typography variant="body2">Sequence Coverage Threshold: {coveragePercentage * 100}%</Typography>
-        <Slider
-          value={coveragePercentage}
-          onChange={handleSliderChange}
-          valueLabelDisplay="auto"
-          marks
-          min={0.1}
-          max={1}
-          step={0.1}
-          valueLabelFormat={(x) => `${x * 100}%`}
-          sx={{ maxWidth: 300 }}
-        />
+        <Typography variant="caption">
+          For more information about this data, please visit{" "}
+          <LinkComponent href={"https://zoonomiaproject.org/"} openInNewTab showExternalIcon>
+            https://zoonomiaproject.org/
+          </LinkComponent>
+        </Typography>
+          <Typography variant="body2" display={"flex"} alignItems={"center"} mt={2}>
+            Sequence Coverage Threshold: {coveragePercentage * 100}%{"\u00A0"}
+            <Tooltip title="Highlights species whose aligned sequence covers x% of the cCRE region">
+              <InfoOutline fontSize="small" />
+            </Tooltip>
+          </Typography>
+          <Slider
+            value={coveragePercentage}
+            onChange={handleSliderChange}
+            valueLabelDisplay="auto"
+            marks
+            min={0.1}
+            max={1}
+            step={0.1}
+            valueLabelFormat={(x) => `${x * 100}%`}
+            sx={{ maxWidth: 300 }}
+          />
         {loadingAlignment || !highlighted ? (
           <CircularProgress />
         ) : (
