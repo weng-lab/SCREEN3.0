@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -8,7 +8,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { CircularProgress, Slider, styled, Tab, Tooltip, Typography } from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import { Box } from "@mui/system";
 import { ParentSize } from "@visx/responsive";
 import { PhyloTree, SequenceAlignmentPlot, TooltipData } from "@weng-lab/visualization";
 import { data as data241 } from "./241_mammals_treedata";
@@ -196,7 +196,26 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     skip: entity.assembly === "mm10",
   });
 
-  const sequenceAlignmentPlotData = useMemo(() => {
+  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
+
+  const handleSetSelectedSpecies = useCallback((newSelected: string[]) => {
+    setSelectedSpecies(newSelected);
+  }, []);
+
+  const handleBranchClick = useCallback((leafIds: string[]) => {
+    setSelectedSpecies((prev) => {
+      //if every leaf id in previous state, filter them all out
+      if (leafIds.every((id) => prev.includes(id))) {
+        return prev.filter((id) => !leafIds.includes(id));
+      } else if (prev.length === 241) { //if all selected, reset to none selected
+        return [];
+      } else {
+        return [...prev.filter((id) => !leafIds.includes(id)), ...leafIds];
+      }
+    });
+  }, []);
+
+  const unfilteredAlignmentPlotData = useMemo(() => {
     if (!alignmentData?.ccreSequenceAlignmentQuery[0]?.sequence_alignment) return {};
     return makeAlignmentPlotData(
       alignmentData.ccreSequenceAlignmentQuery[0].sequence_alignment,
@@ -204,6 +223,14 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       sortSpeciesByTreeOrder
     );
   }, [alignmentData]);
+
+  const filteredAlignmentPlotData = useMemo(() => {
+    if (!selectedSpecies.length) return unfilteredAlignmentPlotData;
+    else
+      return Object.fromEntries(
+        Object.entries(unfilteredAlignmentPlotData).filter(([species, _]) => selectedSpecies.includes(species))
+      );
+  }, [unfilteredAlignmentPlotData, selectedSpecies]);
 
   const [coveragePercentage, setCoveragePercentage] = useState<number>(0.9);
 
@@ -222,13 +249,13 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     for (const step of SLIDER_STEPS) {
       const percentage = parseFloat(step);
       highlightedLists[step] = SPECIES_ORDER_IN_API_RETURN.filter((species) => {
-        const gapFilteredLength = sequenceAlignmentPlotData[species].filter((bp) => bp !== "-").length;
+        const gapFilteredLength = unfilteredAlignmentPlotData[species].filter((bp) => bp !== "-").length;
         return gapFilteredLength / length >= percentage;
       });
     }
 
     return highlightedLists;
-  }, [SLIDER_STEPS, alignmentData, sequenceAlignmentPlotData]);
+  }, [SLIDER_STEPS, alignmentData, unfilteredAlignmentPlotData]);
 
   const handleSliderChange = (event: Event, newValue: number) => {
     setCoveragePercentage(newValue);
@@ -282,23 +309,22 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
             https://zoonomiaproject.org/
           </LinkComponent>
         </Typography>
-          <Typography variant="body2" display={"flex"} alignItems={"center"} mt={2}>
-            Sequence Coverage Threshold: {coveragePercentage * 100}%{"\u00A0"}
-            <Tooltip title="Highlights species whose aligned sequence covers x% of the cCRE region">
-              <InfoOutline fontSize="small" />
-            </Tooltip>
-          </Typography>
-          <Slider
-            value={coveragePercentage}
-            onChange={handleSliderChange}
-            valueLabelDisplay="auto"
-            marks
-            min={0.1}
-            max={1}
-            step={0.1}
-            valueLabelFormat={(x) => `${x * 100}%`}
-            sx={{ maxWidth: 300 }}
-          />
+        <Typography variant="body2" display={"flex"} alignItems={"center"} mt={2}>
+          Sequence Coverage Threshold: {coveragePercentage * 100}%{"\u00A0"}
+          <Tooltip title="Highlights species whose aligned sequence covers x% of the cCRE region" placement="right-end">
+            <InfoOutline fontSize="small" />
+          </Tooltip>
+        </Typography>
+        <Slider
+          value={coveragePercentage}
+          onChange={handleSliderChange}
+          marks
+          min={0.1}
+          max={1}
+          step={0.1}
+          valueLabelFormat={(x) => `${x * 100}%`}
+          sx={{ maxWidth: 300 }}
+        />
         {loadingAlignment || !highlighted ? (
           <CircularProgress />
         ) : (
@@ -316,6 +342,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
                     highlighted={highlighted[coveragePercentage.toFixed(1)]}
                     hovered={hovered}
                     onLeafHoverChange={handlePhyloTreeHoverChange}
+                    onBranchClick={handleBranchClick}
                     defaultScaling="unscaled"
                   />
                 )}
@@ -327,7 +354,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
                   <SequenceAlignmentPlot
                     width={width}
                     height={height}
-                    data={sequenceAlignmentPlotData}
+                    data={filteredAlignmentPlotData}
                     getLabel={getLabel}
                     getOrder={getOrder}
                     getOrderColor={getColor}

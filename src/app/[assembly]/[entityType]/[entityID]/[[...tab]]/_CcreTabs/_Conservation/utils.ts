@@ -819,6 +819,10 @@ const numberToNucleotide = new Map<number, Nucleotide>([
   [4, "T"],
 ]);
 
+/**
+ * Takes sequences (numbers 0-4) and a matching ordered array to map each sequence to a species,
+ * and produces data for the SequenceAlignmentPlot
+ */
 export const makeAlignmentPlotData = (
   sequences: number[][],
   /**
@@ -830,6 +834,10 @@ export const makeAlignmentPlotData = (
    */
   sortFn: (id1: string, id2: string) => number
 ): { [species: string]: Nucleotide[] } => {
+  if (sequences.length !== speciesOrder.length) {
+    throw new Error("Number of sequences doesn't match number of species");
+  }
+
   const mappedSequence: { [species: string]: Nucleotide[] } = {};
   sequences.forEach((sequence, i) => {
     const species = speciesOrder[i];
