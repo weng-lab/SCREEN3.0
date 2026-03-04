@@ -1,6 +1,6 @@
 import { Nucleotide, TreeItem } from "@weng-lab/visualization";
 
-const ORDERS = [
+export const ORDERS = [
   "PRIMATES",
   "DERMOPTERA",
   "CARNIVORA",
@@ -23,6 +23,13 @@ const ORDERS = [
 ] as const;
 
 type Order = (typeof ORDERS)[number];
+
+export type SpeciesRow = {
+  id: string;
+  displayName: string;
+  order: string;
+  coverage: number;
+};
 
 export interface SpeciesMeta {
   displayName: string;

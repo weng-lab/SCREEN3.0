@@ -7,11 +7,12 @@ import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { CircularProgress, Slider, styled, Tab, Tooltip, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import { CircularProgress, IconButton, Slider, styled, Tab, Tooltip, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { ParentSize } from "@visx/responsive";
 import { PhyloTree, SequenceAlignmentPlot, TooltipData } from "@weng-lab/visualization";
 import { data as data241 } from "./241_mammals_treedata";
+
 import {
   formatNode,
   getColor,
@@ -20,9 +21,12 @@ import {
   makeAlignmentPlotData,
   sortSpeciesByTreeOrder,
   SPECIES_ORDER_IN_API_RETURN,
+  SpeciesRow,
 } from "./utils";
 import { capitalizeFirstLetter } from "common/utility";
-import { InfoOutline } from "@mui/icons-material";
+import { InfoOutline, SettingsBackupRestore, Tune } from "@mui/icons-material";
+import Button from "@mui/material/Button";
+import SpeciesSelect from "./SpeciesSelect";
 
 type orthologRow = {
   accession: string;
@@ -31,7 +35,7 @@ type orthologRow = {
   stop: number;
 };
 
-export const ORTHOLOG_QUERY = gql(`
+const ORTHOLOG_QUERY = gql(`
   query orthologTab($assembly: String!, $accession: [String!]) {
     orthologQuery(accession: $accession, assembly: $assembly) {
       assembly
@@ -46,7 +50,7 @@ export const ORTHOLOG_QUERY = gql(`
   }
 `);
 
-export const SEQ_ALIGNMENT_QUERY = gql(`
+const SEQ_ALIGNMENT_QUERY = gql(`
   query fetchccreSequenceAlignmentQuery(
     $assembly: String!
     $accession: [String]!
@@ -81,8 +85,6 @@ const SeqAlignTooltipContents = (tooltipData: TooltipData) => (
   </div>
 );
 
-const phyloTreeRoot = formatNode(data241);
-
 const StyledTabPanel = styled(TabPanel)(() => ({
   padding: 0,
 }));
@@ -105,6 +107,13 @@ const PlotWrapper = styled("div")(({ theme }) => ({
   },
   minWidth: 0, //allow item to shrink below plot intrinsic dimensions
 }));
+
+const phyloTreeRoot = formatNode(data241);
+
+const allSpecies = new Set(SPECIES_ORDER_IN_API_RETURN)
+
+const SLIDER_STEPS = ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"]
+type SliderStep = (typeof SLIDER_STEPS)[number];
 
 export const Conservation = ({ entity }: EntityViewComponentProps) => {
   const [tab, setTab] = useState<number>(0);
@@ -196,23 +205,12 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     skip: entity.assembly === "mm10",
   });
 
-  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
+  const [selectedSpecies, setSelectedSpecies] = useState<Set<string>>(allSpecies);
+  const [speciesSelectOpen, setSpeciesSelectOpen] = useState<boolean>(false);
+  const [hovered, setHovered] = useState<string[]>([]);
 
-  const handleSetSelectedSpecies = useCallback((newSelected: string[]) => {
-    setSelectedSpecies(newSelected);
-  }, []);
-
-  const handleBranchClick = useCallback((leafIds: string[]) => {
-    setSelectedSpecies((prev) => {
-      //if every leaf id in previous state, filter them all out
-      if (leafIds.every((id) => prev.includes(id))) {
-        return prev.filter((id) => !leafIds.includes(id));
-      } else if (prev.length === 241) { //if all selected, reset to none selected
-        return [];
-      } else {
-        return [...prev.filter((id) => !leafIds.includes(id)), ...leafIds];
-      }
-    });
+  const handleSeqPlotHoverChange = useCallback((newHovered: string | null) => {
+    setHovered(newHovered ? [newHovered] : []);
   }, []);
 
   const unfilteredAlignmentPlotData = useMemo(() => {
@@ -224,21 +222,36 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     );
   }, [alignmentData]);
 
+  const speciesCoverageData: SpeciesRow[] = useMemo(() => {
+    if (!alignmentData?.ccreSequenceAlignmentQuery[0]?.sequence_alignment || !unfilteredAlignmentPlotData) {
+      return [];
+    }
+    const totalLength = alignmentData.ccreSequenceAlignmentQuery[0].sequence_alignment[0].length;
+
+    return SPECIES_ORDER_IN_API_RETURN.map((speciesId) => {
+      const alignmentSequence = unfilteredAlignmentPlotData[speciesId] || [];
+      const gapFilteredLength = alignmentSequence.filter((bp: string) => bp !== "-").length;
+      const coverage = totalLength > 0 ? gapFilteredLength / totalLength : 0;
+
+      return {
+        id: speciesId,
+        displayName: getLabel(speciesId),
+        order: getOrder(speciesId),
+        coverage,
+      };
+    });
+  }, [alignmentData, unfilteredAlignmentPlotData]);
+
   const filteredAlignmentPlotData = useMemo(() => {
-    if (!selectedSpecies.length) return unfilteredAlignmentPlotData;
+    if (selectedSpecies.size === SPECIES_ORDER_IN_API_RETURN.length) return unfilteredAlignmentPlotData;
     else
       return Object.fromEntries(
-        Object.entries(unfilteredAlignmentPlotData).filter(([species, _]) => selectedSpecies.includes(species))
+        Object.entries(unfilteredAlignmentPlotData).filter(([species, _]) => selectedSpecies.has(species))
       );
   }, [unfilteredAlignmentPlotData, selectedSpecies]);
 
   const [coveragePercentage, setCoveragePercentage] = useState<number>(0.9);
 
-  const SLIDER_STEPS = useMemo(
-    () => ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"] as const,
-    []
-  );
-  type SliderStep = (typeof SLIDER_STEPS)[number];
 
   const highlighted: Record<SliderStep, string[]> | null = useMemo(() => {
     if (!alignmentData?.ccreSequenceAlignmentQuery[0]?.sequence_alignment) return null;
@@ -249,27 +262,13 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     for (const step of SLIDER_STEPS) {
       const percentage = parseFloat(step);
       highlightedLists[step] = SPECIES_ORDER_IN_API_RETURN.filter((species) => {
-        const gapFilteredLength = unfilteredAlignmentPlotData[species].filter((bp) => bp !== "-").length;
+        const gapFilteredLength = unfilteredAlignmentPlotData[species]?.filter((bp) => bp !== "-").length ?? 0;
         return gapFilteredLength / length >= percentage;
       });
     }
 
     return highlightedLists;
-  }, [SLIDER_STEPS, alignmentData, unfilteredAlignmentPlotData]);
-
-  const handleSliderChange = (event: Event, newValue: number) => {
-    setCoveragePercentage(newValue);
-  };
-
-  const [hovered, setHovered] = useState<string[]>([]);
-
-  const handlePhyloTreeHoverChange = (newHovered: string[]) => {
-    setHovered(newHovered);
-  };
-
-  const handleSeqPlotHoverChange = (newHovered: string | null) => {
-    setHovered(newHovered ? [newHovered] : []);
-  };
+  }, [alignmentData, unfilteredAlignmentPlotData]);
 
   return (
     <TabContext value={tab}>
@@ -288,7 +287,6 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
             columns={conservationCols}
             rows={dataCcre}
             hideFooter
-            //showToolbar={false}
             emptyTableFallback={"No Conservation data found"}
             sx={{ mb: 2 }}
           />
@@ -302,29 +300,55 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
           emptyTableFallback={"No Orthologous cCREs found"}
         />
       </StyledTabPanel>
-      <StyledTabPanel value={1}>
+      <StyledTabPanel value={1} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Typography variant="caption">
           For more information about this data, please visit{" "}
           <LinkComponent href={"https://zoonomiaproject.org/"} openInNewTab showExternalIcon>
             https://zoonomiaproject.org/
           </LinkComponent>
         </Typography>
-        <Typography variant="body2" display={"flex"} alignItems={"center"} mt={2}>
-          Sequence Coverage Threshold: {coveragePercentage * 100}%{"\u00A0"}
-          <Tooltip title="Highlights species whose aligned sequence covers x% of the cCRE region" placement="right-end">
-            <InfoOutline fontSize="small" />
-          </Tooltip>
-        </Typography>
-        <Slider
-          value={coveragePercentage}
-          onChange={handleSliderChange}
-          marks
-          min={0.1}
-          max={1}
-          step={0.1}
-          valueLabelFormat={(x) => `${x * 100}%`}
-          sx={{ maxWidth: 300 }}
-        />
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent={"space-between"}
+          alignItems={{ sm: "flex-end" }}
+          spacing={{ xs: 0, sm: 2 }}
+        >
+          {/* wrapper flex child div to allow child Box to set negative margin for vertical alignment */}
+          <div>
+            <Box width={{ sm: 300 }} marginBottom={{ sm: -2 }}>
+              <Typography variant="body2" display={"flex"} alignItems={"center"}>
+                Sequence Coverage Threshold: {coveragePercentage * 100}%{"\u00A0"}
+                <Tooltip
+                  title="Highlights species whose aligned sequence covers x% of the cCRE region"
+                  placement="right-end"
+                >
+                  <InfoOutline fontSize="small" />
+                </Tooltip>
+              </Typography>
+              <Slider
+                value={coveragePercentage}
+                onChange={(_, newValue: number) => {
+                  setCoveragePercentage(newValue);
+                }}
+                marks
+                min={0.1}
+                max={1}
+                step={0.1}
+                valueLabelFormat={(x) => `${x * 100}%`}
+              />
+            </Box>
+          </div>
+          <Box flexShrink={0} display={"flex"} flexBasis={{ xs: "row-reverse", sm: "row" }}>
+            {!(selectedSpecies.size === SPECIES_ORDER_IN_API_RETURN.length) && (
+              <IconButton onClick={() => setSelectedSpecies(allSpecies)} size="small">
+                <SettingsBackupRestore />
+              </IconButton>
+            )}
+            <Button variant="outlined" onClick={() => setSpeciesSelectOpen(true)} startIcon={<Tune />}>
+              Filter Sequences ({selectedSpecies.size}/{SPECIES_ORDER_IN_API_RETURN.length})
+            </Button>
+          </Box>
+        </Stack>
         {loadingAlignment || !highlighted ? (
           <CircularProgress />
         ) : (
@@ -341,8 +365,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
                     tooltipContents={PhyloTreeTooltip}
                     highlighted={highlighted[coveragePercentage.toFixed(1)]}
                     hovered={hovered}
-                    onLeafHoverChange={handlePhyloTreeHoverChange}
-                    onBranchClick={handleBranchClick}
+                    onLeafHoverChange={setHovered}
                     defaultScaling="unscaled"
                   />
                 )}
@@ -368,6 +391,13 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
             </PlotWrapper>
           </PlotGridContainer>
         )}
+        <SpeciesSelect
+          open={speciesSelectOpen}
+          onClose={() => setSpeciesSelectOpen(false)}
+          species={speciesCoverageData}
+          selectedSpecies={selectedSpecies}
+          onSelectionChange={setSelectedSpecies}
+        />
       </StyledTabPanel>
     </TabContext>
   );
