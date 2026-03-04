@@ -70,7 +70,7 @@ const PhyloTreeTooltip = (id: string) => (
   </div>
 );
 
-const SeqAlignTooltipContents = (tooltipData: TooltipData) => (
+const SeqAlignTooltipContents = (tooltipData: TooltipData, start: number, chr: string) => (
   <div
     style={{
       fontSize: 12,
@@ -79,8 +79,8 @@ const SeqAlignTooltipContents = (tooltipData: TooltipData) => (
     <div style={{ fontWeight: 600 }}>{tooltipData.label}</div>
     <div>{tooltipData.id.replaceAll("_", " ")}</div>
     <div>{capitalizeFirstLetter(tooltipData.order.toLowerCase())}</div>
-    {tooltipData.basePair && tooltipData.position && (
-      <div>{`Position ${tooltipData.position} • ${tooltipData.basePair}`}</div>
+    {tooltipData.basePair && (
+      <div>{`${chr}:${(start + tooltipData.position).toLocaleString()} (Pos ${tooltipData.position}) • ${tooltipData.basePair}`}</div>
     )}
   </div>
 );
@@ -130,13 +130,14 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+
   const {
     data: dataCcre,
     loading: loadingCcre,
     error: errorCcre,
   } = useCcreData({
     assembly: entity.assembly,
-    accession: [entity.entityID],
+    accession: entity.entityID,
   });
 
   const ortholog: orthologRow[] = [];
@@ -270,6 +271,14 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
     return highlightedLists;
   }, [alignmentData, unfilteredAlignmentPlotData]);
 
+  const SeqAlignTooltip = useCallback(
+    (tooltipData: TooltipData) => {
+      if (!dataCcre) return null;
+      return SeqAlignTooltipContents(tooltipData, dataCcre.start, dataCcre.chrom);
+    },
+    [dataCcre]
+  );
+
   return (
     <TabContext value={tab}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -285,7 +294,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
             loading={loadingCcre}
             error={!!errorCcre}
             columns={conservationCols}
-            rows={dataCcre}
+            rows={[dataCcre]}
             hideFooter
             emptyTableFallback={"No Conservation data found"}
             sx={{ mb: 2 }}
@@ -381,7 +390,7 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
                     getLabel={getLabel}
                     getOrder={getOrder}
                     getOrderColor={getColor}
-                    tooltipContents={SeqAlignTooltipContents}
+                    tooltipContents={SeqAlignTooltip}
                     highlighted={highlighted[coveragePercentage.toFixed(1)]}
                     hovered={hovered}
                     onHoverChange={handleSeqPlotHoverChange}
