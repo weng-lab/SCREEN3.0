@@ -3,8 +3,8 @@ import { useQuery } from "@apollo/client";
 import { GridColDef, Table } from "@weng-lab/ui-components";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreData } from "common/hooks/useCcreData";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
+import { useConservationData } from "common/hooks/useConservationData";
 
 const ORTHOLOG_QUERY = gql(`
   query orthologTab($assembly: String!, $accession: [String!]) {
@@ -23,12 +23,12 @@ const ORTHOLOG_QUERY = gql(`
 
 const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) => {
   const {
-    data: dataCcre,
-    loading: loadingCcre,
-    error: errorCcre,
-  } = useCcreData({
+    data: dataConservation,
+    loading: loadingConservation,
+    error: errorConservation,
+  } =  useConservationData({
     assembly: entity.assembly,
-    accession: entity.entityID,
+    accession: [entity.entityID],
   });
 
   const {
@@ -82,39 +82,44 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
     ],
     [entity.assembly]
   );
-
-  const conservationRows = useMemo(() => (dataCcre ? [dataCcre] : []), [dataCcre]);
-
-  const conservationCols: GridColDef<typeof dataCcre>[] = useMemo(
-    () => [
-      {
-        headerName: "Vertebrates",
-        field: "vertebrates",
-        valueFormatter: (value: number) => value.toFixed(2),
-      },
-      {
-        headerName: "Mammals",
-        field: "mammals",
-        valueFormatter: (value: number) => value.toFixed(2),
-      },
-      {
-        headerName: "Primates",
-        field: "primates",
-        valueFormatter: (value: number) => value.toFixed(2),
-      },
-    ],
-    []
-  );
+  const conservationCols: GridColDef[] = [
+     {
+      field: "metric",
+      headerName: "",
+      sortable: false,
+    },
+    {
+      headerName: "Vertebrates (100)",
+      field: "vertebrates",
+      valueFormatter: (value: number) => value.toFixed(2),
+    },
+    {
+      headerName: "Mammals (241)",
+      field: "mammals",
+      valueFormatter: (value: number) => value.toFixed(2),
+    },
+    {
+      headerName: "Primates (43)",
+      field: "primates",
+      valueFormatter: (value: number) => value.toFixed(2),
+    },
+  ];
 
   return (
     <>
-      {entity.assembly == "GRCh38" && dataCcre && (
+      {entity.assembly == "GRCh38" && dataConservation && (
         <Table
           label={`Conservation`}
-          loading={loadingCcre}
-          error={!!errorCcre}
+          loading={loadingConservation}
+          error={!!errorConservation}
           columns={conservationCols}
-          rows={conservationRows}
+           rows={["PhyloP", "PhastCons"].map((metric) => ({
+            id: metric,
+            metric: metric,
+            primates: dataConservation[0][`primates_43_${metric?.toLowerCase()}`],
+            mammals: dataConservation[0][`mammals_241_${metric?.toLowerCase()}`],
+            vertebrates: dataConservation[0][`vertebrates_100_${metric?.toLowerCase()}`],
+          }))}
           hideFooter
           emptyTableFallback={"No Conservation data found"}
           sx={{ mb: 2 }}
