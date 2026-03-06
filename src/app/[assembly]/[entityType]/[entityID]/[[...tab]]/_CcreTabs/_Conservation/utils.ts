@@ -1,4 +1,5 @@
 import { Nucleotide, TreeItem } from "@weng-lab/visualization";
+import data241 from "./241_mammals_treedata.json";
 
 export const ORDERS = [
   "PRIMATES",
@@ -856,3 +857,7 @@ export const makeAlignmentPlotData = (
 
 export const sortSpeciesByTreeOrder = (id1: string, id2: string) =>
   SPECIES_ORDER_IN_TREE.indexOf(id1) - SPECIES_ORDER_IN_TREE.indexOf(id2);
+
+export const phyloTreeRoot = formatNode(data241);
+
+export const allSpecies = new Set(SPECIES_ORDER_IN_API_RETURN);
