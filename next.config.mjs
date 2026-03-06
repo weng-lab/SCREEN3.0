@@ -26,22 +26,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  turbopack: {
-    rules: {
-      "*.txt": {
-        loaders: ["raw-loader"],
-        as: "*.js", // Important: Turbopack loaders must return JavaScript
-      },
-    },
-  },
 };
 
 export default nextConfig;
-
-// webpack: (config) => {
-//       config.module.rules.push({
-//         test: /\.txt$/,
-//         use: "raw-loader",
-//       });
-//       return config;
-//     },

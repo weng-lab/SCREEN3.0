@@ -64,7 +64,6 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "graphql": "^16",
     "prettier": "^3.6.2",
-    "raw-loader": "^4.0.2",
     "typescript": "^5"
   },
   "resolutions": {

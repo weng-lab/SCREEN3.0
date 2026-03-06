@@ -33,7 +33,6 @@
     "next.config.mjs",
     "eslint.config.mjs",
     "src/app/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_linkedICREs",
-    "global.d.ts"
   ],
   "exclude": ["node_modules", "yarn.lock", "yarn-error.log", ".cache", "dist"],
 }
