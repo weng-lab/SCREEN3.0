@@ -106,18 +106,22 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
 
   return (
     <>
-      {entity.assembly == "GRCh38" && dataConservation && (
+      {entity.assembly == "GRCh38" && (
         <Table
           label={`Conservation`}
           loading={loadingConservation}
           error={!!errorConservation}
           columns={conservationCols}
-          rows={["PhyloP", "PhastCons"].map((metric) => ({
-            metric: metric,
-            primates: dataConservation[0][`primates_43_${metric.toLowerCase()}`],
-            mammals: dataConservation[0][`mammals_241_${metric.toLowerCase()}`],
-            vertebrates: dataConservation[0][`vertebrates_100_${metric.toLowerCase()}`],
-          }))}
+          rows={
+            dataConservation
+              ? ["PhyloP", "PhastCons"].map((metric) => ({
+                  metric: metric,
+                  primates: dataConservation[0][`primates_43_${metric.toLowerCase()}`],
+                  mammals: dataConservation[0][`mammals_241_${metric.toLowerCase()}`],
+                  vertebrates: dataConservation[0][`vertebrates_100_${metric.toLowerCase()}`],
+                }))
+              : []
+          }
           hideFooter
           emptyTableFallback={"No Conservation data found"}
           sx={{ mb: 2 }}
