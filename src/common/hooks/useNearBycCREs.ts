@@ -28,7 +28,7 @@ export default function useNearbycCREs(
 ) {
   //coordiantes used to determine nearby ccres if method is not 3 closest genes
   const regions: Coordinate[] = useMemo(() => {
-    if (!geneData) return;
+    if (!geneData.data) return [];
 
     if (method === "tss") {
       return getRegions(geneData.data.transcripts, distance);
@@ -53,8 +53,8 @@ export default function useNearbycCREs(
     loading: nearbyGeneLoading,
     error,
   } = useQuery(NEAR_BY_CCRES_QUERY, {
-    variables: { geneid: [geneData.data.id.split(".")[0]] },
-    skip: !geneData || method !== "3gene",
+    variables: { geneid: [geneData.data?.id.split(".")[0]] },
+    skip: !geneData.data || method !== "3gene",
   });
 
   const accessions =

@@ -105,7 +105,7 @@ export default function GenomeBrowserView({
   );
   const onGeneClick = useCallback(
     (gene: Transcript) => {
-      const name = gene.name;
+      const name = gene.name.split("-")[0];
       if (name.includes("ENSG")) {
         return;
       }

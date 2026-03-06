@@ -230,17 +230,17 @@ export default function DistanceLinkedCcres({
           <>
             {calcMethod === "tss" && (
               <Typography component="span" variant="subtitle2">
-                (Within {distance} bp of TSS of <i>{geneData.data.name}</i>)
+                (Within {distance} bp of TSS of <i>{geneData.data?.name}</i>)
               </Typography>
             )}
             {calcMethod === "3gene" && (
               <Typography component="span" variant="subtitle2">
-                (<i>{geneData.data.name}</i> is 1 of 3 closest genes to cCRE)
+                (<i>{geneData.data?.name}</i> is 1 of 3 closest genes to cCRE)
               </Typography>
             )}
             {calcMethod === "body" && (
               <Typography component="span" variant="subtitle2">
-                (Within <i>{geneData.data.name}</i> gene body)
+                (Within <i>{geneData.data?.name}</i> gene body)
               </Typography>
             )}
           </>
@@ -251,7 +251,7 @@ export default function DistanceLinkedCcres({
         anchorEl={virtualAnchor}
         handleClickAway={handleClickAway}
         distance={distance}
-        geneName={geneData.data.name}
+        geneName={geneData.data?.name}
         calcMethod={calcMethod}
         handleDistanceChange={handleDistanceChange}
         handleMethodChange={handleMethodChange}
