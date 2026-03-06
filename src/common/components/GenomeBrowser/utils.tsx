@@ -8,7 +8,7 @@ export function randomColor() {
   return Vibrant[idx];
 }
 
-export const SearchToScreenTypes: Record<Result["type"], AnyEntityType> = {
+export const SearchToScreenTypes: Partial<Record<Result["type"], AnyEntityType>> = {
   Coordinate: "region",
   Gene: "gene",
   SNP: "variant",
