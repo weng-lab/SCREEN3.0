@@ -26,7 +26,7 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
     data: dataConservation,
     loading: loadingConservation,
     error: errorConservation,
-  } =  useConservationData({
+  } = useConservationData({
     assembly: entity.assembly,
     accession: [entity.entityID],
   });
@@ -40,8 +40,6 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
       assembly: entity.assembly === "GRCh38" ? "grch38" : "mm10",
       accession: entity.entityID,
     },
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
   });
 
   const orthologRows = useMemo(() => {
@@ -82,8 +80,9 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
     ],
     [entity.assembly]
   );
+
   const conservationCols: GridColDef[] = [
-     {
+    {
       field: "metric",
       headerName: "",
       sortable: false,
@@ -113,12 +112,11 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
           loading={loadingConservation}
           error={!!errorConservation}
           columns={conservationCols}
-           rows={["PhyloP", "PhastCons"].map((metric) => ({
-            id: metric,
+          rows={["PhyloP", "PhastCons"].map((metric) => ({
             metric: metric,
-            primates: dataConservation[0][`primates_43_${metric?.toLowerCase()}`],
-            mammals: dataConservation[0][`mammals_241_${metric?.toLowerCase()}`],
-            vertebrates: dataConservation[0][`vertebrates_100_${metric?.toLowerCase()}`],
+            primates: dataConservation[0][`primates_43_${metric.toLowerCase()}`],
+            mammals: dataConservation[0][`mammals_241_${metric.toLowerCase()}`],
+            vertebrates: dataConservation[0][`vertebrates_100_${metric.toLowerCase()}`],
           }))}
           hideFooter
           emptyTableFallback={"No Conservation data found"}
