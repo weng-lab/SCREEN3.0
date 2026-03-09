@@ -1,15 +1,14 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
 import { IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   useGridApiRef,
-  GridColDef,
-  Table,
   GRID_CHECKBOX_SELECTION_COL_DEF,
   GridSortModel,
   GridSortDirection,
-} from "@weng-lab/ui-components";
+} from "@mui/x-data-grid-premium";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
@@ -97,9 +96,9 @@ const GeneExpressionTable = ({
     </div>
   );
 
-  const columns: GridColDef<PointMetadata>[] = [
+  const columns: TableColDef<PointMetadata>[] = [
     {
-      ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<PointMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+      ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef<PointMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
       sortable: true,
       hideable: false,
       renderHeader: StopPropagationWrapper,

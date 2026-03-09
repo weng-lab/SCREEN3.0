@@ -4,7 +4,7 @@ import useNearbycCREs from "common/hooks/useNearBycCREs";
 import { useCcreData } from "common/hooks/useCcreData";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import React, { useState } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
@@ -109,7 +109,7 @@ export default function DistanceLinkedCcres({
     };
   });
 
-  const cols: GridColDef[] = [
+  const cols: TableColDef[] = [
     {
       field: "ccre",
       headerName: "Accession",

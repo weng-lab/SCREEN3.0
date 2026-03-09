@@ -2,7 +2,7 @@
 import useImmuneGWASLdr from "common/hooks/useImmuneGWASLdr";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { useMemo } from "react";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 
 export default function ImmuneGWASLdr({ accession }: { accession: string }) {
@@ -26,7 +26,7 @@ export default function ImmuneGWASLdr({ accession }: { accession: string }) {
     });
   }, [data, snpAlleles]);
 
-  const cols: GridColDef[] = [
+  const cols: TableColDef[] = [
     {
       field: "snpid",
       headerName: "rsID",

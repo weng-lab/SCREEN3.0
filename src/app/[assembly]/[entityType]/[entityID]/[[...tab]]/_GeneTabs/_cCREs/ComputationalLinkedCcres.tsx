@@ -8,7 +8,8 @@ import LinkedElements, { TableDef } from "common/components/linkedElements";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { usePathname } from "next/navigation";
 import { Assembly } from "common/types/globalTypes";
-import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
+import { TableColDef } from "@weng-lab/ui-components";
+import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import { useState } from "react";
@@ -17,7 +18,7 @@ import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
-export const accessionCol = (assembly: string): GridColDef => ({
+export const accessionCol = (assembly: string): TableColDef => ({
   field: "accession",
   headerName: "Accession",
   renderCell: (params: GridRenderCellParams) => (
@@ -67,7 +68,7 @@ export default function ComputationalLinkedCcres({
     }
   };
 
-  const CompuLinkedcCREs_columns: GridColDef<(typeof dataCompucCREs)[number]>[] = [
+  const CompuLinkedcCREs_columns: TableColDef<(typeof dataCompucCREs)[number]>[] = [
     sharedColumns.accession,
     {
       field: "fileaccession",

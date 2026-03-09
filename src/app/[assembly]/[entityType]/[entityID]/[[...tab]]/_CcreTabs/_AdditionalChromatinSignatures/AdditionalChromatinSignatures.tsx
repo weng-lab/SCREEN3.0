@@ -2,7 +2,7 @@
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { GridColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { Box, Stack, Tab } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "common/types/globalTypes";
@@ -39,7 +39,7 @@ query entexActiveAnnotationsQuery( $coordinates: GenomicRangeInput! ) {
 
 }`);
 
-const chromHmmCols: GridColDef[] = [
+const chromHmmCols: TableColDef[] = [
   {
     headerName: "Organ/Tissue",
     field: "tissue",
@@ -69,7 +69,7 @@ const chromHmmCols: GridColDef[] = [
   },
 ];
 
-const entexCols: GridColDef[] = [
+const entexCols: TableColDef[] = [
   {
     headerName: "Tissue",
     field: "tissue",
@@ -126,7 +126,7 @@ const entexCols: GridColDef[] = [
   },
 ];
 
-const entexActiveCols: GridColDef[] = [
+const entexActiveCols: TableColDef[] = [
   {
     headerName: "Tissue",
     field: "tissue",

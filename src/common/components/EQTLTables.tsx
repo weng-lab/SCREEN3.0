@@ -4,7 +4,7 @@ import { Stack, Box } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "./LinkComponent";
-import { GridColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 const EQTL_QUERY = gql(`
@@ -62,7 +62,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
   const gtexRows = eqtlData?.immuneeQTLsQuery.filter((i) => i.study === "GTEX");
   const oneK1KRows = eqtlData?.immuneeQTLsQuery.filter((i) => i.study === "OneK1K");
 
-  const gtexColumns: GridColDef<(typeof gtexRows)[number]>[] = [];
+  const gtexColumns: TableColDef<(typeof gtexRows)[number]>[] = [];
 
   gtexColumns.push({
     field: "variant_id",
@@ -139,7 +139,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
     });
   }
 
-  const oneK1KColumns: GridColDef<(typeof gtexRows)[number]>[] = [];
+  const oneK1KColumns: TableColDef<(typeof gtexRows)[number]>[] = [];
 
   if (entityType === "gene" || entityType === "ccre") {
     oneK1KColumns.push(

@@ -3,7 +3,8 @@ import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "common/types/generated";
-import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
+import { GRID_CHECKBOX_SELECTION_COL_DEF, GridRenderCellParams } from "@mui/x-data-grid-premium";
 import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
 import { CLASS_COLORS } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -73,7 +74,7 @@ const z_score_download_format = (d: number) => (d === -11.0 ? "NA" : d.toFixed(2
  */
 const z_score_display_format = (d: string): string => (d === "NA" ? "--" : d);
 
-const zScoreFormatting: Partial<GridColDef> = {
+const zScoreFormatting: Partial<TableColDef> = {
   valueGetter: z_score_download_format,
   renderCell: (params: GridRenderCellParams) => {
     return z_score_display_format(params.value);
@@ -82,7 +83,7 @@ const zScoreFormatting: Partial<GridColDef> = {
   type: "number",
 };
 
-const ctAgnosticCols: GridColDef[] = [
+const ctAgnosticCols: TableColDef[] = [
   {
     headerName: "DNase max-Z",
     field: "dnase",
@@ -115,7 +116,7 @@ const ctAgnosticCols: GridColDef[] = [
   },
 ];
 
-const silencersDataCols: GridColDef[] = [
+const silencersDataCols: TableColDef[] = [
   {
     headerName: "Study",
     field: "study",
@@ -144,9 +145,9 @@ const StopPropagationWrapper = (params) => (
   </div>
 );
 
-const getCoreAndPartialCols = (): GridColDef[] => [
+const getCoreAndPartialCols = (): TableColDef[] => [
   {
-    ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+    ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
     sortable: true,
     hideable: false,
     renderHeader: StopPropagationWrapper,

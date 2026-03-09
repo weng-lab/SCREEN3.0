@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Table } from "@weng-lab/ui-components";
 import {
   GridColumnVisibilityModel,
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   GridSortDirection,
   GridSortModel,
-  Table,
   useGridApiRef,
-} from "@weng-lab/ui-components";
+} from "@mui/x-data-grid-premium";
 import { useMediaQuery, useTheme } from "@mui/material";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { CcreAssay } from "common/types/globalTypes";

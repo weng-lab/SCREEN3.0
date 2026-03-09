@@ -1,14 +1,13 @@
 import { FormControl, IconButton, MenuItem, Select, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   useGridApiRef,
-  GridColDef,
-  Table,
   GRID_CHECKBOX_SELECTION_COL_DEF,
   GridSortDirection,
   GridSortModel,
-} from "@weng-lab/ui-components";
+} from "@mui/x-data-grid-premium";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
@@ -99,9 +98,9 @@ const TranscriptExpressionTable = ({
     </div>
   );
 
-  const columns: GridColDef<TranscriptMetadata>[] = [
+  const columns: TableColDef<TranscriptMetadata>[] = [
     {
-      ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<TranscriptMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+      ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef<TranscriptMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
       sortable: true,
       hideable: false,
       renderHeader: StopPropagationWrapper,
