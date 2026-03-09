@@ -1,4 +1,5 @@
-import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo } from "@weng-lab/genomebrowser";
+import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, Track } from "@weng-lab/genomebrowser";
+import { tfPeaksTrack } from "@weng-lab/genomebrowser-ui";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
@@ -91,6 +92,22 @@ export function useLocalTracks(assembly: string, entitytype: AnyEntityType, call
   if (entitytype === "gwas") {
     initialTracks = gwasTracks;
   }
+  // Rehydrate the tfPeaks custom track: functions (fetcher, renderers, tooltip, settingsPanel)
+  // are lost on JSON serialization, so replace with the canonical object while preserving user settings
+  initialTracks = initialTracks.map((t) => {
+    if (t.id !== "custom-tf-peaks") return t;
+    const stale = t as unknown as Record<string, unknown>;
+    return {
+      ...tfPeaksTrack,
+      filter: stale.filter as string[] | undefined,
+      color: (stale.color as string) ?? tfPeaksTrack.color,
+      height: (stale.height as number) ?? tfPeaksTrack.height,
+      displayMode: (stale.displayMode as typeof tfPeaksTrack.displayMode) ?? tfPeaksTrack.displayMode,
+      title: (stale.title as string) ?? tfPeaksTrack.title,
+      baseColor: (stale.baseColor as string) ?? tfPeaksTrack.baseColor,
+      overlayColor: (stale.overlayColor as string) ?? tfPeaksTrack.overlayColor,
+    } as Track;
+  });
   // Inject callbacks if provided (callbacks are lost on JSON serialization)
   if (callbacks) {
     initialTracks = initialTracks.map((t) => injectCallbacks(t, callbacks));
