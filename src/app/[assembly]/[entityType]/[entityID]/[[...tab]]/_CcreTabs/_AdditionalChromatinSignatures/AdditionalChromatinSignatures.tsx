@@ -11,7 +11,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { CHROM_HMM_STATES, getChromHmmStateDisplayname, useChromHMMData } from "common/hooks/useChromHmmData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
-import { chromHmmStateDetails } from "common/components/GenomeBrowser/constants";
+import { humanChromStates } from "common/components/GenomeBrowser/constants";
 
 const ENTEx_QUERY = gql(`
 query ENTEXQuery($accession: String!){
@@ -24,7 +24,7 @@ query ENTEXQuery($accession: String!){
     p_betabinom
     experiment_accession
     tissue
-    donor    
+    donor
     imbalance_significance
   }
 }
@@ -193,7 +193,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
         <ProportionsBar
           label="ChromHMM State Proportions, All Tissues:"
           data={getProportionsFromArray(processedTableData, "state", CHROM_HMM_STATES)}
-          getColor={(key) => chromHmmStateDetails[key].color}
+          getColor={(key) => humanChromStates[key].color}
           formatLabel={(key) => getChromHmmStateDisplayname(key)}
           loading={loading || !!error}
           tooltipTitle="ChromHMM State Proportions, All Tissues"

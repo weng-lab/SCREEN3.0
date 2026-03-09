@@ -1,10 +1,17 @@
 import EditIcon from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
 import { Track, TrackStoreInstance } from "@weng-lab/genomebrowser";
-import { BiosampleRowInfo, foldersByAssembly, GeneRowInfo, TrackSelect } from "@weng-lab/genomebrowser-ui";
+import {
+  BiosampleRowInfo,
+  foldersByAssembly,
+  GeneRowInfo,
+  OtherTrackInfo,
+  tfPeaksTrack,
+  TrackSelect,
+} from "@weng-lab/genomebrowser-ui";
 import { ASSAY_COLORS } from "common/colors";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { defaultBigBed, defaultBigWig, defaultTranscript } from "./defaultConfigs";
+import { defaultBigBed, defaultBigWig, defaultMethylC, defaultTranscript } from "./defaultConfigs";
 import { injectCallbacks, TrackCallbacks } from "./defaultTracks";
 
 type Assembly = "GRCh38" | "mm10";
@@ -67,7 +74,7 @@ export default function TrackSelectModal({
     (selectedByFolder: Map<string, Set<string>>) => {
       const currentIds = new Set(tracks.map((t) => t.id));
       const selectedIds = new Set<string>();
-      const tracksToAdd: Array<{ row: BiosampleRowInfo | GeneRowInfo; folderId: string }> = [];
+      const tracksToAdd: Array<{ row: BiosampleRowInfo | GeneRowInfo | OtherTrackInfo; folderId: string }> = [];
 
       for (const folder of folders) {
         const folderSelection = selectedByFolder.get(folder.id) ?? new Set<string>();
@@ -141,7 +148,7 @@ export default function TrackSelectModal({
 }
 
 function generateTrack(
-  row: BiosampleRowInfo | GeneRowInfo,
+  row: BiosampleRowInfo | GeneRowInfo | OtherTrackInfo,
   folderId: string,
   assembly: Assembly,
   callbacks?: TrackCallbacks
@@ -156,6 +163,13 @@ function generateTrack(
       version: geneRow.versions[geneRow.versions.length - 1], // latest version
     };
     return callbacks ? injectCallbacks(track, callbacks) : track;
+  }
+
+  if (folderId.includes("other-tracks")) {
+    if (row.id === "tf-peaks") {
+      return { ...tfPeaksTrack, title: "TF ChIP-seq Peaks and Motifs" };
+    }
+    return null;
   }
 
   // Handle biosample folders
@@ -184,7 +198,7 @@ function generateTrack(
       track = {
         ...defaultBigBed,
         id: sel.id,
-        url: sel.url,
+        url: sel.url ?? "",
         title,
         color,
       };
@@ -193,16 +207,38 @@ function generateTrack(
       track = {
         ...defaultBigWig,
         id: sel.id,
-        url: sel.url,
+        url: sel.url ?? "",
         title,
         color,
+      };
+      break;
+    case "wgbs":
+      track = {
+        ...defaultMethylC,
+        id: sel.id,
+        title,
+        range: { min: 0, max: 100 },
+        urls: {
+          plusStrand: {
+            cpg: { url: sel.cpgPlus ?? "" },
+            chg: { url: "" },
+            chh: { url: "" },
+            depth: { url: sel.coverage ?? "" },
+          },
+          minusStrand: {
+            cpg: { url: sel.cpgMinus ?? "" },
+            chg: { url: "" },
+            chh: { url: "" },
+            depth: { url: sel.coverage ?? "" },
+          },
+        },
       };
       break;
     default:
       track = {
         ...defaultBigWig,
         id: sel.id,
-        url: sel.url,
+        url: sel.url ?? "",
         title,
         color,
         fillWithZero: true,
