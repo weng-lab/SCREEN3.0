@@ -217,6 +217,7 @@ function generateTrack(
         ...defaultMethylC,
         id: sel.id,
         title,
+        range: { min: 0, max: 100 },
         urls: {
           plusStrand: {
             cpg: { url: sel.cpgPlus ?? "" },
