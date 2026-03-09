@@ -1,1 +1,0 @@
-[ApolloClient]: `connectToDevTools` is deprecated and will be removed in Apollo Client 4.0. Please use `devtools.enabled` instead.
