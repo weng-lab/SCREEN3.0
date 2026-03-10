@@ -1,4 +1,11 @@
-import { BigWigConfig, TrackType, DisplayMode, BigBedConfig, TranscriptConfig } from "@weng-lab/genomebrowser";
+import {
+  BigWigConfig,
+  TrackType,
+  DisplayMode,
+  BigBedConfig,
+  MethylCConfig,
+  TranscriptConfig,
+} from "@weng-lab/genomebrowser";
 
 export const defaultBigWig: Omit<BigWigConfig, "id" | "title" | "url"> = {
   trackType: TrackType.BigWig,
@@ -12,6 +19,20 @@ export const defaultBigBed: Omit<BigBedConfig, "id" | "title" | "url"> = {
   height: 20,
   displayMode: DisplayMode.Dense,
   titleSize: 12,
+};
+
+export const defaultMethylC: Omit<MethylCConfig, "id" | "title" | "urls"> = {
+  trackType: TrackType.MethylC,
+  height: 100,
+  displayMode: DisplayMode.Split,
+  titleSize: 12,
+  color: "#648bd8",
+  colors: {
+    cpg: "#648bd8",
+    chg: "#ff944d",
+    chh: "#ff00ff",
+    depth: "#525252",
+  },
 };
 
 export const defaultTranscript: Omit<TranscriptConfig, "id" | "assembly" | "version"> = {

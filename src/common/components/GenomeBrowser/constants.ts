@@ -116,7 +116,7 @@ export const mouseDefaultTracks: Track[] = [
   } as BigWigConfig,
 ];
 
-export const chromHmmStateDetails = {
+export const humanChromStates = {
   ["TssFlnk"]: { description: "Flanking TSS", stateno: "E1", color: "#FF4500" },
   ["TssFlnkD"]: {
     description: "Flanking TSS downstream",
@@ -160,4 +160,22 @@ export const chromHmmStateDetails = {
     color: "#68cdaa",
   },
   ["Tx"]: { description: "Transcription", stateno: "E15", color: "#008000" },
+};
+
+export const mouseChromStates = {
+  ["TssA"]: { description: "Active TSS", color: "#FF0000" },
+  ["TssAFlnk1"]: { description: "Active TSS Flanking 1", color: "#FF4500" },
+  ["TssAFlnk2"]: { description: "Active TSS Flanking 2", color: "#FF4500" },
+  ["TssBiv"]: { description: "Bivalent TSS", color: "#CD5C5C" },
+  ["Enh"]: { description: "Strong Enhancer", color: "#FFDF00" },
+  ["EnhLo1"]: { description: "Low Signal Enhancer 1", color: "#F0E68C" },
+  ["EnhLo2"]: { description: "Low Signal Enhancer 2", color: "#F0E68C" },
+  ["EnhPois1"]: { description: "Poised Enhancer 1", color: "#DAA520" },
+  ["EnhPois2"]: { description: "Poised Enhancer 2", color: "#DAA520" },
+  ["Tx1"]: { description: "Strong Transcription", color: "#008000" },
+  ["Tx2"]: { description: "Weak Transcription", color: "#3F9A50" },
+  ["HetCons"]: { description: "Constitutive Heterochromatin", color: "#4B0082" },
+  ["HetFac"]: { description: "Facultative Heterochromatin", color: "#800080" },
+  ["Quies"]: { description: "Quiescent", color: "#DCDCDC" },
+  ["QuiesG"]: { description: "Quiescent in Gene", color: "#C0C0C0" },
 };
