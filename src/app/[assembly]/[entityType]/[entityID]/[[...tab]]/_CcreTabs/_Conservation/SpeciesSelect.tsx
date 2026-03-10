@@ -150,9 +150,8 @@ const SpeciesSelect: React.FC<SpeciesSelectProps> = ({
           disableRowSelectionExcludeModel
           onRowSelectionModelChange={handleSelectionChange}
           rowSelectionModel={{ type: "include", ids: pendingSelection }}
-          divHeight={{ maxHeight: "80vh" }}
+          divHeight={{ height: "80vh" }}
           initialState={initialState}
-          // getRowId={(row: SpeciesRow) => row.displayName}
           disableRowGrouping={false} //needed since we global disabled grouping in theme bc most tables not setup for it
           groupingColDef={groupingColDef}
           slots={{ footer: CustomFooterWithActions }}
