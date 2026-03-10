@@ -33,6 +33,7 @@ const OverviewIconPath = "/assets/OverviewIcon.svg";
 const BiosampleEnrichmentIconPath = "/assets/BiosampleEnrichmentIcon.svg";
 const ConservationIconPath = "/assets/ConservationIcon.svg";
 const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
+const TFMotifsIconPath = "/assets/TfMotif.svg"
 
 /**
  * @todo rewrite these instructions now that types are separated in own file
@@ -180,6 +181,13 @@ export const humanCcreTabs = [
     component: FunctionalCharacterization,
   },
   {
+    route: "tf",
+    label: "TF Motifs",
+    iconPath: TFMotifsIconPath,
+    component: TfBinding,
+
+  },
+  {
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
@@ -190,11 +198,7 @@ export const humanCcreTabs = [
     label: "Additional Chromatin Signatures",
     component: AdditionalChromatinSignatures,
   },
-  {
-    route: "tf",
-    label: "TF Motifs",
-    component: TfBinding,
-  },
+ 
 ] as const satisfies TabConfig[];
 
 export const humanRegionTabs = [
