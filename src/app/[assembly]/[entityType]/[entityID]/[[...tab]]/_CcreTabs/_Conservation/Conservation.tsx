@@ -1,10 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { gql } from "common/types/generated";
-import { LinkComponent } from "common/components/LinkComponent";
-//import { useCcreData } from "common/hooks/useCcreData";
-//import { useConservationData } from "../../../../../../../common/hooks/useConservationData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { styled, Tab } from "@mui/material";
 import { Box } from "@mui/system";
