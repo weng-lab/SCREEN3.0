@@ -9,7 +9,7 @@ import {
   GridSortModel,
   GridSortDirection,
 } from "@mui/x-data-grid-premium";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
@@ -23,7 +23,6 @@ const GeneExpressionTable = ({
   setSelected,
   geneExpressionData,
   setSortedFilteredData,
-  sortedFilteredData,
   viewBy,
   entity,
   scale
@@ -130,7 +129,7 @@ const GeneExpressionTable = ({
       headerName: scale === "linearTPM" ? "TPM" : "Log10(TPM + 1)",
       type: "number",
       valueGetter: (_, row) => {
-        return (row.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm).toFixed(2) ?? 0;
+        return (row.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0).toFixed(2);
       },
       sortable: viewBy !== "byTissueTPM",
     },
@@ -193,12 +192,12 @@ const GeneExpressionTable = ({
     return true;
   };
 
-  const handleSync = () => {
-    const syncrows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as PointMetadata[];
-    if (!arraysAreEqual(sortedFilteredData, syncrows)) {
-      setSortedFilteredData(syncrows);
-    }
-  };
+  const handleSync = useCallback(() => {
+    const newRows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as PointMetadata[];
+    setTimeout(() => {
+      setSortedFilteredData((prev) => (arraysAreEqual(prev, newRows) ? prev : newRows));
+    }, 0);
+  }, [apiRef, setSortedFilteredData]);
 
   const AutoSortToolbar = useMemo(() => {
     return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;

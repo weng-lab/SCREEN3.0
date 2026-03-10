@@ -1,6 +1,6 @@
 "use client";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
-import { useMemo, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useRef, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
@@ -19,10 +19,10 @@ export type GeneExpressionProps = EntityViewComponentProps;
 export type SharedGeneExpressionPlotProps = EntityViewComponentProps & {
   rows: PointMetadata[];
   selected: PointMetadata[];
-  setSelected: (selected: PointMetadata[]) => void;
+  setSelected: Dispatch<SetStateAction<PointMetadata[]>>;
   geneExpressionData: UseGeneExpressionReturn;
   sortedFilteredData: PointMetadata[];
-  setSortedFilteredData: (data: PointMetadata[]) => void;
+  setSortedFilteredData: Dispatch<SetStateAction<PointMetadata[]>>;
   scale: "linearTPM" | "logTPM";
   setScale: (newScale: "linearTPM" | "logTPM") => void;
   replicates: "mean" | "all";
