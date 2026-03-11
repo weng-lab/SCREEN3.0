@@ -1,37 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Table } from "@weng-lab/ui-components";
 import {
   GridColumnVisibilityModel,
-  gridFilteredSortedRowEntriesSelector,
-  GridRowSelectionModel,
   GridSortDirection,
   GridSortModel,
-  useGridApiRef,
 } from "@mui/x-data-grid-premium";
 import { useMediaQuery, useTheme } from "@mui/material";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { CcreAssay } from "common/types/globalTypes";
 import { CCRE_ASSAYS } from "common/consts";
 import { formatAssay } from "common/utility";
-import { BiosampleRow, SharedAssayViewPlotProps } from "./types";
-
-const arraysAreEqual = (arr1: BiosampleRow[], arr2: BiosampleRow[]): boolean => {
-  if (arr1.length !== arr2.length) {
-    return false;
-  }
-
-  const isEqual = JSON.stringify(arr1[0]) === JSON.stringify(arr2[0]);
-  if (!isEqual) {
-    return false;
-  }
-
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i].name !== arr2[i].name) {
-      return false;
-    }
-  }
-  return true;
-};
+import type { AssayTableProps, BiosampleRow } from "./types";
 
 const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel => {
   const hidden = { ontology: false, sampleType: false, lifeStage: false, tf: false };
@@ -41,99 +20,12 @@ const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel =
   return hidden;
 };
 
-const AssayTable = ({
-  entity,
-  rows,
-  columns,
-  assay,
-  selected,
-  setSelected,
-  setSortedFilteredData,
-  viewBy,
-}: SharedAssayViewPlotProps) => {
+const AssayTable = ({ rows, columns, assay, entity, tableProps, viewBy }: AssayTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const transformedData: BiosampleRow[] = useMemo(() => {
-    if (!rows) return [];
-
-    let filteredData = rows;
-
-    switch (viewBy) {
-      case "value": {
-        filteredData.sort((a, b) => b[assay] - a[assay]);
-        break;
-      }
-
-      case "tissue": {
-        const getTissue = (d: BiosampleRow) => d.ontology ?? "unknown";
-
-        const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
-          const tissue = getTissue(item);
-          acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item[assay]);
-          return acc;
-        }, {});
-
-        filteredData.sort((a, b) => {
-          const tissueA = getTissue(a);
-          const tissueB = getTissue(b);
-          const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
-          if (maxDiff !== 0) return maxDiff;
-          return b[assay] - a[assay];
-        });
-        break;
-      }
-
-      case "tissueMax": {
-        const getTissue = (d: BiosampleRow) => d.ontology ?? "unknown";
-
-        const maxValuesByTissue = filteredData.reduce<Record<string, number>>((acc, item) => {
-          const tissue = getTissue(item);
-          acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item[assay]);
-          return acc;
-        }, {});
-
-        filteredData = filteredData.filter((item) => {
-          const tissue = getTissue(item);
-          return item[assay] === maxValuesByTissue[tissue];
-        });
-
-        filteredData.sort((a, b) => b[assay] - a[assay]);
-        break;
-      }
-    }
-
-    return [...filteredData];
-  }, [rows, viewBy, assay]);
-
-  const apiRef = useGridApiRef();
-
-  const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
-    if (newRowSelectionModel.type === "include") {
-      const newIds = Array.from(newRowSelectionModel.ids);
-      const selectedRows = newIds.map((id) => rows.find((row) => row.name === id));
-      setSelected(selectedRows);
-    } else {
-      // if type is exclude, it's always with 0 ids (aka select all)
-      setSelected(rows);
-    }
-  };
-
-  const handleSync = useCallback(() => {
-    if (!apiRef.current) return;
-    const newRows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as BiosampleRow[];
-    // Defer the parent state update to after the current render cycle.
-    // onStateChange fires synchronously during DataGrid rendering — calling setSortedFilteredData
-    // directly here would trigger a React "update parent while rendering child" error.
-    setTimeout(() => {
-      setSortedFilteredData((prev) => (arraysAreEqual(prev, newRows) ? prev : newRows));
-    }, 0);
-  }, [apiRef, setSortedFilteredData]);
-
-  const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
-    return { type: "include", ids: new Set(selected.map((x) => x.name)) };
-  }, [selected]);
+  const { apiRef, rowSelectionModel } = tableProps;
 
   useEffect(() => {
     if (!apiRef.current) return;
@@ -147,12 +39,13 @@ const AssayTable = ({
 
   const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" as GridSortDirection }], [assay]);
 
+  // Derive selected from the rowSelectionModel for autoSort logic
+  const hasSelection = rowSelectionModel.type === "include" && rowSelectionModel.ids.size > 0;
+
   // handle auto sorting
   useEffect(() => {
     const api = apiRef?.current;
     if (!api) return;
-
-    const hasSelection = selected?.length > 0;
 
     // handle sort by tissue special case
     if (viewBy === "tissue") {
@@ -166,19 +59,17 @@ const AssayTable = ({
 
     // all other views
     if (!autoSort) {
-      //reset sort if none selected
       api.setSortModel(initialSort);
       return;
     }
 
     //sort by checkboxes if some selected, otherwise sort by tpm
     api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
-  }, [apiRef, autoSort, initialSort, selected, viewBy]);
+  }, [apiRef, autoSort, initialSort, hasSelection, viewBy]);
 
   /**
    * Resize cols on assay change. Need to use requestAnimationFrame to queue this update until after
    * the column changes are completed. This calls the autosize method right before the next repaint.
-   * Calling it in above useEffect autosized before column updates were complete
    */
   useEffect(() => {
     if (!apiRef.current) return;
@@ -196,24 +87,17 @@ const AssayTable = ({
   return (
     <Table
       label={`${entity.entityID} ${formatAssay(assay)} z-scores`}
-      rows={transformedData}
+      rows={rows}
       loading={!rows}
       columns={columns}
-      apiRef={apiRef}
-      // -- Selection Props --
-      checkboxSelection
-      getRowId={(row: BiosampleRow) => row.name} //Need to assign unique ID, as DataGrid selection is managed only through row ID
-      onRowSelectionModelChange={handleRowSelectionModelChange}
-      rowSelectionModel={rowSelectionModel}
-      keepNonExistentRowsSelected
-      // -- End Selection Props --
-      onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
+      getRowId={(row: BiosampleRow) => row.name}
       divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: initialSort },
       }}
       toolbarSlot={AutoSortToolbar}
+      {...tableProps}
     />
   );
 };

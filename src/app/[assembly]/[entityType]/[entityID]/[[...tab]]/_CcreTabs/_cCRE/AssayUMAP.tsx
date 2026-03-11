@@ -20,7 +20,7 @@ import { interpolateRdYlBu } from "d3-scale-chromatic";
 import UMAPLegend from "common/components/UMAPLegend";
 import { formatAssay } from "common/utility";
 import { CcreAssay } from "common/types/globalTypes";
-import type { BiosampleRow, SharedAssayViewPlotProps } from "./types";
+import type { BiosampleRow, AssayUMAPProps } from "./types";
 
 const BIOSAMPLE_UMAP = gql(`
   query BiosampleUmap($assembly: String!, $assay: String!) {
@@ -52,7 +52,7 @@ const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: CcreA
   );
 };
 
-const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAssayViewPlotProps) => {
+const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection, ref }: AssayUMAPProps) => {
   const [colorScheme, setColorScheme] = useState<"score" | "organ/tissue" | "sampleType">("score");
   const [scoreColorMode, setScoreColorMode] = useState<"active" | "all">("active");
 
@@ -67,7 +67,6 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
   const {
     data: data_umap,
     loading: loading_umap,
-    error: error_umap,
   } = useQuery(BIOSAMPLE_UMAP, {
     variables: {
       assembly: entity.assembly.toLowerCase(),
@@ -119,7 +118,6 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
 
     return rows
       .map((x) => {
-        // const gradientColor = interpolateYlOrRd(colorScale(logTransform(x.value)));
         const coords = data_umap.ccREBiosampleQuery.biosamples.find(
           (sample) => sample.name === x.name
         )?.umap_coordinates;
@@ -137,9 +135,7 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
   }, [rows, data_umap, colorScale, selected, getPointColor, assay]);
 
   const handlePointClick = (point: Point<BiosampleRow>) => {
-    if (selected.includes(point.metaData)) {
-      setSelected(selected.filter((x) => x.name !== point.metaData.name));
-    } else setSelected([...selected, point.metaData]);
+    toggleSelection(point.metaData);
   };
 
   const handleLassoSelect = (points: Point<BiosampleRow>[]) => {
@@ -206,6 +202,5 @@ const AssayUMAP = ({ entity, rows, assay, selected, setSelected, ref }: SharedAs
     </Stack>
   );
 };
-//15, 30, 30, 65
 
 export default AssayUMAP;
