@@ -1,16 +1,15 @@
 import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
 import { IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import {
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   useGridApiRef,
-  GridColDef,
-  Table,
   GRID_CHECKBOX_SELECTION_COL_DEF,
   GridSortModel,
   GridSortDirection,
-} from "@weng-lab/ui-components";
-import { useEffect, useMemo, useState } from "react";
+} from "@mui/x-data-grid-premium";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
@@ -24,7 +23,6 @@ const GeneExpressionTable = ({
   setSelected,
   geneExpressionData,
   setSortedFilteredData,
-  sortedFilteredData,
   viewBy,
   entity,
   scale
@@ -97,9 +95,9 @@ const GeneExpressionTable = ({
     </div>
   );
 
-  const columns: GridColDef<PointMetadata>[] = [
+  const columns: TableColDef<PointMetadata>[] = [
     {
-      ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<PointMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+      ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef<PointMetadata>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
       sortable: true,
       hideable: false,
       renderHeader: StopPropagationWrapper,
@@ -131,7 +129,7 @@ const GeneExpressionTable = ({
       headerName: scale === "linearTPM" ? "TPM" : "Log10(TPM + 1)",
       type: "number",
       valueGetter: (_, row) => {
-        return (row.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm).toFixed(2) ?? 0;
+        return (row.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0).toFixed(2);
       },
       sortable: viewBy !== "byTissueTPM",
     },
@@ -194,12 +192,12 @@ const GeneExpressionTable = ({
     return true;
   };
 
-  const handleSync = () => {
-    const syncrows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as PointMetadata[];
-    if (!arraysAreEqual(sortedFilteredData, syncrows)) {
-      setSortedFilteredData(syncrows);
-    }
-  };
+  const handleSync = useCallback(() => {
+    const newRows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as PointMetadata[];
+    setTimeout(() => {
+      setSortedFilteredData((prev) => (arraysAreEqual(prev, newRows) ? prev : newRows));
+    }, 0);
+  }, [apiRef, setSortedFilteredData]);
 
   const AutoSortToolbar = useMemo(() => {
     return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;

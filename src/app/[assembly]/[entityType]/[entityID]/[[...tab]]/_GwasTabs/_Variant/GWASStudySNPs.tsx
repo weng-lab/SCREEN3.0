@@ -1,5 +1,5 @@
 "use client";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -21,7 +21,7 @@ export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
     return parse(v1) - parse(v2);
   };
 
-  const columns: GridColDef<(typeof dataGWASSnps)[number]>[] = [
+  const columns: TableColDef<(typeof dataGWASSnps)[number]>[] = [
     {
       field: "snpid",
       headerName: "rsID",

@@ -1,7 +1,7 @@
 "use client";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
 import { useMemo, useState } from "react";
-import { Table, GridColDef, EncodeBiosample } from "@weng-lab/ui-components";
+import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { CancelRounded } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
@@ -84,7 +84,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const showH3k27ac = !selectedBiosample || !!selectedBiosample.h3k27ac_experiment_accession;
   const showH3k4me3 = !selectedBiosample || !!selectedBiosample.h3k4me3_experiment_accession;
 
-  const ldblocks_columns: GridColDef<typeof data>[] = useMemo(
+  const ldblocks_columns: TableColDef<typeof data>[] = useMemo(
     () => [
       //skip specifying type: "number" to avoid manual left align. Nobody is filtering this table so doesn't matter
       {
@@ -108,7 +108,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
     []
   );
 
-  const columns: GridColDef<(typeof mergedData)[number]>[] = useMemo(
+  const columns: TableColDef<(typeof mergedData)[number]>[] = useMemo(
     () => [
       {
         field: "ccre",

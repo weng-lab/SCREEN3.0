@@ -1,10 +1,11 @@
 import { Typography } from "@mui/material";
-import { GridRenderCellParams, GridColDef } from "@weng-lab/ui-components";
+import { TableColDef } from "@weng-lab/ui-components";
+import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
 import { LinkedGeneInfo } from "common/hooks/useGWASSnpscCREsGenesData";
 import { toScientificNotationElement } from "common/utility";
 
-const geneNameCol: GridColDef = {
+const geneNameCol: TableColDef = {
   field: "gene",
   headerName: "Common Gene Name",
   renderCell: (params: GridRenderCellParams) =>
@@ -28,13 +29,13 @@ const GeneTypeFormatter = (value: string, row: LinkedGeneInfo) =>
           .join(" ")
     : value;
 
-const geneTypeCol: GridColDef = {
+const geneTypeCol: TableColDef = {
   field: "genetype",
   headerName: "Gene Type",
   valueGetter: (value, row: LinkedGeneInfo) => GeneTypeFormatter(value, row),
 };
 
-const experimentCol: GridColDef = {
+const experimentCol: TableColDef = {
   field: "experiment_accession",
   headerName: "Experiment ID",
   renderCell: (params: GridRenderCellParams) => (
@@ -44,18 +45,18 @@ const experimentCol: GridColDef = {
   ),
 };
 
-const displayNameCol: GridColDef = {
+const displayNameCol: TableColDef = {
   field: "displayname",
   headerName: "Biosample",
 };
 
-const scoreCol: GridColDef = {
+const scoreCol: TableColDef = {
   field: "score",
   headerName: "Score",
   type: "number",
 };
 
-const pValCol: GridColDef = {
+const pValCol: TableColDef = {
   field: "p_val",
   headerName: "P",
   type: "number",
@@ -69,37 +70,37 @@ const pValCol: GridColDef = {
     params.value === 0 ? "0" : toScientificNotationElement(params.value, 2, { variant: "body2" }),
 };
 
-const assayCol: GridColDef = {
+const assayCol: TableColDef = {
   field: "assay",
   headerName: "Assay Type",
 };
 
-const gRNACol: GridColDef = {
+const gRNACol: TableColDef = {
   field: "grnaid",
   headerName: "gRNA ID",
 };
 
-const effectSizeCol: GridColDef = {
+const effectSizeCol: TableColDef = {
   field: "effectsize",
   headerName: "Effect Size",
 };
 
-const variantIDCol: GridColDef = {
+const variantIDCol: TableColDef = {
   field: "variantid",
   headerName: "Variant ID",
 };
 
-const sourceCol: GridColDef = {
+const sourceCol: TableColDef = {
   field: "source",
   headerName: "Source",
 };
 
-const tissueCol: GridColDef = {
+const tissueCol: TableColDef = {
   field: "tissue",
   headerName: "Tissue",
 };
 
-const slopeCol: GridColDef = {
+const slopeCol: TableColDef = {
   field: "slope",
   headerName: "Slope",
   type: "number",
@@ -108,7 +109,7 @@ const slopeCol: GridColDef = {
 /**
  * Table definitions for the linked genes tab.
  */
-export const IntactHiCLoopsCols: GridColDef[] = [
+export const IntactHiCLoopsCols: TableColDef[] = [
   geneNameCol,
   { ...geneTypeCol, minWidth: 65 },
   experimentCol,
@@ -117,7 +118,7 @@ export const IntactHiCLoopsCols: GridColDef[] = [
   { ...pValCol, minWidth: 85 },
 ];
 
-export const ChIAPETCols: GridColDef[] = [
+export const ChIAPETCols: TableColDef[] = [
   geneNameCol,
   { ...geneTypeCol, minWidth: 65 },
   { ...assayCol, minWidth: 85 },
@@ -126,7 +127,7 @@ export const ChIAPETCols: GridColDef[] = [
   scoreCol,
 ];
 
-export const CrisprFlowFISHCols: GridColDef[] = [
+export const CrisprFlowFISHCols: TableColDef[] = [
   geneNameCol,
   { ...geneTypeCol, minWidth: 65 },
   gRNACol,
@@ -136,7 +137,7 @@ export const CrisprFlowFISHCols: GridColDef[] = [
   pValCol,
 ];
 
-export const eQTLCols: GridColDef[] = [
+export const eQTLCols: TableColDef[] = [
   geneNameCol,
   { ...geneTypeCol, minWidth: 100 },
   { ...variantIDCol, minWidth: 140 },

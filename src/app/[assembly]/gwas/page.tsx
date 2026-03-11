@@ -13,7 +13,7 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { useTheme } from "@mui/material/styles";
 import GWASLandingHeader from "./GWASLandingHeader";
 import { Treemap } from "@weng-lab/visualization";
@@ -191,7 +191,7 @@ export default function GWASLandingPage() {
       TABLE COLUMNS
       --------------------------- */
 
-  const studies_columns: GridColDef<GwasStudiesMetadata>[] = [
+  const studies_columns: TableColDef<GwasStudiesMetadata>[] = [
     {
       field: "disease_trait",
       headerName: "Disease",

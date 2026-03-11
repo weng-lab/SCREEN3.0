@@ -2,6 +2,7 @@ import { isValidAssembly } from "common/types/globalTypes";
 import { getComponentForEntity, isValidEntityType, isValidRouteForEntity } from "common/entityTabsConfig";
 import { use } from "react";
 import { CandidateOpenEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
+import { notFound } from "next/navigation";
 
 export default function DetailsPage({
   params,
@@ -11,11 +12,11 @@ export default function DetailsPage({
   const { assembly, entityType, entityID, tab: tabString } = use(params);
 
   if (!isValidAssembly(assembly)) {
-    throw new Error(`Unknown assembly: ${assembly}`);
+    notFound();
   }
 
   if (!isValidEntityType(assembly, entityType)) {
-    throw new Error(`Unknown entity for ${assembly}: ${entityType}`);
+    notFound();
   }
 
   let tab = tabString;
@@ -32,13 +33,13 @@ export default function DetailsPage({
   }
 
   if (!isValidRouteForEntity(assembly, entityType, tab)) {
-    throw new Error(`Unknown tab ${tab} for entity type ${entityType}`);
+    notFound();
   }
 
   const entity: CandidateOpenEntity = { assembly, entityID, entityType, tab };
 
   if (!isValidOpenEntity(entity)) {
-    throw new Error(`Incorrect entity configuration: ` + JSON.stringify(entity));
+    notFound();
   }
 
   /**
