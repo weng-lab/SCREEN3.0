@@ -2,7 +2,7 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useState, useMemo, useRef } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
@@ -14,9 +14,9 @@ export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 export type SharedTranscriptExpressionPlotProps = EntityViewComponentProps & {
   rows: TranscriptMetadata[];
   selected: TranscriptMetadata[];
-  setSelected: (selected: TranscriptMetadata[]) => void;
+  setSelected: Dispatch<SetStateAction<TranscriptMetadata[]>>;
   sortedFilteredData: TranscriptMetadata[];
-  setSortedFilteredData: (data: TranscriptMetadata[]) => void;
+  setSortedFilteredData: Dispatch<SetStateAction<TranscriptMetadata[]>>;
   transcriptExpressionData: UseTranscriptExpressionReturn;
   selectedPeak: string;
   viewBy: "value" | "tissue" | "tissueMax";

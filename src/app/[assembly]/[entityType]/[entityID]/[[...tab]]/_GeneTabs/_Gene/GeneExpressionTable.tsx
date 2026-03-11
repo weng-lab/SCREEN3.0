@@ -259,7 +259,8 @@ const GeneExpressionTable = ({
         rowSelectionModel={rowSelectionModel}
         keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
         // -- End Selection Props --
-        onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
+        // onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
+        onReady={(apiRef) => apiRef.current.subscribeEvent("stateChange", handleSync)}
         divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
         toolbarSlot={AutoSortToolbar}
       />

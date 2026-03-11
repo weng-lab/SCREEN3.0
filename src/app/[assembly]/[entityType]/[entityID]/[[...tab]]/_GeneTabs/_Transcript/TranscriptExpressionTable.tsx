@@ -8,7 +8,7 @@ import {
   GridSortDirection,
   GridSortModel,
 } from "@mui/x-data-grid-premium";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import React from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
@@ -26,7 +26,6 @@ const TranscriptExpressionTable = ({
   setSelected,
   transcriptExpressionData,
   setSortedFilteredData,
-  sortedFilteredData,
   selectedPeak,
   setPeak,
   viewBy,
@@ -199,12 +198,12 @@ const TranscriptExpressionTable = ({
     return true;
   };
 
-  const handleSync = () => {
-    const syncrows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as TranscriptMetadata[];
-    if (!arraysAreEqual(sortedFilteredData, syncrows)) {
-      setSortedFilteredData(syncrows);
-    }
-  };
+  const handleSync = useCallback(() => {
+    const newRows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as TranscriptMetadata[];
+    setTimeout(() => {
+      setSortedFilteredData((prev) => (arraysAreEqual(prev, newRows) ? prev : newRows));
+    }, 0);
+  }, [apiRef, setSortedFilteredData]);
 
   const AutoSortToolbar = useMemo(() => {
     return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;

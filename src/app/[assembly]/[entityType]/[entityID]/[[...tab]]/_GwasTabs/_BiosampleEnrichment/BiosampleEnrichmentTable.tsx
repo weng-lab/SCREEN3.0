@@ -1,5 +1,5 @@
 import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { Table, TableColDef } from "@weng-lab/ui-components";
@@ -28,7 +28,6 @@ const BiosampleEnrichmentTable = ({
   onSelectionChange,
   setSortedFilteredData,
   selected,
-  sortedFilteredData,
 }: BiosampleEnrichmentTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
   const { data, loading, error } = enrichmentdata;
@@ -66,12 +65,12 @@ const BiosampleEnrichmentTable = ({
     return true;
   };
 
-  const handleSync = () => {
-    const rows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as GWASEnrichment[];
-    if (!arraysAreEqual(sortedFilteredData, rows)) {
-      setSortedFilteredData(rows);
-    }
-  };
+  const handleSync = useCallback(() => {
+    const newRows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as GWASEnrichment[];
+    setTimeout(() => {
+      setSortedFilteredData((prev) => (arraysAreEqual(prev, newRows) ? prev : newRows));
+    }, 0);
+  }, [apiRef, setSortedFilteredData]);
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
   const StopPropagationWrapper = (params) => (
