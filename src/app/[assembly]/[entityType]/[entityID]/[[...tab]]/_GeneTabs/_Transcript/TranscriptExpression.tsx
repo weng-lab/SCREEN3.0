@@ -1,43 +1,79 @@
 "use client";
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
-import { useTranscriptExpression, UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
-import { Dispatch, SetStateAction, useEffect, useState, useMemo, useRef } from "react";
+import { useTranscriptExpression } from "common/hooks/useTranscriptExpression";
+import { useEffect, useState, useMemo, useRef } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import type {
+  TranscriptMetadata,
+  TranscriptExpressionViewBy,
+  TranscriptExpressionScale,
+  TranscriptExpressionControlProps,
+} from "./types";
 
-export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
+function applyViewByTransform(rows: TranscriptMetadata[], viewBy: TranscriptExpressionViewBy): TranscriptMetadata[] {
+  if (!rows.length) return [];
 
-export type SharedTranscriptExpressionPlotProps = EntityViewComponentProps & {
-  rows: TranscriptMetadata[];
-  selected: TranscriptMetadata[];
-  setSelected: Dispatch<SetStateAction<TranscriptMetadata[]>>;
-  sortedFilteredData: TranscriptMetadata[];
-  setSortedFilteredData: Dispatch<SetStateAction<TranscriptMetadata[]>>;
-  transcriptExpressionData: UseTranscriptExpressionReturn;
-  selectedPeak: string;
-  viewBy: "value" | "tissue" | "tissueMax";
-  scale: "linear" | "log";
-  setPeak: (newPeak: string) => void;
-  setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
-  setScale: (newScale: "linear" | "log") => void;
-  ref?: React.RefObject<DownloadPlotHandle>;
-};
+  let result = [...rows];
 
-const TranscriptExpression = ({entity}: EntityViewComponentProps) => {
-  const [selected, setSelected] = useState<TranscriptMetadata[]>([]);
+  switch (viewBy) {
+    case "value": {
+      result.sort((a, b) => b.value - a.value);
+      break;
+    }
+    case "tissue": {
+      const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
+      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+        const tissue = getTissue(item);
+        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
+        return acc;
+      }, {});
+      result.sort((a, b) => {
+        const tissueA = getTissue(a);
+        const tissueB = getTissue(b);
+        const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
+        if (maxDiff !== 0) return maxDiff;
+        return b.value - a.value;
+      });
+      break;
+    }
+    case "tissueMax": {
+      const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
+      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+        const tissue = getTissue(item);
+        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
+        return acc;
+      }, {});
+      result = result.filter((item) => {
+        const tissue = getTissue(item);
+        return item.value === maxValuesByTissue[tissue];
+      });
+      result.sort((a, b) => b.value - a.value);
+      break;
+    }
+  }
+
+  return result;
+}
+
+const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
   const [peak, setPeak] = useState<string>("");
-  const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value");
-  const [scale, setScale] = useState<"linear" | "log">("linear");
-  const [sortedFilteredData, setSortedFilteredData] = useState<TranscriptMetadata[]>([]);
+  const [viewBy, setViewBy] = useState<TranscriptExpressionViewBy>("value");
+  const [scale, setScale] = useState<TranscriptExpressionScale>("linear");
 
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
 
   const transcriptExpressionData = useTranscriptExpression({ gene: entity.entityID });
+
+  useEffect(() => {
+    console.log("changing")
+  }, [transcriptExpressionData])
 
   useEffect(() => {
     if (transcriptExpressionData && peak === "") {
@@ -48,10 +84,8 @@ const TranscriptExpression = ({entity}: EntityViewComponentProps) => {
   const rows: TranscriptMetadata[] = useMemo(() => {
     if (!transcriptExpressionData?.data?.length) return [];
 
-    //filter out the selected peak
     let filteredData = transcriptExpressionData.data.filter((d) => d.peakId === peak);
 
-    // Apply scaling to each item’s value
     filteredData = filteredData.map((item) => ({
       ...item,
       value: scale === "log" ? Math.log10((item.value ?? 0) + 1) : (item.value ?? 0),
@@ -60,53 +94,67 @@ const TranscriptExpression = ({entity}: EntityViewComponentProps) => {
     return [...filteredData];
   }, [transcriptExpressionData, scale, peak]);
 
-  const SharedTranscriptExpressionPlotProps: SharedTranscriptExpressionPlotProps = useMemo(
-    () => ({
-      rows,
-      selected,
-      setSelected,
-      sortedFilteredData,
-      setSortedFilteredData,
-      transcriptExpressionData,
-      selectedPeak: peak,
-      viewBy,
-      scale,
-      setPeak,
-      setViewBy,
-      setScale,
-      entity,
-    }),
-    [
-      rows,
-      selected,
-      setSelected,
-      sortedFilteredData,
-      setSortedFilteredData,
-      transcriptExpressionData,
-      peak,
-      viewBy,
-      scale,
-      setPeak,
-      setViewBy,
-      setScale,
-      entity,
-    ]
-  );
+  const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy), [rows, viewBy]);
+
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection } = useTablePlotSync({
+    rows: transformedRows,
+    getRowId: (r) => r.expAccession,
+  });
+
+  const controlProps: TranscriptExpressionControlProps = {
+    scale,
+    setScale,
+    viewBy,
+    setViewBy,
+    selectedPeak: peak,
+    setPeak,
+    transcriptExpressionData,
+  };
 
   return (
     <TwoPaneLayout
-      TableComponent={<TranscriptExpressionTable {...SharedTranscriptExpressionPlotProps} />}
+      TableComponent={
+        <TranscriptExpressionTable
+          rows={transformedRows}
+          entity={entity}
+          transcriptExpressionData={transcriptExpressionData}
+          tableProps={tableProps}
+          viewBy={viewBy}
+          scale={scale}
+          selectedPeak={peak}
+          setPeak={setPeak}
+        />
+      }
       plots={[
         {
           tabTitle: "Bar Plot",
           icon: <BarChart />,
-          plotComponent: <TranscriptExpressionBarPlot ref={barRef} {...SharedTranscriptExpressionPlotProps} />,
+          plotComponent: (
+            <TranscriptExpressionBarPlot
+              ref={barRef}
+              sortedFilteredData={sortedFilteredData}
+              selected={selected}
+              toggleSelection={toggleSelection}
+              entity={entity}
+              {...controlProps}
+            />
+          ),
           ref: barRef,
         },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
-          plotComponent: <TranscriptExpressionViolinPlot ref={violinRef} {...SharedTranscriptExpressionPlotProps} />,
+          plotComponent: (
+            <TranscriptExpressionViolinPlot
+              ref={violinRef}
+              rows={rows}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              entity={entity}
+              {...controlProps}
+            />
+          ),
           ref: violinRef,
         },
       ]}

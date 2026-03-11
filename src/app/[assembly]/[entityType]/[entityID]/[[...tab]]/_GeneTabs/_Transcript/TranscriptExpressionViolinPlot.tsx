@@ -1,14 +1,11 @@
-import {
-  TranscriptMetadata,
-  SharedTranscriptExpressionPlotProps,
-} from "./TranscriptExpression";
+import type { TranscriptMetadata, TranscriptExpressionViolinPlotProps } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
-import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
+import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
 import TranscriptPlotControls from "./TranscriptPlotControls";
 
-const TranscriptExpressionBarPlot = ({
+const TranscriptExpressionViolinPlot = ({
   setViewBy,
   setPeak,
   setScale,
@@ -19,10 +16,10 @@ const TranscriptExpressionBarPlot = ({
   selectedPeak,
   transcriptExpressionData,
   selected,
+  toggleSelection,
   rows,
   ref,
-  ...rest
-}: SharedTranscriptExpressionPlotProps) => {
+}: TranscriptExpressionViolinPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
@@ -61,10 +58,9 @@ const TranscriptExpressionBarPlot = ({
       return { label, data, violinColor };
     });
 
-    //apply sorting
     distributions.sort((a, b) => {
       if (sortBy === "tissue") {
-        return a.label.localeCompare(b.label); // alphabetical
+        return a.label.localeCompare(b.label);
       }
       if (sortBy === "median") {
         const median = (arr: number[]) => {
@@ -99,12 +95,7 @@ const TranscriptExpressionBarPlot = ({
   };
 
   const onPointClicked = (point: ViolinPoint<TranscriptMetadata>) => {
-    const id = point.metadata.expAccession;
-    if (selected.some((x) => x.expAccession === id)) {
-      setSelected(selected.filter((x) => x.expAccession !== id));
-    } else {
-      setSelected([...selected, point.metadata]);
-    }
+    toggleSelection(point.metadata);
   };
 
   return (
@@ -130,10 +121,9 @@ const TranscriptExpressionBarPlot = ({
       />
       <Box
         width={"100%"}
-        height={"calc(100% - 63px)"} // bad fix for adjusting height to account for controls
+        height={"calc(100% - 63px)"}
       >
         <ViolinPlot
-          {...rest}
           distributions={violinData}
           axisLabel={`TSS Expression at ${selectedPeak} of ${entity.entityID} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
           loading={transcriptExpressionData.loading}
@@ -181,4 +171,4 @@ const TranscriptExpressionBarPlot = ({
   );
 };
 
-export default TranscriptExpressionBarPlot;
+export default TranscriptExpressionViolinPlot;
