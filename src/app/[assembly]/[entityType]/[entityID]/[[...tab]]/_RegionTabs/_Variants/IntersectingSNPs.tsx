@@ -1,7 +1,7 @@
 "use client";
 import { useSnpData } from "common/hooks/useSnpData";
 import { LinkComponent } from "common/components/LinkComponent";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { useMemo } from "react";
@@ -32,7 +32,7 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
     skip: !coordinates,
   });
 
-  const columns: GridColDef<(typeof dataSnps)[number]>[] = [
+  const columns: TableColDef<(typeof dataSnps)[number]>[] = [
     {
       field: "id",
       headerName: "rsID",

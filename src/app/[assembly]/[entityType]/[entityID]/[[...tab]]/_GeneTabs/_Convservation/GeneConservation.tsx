@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@apollo/client";
-import { GridColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
@@ -18,7 +18,7 @@ export const GET_ORTHOLOG = gql(`
   }
 `);
 
-const orthologTableCols: GridColDef[] = [
+const orthologTableCols: TableColDef[] = [
   {
     headerName: "Gene",
     field: "name",

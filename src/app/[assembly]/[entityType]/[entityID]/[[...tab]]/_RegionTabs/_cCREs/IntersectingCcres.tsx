@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Typography, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
-import { Table, GridColDef, EncodeBiosample } from "@weng-lab/ui-components";
+import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useMemo, useState } from "react";
 import { CancelRounded } from "@mui/icons-material";
@@ -71,7 +71,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     setSelectedBiosample(biosample);
   };
 
-  const columns: GridColDef<(typeof dataCcres)[number]>[] = [
+  const columns: TableColDef<(typeof dataCcres)[number]>[] = [
     {
       field: "info.accession",
       headerName: "Accession",

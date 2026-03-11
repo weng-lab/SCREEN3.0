@@ -2,16 +2,15 @@ import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnr
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useMediaQuery, useTheme } from "@mui/material";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import {
-  Table,
   GRID_CHECKBOX_SELECTION_COL_DEF,
-  GridColDef,
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   GridSortDirection,
   GridSortModel,
   useGridApiRef,
-} from "@weng-lab/ui-components";
+} from "@mui/x-data-grid-premium";
 import { OpenInNew } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
 import { capitalizeFirstLetter } from "common/utility";
@@ -81,9 +80,9 @@ const BiosampleEnrichmentTable = ({
     </div>
   );
 
-  const columns: GridColDef<(typeof data)[number]>[] = [
+  const columns: TableColDef<(typeof data)[number]>[] = [
     {
-      ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<GWASEnrichment>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+      ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef<GWASEnrichment>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
       sortable: true,
       hideable: false,
       renderHeader: StopPropagationWrapper,

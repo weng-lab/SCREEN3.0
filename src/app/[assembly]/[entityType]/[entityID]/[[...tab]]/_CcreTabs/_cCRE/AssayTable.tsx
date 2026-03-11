@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Table } from "@weng-lab/ui-components";
 import {
   GridColumnVisibilityModel,
   gridFilteredSortedRowEntriesSelector,
   GridRowSelectionModel,
   GridSortDirection,
   GridSortModel,
-  Table,
   useGridApiRef,
-} from "@weng-lab/ui-components";
+} from "@mui/x-data-grid-premium";
 import { useMediaQuery, useTheme } from "@mui/material";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { CcreAssay } from "common/types/globalTypes";
@@ -48,7 +48,6 @@ const AssayTable = ({
   assay,
   selected,
   setSelected,
-  sortedFilteredData,
   setSortedFilteredData,
   viewBy,
 }: SharedAssayViewPlotProps) => {
@@ -123,11 +122,14 @@ const AssayTable = ({
 
   const handleSync = useCallback(() => {
     if (!apiRef.current) return;
-    const rows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as BiosampleRow[];
-    if (!arraysAreEqual(sortedFilteredData, rows)) {
-      setSortedFilteredData(rows);
-    }
-  }, [apiRef, setSortedFilteredData, sortedFilteredData]);
+    const newRows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as BiosampleRow[];
+    // Defer the parent state update to after the current render cycle.
+    // onStateChange fires synchronously during DataGrid rendering — calling setSortedFilteredData
+    // directly here would trigger a React "update parent while rendering child" error.
+    setTimeout(() => {
+      setSortedFilteredData((prev) => (arraysAreEqual(prev, newRows) ? prev : newRows));
+    }, 0);
+  }, [apiRef, setSortedFilteredData]);
 
   const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
     return { type: "include", ids: new Set(selected.map((x) => x.name)) };
