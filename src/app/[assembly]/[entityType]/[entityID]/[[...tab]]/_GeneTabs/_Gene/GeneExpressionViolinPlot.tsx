@@ -1,21 +1,16 @@
-import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
+import { GeneExpressionViolinPlotProps, PointMetadata } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
-import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
+import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
 import GenePlotControls from "./GenePlotControls";
 
-export type GeneExpressionViolinPlotProps = GeneExpressionProps &
-  SharedGeneExpressionPlotProps &
-  Partial<ViolinPlotProps<PointMetadata>> & {
-    scale: "linearTPM" | "logTPM";
-  };
-
-const GeneExpressionBarPlot = ({
+const GeneExpressionViolinPlot = ({
   scale,
   setScale,
   selected,
   setSelected,
+  toggleSelection,
   RNAtype,
   setRNAType,
   viewBy,
@@ -26,7 +21,6 @@ const GeneExpressionBarPlot = ({
   rows,
   entity,
   geneExpressionData,
-  ...rest
 }: GeneExpressionViolinPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
@@ -119,12 +113,7 @@ const GeneExpressionBarPlot = ({
   };
 
   const onPointClicked = (point: ViolinPoint<PointMetadata>) => {
-    const id = point.metadata.accession;
-    if (selected.some((x) => x.accession === id)) {
-      setSelected(selected.filter((x) => x.accession !== id));
-    } else {
-      setSelected([...selected, point.metadata]);
-    }
+    toggleSelection(point.metadata);
   };
 
   return (
@@ -156,7 +145,6 @@ const GeneExpressionBarPlot = ({
         height={"calc(100% - 63px)"} // bad fix for adjusting height to account for controls
       >
         <ViolinPlot
-          {...rest}
           onPointClicked={onPointClicked}
           onViolinClicked={onViolinClicked}
           distributions={violinData}
@@ -200,7 +188,8 @@ const GeneExpressionBarPlot = ({
                   <strong>Tissue:</strong> {point.metadata?.tissue}
                 </div>
                 <div>
-                  <strong>{scale === "linearTPM" ? "TPM" : "Log₁₀(TPM + 1)"}:</strong> {displayTPM.toFixed(1)}
+                  <strong>{scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}:</strong>{" "}
+                  {displayTPM.toFixed(1)}
                 </div>
               </Box>
             );
@@ -211,4 +200,4 @@ const GeneExpressionBarPlot = ({
   );
 };
 
-export default GeneExpressionBarPlot;
+export default GeneExpressionViolinPlot;

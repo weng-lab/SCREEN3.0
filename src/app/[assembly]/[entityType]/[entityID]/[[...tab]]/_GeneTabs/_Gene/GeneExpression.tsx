@@ -1,56 +1,90 @@
 "use client";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
-import { Dispatch, SetStateAction, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
-import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
+import { useGeneExpression } from "common/hooks/useGeneExpression";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 import VersionFallback from "./GeneVersionFallback";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
+import { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import type {
+  PointMetadata,
+  GeneExpressionViewBy,
+  GeneExpressionScale,
+  GeneExpressionReplicates,
+  GeneExpressionRNAType,
+  GeneExpressionControlProps,
+} from "./types";
 
-export type PointMetadata = UseGeneExpressionReturn["data"][number];
+const getTPM = (d: PointMetadata) => d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
+const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
 
-export type GeneExpressionProps = EntityViewComponentProps;
+/**
+ * Applies the viewBy transformation to rows.
+ * - "byExperimentTPM": sort by TPM descending
+ * - "byTissueTPM": group by tissue (sorted by max TPM within tissue), then by TPM within group
+ * - "byTissueMaxTPM": keep only the max-TPM experiment per tissue, sort by TPM descending
+ */
+function applyViewByTransform(rows: PointMetadata[], viewBy: GeneExpressionViewBy): PointMetadata[] {
+  if (!rows.length) return [];
 
-export type SharedGeneExpressionPlotProps = EntityViewComponentProps & {
-  rows: PointMetadata[];
-  selected: PointMetadata[];
-  setSelected: Dispatch<SetStateAction<PointMetadata[]>>;
-  geneExpressionData: UseGeneExpressionReturn;
-  sortedFilteredData: PointMetadata[];
-  setSortedFilteredData: Dispatch<SetStateAction<PointMetadata[]>>;
-  scale: "linearTPM" | "logTPM";
-  setScale: (newScale: "linearTPM" | "logTPM") => void;
-  replicates: "mean" | "all";
-  setReplicates: (newReplicates: "mean" | "all") => void;
-  viewBy: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM";
-  setViewBy: (newView: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM") => void;
-  RNAtype: "all" | "polyA plus RNA-seq" | "total RNA-seq";
-  setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void;
-  ref?: React.RefObject<DownloadPlotHandle>;
-  isV40?: boolean;
-};
+  let result = [...rows];
 
-const GeneExpression = ({ entity }: GeneExpressionProps) => {
+  switch (viewBy) {
+    case "byExperimentTPM": {
+      result.sort((a, b) => getTPM(b) - getTPM(a));
+      break;
+    }
+
+    case "byTissueTPM": {
+      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+        const tissue = getTissue(item);
+        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getTPM(item));
+        return acc;
+      }, {});
+
+      result.sort((a, b) => {
+        const tissueA = getTissue(a);
+        const tissueB = getTissue(b);
+        const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
+        if (maxDiff !== 0) return maxDiff;
+        return getTPM(b) - getTPM(a);
+      });
+      break;
+    }
+
+    case "byTissueMaxTPM": {
+      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+        const tissue = getTissue(item);
+        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getTPM(item));
+        return acc;
+      }, {});
+
+      result = result.filter((item) => {
+        const tissue = getTissue(item);
+        return getTPM(item) === maxValuesByTissue[tissue];
+      });
+
+      result.sort((a, b) => getTPM(b) - getTPM(a));
+      break;
+    }
+  }
+
+  return result;
+}
+
+const GeneExpression = ({ entity }: EntityViewComponentProps) => {
   const geneData = useGeneData({ name: entity.entityID, assembly: entity.assembly });
 
-  const [selected, setSelected] = useState<PointMetadata[]>([]);
-  const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
-  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM");
-  const [replicates, setReplicates] = useState<"mean" | "all">("mean");
-  const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM");
-  const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">(
-    entity.assembly === "GRCh38" ? "total RNA-seq" : "all"
-  );
-
-  const handleSetReplicates = (newReplicates: "mean" | "all") => {
-    setSelected([]);
-    setReplicates(newReplicates);
-  };
+  const [scale, setScale] = useState<GeneExpressionScale>("linearTPM");
+  const [replicates, setReplicates] = useState<GeneExpressionReplicates>("mean");
+  const [viewBy, setViewBy] = useState<GeneExpressionViewBy>("byExperimentTPM");
+  const [RNAtype, setRNAType] = useState<GeneExpressionRNAType>(entity.assembly === "GRCh38" ? "total RNA-seq" : "all");
 
   const barRef = useRef<DownloadPlotHandle>(null);
   const violinRef = useRef<DownloadPlotHandle>(null);
@@ -131,49 +165,90 @@ const GeneExpression = ({ entity }: GeneExpressionProps) => {
     return result;
   }, [geneExpressionData.data, isV40, RNAtype, replicates, scale]);
 
-  const SharedGeneExpressionPlotProps: SharedGeneExpressionPlotProps = useMemo(
-    () => ({
-      rows,
-      selected,
-      setSelected,
-      sortedFilteredData,
-      setSortedFilteredData,
-      scale,
-      setScale,
-      replicates,
-      setReplicates: handleSetReplicates,
-      viewBy,
-      setViewBy,
-      RNAtype,
-      setRNAType,
-      geneExpressionData,
-      entity,
-    }),
-    [rows, selected, sortedFilteredData, scale, replicates, viewBy, RNAtype, geneExpressionData, entity]
-  );
+  const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy), [rows, viewBy]);
+
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection } = useTablePlotSync({
+    rows: transformedRows,
+    getRowId: (r) => r.accession,
+  });
+
+  const handleSetReplicates = (newReplicates: GeneExpressionReplicates) => {
+    setSelected([]);
+    setReplicates(newReplicates);
+  };
+
+  const controlProps: GeneExpressionControlProps = {
+    scale,
+    setScale,
+    replicates,
+    setReplicates: handleSetReplicates,
+    viewBy,
+    setViewBy,
+    RNAtype,
+    setRNAType,
+  };
 
   return (
     <>
       {isV40 && <VersionFallback gene={entity.entityID} />}
       <TwoPaneLayout
-        TableComponent={<GeneExpressionTable {...SharedGeneExpressionPlotProps} />}
+        TableComponent={
+          <GeneExpressionTable
+            rows={transformedRows}
+            entity={entity}
+            geneExpressionData={geneExpressionData}
+            tableProps={tableProps}
+            viewBy={viewBy}
+            scale={scale}
+          />
+        }
         plots={[
           {
             tabTitle: "Bar Plot",
             icon: <BarChart />,
-            plotComponent: <GeneExpressionBarPlot ref={barRef} {...SharedGeneExpressionPlotProps} isV40={isV40} />,
+            plotComponent: (
+              <GeneExpressionBarPlot
+                ref={barRef}
+                sortedFilteredData={sortedFilteredData}
+                selected={selected}
+                toggleSelection={toggleSelection}
+                entity={entity}
+                isV40={isV40}
+                {...controlProps}
+              />
+            ),
             ref: barRef,
           },
           {
             tabTitle: "Violin Plot",
             icon: <CandlestickChart />,
-            plotComponent: <GeneExpressionViolinPlot ref={violinRef} {...SharedGeneExpressionPlotProps} />,
+            plotComponent: (
+              <GeneExpressionViolinPlot
+                ref={violinRef}
+                rows={rows}
+                selected={selected}
+                setSelected={setSelected}
+                toggleSelection={toggleSelection}
+                entity={entity}
+                geneExpressionData={geneExpressionData}
+                {...controlProps}
+              />
+            ),
             ref: violinRef,
           },
           {
             tabTitle: "UMAP",
             icon: <ScatterPlot />,
-            plotComponent: <GeneExpressionUMAP ref={scatterRef} {...SharedGeneExpressionPlotProps} />,
+            plotComponent: (
+              <GeneExpressionUMAP
+                ref={scatterRef}
+                entity={entity}
+                selected={selected}
+                setSelected={setSelected}
+                toggleSelection={toggleSelection}
+                geneExpressionData={geneExpressionData}
+              />
+            ),
             ref: scatterRef,
           },
         ]}

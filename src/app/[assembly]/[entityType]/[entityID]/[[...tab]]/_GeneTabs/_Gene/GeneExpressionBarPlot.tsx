@@ -1,21 +1,15 @@
-import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
+import { GeneExpressionBarPlotProps, PointMetadata } from "./types";
 import { useCallback, useMemo } from "react";
 import { capitalizeFirstLetter } from "common/utility";
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
-import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
+import { BarPlot, BarData } from "@weng-lab/visualization";
 import GenePlotControls from "./GenePlotControls";
-
-export type GeneExpressionBarPlotProps = GeneExpressionProps &
-  SharedGeneExpressionPlotProps &
-  Partial<BarPlotProps<PointMetadata>> & {
-    scale: "linearTPM" | "logTPM";
-  };
 
 const GeneExpressionBarPlot = ({
   scale,
   selected,
-  setSelected,
+  toggleSelection,
   sortedFilteredData,
   RNAtype,
   setRNAType,
@@ -27,7 +21,6 @@ const GeneExpressionBarPlot = ({
   ref,
   isV40,
   entity,
-  ...rest
 }: GeneExpressionBarPlotProps) => {
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
     const maxLength = 20;
@@ -49,7 +42,7 @@ const GeneExpressionBarPlot = ({
       return {
         category: capitalizeFirstLetter(x.tissue),
         label: makeLabel(x.gene_quantification_files[0].quantifications[0]?.tpm, x.biosample, x.accession),
-        value: x.gene_quantification_files[0].quantifications[0]?.tpm, //indexing into 0th position, only one gene so quantifications should always be length 1
+        value: x.gene_quantification_files[0].quantifications[0]?.tpm,
         color:
           (anySelected && isSelected) || !anySelected ? (tissueColors[x.tissue] ?? tissueColors.missing) : "#CCCCCC",
         id: i.toString(),
@@ -59,9 +52,7 @@ const GeneExpressionBarPlot = ({
   }, [sortedFilteredData, selected]);
 
   const handleBarClick = (bar: BarData<PointMetadata>) => {
-    if (selected.some((x) => x.accession === bar.metadata.accession)) {
-      setSelected(selected.filter((x) => x.accession !== bar.metadata.accession));
-    } else setSelected([...selected, bar.metadata]);
+    toggleSelection(bar.metadata);
   };
 
   const PlotTooltip = useCallback(
@@ -119,7 +110,6 @@ const GeneExpressionBarPlot = ({
         <Typography>No Gene expression data available on GENCODE V40 genes</Typography>
       ) : (
         <BarPlot
-          {...rest}
           onBarClicked={handleBarClick}
           data={plotData}
           topAxisLabel={

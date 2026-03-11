@@ -1,92 +1,23 @@
-import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
+import { GeneExpressionTableProps, PointMetadata } from "./types";
 import { IconButton, useMediaQuery, useTheme } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import {
-  gridFilteredSortedRowEntriesSelector,
-  GridRowSelectionModel,
-  useGridApiRef,
   GRID_CHECKBOX_SELECTION_COL_DEF,
   GridSortModel,
   GridSortDirection,
 } from "@mui/x-data-grid-premium";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 
-export type GeneExpressionTableProps = GeneExpressionProps & SharedGeneExpressionPlotProps;
-
-const GeneExpressionTable = ({
-  rows,
-  selected,
-  setSelected,
-  geneExpressionData,
-  setSortedFilteredData,
-  viewBy,
-  entity,
-  scale
-}: GeneExpressionTableProps) => {
+const GeneExpressionTable = ({ rows, entity, geneExpressionData, tableProps, viewBy, scale }: GeneExpressionTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
   const { loading, error } = geneExpressionData;
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // based on control buttons in parent, transform this data to match the expected format
-  const transformedData: PointMetadata[] = useMemo(() => {
-    if (!rows.length) return [];
-    const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
-    const getTPM = (d: PointMetadata) => d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
-
-    let result = rows;
-
-    // Sort based on viewBy
-    switch (viewBy) {
-      case "byExperimentTPM": {
-        result.sort((a, b) => getTPM(b) - getTPM(a));
-        break;
-      }
-
-      case "byTissueTPM": {
-        const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-          const tissue = getTissue(item);
-          acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getTPM(item));
-          return acc;
-        }, {});
-
-        result.sort((a, b) => {
-          const tissueA = getTissue(a);
-          const tissueB = getTissue(b);
-          const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
-          if (maxDiff !== 0) return maxDiff;
-          return getTPM(b) - getTPM(a);
-        });
-        break;
-      }
-
-      case "byTissueMaxTPM": {
-        const maxValuesByTissue: Record<string, number> = result.reduce(
-          (acc, item) => {
-            const tissue = getTissue(item);
-            const tpm = getTPM(item);
-            acc[tissue] = Math.max(acc[tissue] || -Infinity, tpm);
-            return acc;
-          },
-          {} as Record<string, number>
-        );
-
-        result = result.filter((item) => {
-          const tpm = getTPM(item);
-          const tissue = getTissue(item);
-          return tpm === maxValuesByTissue[tissue];
-        });
-
-        result.sort((a, b) => getTPM(b) - getTPM(a));
-        break;
-      }
-    }
-    return [...result];
-  }, [rows, viewBy]);
+  const { apiRef, rowSelectionModel } = tableProps;
 
   //This is used to prevent sorting from happening when clicking on the header checkbox
   const StopPropagationWrapper = (params) => (
@@ -161,56 +92,18 @@ const GeneExpressionTable = ({
     },
   ];
 
-  const handleRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel) => {
-    if (newRowSelectionModel.type === "include") {
-      const newIds = Array.from(newRowSelectionModel.ids);
-      const selectedRows = newIds.map((id) => rows.find((row) => row.accession === id));
-      setSelected(selectedRows);
-    } else {
-      // if type is exclude, it's always with 0 ids (aka select all)
-      setSelected(rows);
-    }
-  };
-
-  const apiRef = useGridApiRef();
-
-  const arraysAreEqual = (arr1: PointMetadata[], arr2: PointMetadata[]): boolean => {
-    if (arr1.length !== arr2.length) {
-      return false;
-    }
-
-    const isEqual = JSON.stringify(arr1[0]) === JSON.stringify(arr2[0]);
-    if (!isEqual) {
-      return false;
-    }
-
-    for (let i = 0; i < arr1.length; i++) {
-      if (arr1[i].accession !== arr2[i].accession) {
-        return false;
-      }
-    }
-    return true;
-  };
-
-  const handleSync = useCallback(() => {
-    const newRows = gridFilteredSortedRowEntriesSelector(apiRef).map((x) => x.model) as PointMetadata[];
-    setTimeout(() => {
-      setSortedFilteredData((prev) => (arraysAreEqual(prev, newRows) ? prev : newRows));
-    }, 0);
-  }, [apiRef, setSortedFilteredData]);
-
   const AutoSortToolbar = useMemo(() => {
     return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
   }, [autoSort]);
 
   const initialSort: GridSortModel = useMemo(() => [{ field: "tpm", sort: "desc" as GridSortDirection }], []);
 
+  const hasSelection = rowSelectionModel.type === "include" && rowSelectionModel.ids.size > 0;
+
   // handle auto sorting
   useEffect(() => {
     const api = apiRef?.current;
     if (!api) return;
-
-    const hasSelection = selected?.length > 0;
 
     // handle sort by tissue special case
     if (viewBy === "byTissueTPM") {
@@ -224,47 +117,32 @@ const GeneExpressionTable = ({
 
     // all other views
     if (!autoSort) {
-      //reset sort if none selected
       api.setSortModel(initialSort);
       return;
     }
 
     //sort by checkboxes if some selected, otherwise sort by tpm
     api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
-  }, [apiRef, autoSort, initialSort, selected, viewBy]);
-
-  const rowSelectionModel: GridRowSelectionModel = useMemo(() => {
-    return { type: "include", ids: new Set(selected.map((x) => x.accession)) };
-  }, [selected]);
+  }, [apiRef, autoSort, initialSort, hasSelection, viewBy]);
 
   return (
-    <>
-      <Table
-        apiRef={apiRef}
-        label={`${entity.entityID} Expression`}
-        rows={transformedData}
-        columns={columns}
-        loading={loading}
-        error={!!error}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          sorting: {
-            sortModel: initialSort,
-          },
-        }}
-        // -- Selection Props --
-        checkboxSelection
-        getRowId={(row: typeof transformedData[number]) => row.accession} //needed to match up data with the ids returned by onRowSelectionModelChange
-        onRowSelectionModelChange={handleRowSelectionModelChange}
-        rowSelectionModel={rowSelectionModel}
-        keepNonExistentRowsSelected // Needed to prevent clearing selections on changing filters
-        // -- End Selection Props --
-        // onStateChange={handleSync} // Not really supposed to be using this, is not documented by MUI. Not using its structure, just the callback trigger
-        onReady={(apiRef) => apiRef.current.subscribeEvent("stateChange", handleSync)}
-        divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
-        toolbarSlot={AutoSortToolbar}
-      />
-    </>
+    <Table
+      label={`${entity.entityID} Expression`}
+      rows={rows}
+      columns={columns}
+      loading={loading}
+      error={!!error}
+      pageSizeOptions={[10, 25, 50]}
+      getRowId={(row: PointMetadata) => row.accession}
+      initialState={{
+        sorting: {
+          sortModel: initialSort,
+        },
+      }}
+      divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
+      toolbarSlot={AutoSortToolbar}
+      {...tableProps}
+    />
   );
 };
 
