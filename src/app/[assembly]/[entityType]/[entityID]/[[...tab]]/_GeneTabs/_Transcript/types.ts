@@ -23,7 +23,6 @@ export type TranscriptExpressionControlProps = {
 /** Props for TranscriptExpressionTable */
 export type TranscriptExpressionTableProps = {
   rows: TranscriptMetadata[];
-  entity: EntityViewComponentProps["entity"];
   transcriptExpressionData: UseTranscriptExpressionReturn;
   tableProps: ReturnType<typeof useTablePlotSync<TranscriptMetadata>>["tableProps"];
   viewBy: TranscriptExpressionViewBy;

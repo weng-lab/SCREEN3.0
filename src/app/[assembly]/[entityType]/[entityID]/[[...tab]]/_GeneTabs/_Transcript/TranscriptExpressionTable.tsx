@@ -13,7 +13,6 @@ import AutoSortSwitch from "common/components/AutoSortSwitch";
 
 const TranscriptExpressionTable = ({
   rows,
-  entity,
   transcriptExpressionData,
   tableProps,
   viewBy,
@@ -32,91 +31,91 @@ const TranscriptExpressionTable = ({
     </div>
   );
 
-  const columns: TableColDef<TranscriptMetadata>[] = [
-    {
-      ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef<TranscriptMetadata>),
-      sortable: true,
-      hideable: false,
-      renderHeader: StopPropagationWrapper,
-    },
-    {
-      field: "biosample",
-      headerName: "Sample",
-      sortable: viewBy !== "tissue",
-      valueGetter: (_, row) => {
-        return capitalizeFirstLetter(row.biosampleSummary.replaceAll("_", " "));
+  const columns: TableColDef<TranscriptMetadata>[] = useMemo(
+    () => [
+      {
+        ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef<TranscriptMetadata>),
+        sortable: true,
+        hideable: false,
+        renderHeader: StopPropagationWrapper,
       },
-      renderCell: (params) => (
-        <div
-          style={{
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: 250,
-          }}
-          title={params.value}
-        >
-          {params.value}
-        </div>
-      ),
-    },
-    {
-      field: " ",
-      headerName: `${scale === "linear" ? "RPM" : "Log10(RPM + 1)"}`,
-      type: "number",
-      sortable: viewBy !== "tissue",
-      valueGetter: (_, row) => {
-        return row.value.toFixed(2);
-      },
-    },
-    {
-      field: "organ",
-      headerName: "Tissue",
-      sortable: viewBy !== "tissue",
-      valueGetter: (_, row) => {
-        return capitalizeFirstLetter(row.organ);
-      },
-    },
-    {
-      field: "strand",
-      headerName: "Strand",
-      sortable: viewBy !== "tissue",
-    },
-    {
-      field: "expAccession",
-      headerName: "Experiment",
-      sortable: viewBy !== "tissue",
-      renderCell: (params) => (
-        <Tooltip title="View Experiment in ENCODE" arrow>
-          <IconButton
-            href={`https://www.encodeproject.org/experiments/${params.value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            size="small"
+      {
+        field: "biosample",
+        headerName: "Sample",
+        sortable: viewBy !== "tissue",
+        valueGetter: (_, row) => {
+          return capitalizeFirstLetter(row.biosampleSummary.replaceAll("_", " "));
+        },
+        renderCell: (params) => (
+          <div
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: 250,
+            }}
+            title={params.value}
           >
-            <OpenInNew fontSize="inherit" />
-          </IconButton>
-        </Tooltip>
-      ),
-    },
-  ];
+            {params.value}
+          </div>
+        ),
+      },
+      {
+        field: " ",
+        headerName: `${scale === "linear" ? "RPM" : "Log10(RPM + 1)"}`,
+        type: "number",
+        sortable: viewBy !== "tissue",
+        valueGetter: (_, row) => {
+          return row.value.toFixed(2);
+        },
+      },
+      {
+        field: "organ",
+        headerName: "Tissue",
+        sortable: viewBy !== "tissue",
+        valueGetter: (_, row) => {
+          return capitalizeFirstLetter(row.organ);
+        },
+      },
+      {
+        field: "strand",
+        headerName: "Strand",
+        sortable: viewBy !== "tissue",
+      },
+      {
+        field: "expAccession",
+        headerName: "Experiment",
+        sortable: viewBy !== "tissue",
+        renderCell: (params) => (
+          <Tooltip title="View Experiment in ENCODE" arrow>
+            <IconButton
+              href={`https://www.encodeproject.org/experiments/${params.value}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              size="small"
+            >
+              <OpenInNew fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+        ),
+      },
+    ],
+    [viewBy, scale]
+  );
 
   const AutoSortToolbar = useMemo(() => {
     return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
   }, [autoSort]);
 
+  const { apiRef, rowSelectionModel } = tableProps;
+
   const initialSort: GridSortModel = useMemo(() => [{ field: "rpm", sort: "desc" as GridSortDirection }], []);
 
-  const selected = useMemo(() => {
-    const ids = tableProps.rowSelectionModel.ids;
-    return rows.filter((r) => ids.has(r.expAccession));
-  }, [tableProps.rowSelectionModel, rows]);
+  const hasSelection = rowSelectionModel.type === "include" && rowSelectionModel.ids.size > 0;
 
   useEffect(() => {
-    const api = tableProps.apiRef?.current;
+    const api = apiRef?.current;
     if (!api) return;
-
-    const hasSelection = selected.length > 0;
 
     if (viewBy === "tissue") {
       if (!autoSort || !hasSelection) {
@@ -133,7 +132,7 @@ const TranscriptExpressionTable = ({
     }
 
     api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
-  }, [tableProps.apiRef, autoSort, initialSort, selected, viewBy]);
+  }, [apiRef, autoSort, initialSort, hasSelection, viewBy]);
 
   return (
     <Table
@@ -163,7 +162,6 @@ const TranscriptExpressionTable = ({
       rows={rows}
       columns={columns}
       loading={loading}
-      pageSizeOptions={[10, 25, 50]}
       initialState={{
         sorting: {
           sortModel: initialSort,

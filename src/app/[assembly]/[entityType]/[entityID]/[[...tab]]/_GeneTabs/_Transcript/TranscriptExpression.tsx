@@ -72,10 +72,6 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
   const transcriptExpressionData = useTranscriptExpression({ gene: entity.entityID });
 
   useEffect(() => {
-    console.log("changing")
-  }, [transcriptExpressionData])
-
-  useEffect(() => {
     if (transcriptExpressionData && peak === "") {
       setPeak(transcriptExpressionData.data?.[0]?.peakId ?? "");
     }
@@ -116,7 +112,6 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
       TableComponent={
         <TranscriptExpressionTable
           rows={transformedRows}
-          entity={entity}
           transcriptExpressionData={transcriptExpressionData}
           tableProps={tableProps}
           viewBy={viewBy}

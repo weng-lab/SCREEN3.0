@@ -57,7 +57,7 @@ export type GeneExpressionUMAPProps = {
 /** Props for GeneExpressionTable */
 export type GeneExpressionTableProps = {
   rows: PointMetadata[];
-  entity: EntityViewComponentProps["entity"];
+  label: string;
   geneExpressionData: UseGeneExpressionReturn;
   tableProps: ReturnType<typeof useTablePlotSync<PointMetadata>>["tableProps"];
   viewBy: GeneExpressionViewBy;
