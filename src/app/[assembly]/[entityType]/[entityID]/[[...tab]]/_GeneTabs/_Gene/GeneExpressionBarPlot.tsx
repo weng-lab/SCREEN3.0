@@ -19,7 +19,6 @@ const GeneExpressionBarPlot = ({
   replicates,
   setReplicates,
   ref,
-  isV40,
   entity,
 }: GeneExpressionBarPlotProps) => {
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
@@ -98,28 +97,23 @@ const GeneExpressionBarPlot = ({
         setViewBy={setViewBy}
         setScale={setScale}
         setReplicates={setReplicates}
-        disabled={isV40}
       />
-      {isV40 ? (
-        <Typography>No Gene expression data available on GENCODE V40 genes</Typography>
-      ) : (
-        <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
-          <BarPlot
-            onBarClicked={handleBarClick}
-            data={plotData}
-            topAxisLabel={
-              scale === "linearTPM"
-                ? `${entity.entityID} Expression: TPM`
-                : `${entity.entityID} Expression: log\u2081\u2080(TPM + 1)`
-            }
-            TooltipContents={PlotTooltip}
-            ref={ref}
-            downloadFileName={`${entity.entityID}_expression_bar_plot`}
-            animation="slideRight"
-            animationBuffer={0.01}
-          />
-        </Box>
-      )}
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
+        <BarPlot
+          onBarClicked={handleBarClick}
+          data={plotData}
+          topAxisLabel={
+            scale === "linearTPM"
+              ? `${entity.entityID} Expression: TPM`
+              : `${entity.entityID} Expression: log\u2081\u2080(TPM + 1)`
+          }
+          TooltipContents={PlotTooltip}
+          ref={ref}
+          downloadFileName={`${entity.entityID}_expression_bar_plot`}
+          animation="slideRight"
+          animationBuffer={0.01}
+        />
+      </Box>
     </Box>
   );
 };

@@ -29,7 +29,6 @@ export type GeneExpressionBarPlotProps = GeneExpressionControlProps & {
   selected: PointMetadata[];
   toggleSelection: (item: PointMetadata) => void;
   entity: EntityViewComponentProps["entity"];
-  isV40?: boolean;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
 

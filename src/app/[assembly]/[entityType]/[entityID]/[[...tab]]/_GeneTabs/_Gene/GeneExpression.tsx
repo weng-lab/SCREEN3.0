@@ -183,68 +183,65 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
     setRNAType,
   };
 
+  if (isV40) return <VersionFallback gene={entity.entityID} />;
+
   return (
-    <>
-      {isV40 && <VersionFallback gene={entity.entityID} />}
-      <TwoPaneLayout
-        TableComponent={
-          <GeneExpressionTable
-            rows={transformedRows}
-            label={`${entity.entityID} Expression`}
-            loading={geneExpressionData.loading}
-            error={!!geneExpressionData.error}
-            tableProps={tableProps}
-            viewBy={viewBy}
-            scale={scale}
-          />
-        }
-        plots={[
-          {
-            tabTitle: "Bar Plot",
-            icon: <BarChart />,
-            plotComponent: (
-              <GeneExpressionBarPlot
-                sortedFilteredData={sortedFilteredData}
-                selected={selected}
-                toggleSelection={toggleSelection}
-                entity={entity}
-                isV40={isV40}
-                {...controlProps}
-              />
-            ),
-          },
-          {
-            tabTitle: "Violin Plot",
-            icon: <CandlestickChart />,
-            plotComponent: (
-              <GeneExpressionViolinPlot
-                rows={rows}
-                selected={selected}
-                setSelected={setSelected}
-                toggleSelection={toggleSelection}
-                entity={entity}
-                geneExpressionData={geneExpressionData}
-                {...controlProps}
-              />
-            ),
-          },
-          {
-            tabTitle: "UMAP",
-            icon: <ScatterPlot />,
-            plotComponent: (
-              <GeneExpressionUMAP
-                entity={entity}
-                selected={selected}
-                setSelected={setSelected}
-                toggleSelection={toggleSelection}
-                geneExpressionData={geneExpressionData}
-              />
-            ),
-          },
-        ]}
-        isV40={isV40}
-      />
-    </>
+    <TwoPaneLayout
+      TableComponent={
+        <GeneExpressionTable
+          rows={transformedRows}
+          label={`${entity.entityID} Expression`}
+          loading={geneExpressionData.loading}
+          error={!!geneExpressionData.error}
+          tableProps={tableProps}
+          viewBy={viewBy}
+          scale={scale}
+        />
+      }
+      plots={[
+        {
+          tabTitle: "Bar Plot",
+          icon: <BarChart />,
+          plotComponent: (
+            <GeneExpressionBarPlot
+              sortedFilteredData={sortedFilteredData}
+              selected={selected}
+              toggleSelection={toggleSelection}
+              entity={entity}
+              {...controlProps}
+            />
+          ),
+        },
+        {
+          tabTitle: "Violin Plot",
+          icon: <CandlestickChart />,
+          plotComponent: (
+            <GeneExpressionViolinPlot
+              rows={rows}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              entity={entity}
+              geneExpressionData={geneExpressionData}
+              {...controlProps}
+            />
+          ),
+        },
+        {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: (
+            <GeneExpressionUMAP
+              entity={entity}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              geneExpressionData={geneExpressionData}
+            />
+          ),
+        },
+      ]}
+    />
   );
 };
 

@@ -38,12 +38,11 @@ export type TwoPanePlotConfig = {
 export type TwoPaneLayoutProps = {
   TableComponent: React.ReactNode;
   plots: readonly TwoPanePlotConfig[];
-  isV40?: boolean;
 };
 
 const PANE_HEIGHT = { xs: "500px", lg: "600px" };
 
-const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutProps) => {
+const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
   const [tab, setTab] = useState<number>(0);
   const [tableOpen, setTableOpen] = useState(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -106,11 +105,11 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
   );
 
   const downloadButton = isXs ? (
-    <IconButton color="primary" aria-label="download" size="small" onClick={handleOpenDownload} disabled={isV40}>
+    <IconButton color="primary" aria-label="download" size="small" onClick={handleOpenDownload}>
       <DownloadIcon />
     </IconButton>
   ) : (
-    <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleOpenDownload} disabled={isV40}>
+    <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleOpenDownload}>
       Download
     </Button>
   );
@@ -158,7 +157,6 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
               icon={tab.icon}
               iconPosition="start"
               sx={{ minHeight: "48px" }}
-              disabled={isV40}
             />
           ))}
         </Tabs>
