@@ -131,50 +131,43 @@ const GeneExpressionUMAP = ({
 
   return (
     <>
-      <Stack
-        width={"100%"}
-        height={"100%"}
-        padding={1}
-        sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-      >
-        {scatterData &&
-        scatterData.length > 0 &&
-        scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm !== undefined ? (
-          <>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <ColorBySelect colorScheme={colorScheme} handleColorSchemeChange={handleColorSchemeChange} />
-              <UMAPLegend
-                colorScheme={colorScheme}
-                scatterData={scatterData}
-                maxValue={maxValue}
-                colorScale={colorScale}
-              />
-            </Stack>
-            <Box sx={{ flexGrow: 1 }}>
-              <ScatterPlot
-                onSelectionChange={handlePointsSelected}
-                onPointClicked={handlePointSelected}
-                controlsHighlight={theme.palette.primary.light}
-                pointData={scatterData}
-                selectable
-                loading={loading}
-                miniMap={map}
-                groupPointsAnchor="accession"
-                tooltipBody={(point) => <TooltipBody {...point} />}
-                leftAxisLabel="UMAP-2"
-                bottomAxisLabel="UMAP-1"
-                ref={ref}
-                downloadFileName={`${entity.entityID}_expression_UMAP`}
-                animation="scale"
-                animationBuffer={0.01}
-                animationGroupSize={15}
-              />
-            </Box>
-          </>
-        ) : (
-          <></>
-        )}
-      </Stack>
+      {scatterData &&
+      scatterData.length > 0 &&
+      scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm !== undefined ? (
+        <Box display="flex" flexDirection="column" height="100%">
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <ColorBySelect colorScheme={colorScheme} handleColorSchemeChange={handleColorSchemeChange} />
+            <UMAPLegend
+              colorScheme={colorScheme}
+              scatterData={scatterData}
+              maxValue={maxValue}
+              colorScale={colorScale}
+            />
+          </Stack>
+          <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
+            <ScatterPlot
+              onSelectionChange={handlePointsSelected}
+              onPointClicked={handlePointSelected}
+              controlsHighlight={theme.palette.primary.light}
+              pointData={scatterData}
+              selectable
+              loading={loading}
+              miniMap={map}
+              groupPointsAnchor="accession"
+              tooltipBody={(point) => <TooltipBody {...point} />}
+              leftAxisLabel="UMAP-2"
+              bottomAxisLabel="UMAP-1"
+              ref={ref}
+              downloadFileName={`${entity.entityID}_expression_UMAP`}
+              animation="scale"
+              animationBuffer={0.01}
+              animationGroupSize={15}
+            />
+          </Box>
+        </Box>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

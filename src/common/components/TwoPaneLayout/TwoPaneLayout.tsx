@@ -31,7 +31,7 @@ export type TwoPaneLayoutProps = {
   isV40?: boolean;
 };
 
-const PANE_HEIGHT = { xs: "580px", lg: "60vh" };
+const PANE_HEIGHT = { xs: "500px", lg: "600px" };
 
 const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutProps) => {
   const [tab, setTab] = useState<number>(0);
@@ -59,6 +59,14 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
     </Tooltip>
   );
 
+  const hideTableButton = (
+    <Tooltip title="Hide Table">
+      <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
+        <CloseFullscreenRounded color="primary" />
+      </IconButton>
+    </Tooltip>
+  );
+
   const downloadButton = isXs ? (
     <IconButton color="primary" aria-label="download" size="small" onClick={() => setModalOpen(true)} disabled={isV40}>
       <DownloadIcon />
@@ -74,33 +82,33 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
   return (
     <Box
       display="grid"
-      sx={{
-        gridTemplateColumns: { xs: "minmax(0, 1fr)", lg: tableOpen ? "35% minmax(0, 1fr)" : "minmax(0, 1fr)" },
-        gridTemplateRows: { xs: tableOpen ? "auto auto auto auto" : "auto auto", lg: "auto 1fr" },
-        gap: 2,
-      }}
+      gridTemplateColumns={{ xs: "minmax(0, 1fr)", lg: tableOpen ? "35% minmax(0, 1fr)" : "minmax(0, 1fr)" }}
+      gridTemplateRows={{ xs: tableOpen ? "auto auto auto auto" : "auto auto", lg: "auto 1fr" }}
+      gap={2}
     >
       {/* Table header — row 1 at all breakpoints */}
-      <Box display={tableOpen ? "block" : "none"} sx={{ gridRow: 1, gridColumn: 1 }}>
-        <Stack direction="row" alignItems="center" gap={1}>
-          {tableIconButton}
-          <Typography variant="h5" sx={{ flexGrow: 1 }}>
-            Table View
-          </Typography>
-          <Tooltip title="Hide Table">
-            <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
-              <CloseFullscreenRounded color="primary" />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      </Box>
+      <Stack
+        display={tableOpen ? "flex" : "none"}
+        direction="row"
+        alignItems="center"
+        gap={1}
+        gridRow={1}
+        gridColumn={1}
+      >
+        {tableIconButton}
+        <Typography variant="h5" sx={{ flexGrow: 1 }}>
+          Table View
+        </Typography>
+        {hideTableButton}
+      </Stack>
 
       {/* Tabs header — row 1 on lg (beside table header), row 3 on xs (below table content) */}
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        sx={{ gridRow: { xs: tableOpen ? 3 : 1, lg: 1 }, gridColumn: { xs: 1, lg: tableOpen ? 2 : 1 } }}
+        gridRow={{ xs: tableOpen ? 3 : 1, lg: 1 }}
+        gridColumn={{ xs: 1, lg: tableOpen ? 2 : 1 }}
       >
         <Stack direction="row" alignItems="center" gap={2}>
           {!tableOpen && tableIconButton}
@@ -121,18 +129,16 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
       </Stack>
 
       {/* Table content — row 2 at all breakpoints */}
-      <Box display={tableOpen ? "block" : "none"} sx={{ gridRow: 2, gridColumn: 1, height: PANE_HEIGHT }}>
+      <Box display={tableOpen ? "block" : "none"} gridRow={2} gridColumn={1} height={PANE_HEIGHT}>
         {TableComponent}
       </Box>
 
       {/* Plot content — row 2 on lg, row 4 on xs */}
       <Box
-        sx={{
-          gridRow: { xs: tableOpen ? 4 : 2, lg: 2 },
-          gridColumn: { xs: 1, lg: tableOpen ? 2 : 1 },
-          height: PANE_HEIGHT,
-          minWidth: 0,
-        }}
+        gridRow={{ xs: tableOpen ? 4 : 2, lg: 2 }}
+        gridColumn={{ xs: 1, lg: tableOpen ? 2 : 1 }}
+        height={PANE_HEIGHT}
+        minWidth={0}
       >
         <FigurePanel value={tabValue} figures={figures} />
         {modalOpen && (

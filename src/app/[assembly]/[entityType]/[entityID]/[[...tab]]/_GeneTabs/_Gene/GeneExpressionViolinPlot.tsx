@@ -117,13 +117,7 @@ const GeneExpressionViolinPlot = ({
   };
 
   return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
+    <Box display="flex" flexDirection="column" height="100%">
       <GenePlotControls
         assembly={entity.assembly}
         RNAtype={RNAtype}
@@ -140,10 +134,7 @@ const GeneExpressionViolinPlot = ({
         showPoints={showPoints}
         setShowPoints={setShowPoints}
       />
-      <Box
-        width={"100%"}
-        height={"calc(100% - 63px)"} // bad fix for adjusting height to account for controls
-      >
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ViolinPlot
           onPointClicked={onPointClicked}
           onViolinClicked={onViolinClicked}
@@ -188,8 +179,7 @@ const GeneExpressionViolinPlot = ({
                   <strong>Tissue:</strong> {point.metadata?.tissue}
                 </div>
                 <div>
-                  <strong>{scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}:</strong>{" "}
-                  {displayTPM.toFixed(1)}
+                  <strong>{scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}:</strong> {displayTPM.toFixed(1)}
                 </div>
               </Box>
             );

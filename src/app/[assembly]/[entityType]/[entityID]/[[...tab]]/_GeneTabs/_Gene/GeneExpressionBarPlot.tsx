@@ -87,13 +87,7 @@ const GeneExpressionBarPlot = ({
   );
 
   return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
+    <Box display="flex" flexDirection="column" height="100%">
       <GenePlotControls
         assembly={entity.assembly}
         RNAtype={RNAtype}
@@ -109,20 +103,22 @@ const GeneExpressionBarPlot = ({
       {isV40 ? (
         <Typography>No Gene expression data available on GENCODE V40 genes</Typography>
       ) : (
-        <BarPlot
-          onBarClicked={handleBarClick}
-          data={plotData}
-          topAxisLabel={
-            scale === "linearTPM"
-              ? `${entity.entityID} Expression: TPM`
-              : `${entity.entityID} Expression: log\u2081\u2080(TPM + 1)`
-          }
-          TooltipContents={PlotTooltip}
-          ref={ref}
-          downloadFileName={`${entity.entityID}_expression_bar_plot`}
-          animation="slideRight"
-          animationBuffer={0.01}
-        />
+        <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
+          <BarPlot
+            onBarClicked={handleBarClick}
+            data={plotData}
+            topAxisLabel={
+              scale === "linearTPM"
+                ? `${entity.entityID} Expression: TPM`
+                : `${entity.entityID} Expression: log\u2081\u2080(TPM + 1)`
+            }
+            TooltipContents={PlotTooltip}
+            ref={ref}
+            downloadFileName={`${entity.entityID}_expression_bar_plot`}
+            animation="slideRight"
+            animationBuffer={0.01}
+          />
+        </Box>
       )}
     </Box>
   );

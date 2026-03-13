@@ -29,6 +29,10 @@ export default function FigurePanel({ value, figures }: FigurePanelProps) {
             key={`figure-${i}`}
             display={isActive ? "block" : "none"}
             height="100%"
+            width={"100%"}
+            overflow={"auto"}
+            padding={1}
+            sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
           >
             {isMounted && Figure.component}
           </Box>

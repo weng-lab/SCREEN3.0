@@ -37,7 +37,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
   disabled = false,
 }) => {
   return (
-    <Stack direction="row" spacing={2} mb={2} flexWrap="wrap">
+    <Stack direction="row" gap={2} mb={2} flexWrap="wrap">
       <FormControl>
         <FormLabel>RNA-seq Type</FormLabel>
         <ToggleButtonGroup
