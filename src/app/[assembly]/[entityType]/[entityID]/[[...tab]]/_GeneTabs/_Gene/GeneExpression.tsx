@@ -1,13 +1,12 @@
 "use client";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
 import { useGeneExpression } from "common/hooks/useGeneExpression";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
-import { DownloadPlotHandle } from "@weng-lab/visualization";
 import VersionFallback from "./GeneVersionFallback";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
@@ -85,10 +84,6 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
   const [replicates, setReplicates] = useState<GeneExpressionReplicates>("mean");
   const [viewBy, setViewBy] = useState<GeneExpressionViewBy>("byExperimentTPM");
   const [RNAtype, setRNAType] = useState<GeneExpressionRNAType>(entity.assembly === "GRCh38" ? "total RNA-seq" : "all");
-
-  const barRef = useRef<DownloadPlotHandle>(null);
-  const violinRef = useRef<DownloadPlotHandle>(null);
-  const scatterRef = useRef<DownloadPlotHandle>(null);
 
   const geneExpressionData = useGeneExpression({ id: geneData?.data?.id, assembly: entity.assembly, skip: !geneData });
 
@@ -209,7 +204,6 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
             icon: <BarChart />,
             plotComponent: (
               <GeneExpressionBarPlot
-                ref={barRef}
                 sortedFilteredData={sortedFilteredData}
                 selected={selected}
                 toggleSelection={toggleSelection}
@@ -218,14 +212,12 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
                 {...controlProps}
               />
             ),
-            ref: barRef,
           },
           {
             tabTitle: "Violin Plot",
             icon: <CandlestickChart />,
             plotComponent: (
               <GeneExpressionViolinPlot
-                ref={violinRef}
                 rows={rows}
                 selected={selected}
                 setSelected={setSelected}
@@ -235,14 +227,12 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
                 {...controlProps}
               />
             ),
-            ref: violinRef,
           },
           {
             tabTitle: "UMAP",
             icon: <ScatterPlot />,
             plotComponent: (
               <GeneExpressionUMAP
-                ref={scatterRef}
                 entity={entity}
                 selected={selected}
                 setSelected={setSelected}
@@ -250,7 +240,6 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
                 geneExpressionData={geneExpressionData}
               />
             ),
-            ref: scatterRef,
           },
         ]}
         isV40={isV40}

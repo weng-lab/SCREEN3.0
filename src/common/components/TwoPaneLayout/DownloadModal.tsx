@@ -6,14 +6,14 @@ import { DownloadPlotHandle } from "@weng-lab/visualization";
 export interface DownloadModalProps {
   open: boolean;
   onClose: () => void;
-  ref: DownloadPlotHandle;
+  plotHandle: DownloadPlotHandle;
   plotTitle: string;
 }
 
-const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose, ref, plotTitle }) => {
+const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose, plotHandle, plotTitle }) => {
   const downloadOptions = [
-    { label: "PNG", action: ref.downloadPNG },
-    { label: "SVG", action: ref.downloadSVG },
+    { label: "PNG", action: plotHandle.downloadPNG },
+    { label: "SVG", action: plotHandle.downloadSVG },
   ].filter((option) => option.action);
 
   return (

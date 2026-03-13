@@ -13,21 +13,31 @@ import {
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { theme } from "app/theme";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import DownloadModal from "./DownloadModal";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 import FigurePanel from "./FigurePanel";
+
+function mergeRefs<T>(...refs: (React.Ref<T> | undefined)[]): React.RefCallback<T> {
+  return (value) => {
+    refs.forEach((ref) => {
+      if (!ref) return;
+      if (typeof ref === "function") ref(value);
+      else (ref as React.RefObject<T | null>).current = value;
+    });
+  };
+}
 
 export type TwoPanePlotConfig = {
   tabTitle: string;
   icon?: TabOwnProps["icon"];
   plotComponent: React.ReactNode;
-  ref?: React.RefObject<DownloadPlotHandle>;
+  externalRef?: React.Ref<DownloadPlotHandle>;
 };
 
 export type TwoPaneLayoutProps = {
   TableComponent: React.ReactNode;
-  plots: TwoPanePlotConfig[];
+  plots: readonly TwoPanePlotConfig[];
   isV40?: boolean;
 };
 
@@ -37,8 +47,15 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
   const [tab, setTab] = useState<number>(0);
   const [tableOpen, setTableOpen] = useState(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  // Captured when opening the modal so we don't read ref.current during render.
+  const [activePlotHandle, setActivePlotHandle] = useState<DownloadPlotHandle | null>(null);
 
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Refs owned here since TwoPaneLayout controls the download modal.
+  // Stored in state (not useRef) so they're safe to read during render for cloneElement.
+  // Assumed static — plots.length must not change after mount.
+  const [plotRefs] = useState(() => plots.map(() => React.createRef<DownloadPlotHandle>()));
 
   const handleSetTab = (_, newTab: number) => {
     setTab(newTab);
@@ -48,8 +65,29 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
     setTableOpen(!tableOpen);
   };
 
+  const handleOpenDownload = () => {
+    const handle = plotRefs[tabValue]?.current;
+    if (handle) {
+      setActivePlotHandle(handle);
+      setModalOpen(true);
+    }
+  };
+
   const plotTabs = useMemo(() => plots.map((x) => ({ tabTitle: x.tabTitle, icon: x.icon })), [plots]);
-  const figures = useMemo(() => plots.map((x) => ({ title: x.tabTitle, component: x.plotComponent })), [plots]);
+
+  const figures = useMemo(
+    () =>
+      plots.map((x, i) => {
+        const internalRef = plotRefs[i];
+        const element = x.plotComponent as React.ReactElement<{ ref: React.Ref<DownloadPlotHandle> }>;
+        const ref = x.externalRef ? mergeRefs(internalRef, x.externalRef) : internalRef;
+        return {
+          title: x.tabTitle,
+          component: React.cloneElement(element, { ref }),
+        };
+      }),
+    [plots, plotRefs]
+  );
 
   const tableIconButton = (
     <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
@@ -68,11 +106,11 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
   );
 
   const downloadButton = isXs ? (
-    <IconButton color="primary" aria-label="download" size="small" onClick={() => setModalOpen(true)} disabled={isV40}>
+    <IconButton color="primary" aria-label="download" size="small" onClick={handleOpenDownload} disabled={isV40}>
       <DownloadIcon />
     </IconButton>
   ) : (
-    <Button variant="outlined" startIcon={<DownloadIcon />} onClick={() => setModalOpen(true)} disabled={isV40}>
+    <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleOpenDownload} disabled={isV40}>
       Download
     </Button>
   );
@@ -140,11 +178,11 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
         minWidth={0}
       >
         <FigurePanel value={tabValue} figures={figures} />
-        {modalOpen && (
+        {modalOpen && activePlotHandle && (
           <DownloadModal
             open={modalOpen}
             onClose={() => setModalOpen(false)}
-            ref={plots[tabValue]?.ref?.current}
+            plotHandle={activePlotHandle}
             plotTitle={plots[tabValue]?.tabTitle}
           />
         )}
