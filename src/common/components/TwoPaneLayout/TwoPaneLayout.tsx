@@ -107,24 +107,23 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
         direction="row"
         alignItems="center"
         justifyContent="space-between"
+        gap={2}
         gridRow={{ xs: tableOpen ? 3 : 1, lg: 1 }}
         gridColumn={{ xs: 1, lg: tableOpen ? 2 : 1 }}
       >
-        <Stack direction="row" alignItems="center" gap={2}>
-          {!tableOpen && tableIconButton}
-          <Tabs value={tabValue} onChange={handleSetTab}>
-            {plotTabs.map((tab, i) => (
-              <Tab
-                label={isXs ? "" : tab.tabTitle}
-                key={i}
-                icon={tab.icon}
-                iconPosition="start"
-                sx={{ minHeight: "48px" }}
-                disabled={isV40}
-              />
-            ))}
-          </Tabs>
-        </Stack>
+        {!tableOpen && tableIconButton}
+        <Tabs value={tabValue} onChange={handleSetTab} sx={{ flexGrow: 1 }}>
+          {plotTabs.map((tab, i) => (
+            <Tab
+              label={isXs ? "" : tab.tabTitle}
+              key={i}
+              icon={tab.icon}
+              iconPosition="start"
+              sx={{ minHeight: "48px" }}
+              disabled={isV40}
+            />
+          ))}
+        </Tabs>
         {downloadButton}
       </Stack>
 
