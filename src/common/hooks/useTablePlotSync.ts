@@ -6,6 +6,7 @@ import {
 } from "@mui/x-data-grid-premium";
 import type { GridApi } from "@mui/x-data-grid-premium";
 import type { RefObject } from "react";
+import { TableProps } from "@weng-lab/ui-components";
 
 /**
  * Shallow equality check for arrays by element reference.
@@ -49,6 +50,8 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
     rowsRef.current = rows;
   });
 
+  const stableGetRowId = useCallback((r: T) => getRowIdRef.current(r), []);
+
   /**
    * Called via Table's `onReady` prop once the DataGrid has mounted.
    * Subscribes to sortedRowsSet and filteredRowsSet events which fire
@@ -71,7 +74,7 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
     (model: GridRowSelectionModel) => {
       if (model.type === "include") {
         const newSelected = Array.from(model.ids)
-          .map((id) => rowsRef.current.find((r) => getRowIdRef.current(r) === String(id)))
+          .map((id) => rowsRef.current.find((r) => stableGetRowId(r) === String(id)))
           .filter(Boolean) as T[];
         setSelected(newSelected);
       } else {
@@ -79,20 +82,18 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
         setSelected([...rowsRef.current]);
       }
     },
-    []
+    [stableGetRowId]
   );
 
   /** Toggle a single item's selection state. Use for plot click handlers. */
   const toggleSelection = useCallback(
     (item: T) => {
-      const id = getRowIdRef.current(item);
+      const id = stableGetRowId(item);
       setSelected((prev) =>
-        prev.some((x) => getRowIdRef.current(x) === id)
-          ? prev.filter((x) => getRowIdRef.current(x) !== id)
-          : [...prev, item]
+        prev.some((x) => stableGetRowId(x) === id) ? prev.filter((x) => stableGetRowId(x) !== id) : [...prev, item]
       );
     },
-    []
+    [stableGetRowId]
   );
 
   const rowSelectionModel: GridRowSelectionModel = useMemo(
@@ -103,6 +104,7 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
     [selected, getRowId]
   );
 
+
   const tableProps = useMemo(
     () => ({
       apiRef,
@@ -111,9 +113,10 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
       rowSelectionModel,
       keepNonExistentRowsSelected: true,
       onReady: onTableReady,
+      getRowId: stableGetRowId,
     }),
-    [apiRef, handleRowSelectionModelChange, rowSelectionModel, onTableReady]
-  );
+    [apiRef, handleRowSelectionModelChange, rowSelectionModel, onTableReady, stableGetRowId]
+  ) satisfies Partial<TableProps>;
 
   return {
     selected,

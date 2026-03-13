@@ -196,7 +196,8 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
           <GeneExpressionTable
             rows={transformedRows}
             label={`${entity.entityID} Expression`}
-            geneExpressionData={geneExpressionData}
+            loading={geneExpressionData.loading}
+            error={!!geneExpressionData.error}
             tableProps={tableProps}
             viewBy={viewBy}
             scale={scale}

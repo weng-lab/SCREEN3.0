@@ -145,6 +145,7 @@ const StopPropagationWrapper = (params) => (
   </div>
 );
 
+//Why is this here?
 const getCoreAndPartialCols = (): TableColDef[] => [
   {
     ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column

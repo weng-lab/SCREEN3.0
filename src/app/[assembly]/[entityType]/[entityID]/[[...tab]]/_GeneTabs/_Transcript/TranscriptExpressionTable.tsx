@@ -1,10 +1,6 @@
 import { FormControl, IconButton, MenuItem, Select, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
-import {
-  GRID_CHECKBOX_SELECTION_COL_DEF,
-  GridSortDirection,
-  GridSortModel,
-} from "@mui/x-data-grid-premium";
+import { GRID_CHECKBOX_SELECTION_COL_DEF, GridSortDirection, GridSortModel } from "@mui/x-data-grid-premium";
 import { useEffect, useMemo, useState } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
@@ -134,31 +130,36 @@ const TranscriptExpressionTable = ({
     api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
   }, [apiRef, autoSort, initialSort, hasSelection, viewBy]);
 
+  const TableLabel = useMemo(
+    () => (
+      <>
+        <Typography mr={1} display={{ xs: "none", md: "inherit" }}>
+          TSS Expression at
+        </Typography>
+        <FormControl>
+          <Select
+            value={selectedPeak}
+            onChange={(e) => setPeak(e.target.value as string)}
+            size="small"
+            variant="standard"
+            renderValue={(value) => transcriptExpressionData?.peaks.find((p) => p.peakID === value)?.peakID || ""}
+          >
+            {transcriptExpressionData?.peaks.map((peak) => (
+              <MenuItem key={peak.peakID} value={peak.peakID}>
+                {`${peak.peakID} (${peak.peakType})`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </>
+    ),
+    [selectedPeak, setPeak, transcriptExpressionData]
+  );
+
   return (
     <Table
       {...tableProps}
-      label={
-        <>
-          <Typography mr={1} display={{ xs: "none", md: "inherit" }}>
-            TSS Expression at
-          </Typography>
-          <FormControl>
-            <Select
-              value={selectedPeak}
-              onChange={(e) => setPeak(e.target.value as string)}
-              size="small"
-              variant="standard"
-              renderValue={(value) => transcriptExpressionData?.peaks.find((p) => p.peakID === value)?.peakID || ""}
-            >
-              {transcriptExpressionData?.peaks.map((peak) => (
-                <MenuItem key={peak.peakID} value={peak.peakID}>
-                  {`${peak.peakID} (${peak.peakType})`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </>
-      }
+      label={TableLabel}
       rows={rows}
       columns={columns}
       loading={loading}
@@ -168,7 +169,6 @@ const TranscriptExpressionTable = ({
         },
       }}
       downloadFileName={"TSS Expression at " + selectedPeak}
-      getRowId={(row: TranscriptMetadata) => row.expAccession}
       divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
       toolbarSlot={AutoSortToolbar}
     />

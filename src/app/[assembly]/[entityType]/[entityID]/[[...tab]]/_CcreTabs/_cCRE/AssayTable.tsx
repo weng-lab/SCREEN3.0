@@ -10,7 +10,7 @@ import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { CcreAssay } from "common/types/globalTypes";
 import { CCRE_ASSAYS } from "common/consts";
 import { formatAssay } from "common/utility";
-import type { AssayTableProps, BiosampleRow } from "./types";
+import type { AssayTableProps } from "./types";
 
 const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel => {
   const hidden = { ontology: false, sampleType: false, lifeStage: false, tf: false };
@@ -32,10 +32,6 @@ const AssayTable = ({ rows, columns, assay, entity, tableProps, viewBy }: AssayT
     apiRef.current.setColumnVisibilityModel(makeColumnVisibiltyModel(assay));
     apiRef.current.sortColumn(assay, "desc");
   }, [apiRef, assay]);
-
-  const AutoSortToolbar = useMemo(() => {
-    return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
-  }, [autoSort]);
 
   const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" as GridSortDirection }], [assay]);
 
@@ -90,13 +86,12 @@ const AssayTable = ({ rows, columns, assay, entity, tableProps, viewBy }: AssayT
       rows={rows}
       loading={!rows}
       columns={columns}
-      getRowId={(row: BiosampleRow) => row.name}
       divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: initialSort },
       }}
-      toolbarSlot={AutoSortToolbar}
+      toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
       {...tableProps}
     />
   );

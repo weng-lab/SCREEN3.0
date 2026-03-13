@@ -58,7 +58,8 @@ export type GeneExpressionUMAPProps = {
 export type GeneExpressionTableProps = {
   rows: PointMetadata[];
   label: string;
-  geneExpressionData: UseGeneExpressionReturn;
+  loading: boolean;
+  error: boolean;
   tableProps: ReturnType<typeof useTablePlotSync<PointMetadata>>["tableProps"];
   viewBy: GeneExpressionViewBy;
   scale: GeneExpressionScale;
