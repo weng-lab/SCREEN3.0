@@ -3,6 +3,7 @@ import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { AnyOpenEntity } from "common/OpenEntitiesContext";
 import type { CcreAssay, CcreClass } from "common/types/globalTypes";
 import type { Dispatch, SetStateAction } from "react";
+import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
 
 export type BiosampleRow = {
   name?: string;
@@ -32,16 +33,58 @@ export type AssayViewProps = {
   entity: AnyOpenEntity;
 };
 
-export type SharedAssayViewPlotProps = AssayViewProps & {
-  selected: BiosampleRow[];
-  setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
+export type ViewBy = "value" | "tissue" | "tissueMax";
+
+/** Props for the AssayTable component */
+export type AssayTableProps = {
+  rows: BiosampleRow[];
+  columns: TableColDef[];
+  assay: CcreAssay;
+  entity: AnyOpenEntity;
+  tableProps: ReturnType<typeof useTablePlotSync<BiosampleRow>>["tableProps"];
+  viewBy: ViewBy;
+};
+
+/** Props for the AssayBarPlot component */
+export type AssayBarPlotProps = {
   sortedFilteredData: BiosampleRow[];
-  setSortedFilteredData: Dispatch<SetStateAction<BiosampleRow[]>>;
-  viewBy: "value" | "tissue" | "tissueMax";
-  setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
-  ref?: React.RefObject<DownloadPlotHandle>;
+  selected: BiosampleRow[];
+  toggleSelection: (item: BiosampleRow) => void;
+  assay: CcreAssay;
+  entity: AnyOpenEntity;
+  viewBy: ViewBy;
+  setViewBy: (view: ViewBy) => void;
   cutoffLowSignal: boolean;
   setCutoffLowSignal: (cutoff: boolean) => void;
   show95Line: boolean;
   setShow95Line: (show: boolean) => void;
+  ref?: React.RefObject<DownloadPlotHandle>;
+};
+
+/** Props for the AssayViolinPlot component */
+export type AssayViolinPlotProps = {
+  rows: BiosampleRow[];
+  selected: BiosampleRow[];
+  setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
+  toggleSelection: (item: BiosampleRow) => void;
+  assay: CcreAssay;
+  entity: AnyOpenEntity;
+  viewBy: ViewBy;
+  setViewBy: (view: ViewBy) => void;
+  cutoffLowSignal: boolean;
+  setCutoffLowSignal: (cutoff: boolean) => void;
+  show95Line: boolean;
+  setShow95Line: (show: boolean) => void;
+  ref?: React.RefObject<DownloadPlotHandle>;
+};
+
+/** Props for the AssayUMAP component */
+export type AssayUMAPProps = {
+  rows: BiosampleRow[];
+  selected: BiosampleRow[];
+  setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
+  toggleSelection: (item: BiosampleRow) => void;
+  assay: CcreAssay;
+  entity: AnyOpenEntity;
+  ref?: React.RefObject<DownloadPlotHandle>;
 };

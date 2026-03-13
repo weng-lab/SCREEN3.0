@@ -4,14 +4,15 @@ import { capitalizeFirstLetter, formatAssay } from "common/utility";
 import { tissueColors } from "common/colors";
 import { useMemo, useState } from "react";
 import AssayPlotControls from "./AssayPlotControls";
-import type { SharedAssayViewPlotProps, BiosampleRow } from "./types";
+import type { AssayViolinPlotProps, BiosampleRow } from "./types";
 
 const AssayViolinPlot = ({
-  entity,
   rows,
   assay,
+  entity,
   selected,
   setSelected,
+  toggleSelection,
   viewBy,
   setViewBy,
   cutoffLowSignal,
@@ -19,7 +20,7 @@ const AssayViolinPlot = ({
   show95Line,
   setShow95Line,
   ref,
-}: SharedAssayViewPlotProps) => {
+}: AssayViolinPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
@@ -102,9 +103,7 @@ const AssayViolinPlot = ({
   };
 
   const onPointClicked = (point: ViolinPoint<BiosampleRow>) => {
-    if (selected.includes(point.metadata)) {
-      setSelected(selected.filter((x) => x.name !== point.metadata.name));
-    } else setSelected([...selected, point.metadata]);
+    toggleSelection(point.metadata);
   };
 
   return (

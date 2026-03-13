@@ -1,21 +1,6 @@
-import {
-  TranscriptMetadata,
-  SharedTranscriptExpressionPlotProps,
-} from "./TranscriptExpression";
+import type { TranscriptMetadata, TranscriptExpressionBarPlotProps } from "./types";
 import { useMemo } from "react";
-// import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility";
-export function capitalizeWords(input: string): string {
-  return input.replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-export const truncateString = (input: string, maxLength: number) => {
-  if (input.length <= maxLength) return input;
-  return input.slice(0, maxLength - 3) + "...";
-};
-const capitalizeFirstLetter = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
+import { capitalizeWords, capitalizeFirstLetter, truncateString } from "common/utility";
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
 import { BarPlot, BarData } from "@weng-lab/visualization";
@@ -30,12 +15,11 @@ const TranscriptExpressionBarPlot = ({
   entity,
   transcriptExpressionData,
   selected,
-  setSelected,
+  toggleSelection,
   selectedPeak,
   sortedFilteredData,
   ref,
-  ...rest
-}: SharedTranscriptExpressionPlotProps) => {
+}: TranscriptExpressionBarPlotProps) => {
   const plotData: BarData<TranscriptMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((x, i) => {
@@ -54,9 +38,7 @@ const TranscriptExpressionBarPlot = ({
   }, [sortedFilteredData, selected]);
 
   const handleBarClick = (bar: BarData<TranscriptMetadata>) => {
-    if (selected.some((x) => x.expAccession === bar.metadata.expAccession)) {
-      setSelected(selected.filter((x) => x.expAccession !== bar.metadata.expAccession));
-    } else setSelected([...selected, bar.metadata]);
+    toggleSelection(bar.metadata);
   };
 
   const PlotTooltip = (bar: BarData<TranscriptMetadata>) => {

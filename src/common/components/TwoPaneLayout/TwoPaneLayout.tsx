@@ -13,52 +13,49 @@ import {
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { theme } from "app/theme";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import DownloadModal from "./DownloadModal";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 import FigurePanel from "./FigurePanel";
+
+function mergeRefs<T>(...refs: (React.Ref<T> | undefined)[]): React.RefCallback<T> {
+  return (value) => {
+    refs.forEach((ref) => {
+      if (!ref) return;
+      if (typeof ref === "function") ref(value);
+      else (ref as React.RefObject<T | null>).current = value;
+    });
+  };
+}
 
 export type TwoPanePlotConfig = {
   tabTitle: string;
   icon?: TabOwnProps["icon"];
   plotComponent: React.ReactNode;
-  ref?: React.RefObject<DownloadPlotHandle>;
+  externalRef?: React.Ref<DownloadPlotHandle>;
 };
 
 export type TwoPaneLayoutProps = {
   TableComponent: React.ReactNode;
-  plots: TwoPanePlotConfig[];
+  plots: readonly TwoPanePlotConfig[];
   isV40?: boolean;
 };
+
+const PANE_HEIGHT = { xs: "500px", lg: "600px" };
 
 const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutProps) => {
   const [tab, setTab] = useState<number>(0);
   const [tableOpen, setTableOpen] = useState(true);
-  const tableRef = useRef<HTMLDivElement>(null);
-  const [tableHeight, setTableHeight] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  // Captured when opening the modal so we don't read ref.current during render.
+  const [activePlotHandle, setActivePlotHandle] = useState<DownloadPlotHandle | null>(null);
 
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMd = useMediaQuery(theme.breakpoints.down("lg"));
 
-  //listens for changes in the size of the table component and passes that height into the figure container
-  useEffect(() => {
-    if (!tableRef.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect) {
-          if (entry.contentRect.height > 0) {
-            setTableHeight(entry.contentRect.height);
-          }
-        }
-      }
-    });
-
-    observer.observe(tableRef.current);
-
-    return () => observer.disconnect();
-  }, []);
+  // Refs owned here since TwoPaneLayout controls the download modal.
+  // Stored in state (not useRef) so they're safe to read during render for cloneElement.
+  // Assumed static — plots.length must not change after mount.
+  const [plotRefs] = useState(() => plots.map(() => React.createRef<DownloadPlotHandle>()));
 
   const handleSetTab = (_, newTab: number) => {
     setTab(newTab);
@@ -68,101 +65,129 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
     setTableOpen(!tableOpen);
   };
 
-  const plotTabs = useMemo(() => plots.map((x) => ({ tabTitle: x.tabTitle, icon: x.icon })), [plots]);
-  const figures = useMemo(() => plots.map((x) => ({ title: x.tabTitle, component: x.plotComponent })), [plots]);
-
-  const TableIconButton = () => {
-    return (
-      <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
-        {/* Using negative margin instead of 'edge' prop since, edge gives -12px padding instead of needed -8px for actual alignment */}
-        <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
-          <TableChartRounded color="primary" />
-        </IconButton>
-      </Tooltip>
-    );
-  };
-
-  const DownloadButton = () => {
-    const onClick = () => {
+  const handleOpenDownload = () => {
+    const handle = plotRefs[tabValue]?.current;
+    if (handle) {
+      setActivePlotHandle(handle);
       setModalOpen(true);
-    };
-    return isXs ? (
-      <IconButton color="primary" aria-label="download" size="small" onClick={onClick} disabled={isV40}>
-        <DownloadIcon />
-      </IconButton>
-    ) : (
-      <Button variant="outlined" startIcon={<DownloadIcon />} onClick={onClick} disabled={isV40}>
-        Download
-      </Button>
-    );
+    }
   };
 
-  //  Handles unavailable index being selected due to hidden plot
-  useEffect(() => {
-    if (tab > plots.length - 1) {
-      setTab(plots.length - 1);
-    }
-  }, [plots, tab]);
+  const plotTabs = useMemo(() => plots.map((x) => ({ tabTitle: x.tabTitle, icon: x.icon })), [plots]);
 
-  const tabValue = tab > plots.length - 1 ? plots.length - 1 : tab;
+  const figures = useMemo(
+    () =>
+      plots.map((x, i) => {
+        const internalRef = plotRefs[i];
+        const element = x.plotComponent as React.ReactElement<{ ref: React.Ref<DownloadPlotHandle> }>;
+        const ref = x.externalRef ? mergeRefs(internalRef, x.externalRef) : internalRef;
+        return {
+          title: x.tabTitle,
+          component: React.cloneElement(element, { ref }),
+        };
+      }),
+    [plots, plotRefs]
+  );
+
+  const tableIconButton = (
+    <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
+      <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
+        <TableChartRounded color="primary" />
+      </IconButton>
+    </Tooltip>
+  );
+
+  const hideTableButton = (
+    <Tooltip title="Hide Table">
+      <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
+        <CloseFullscreenRounded color="primary" />
+      </IconButton>
+    </Tooltip>
+  );
+
+  const downloadButton = isXs ? (
+    <IconButton color="primary" aria-label="download" size="small" onClick={handleOpenDownload} disabled={isV40}>
+      <DownloadIcon />
+    </IconButton>
+  ) : (
+    <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleOpenDownload} disabled={isV40}>
+      Download
+    </Button>
+  );
+
+  const tabValue = Math.min(tab, plots.length - 1);
 
   return (
-    <Stack spacing={2} direction={{ xs: "column", lg: "row" }} id="two-pane-layout">
-      <Box
-        flexGrow={0}
-        width={{ xs: "100%", lg: tableOpen ? "35%" : "initial" }}
-        id="table-container"
-        display={tableOpen ? "initial" : "none"}
+    <Box
+      display="grid"
+      gridTemplateColumns={{ xs: "minmax(0, 1fr)", lg: tableOpen ? "35% minmax(0, 1fr)" : "minmax(0, 1fr)" }}
+      gridTemplateRows={{ xs: tableOpen ? "auto auto auto auto" : "auto auto", lg: "auto 1fr" }}
+      gap={2}
+    >
+      {/* Table header — row 1 at all breakpoints */}
+      <Stack
+        display={tableOpen ? "flex" : "none"}
+        direction="row"
+        alignItems="center"
+        gap={1}
+        gridRow={1}
+        gridColumn={1}
       >
-        <Stack direction={"row"} alignItems={"center"} gap={1} mb={2}>
-          <TableIconButton />
-          <Typography variant="h5" sx={{ flexGrow: 1 }}>
-            Table View
-          </Typography>
-          <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
-            {/* Using negative margin instead of 'edge' prop since, edge gives -12px padding instead of needed -8px for actual alignment */}
-            <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
-              <CloseFullscreenRounded color="primary" />
-            </IconButton>
-          </Tooltip>
-          {/* Used to force this container to have the same height as the below tabs. Prevents layout shift when closing the table */}
-          <Tab sx={{ visibility: "hidden", minWidth: 0, px: 0 }} />
-        </Stack>
-        <div ref={tableRef} style={{ height: isMd ? "580px" : "60vh" }}>
-          {TableComponent}
-        </div>
+        {tableIconButton}
+        <Typography variant="h5" sx={{ flexGrow: 1 }}>
+          Table View
+        </Typography>
+        {hideTableButton}
+      </Stack>
+
+      {/* Tabs header — row 1 on lg (beside table header), row 3 on xs (below table content) */}
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        gap={2}
+        gridRow={{ xs: tableOpen ? 3 : 1, lg: 1 }}
+        gridColumn={{ xs: 1, lg: tableOpen ? 2 : 1 }}
+      >
+        {!tableOpen && tableIconButton}
+        <Tabs value={tabValue} onChange={handleSetTab} sx={{ flexGrow: 1 }}>
+          {plotTabs.map((tab, i) => (
+            <Tab
+              label={isXs ? "" : tab.tabTitle}
+              key={i}
+              icon={tab.icon}
+              iconPosition="start"
+              sx={{ minHeight: "48px" }}
+              disabled={isV40}
+            />
+          ))}
+        </Tabs>
+        {downloadButton}
+      </Stack>
+
+      {/* Table content — row 2 at all breakpoints */}
+      <Box display={tableOpen ? "block" : "none"} gridRow={2} gridColumn={1} height={PANE_HEIGHT}>
+        {TableComponent}
       </Box>
-      <Box flex="1 1 0" minWidth={0} id="tabs_figure_container">
-        <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-          <Stack direction={"row"} alignItems={"center"} mb={2} gap={2}>
-            {!tableOpen && <TableIconButton />}
-            <Tabs value={tabValue} onChange={handleSetTab} id="plot_tabs">
-              {plotTabs.map((tab, i) => (
-                // minHeight: 48px is initial value for tabs without icon. With icon it's 72 which is way too tall
-                <Tab
-                  label={isXs ? "" : tab.tabTitle}
-                  key={i}
-                  icon={tab.icon}
-                  iconPosition="start"
-                  sx={{ minHeight: "48px" }}
-                  disabled={isV40}
-                />
-              ))}
-            </Tabs>
-          </Stack>
-          <DownloadButton />
-        </Stack>
-        <FigurePanel value={tabValue} figures={figures} tableOpen={tableOpen} tableHeight={tableHeight || "100%"} />
-        {modalOpen && (
+
+      {/* Plot content — row 2 on lg, row 4 on xs */}
+      <Box
+        gridRow={{ xs: tableOpen ? 4 : 2, lg: 2 }}
+        gridColumn={{ xs: 1, lg: tableOpen ? 2 : 1 }}
+        height={PANE_HEIGHT}
+        minWidth={0}
+      >
+        <FigurePanel value={tabValue} figures={figures} />
+        {modalOpen && activePlotHandle && (
           <DownloadModal
             open={modalOpen}
             onClose={() => setModalOpen(false)}
-            ref={plots[tabValue]?.ref?.current}
+            plotHandle={activePlotHandle}
             plotTitle={plots[tabValue]?.tabTitle}
           />
         )}
       </Box>
-    </Stack>
+    </Box>
   );
 };
 

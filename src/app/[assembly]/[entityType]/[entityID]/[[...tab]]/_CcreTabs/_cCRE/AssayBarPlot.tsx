@@ -5,7 +5,7 @@ import { tissueColors } from "common/colors";
 import { useMemo } from "react";
 import { Typography } from "@mui/material";
 import AssayPlotControls from "./AssayPlotControls";
-import type { SharedAssayViewPlotProps, BiosampleRow } from "./types";
+import type { AssayBarPlotProps, BiosampleRow } from "./types";
 
 const PlotTooltip = (bar: BarData<BiosampleRow>) => {
   return (
@@ -27,19 +27,19 @@ const PlotTooltip = (bar: BarData<BiosampleRow>) => {
 };
 
 const AssayBarPlot = ({
-  entity,
-  assay,
-  selected,
-  setSelected,
   sortedFilteredData,
+  selected,
+  toggleSelection,
+  assay,
+  entity,
   viewBy,
-  ref,
   setViewBy,
   cutoffLowSignal,
   setCutoffLowSignal,
   show95Line,
   setShow95Line,
-}: SharedAssayViewPlotProps) => {
+  ref,
+}: AssayBarPlotProps) => {
   const plotData: BarData<BiosampleRow>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((row) => {
@@ -60,9 +60,7 @@ const AssayBarPlot = ({
   }, [assay, selected, sortedFilteredData]);
 
   const handleBarClick = (bar: BarData<BiosampleRow>) => {
-    if (selected.some((x) => x.name === bar.metadata.name)) {
-      setSelected(selected.filter((x) => x.name !== bar.metadata.name));
-    } else setSelected([...selected, bar.metadata]);
+    toggleSelection(bar.metadata);
   };
 
   return (
