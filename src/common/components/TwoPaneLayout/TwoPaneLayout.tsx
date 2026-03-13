@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { theme } from "app/theme";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import DownloadModal from "./DownloadModal";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 import FigurePanel from "./FigurePanel";
@@ -31,34 +31,14 @@ export type TwoPaneLayoutProps = {
   isV40?: boolean;
 };
 
+const PANE_HEIGHT = { xs: "580px", lg: "60vh" };
+
 const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutProps) => {
   const [tab, setTab] = useState<number>(0);
   const [tableOpen, setTableOpen] = useState(true);
-  const tableRef = useRef<HTMLDivElement>(null);
-  const [tableHeight, setTableHeight] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMd = useMediaQuery(theme.breakpoints.down("lg"));
-
-  //listens for changes in the size of the table component and passes that height into the figure container
-  useEffect(() => {
-    if (!tableRef.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect) {
-          if (entry.contentRect.height > 0) {
-            setTableHeight(entry.contentRect.height);
-          }
-        }
-      }
-    });
-
-    observer.observe(tableRef.current);
-
-    return () => observer.disconnect();
-  }, []);
 
   const handleSetTab = (_, newTab: number) => {
     setTab(newTab);
@@ -71,88 +51,90 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
   const plotTabs = useMemo(() => plots.map((x) => ({ tabTitle: x.tabTitle, icon: x.icon })), [plots]);
   const figures = useMemo(() => plots.map((x) => ({ title: x.tabTitle, component: x.plotComponent })), [plots]);
 
-  const TableIconButton = () => {
-    return (
-      <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
-        {/* Using negative margin instead of 'edge' prop since, edge gives -12px padding instead of needed -8px for actual alignment */}
-        <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
-          <TableChartRounded color="primary" />
-        </IconButton>
-      </Tooltip>
-    );
-  };
-
-  const DownloadButton = () => {
-    const onClick = () => {
-      setModalOpen(true);
-    };
-    return isXs ? (
-      <IconButton color="primary" aria-label="download" size="small" onClick={onClick} disabled={isV40}>
-        <DownloadIcon />
+  const tableIconButton = (
+    <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
+      <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
+        <TableChartRounded color="primary" />
       </IconButton>
-    ) : (
-      <Button variant="outlined" startIcon={<DownloadIcon />} onClick={onClick} disabled={isV40}>
-        Download
-      </Button>
-    );
-  };
+    </Tooltip>
+  );
 
-  //  Handles unavailable index being selected due to hidden plot
-  useEffect(() => {
-    if (tab > plots.length - 1) {
-      setTab(plots.length - 1);
-    }
-  }, [plots, tab]);
+  const downloadButton = isXs ? (
+    <IconButton color="primary" aria-label="download" size="small" onClick={() => setModalOpen(true)} disabled={isV40}>
+      <DownloadIcon />
+    </IconButton>
+  ) : (
+    <Button variant="outlined" startIcon={<DownloadIcon />} onClick={() => setModalOpen(true)} disabled={isV40}>
+      Download
+    </Button>
+  );
 
-  const tabValue = tab > plots.length - 1 ? plots.length - 1 : tab;
+  const tabValue = Math.min(tab, plots.length - 1);
 
   return (
-    <Stack spacing={2} direction={{ xs: "column", lg: "row" }} id="two-pane-layout">
-      <Box
-        flexGrow={0}
-        width={{ xs: "100%", lg: tableOpen ? "35%" : "initial" }}
-        id="table-container"
-        display={tableOpen ? "initial" : "none"}
-      >
-        <Stack direction={"row"} alignItems={"center"} gap={1} mb={2}>
-          <TableIconButton />
+    <Box
+      display="grid"
+      sx={{
+        gridTemplateColumns: { xs: "minmax(0, 1fr)", lg: tableOpen ? "35% minmax(0, 1fr)" : "minmax(0, 1fr)" },
+        gridTemplateRows: { xs: tableOpen ? "auto auto auto auto" : "auto auto", lg: "auto 1fr" },
+        gap: 2,
+      }}
+    >
+      {/* Table header — row 1 at all breakpoints */}
+      <Box display={tableOpen ? "block" : "none"} sx={{ gridRow: 1, gridColumn: 1 }}>
+        <Stack direction="row" alignItems="center" gap={1}>
+          {tableIconButton}
           <Typography variant="h5" sx={{ flexGrow: 1 }}>
             Table View
           </Typography>
-          <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
-            {/* Using negative margin instead of 'edge' prop since, edge gives -12px padding instead of needed -8px for actual alignment */}
+          <Tooltip title="Hide Table">
             <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
               <CloseFullscreenRounded color="primary" />
             </IconButton>
           </Tooltip>
-          {/* Used to force this container to have the same height as the below tabs. Prevents layout shift when closing the table */}
-          <Tab sx={{ visibility: "hidden", minWidth: 0, px: 0 }} />
         </Stack>
-        <div ref={tableRef} style={{ height: isMd ? "580px" : "60vh" }}>
-          {TableComponent}
-        </div>
       </Box>
-      <Box flex="1 1 0" minWidth={0} id="tabs_figure_container">
-        <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-          <Stack direction={"row"} alignItems={"center"} mb={2} gap={2}>
-            {!tableOpen && <TableIconButton />}
-            <Tabs value={tabValue} onChange={handleSetTab} id="plot_tabs">
-              {plotTabs.map((tab, i) => (
-                // minHeight: 48px is initial value for tabs without icon. With icon it's 72 which is way too tall
-                <Tab
-                  label={isXs ? "" : tab.tabTitle}
-                  key={i}
-                  icon={tab.icon}
-                  iconPosition="start"
-                  sx={{ minHeight: "48px" }}
-                  disabled={isV40}
-                />
-              ))}
-            </Tabs>
-          </Stack>
-          <DownloadButton />
+
+      {/* Tabs header — row 1 on lg (beside table header), row 3 on xs (below table content) */}
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{ gridRow: { xs: tableOpen ? 3 : 1, lg: 1 }, gridColumn: { xs: 1, lg: tableOpen ? 2 : 1 } }}
+      >
+        <Stack direction="row" alignItems="center" gap={2}>
+          {!tableOpen && tableIconButton}
+          <Tabs value={tabValue} onChange={handleSetTab}>
+            {plotTabs.map((tab, i) => (
+              <Tab
+                label={isXs ? "" : tab.tabTitle}
+                key={i}
+                icon={tab.icon}
+                iconPosition="start"
+                sx={{ minHeight: "48px" }}
+                disabled={isV40}
+              />
+            ))}
+          </Tabs>
         </Stack>
-        <FigurePanel value={tabValue} figures={figures} tableOpen={tableOpen} tableHeight={tableHeight || "100%"} />
+        {downloadButton}
+      </Stack>
+
+      {/* Table content — row 2 at all breakpoints */}
+      <Box display={tableOpen ? "block" : "none"} sx={{ gridRow: 2, gridColumn: 1, height: PANE_HEIGHT }}>
+        {TableComponent}
+      </Box>
+
+      {/* Plot content — row 2 on lg, row 4 on xs */}
+      <Box
+        sx={{
+          gridRow: { xs: tableOpen ? 4 : 2, lg: 2 },
+          gridColumn: { xs: 1, lg: tableOpen ? 2 : 1 },
+          height: PANE_HEIGHT,
+          minWidth: 0,
+        }}
+      >
+        <FigurePanel value={tabValue} figures={figures} />
         {modalOpen && (
           <DownloadModal
             open={modalOpen}
@@ -162,7 +144,7 @@ const TwoPaneLayout = ({ TableComponent, plots, isV40 = false }: TwoPaneLayoutPr
           />
         )}
       </Box>
-    </Stack>
+    </Box>
   );
 };
 

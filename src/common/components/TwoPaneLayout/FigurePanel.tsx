@@ -9,11 +9,9 @@ type Figure = {
 type FigurePanelProps = {
   value: number;
   figures: Figure[];
-  tableOpen: boolean;
-  tableHeight: string | number;
 };
 
-export default function FigurePanel({ value, figures, tableOpen, tableHeight }: FigurePanelProps) {
+export default function FigurePanel({ value, figures }: FigurePanelProps) {
   const [mountedTabs, setMountedTabs] = useState<number[]>([value]);
 
   useEffect(() => {
@@ -30,11 +28,7 @@ export default function FigurePanel({ value, figures, tableOpen, tableHeight }: 
           <Box
             key={`figure-${i}`}
             display={isActive ? "block" : "none"}
-            id="figure_container"
-            //use table height unless its not open, then set px height for umap so it doesnt slowly resize
-            height={tableOpen ? tableHeight : Figure.title === "UMAP" ? "700px" : "100%"}
-            maxHeight={Figure.title !== "Bar Plot" ? "700px" : "none"}
-            minHeight="580px"
+            height="100%"
           >
             {isMounted && Figure.component}
           </Box>

@@ -1,5 +1,5 @@
 import { GeneExpressionTableProps, PointMetadata } from "./types";
-import { IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { GridSortModel, GridSortDirection } from "@mui/x-data-grid-premium";
 import { useEffect, useMemo, useState } from "react";
@@ -10,8 +10,6 @@ import { sortableTableCheckboxColumn } from "common/components/SortableTableChec
 
 const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, scale }: GeneExpressionTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { apiRef, rowSelectionModel } = tableProps;
 
@@ -124,7 +122,7 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
           sortModel: initialSort,
         },
       }}
-      divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
+      divHeight={{ height: "100%" }}
       toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
       {...tableProps}
     />

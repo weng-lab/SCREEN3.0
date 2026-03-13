@@ -1,4 +1,4 @@
-import { FormControl, IconButton, MenuItem, Select, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { FormControl, IconButton, MenuItem, Select, Tooltip, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { GRID_CHECKBOX_SELECTION_COL_DEF, GridSortDirection, GridSortModel } from "@mui/x-data-grid-premium";
 import { useEffect, useMemo, useState } from "react";
@@ -18,8 +18,6 @@ const TranscriptExpressionTable = ({
 }: TranscriptExpressionTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
   const { loading } = transcriptExpressionData;
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const StopPropagationWrapper = (params) => (
     <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
@@ -169,7 +167,7 @@ const TranscriptExpressionTable = ({
         },
       }}
       downloadFileName={"TSS Expression at " + selectedPeak}
-      divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
+      divHeight={{ height: "100%" }}
       toolbarSlot={AutoSortToolbar}
     />
   );

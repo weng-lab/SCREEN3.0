@@ -5,7 +5,6 @@ import {
   GridSortDirection,
   GridSortModel,
 } from "@mui/x-data-grid-premium";
-import { useMediaQuery, useTheme } from "@mui/material";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { CcreAssay } from "common/types/globalTypes";
 import { CCRE_ASSAYS } from "common/consts";
@@ -22,8 +21,6 @@ const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel =
 
 const AssayTable = ({ rows, columns, assay, entity, tableProps, viewBy }: AssayTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { apiRef, rowSelectionModel } = tableProps;
 
@@ -86,7 +83,7 @@ const AssayTable = ({ rows, columns, assay, entity, tableProps, viewBy }: AssayT
       rows={rows}
       loading={!rows}
       columns={columns}
-      divHeight={{ height: "100%", minHeight: isXs ? "none" : "580px" }}
+      divHeight={{ height: "100%" }}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: initialSort },
