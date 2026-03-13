@@ -29,6 +29,7 @@ export type GeneExpressionBarPlotProps = GeneExpressionControlProps & {
   selected: PointMetadata[];
   toggleSelection: (item: PointMetadata) => void;
   entity: EntityViewComponentProps["entity"];
+  getRowId: (item: PointMetadata) => string;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
 
@@ -40,6 +41,7 @@ export type GeneExpressionViolinPlotProps = GeneExpressionControlProps & {
   toggleSelection: (item: PointMetadata) => void;
   entity: EntityViewComponentProps["entity"];
   geneExpressionData: UseGeneExpressionReturn;
+  getRowId: (item: PointMetadata) => string;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
 
@@ -50,6 +52,7 @@ export type GeneExpressionUMAPProps = {
   setSelected: Dispatch<SetStateAction<PointMetadata[]>>;
   toggleSelection: (item: PointMetadata) => void;
   geneExpressionData: UseGeneExpressionReturn;
+  getRowId: (item: PointMetadata) => string;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
 

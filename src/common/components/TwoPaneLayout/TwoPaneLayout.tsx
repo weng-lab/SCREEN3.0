@@ -40,7 +40,7 @@ export type TwoPaneLayoutProps = {
   plots: readonly TwoPanePlotConfig[];
 };
 
-const PANE_HEIGHT = { xs: "500px", lg: "600px" };
+const PANE_HEIGHT = { xs: "500px", lg: "max(60vh, 600px)" };
 
 const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
   const [tab, setTab] = useState<number>(0);

@@ -21,6 +21,7 @@ const GeneExpressionViolinPlot = ({
   rows,
   entity,
   geneExpressionData,
+  getRowId,
 }: GeneExpressionViolinPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
@@ -45,9 +46,7 @@ const GeneExpressionViolinPlot = ({
       const label = tissue;
       const violinColor =
         selected.length === 0 ||
-        group.every((d) =>
-          selected.some((s) => s.gene_quantification_files[0].accession === d.gene_quantification_files[0].accession)
-        )
+        group.every((d) => selected.some((s) => getRowId(s) === getRowId(d)))
           ? (tissueColors[tissue] ?? tissueColors.missing)
           : "#CCCCCC";
 
@@ -55,9 +54,7 @@ const GeneExpressionViolinPlot = ({
         const metadata = group[i];
         const isSelected =
           selected.length === 0 ||
-          selected.some(
-            (s) => s.gene_quantification_files[0].accession === metadata.gene_quantification_files[0].accession
-          );
+          selected.some((s) => getRowId(s) === getRowId(metadata));
         const pointColor = isSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 
@@ -95,19 +92,19 @@ const GeneExpressionViolinPlot = ({
     });
 
     return distributions;
-  }, [selected, rows, sortBy]);
+  }, [selected, rows, sortBy, getRowId]);
 
   const onViolinClicked = (violin: Distribution<PointMetadata>) => {
     const rowsForDistribution = violin.data.map((point) => point.metadata);
 
     const allInDistributionSelected = rowsForDistribution.every((row) =>
-      selected.some((x) => x.accession === row.accession)
+      selected.some((x) => getRowId(x) === getRowId(row))
     );
 
     if (allInDistributionSelected) {
-      setSelected(selected.filter((row) => !rowsForDistribution.some((x) => x.accession === row.accession)));
+      setSelected(selected.filter((row) => !rowsForDistribution.some((x) => getRowId(x) === getRowId(row))));
     } else {
-      const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.accession === row.accession));
+      const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => getRowId(x) === getRowId(row)));
       setSelected([...selected, ...toSelect]);
     }
   };

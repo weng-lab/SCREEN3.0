@@ -1,7 +1,7 @@
 import { GeneExpressionTableProps, PointMetadata } from "./types";
 import { IconButton } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
-import { GridSortModel, GridSortDirection } from "@mui/x-data-grid-premium";
+import { GridSortModel } from "@mui/x-data-grid-premium";
 import { useEffect, useMemo, useState } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
@@ -11,7 +11,7 @@ import { sortableTableCheckboxColumn } from "common/components/SortableTableChec
 const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, scale }: GeneExpressionTableProps) => {
   const [autoSort, setAutoSort] = useState<boolean>(false);
 
-  const { apiRef, rowSelectionModel } = tableProps;
+  const { apiRef } = tableProps;
 
   const columns: TableColDef<PointMetadata>[] = useMemo(
     () => [
@@ -81,34 +81,40 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
     [viewBy, scale]
   );
 
-  const initialSort: GridSortModel = useMemo(() => [{ field: "tpm", sort: "desc" as GridSortDirection }], []);
+  const initialSort: GridSortModel = useMemo(() => [{ field: "tpm", sort: "desc" }], []);
 
-  const hasSelection = rowSelectionModel.type === "include" && rowSelectionModel.ids.size > 0;
-
-  // handle auto sorting
+  // When autoSort or viewBy changes, reset to the canonical sort for the current view.
+  // Always resetting on viewBy change ensures the pre-computed row order is not overridden
+  // by a stale user sort (e.g. byTissueTPM grouping being destroyed by a biosample sort).
   useEffect(() => {
     const api = apiRef?.current;
     if (!api) return;
 
-    // handle sort by tissue special case
-    if (viewBy === "byTissueTPM") {
-      if (!autoSort || !hasSelection) {
-        api.setSortModel([]); // clear when autoSort off OR no selection
-      } else {
-        api.setSortModel([{ field: "__check__", sort: "desc" }]);
-      }
-      return;
-    }
+    const base: GridSortModel = viewBy === "byTissueTPM" ? [] : initialSort;
+    api.setSortModel(autoSort ? [{ field: "__check__", sort: "desc" }, ...base] : base);
+  }, [apiRef, autoSort, viewBy, initialSort]);
 
-    // all other views
-    if (!autoSort) {
-      api.setSortModel(initialSort);
-      return;
-    }
+  // While autoSort is on, keep __check__ as primary sort after any user-initiated sort change.
+  // Guard against infinite loop: if __check__ is already first, the call was ours — skip it.
+  useEffect(() => {
+    const api = apiRef?.current;
+    if (!api || !autoSort) return;
+    return api.subscribeEvent("sortModelChange", (model) => {
+      if (model[0]?.field === "__check__") return;
+      const withoutCheck = model.filter((s) => s.field !== "__check__");
+      api.setSortModel([{ field: "__check__", sort: "desc" }, ...withoutCheck]);
+    });
+  }, [apiRef, autoSort]);
 
-    //sort by checkboxes if some selected, otherwise sort by tpm
-    api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
-  }, [apiRef, autoSort, initialSort, hasSelection, viewBy]);
+  // Re-apply the sort model when selection changes while autoSort is active.
+  // DataGrid doesn't re-sort automatically when checkbox state changes.
+  useEffect(() => {
+    const api = apiRef?.current;
+    if (!api || !autoSort) return;
+    return api.subscribeEvent("rowSelectionChange", () => {
+      api.setSortModel([...api.getSortModel()]);
+    });
+  }, [apiRef, autoSort]);
 
   return (
     <Table

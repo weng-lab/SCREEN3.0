@@ -25,7 +25,7 @@ function arraysShallowEqual<T>(a: T[], b: T[]): boolean {
 type UseTablePlotSyncOptions<T> = {
   /** Pre-transformed rows to display in the table */
   rows: T[];
-  /** Extract a unique string ID from a row (must match getRowId passed to <Table>) */
+  /** Extract a unique string ID from a row (must match getRowId passed to \<Table>) */
   getRowId: (row: T) => string;
 };
 
@@ -99,11 +99,12 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
   const rowSelectionModel: GridRowSelectionModel = useMemo(
     () => ({
       type: "include" as const,
-      ids: new Set(selected.map((x) => getRowId(x))),
+      ids: new Set(selected.map((x) => stableGetRowId(x))),
     }),
-    [selected, getRowId]
+    // stableGetRowId has [] deps and never changes — omitting it is safe
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selected]
   );
-
 
   const tableProps = useMemo(
     () => ({
@@ -125,5 +126,6 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
     apiRef,
     tableProps,
     toggleSelection,
+    getRowId,
   };
 }

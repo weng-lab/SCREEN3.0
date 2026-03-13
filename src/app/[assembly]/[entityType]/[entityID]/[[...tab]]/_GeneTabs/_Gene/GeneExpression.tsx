@@ -162,7 +162,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
 
   const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy), [rows, viewBy]);
 
-  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection } = useTablePlotSync({
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: transformedRows,
     getRowId: (r) => r.accession,
   });
@@ -208,6 +208,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               selected={selected}
               toggleSelection={toggleSelection}
               entity={entity}
+              getRowId={getRowId}
               {...controlProps}
             />
           ),
@@ -223,6 +224,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               toggleSelection={toggleSelection}
               entity={entity}
               geneExpressionData={geneExpressionData}
+              getRowId={getRowId}
               {...controlProps}
             />
           ),
@@ -237,6 +239,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               setSelected={setSelected}
               toggleSelection={toggleSelection}
               geneExpressionData={geneExpressionData}
+              getRowId={getRowId}
             />
           ),
         },

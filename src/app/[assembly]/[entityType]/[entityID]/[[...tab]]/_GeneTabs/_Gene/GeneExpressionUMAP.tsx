@@ -21,6 +21,7 @@ const GeneExpressionUMAP = ({
   setSelected,
   toggleSelection,
   geneExpressionData,
+  getRowId,
   ref,
 }: GeneExpressionUMAPProps) => {
   const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue">("expression");
@@ -61,7 +62,7 @@ const GeneExpressionUMAP = ({
   const scatterData: Point<PointMetadata>[] = useMemo(() => {
     if (!data) return [];
 
-    const isHighlighted = (x: PointMetadata) => selected.some((y) => y.accession === x.accession);
+    const isHighlighted = (x: PointMetadata) => selected.some((y) => getRowId(y) === getRowId(x));
 
     return data.map((x) => {
       const gradientColor = interpolateYlOrRd(
@@ -84,7 +85,7 @@ const GeneExpressionUMAP = ({
         metaData: x,
       };
     });
-  }, [data, selected, colorScale, colorScheme]);
+  }, [data, selected, colorScale, colorScheme, getRowId]);
 
   const handlePointsSelected = (selectedPoints: Point<PointMetadata>[]) => {
     setSelected([...selected, ...selectedPoints.map((point) => point.metaData)]);

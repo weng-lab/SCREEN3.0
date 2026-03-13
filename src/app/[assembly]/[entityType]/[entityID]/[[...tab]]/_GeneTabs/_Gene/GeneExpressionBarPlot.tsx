@@ -20,6 +20,7 @@ const GeneExpressionBarPlot = ({
   setReplicates,
   ref,
   entity,
+  getRowId,
 }: GeneExpressionBarPlotProps) => {
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
     const maxLength = 20;
@@ -35,9 +36,7 @@ const GeneExpressionBarPlot = ({
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((x, i) => {
       const anySelected = selected.length > 0;
-      const isSelected = selected.some(
-        (y) => y.gene_quantification_files[0].accession === x.gene_quantification_files[0].accession
-      );
+      const isSelected = selected.some((y) => getRowId(y) === getRowId(x));
       return {
         category: capitalizeFirstLetter(x.tissue),
         label: makeLabel(x.gene_quantification_files[0].quantifications[0]?.tpm, x.biosample, x.accession),
@@ -48,7 +47,7 @@ const GeneExpressionBarPlot = ({
         metadata: x,
       };
     });
-  }, [sortedFilteredData, selected]);
+  }, [sortedFilteredData, selected, getRowId]);
 
   const handleBarClick = (bar: BarData<PointMetadata>) => {
     toggleSelection(bar.metadata);
