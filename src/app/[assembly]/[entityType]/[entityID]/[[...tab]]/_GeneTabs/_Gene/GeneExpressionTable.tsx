@@ -2,17 +2,19 @@ import { GeneExpressionTableProps, getTPM, PointMetadata } from "./types";
 import { IconButton } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
 import { useAutoSort } from "common/hooks/useAutoSort";
 
-const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, scale }: GeneExpressionTableProps) => {
-  const [autoSort, setAutoSort] = useState<boolean>(false);
+const initialSort: GridSortModel = [{ field: "tpm", sort: "desc" }];
 
-  const { apiRef } = tableProps;
+const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, scale }: GeneExpressionTableProps) => {
+  const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
+
+  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, viewBy, initialSort);
 
   const columns: TableColDef<PointMetadata>[] = useMemo(
     () => [
@@ -83,10 +85,6 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
     [viewBy, scale]
   );
 
-  const initialSort: GridSortModel = useMemo(() => [{ field: "tpm", sort: "desc" }], []);
-
-  useAutoSort(apiRef, autoSort, viewBy, initialSort);
-
   return (
     <Table
       label={label}
@@ -101,7 +99,12 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
       }}
       divHeight={{ height: "100%" }}
       toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
-      {...tableProps}
+      {...restTableProps}
+      onReady={(api) => {
+        const existing = tableSyncOnReady?.(api);
+        const existingCleanups = Array.isArray(existing) ? existing : existing ? [existing] : [];
+        return [...existingCleanups, ...autoSortOnReady(api)];
+      }}
     />
   );
 };
