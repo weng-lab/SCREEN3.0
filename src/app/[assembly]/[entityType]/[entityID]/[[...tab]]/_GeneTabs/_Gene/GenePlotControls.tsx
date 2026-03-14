@@ -1,5 +1,9 @@
 import React from "react";
-import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
+import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, Tooltip, styled } from "@mui/material";
+
+const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
+  ...theme.typography.body2
+}));
 
 interface ControlProps {
   assembly: string;
@@ -39,7 +43,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
   return (
     <Stack direction="row" gap={2} mb={2} flexWrap="wrap">
       <FormControl>
-        <FormLabel>RNA-seq Type</FormLabel>
+        <StyledFormLabel>RNA-seq Type</StyledFormLabel>
         <ToggleButtonGroup
           color="primary"
           value={RNAtype}
@@ -77,7 +81,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
       </FormControl>
 
       <FormControl>
-        <FormLabel>Scale</FormLabel>
+        <StyledFormLabel>Scale</StyledFormLabel>
         <ToggleButtonGroup
           color="primary"
           value={scale}
@@ -101,7 +105,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
       </FormControl>
 
       <FormControl>
-        <FormLabel>Replicates</FormLabel>
+        <StyledFormLabel>Replicates</StyledFormLabel>
         <ToggleButtonGroup
           color="primary"
           value={replicates}
@@ -126,7 +130,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
       {violin ? (
         <Stack direction="row" spacing={2} alignItems="center">
           <FormControl>
-            <FormLabel>Sort By</FormLabel>
+            <StyledFormLabel>Sort By</StyledFormLabel>
             <ToggleButtonGroup
               color="primary"
               value={sortBy}
@@ -151,7 +155,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
             </ToggleButtonGroup>
           </FormControl>
           <FormControl>
-            <FormLabel>Show Points</FormLabel>
+            <StyledFormLabel>Show Points</StyledFormLabel>
             <ToggleButtonGroup
               color="primary"
               value={showPoints}
@@ -175,7 +179,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
         </Stack>
       ) : (
         <FormControl>
-          <FormLabel>View By</FormLabel>
+          <StyledFormLabel>View By</StyledFormLabel>
           <ToggleButtonGroup
             color="primary"
             value={viewBy}

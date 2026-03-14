@@ -1,4 +1,4 @@
-import { CloseFullscreenRounded, TableChartRounded } from "@mui/icons-material";
+import { CloseFullscreenRounded, DragHandle, TableChartRounded } from "@mui/icons-material";
 import {
   Stack,
   Box,
@@ -10,10 +10,11 @@ import {
   Tooltip,
   Button,
   useMediaQuery,
+  Divider,
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { theme } from "app/theme";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import DownloadModal from "./DownloadModal";
 import { DownloadPlotHandle } from "@weng-lab/visualization";
 import FigurePanel from "./FigurePanel";
@@ -46,6 +47,8 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
   const [tab, setTab] = useState<number>(0);
   const [tableOpen, setTableOpen] = useState(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [leftPct, setLeftPct] = useState(40);
+  const containerRef = useRef<HTMLDivElement>(null);
   // Captured when opening the modal so we don't read ref.current during render.
   const [activePlotHandle, setActivePlotHandle] = useState<DownloadPlotHandle | null>(null);
 
@@ -91,7 +94,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
   const tableIconButton = (
     <Tooltip title={`${tableOpen ? "Hide" : "Show"} Table`}>
       <IconButton onClick={handleToggleTable} sx={{ mx: -1 }}>
-        <TableChartRounded color="primary" />
+        <TableChartRounded color="primary" fontSize="small" />
       </IconButton>
     </Tooltip>
   );
@@ -109,19 +112,41 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
       <DownloadIcon />
     </IconButton>
   ) : (
-    <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleOpenDownload}>
+    <Button variant="text" startIcon={<DownloadIcon />} onClick={handleOpenDownload}>
       Download
     </Button>
   );
 
   const tabValue = Math.min(tab, plots.length - 1);
 
+  const handleDividerPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handleDividerPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+    const container = containerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const newPct = ((e.clientX - rect.left) / rect.width) * 100;
+    setLeftPct(Math.min(75, Math.max(15, newPct)));
+  };
+
+  const handleDividerPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
   return (
     <Box
+      ref={containerRef}
       display="grid"
-      gridTemplateColumns={{ xs: "minmax(0, 1fr)", lg: tableOpen ? "35% minmax(0, 1fr)" : "minmax(0, 1fr)" }}
+      gridTemplateColumns={(theme) => ({
+        xs: "minmax(0, 1fr)",
+        lg: tableOpen ? `${leftPct}% ${theme.spacing(2)} minmax(0, 1fr)` : "minmax(0, 1fr)",
+      })}
       gridTemplateRows={{ xs: tableOpen ? "auto auto auto auto" : "auto auto", lg: "auto 1fr" }}
-      gap={2}
+      rowGap={1}
+      columnGap={{ xs: 2, lg: tableOpen ? 0 : 2 }}
     >
       {/* Table header — row 1 at all breakpoints */}
       <Stack
@@ -133,11 +158,40 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
         gridColumn={1}
       >
         {tableIconButton}
-        <Typography variant="h5" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Table View
         </Typography>
         {hideTableButton}
       </Stack>
+
+      {/* Divider — only visible on lg when table is open */}
+      {tableOpen && (
+        <Box
+          display={{ xs: "none", lg: "flex" }}
+          alignItems="center"
+          justifyContent="center"
+          gridRow="1 / 3"
+          gridColumn={2}
+          sx={{ cursor: "col-resize" }}
+          onPointerDown={handleDividerPointerDown}
+          onPointerMove={handleDividerPointerMove}
+          onPointerUp={handleDividerPointerUp}
+        >
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{
+              "& .MuiDivider-wrapperVertical": {
+                padding: 0,
+                display: "flex",
+              },
+              mx: "auto",
+            }}
+          >
+            <DragHandle sx={{ transform: "rotate(90deg)", color: "divider"}} />
+          </Divider>
+        </Box>
+      )}
 
       {/* Tabs header — row 1 on lg (beside table header), row 3 on xs (below table content) */}
       <Stack
@@ -146,7 +200,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
         justifyContent="space-between"
         gap={2}
         gridRow={{ xs: tableOpen ? 3 : 1, lg: 1 }}
-        gridColumn={{ xs: 1, lg: tableOpen ? 2 : 1 }}
+        gridColumn={{ xs: 1, lg: tableOpen ? 3 : 1 }}
       >
         {!tableOpen && tableIconButton}
         <Tabs value={tabValue} onChange={handleSetTab} sx={{ flexGrow: 1 }}>
@@ -171,7 +225,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
       {/* Plot content — row 2 on lg, row 4 on xs */}
       <Box
         gridRow={{ xs: tableOpen ? 4 : 2, lg: 2 }}
-        gridColumn={{ xs: 1, lg: tableOpen ? 2 : 1 }}
+        gridColumn={{ xs: 1, lg: tableOpen ? 3 : 1 }}
         height={PANE_HEIGHT}
         minWidth={0}
       >

@@ -46,6 +46,7 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
           return (row.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0).toFixed(2);
         },
         sortable: viewBy !== "byTissueTPM",
+        minWidth: 75,
       },
       {
         field: "tissue",

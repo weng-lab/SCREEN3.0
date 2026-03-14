@@ -92,7 +92,7 @@ const GeneExpressionViolinPlot = ({
     });
 
     return distributions;
-  }, [selected, rows, sortBy, getRowId]);
+  }, [rows, selected, getRowId, sortBy]);
 
   const onViolinClicked = (violin: Distribution<PointMetadata>) => {
     const rowsForDistribution = violin.data.map((point) => point.metadata);
