@@ -1,4 +1,4 @@
-import { GeneExpressionBarPlotProps, PointMetadata } from "./types";
+import { GeneExpressionBarPlotProps, getScaleLabel, getTPM, PointMetadata } from "./types";
 import { useCallback, useMemo } from "react";
 import { capitalizeFirstLetter } from "common/utility";
 import { Box, Typography } from "@mui/material";
@@ -39,8 +39,8 @@ const GeneExpressionBarPlot = ({
       const isSelected = selected.some((y) => getRowId(y) === getRowId(x));
       return {
         category: capitalizeFirstLetter(x.tissue),
-        label: makeLabel(x.gene_quantification_files[0].quantifications[0]?.tpm, x.biosample, x.accession),
-        value: x.gene_quantification_files[0].quantifications[0]?.tpm,
+        label: makeLabel(getTPM(x), x.biosample, x.accession),
+        value: getTPM(x),
         color:
           (anySelected && isSelected) || !anySelected ? (tissueColors[x.tissue] ?? tissueColors.missing) : "#CCCCCC",
         id: i.toString(),
@@ -101,11 +101,7 @@ const GeneExpressionBarPlot = ({
         <BarPlot
           onBarClicked={handleBarClick}
           data={plotData}
-          topAxisLabel={
-            scale === "linearTPM"
-              ? `${entity.entityID} Expression: TPM`
-              : `${entity.entityID} Expression: log\u2081\u2080(TPM + 1)`
-          }
+          topAxisLabel={getScaleLabel(entity.entityID, scale)}
           TooltipContents={PlotTooltip}
           ref={ref}
           downloadFileName={`${entity.entityID}_expression_bar_plot`}

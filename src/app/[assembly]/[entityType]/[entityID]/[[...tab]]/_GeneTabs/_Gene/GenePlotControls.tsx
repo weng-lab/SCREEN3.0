@@ -1,5 +1,11 @@
 import React from "react";
 import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, Tooltip, styled } from "@mui/material";
+import type {
+  GeneExpressionRNAType,
+  GeneExpressionScale,
+  GeneExpressionViewBy,
+  GeneExpressionReplicates,
+} from "./types";
 
 const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
   ...theme.typography.body2
@@ -7,14 +13,14 @@ const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
 
 interface ControlProps {
   assembly: string;
-  RNAtype: string;
-  scale: string;
-  viewBy: string;
-  replicates: string;
-  setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void;
-  setScale: (newScale: "linearTPM" | "logTPM") => void;
-  setViewBy: (newView: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM") => void;
-  setReplicates: (newReplicates: "mean" | "all") => void;
+  RNAtype: GeneExpressionRNAType;
+  scale: GeneExpressionScale;
+  viewBy: GeneExpressionViewBy;
+  replicates: GeneExpressionReplicates;
+  setRNAType: (newType: GeneExpressionRNAType) => void;
+  setScale: (newScale: GeneExpressionScale) => void;
+  setViewBy: (newView: GeneExpressionViewBy) => void;
+  setReplicates: (newReplicates: GeneExpressionReplicates) => void;
   setSortBy?: (sortBy: "median" | "max" | "tissue") => void;
   sortBy?: "median" | "max" | "tissue";
   setShowPoints?: (showPoints: boolean) => void;
@@ -50,7 +56,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
           exclusive
           onChange={(_, value) => {
             if (value !== null) {
-              setRNAType(value as "all" | "polyA plus RNA-seq" | "total RNA-seq");
+              setRNAType(value as GeneExpressionRNAType);
             }
           }}
           aria-label="RNA-seq Type"
@@ -88,7 +94,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
           exclusive
           onChange={(_, value) => {
             if (value !== null) {
-              setScale(value as "linearTPM" | "logTPM");
+              setScale(value as GeneExpressionScale);
             }
           }}
           aria-label="Scale"
@@ -112,7 +118,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
           exclusive
           onChange={(_, value) => {
             if (value !== null) {
-              setReplicates(value as "mean" | "all");
+              setReplicates(value as GeneExpressionReplicates);
             }
           }}
           aria-label="Replicates"
@@ -186,7 +192,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
             exclusive
             onChange={(_, value) => {
               if (value !== null) {
-                setViewBy(value as "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM");
+                setViewBy(value as GeneExpressionViewBy);
               }
             }}
             aria-label="View By"

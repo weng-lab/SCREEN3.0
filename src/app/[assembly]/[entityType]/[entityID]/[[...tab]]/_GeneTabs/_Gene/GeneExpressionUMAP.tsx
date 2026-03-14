@@ -1,4 +1,4 @@
-import { GeneExpressionUMAPProps, PointMetadata } from "./types";
+import { GeneExpressionUMAPProps, getTPM, PointMetadata } from "./types";
 import { Box, SelectChangeEvent, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
 import { Point, ScatterPlot } from "@weng-lab/visualization";
@@ -46,7 +46,7 @@ const GeneExpressionUMAP = ({
   //find the max logTPM for the domain fo the gradient
   const maxValue = useMemo(() => {
     if (!data || data.length === 0) return 0;
-    return Math.max(...data.map((x) => logTransform(x.gene_quantification_files[0].quantifications[0]?.tpm)));
+    return Math.max(...data.map((x) => logTransform(getTPM(x))));
   }, [data]);
 
   const colorScale = useMemo(
@@ -66,7 +66,7 @@ const GeneExpressionUMAP = ({
 
     return data.map((x) => {
       const gradientColor = interpolateYlOrRd(
-        colorScale(logTransform(x.gene_quantification_files[0].quantifications[0]?.tpm))
+        colorScale(logTransform(getTPM(x)))
       );
 
       const getColor = () => {

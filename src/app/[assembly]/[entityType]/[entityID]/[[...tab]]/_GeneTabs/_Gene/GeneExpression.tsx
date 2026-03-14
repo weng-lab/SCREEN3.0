@@ -19,8 +19,7 @@ import type {
   GeneExpressionRNAType,
   GeneExpressionControlProps,
 } from "./types";
-
-const getTPM = (d: PointMetadata) => d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
+import { getTPM } from "./types";
 const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
 
 /**

@@ -1,4 +1,4 @@
-import { GeneExpressionViolinPlotProps, PointMetadata } from "./types";
+import { GeneExpressionViolinPlotProps, getScaleLabel, getTPM, PointMetadata } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
@@ -42,7 +42,7 @@ const GeneExpressionViolinPlot = ({
     );
 
     const distributions = Object.entries(grouped).map(([tissue, group]) => {
-      const values = group.map((d) => d.gene_quantification_files[0].quantifications[0]?.tpm);
+      const values = group.map((d) => getTPM(d));
       const label = tissue;
       const violinColor =
         selected.length === 0 ||
@@ -136,11 +136,7 @@ const GeneExpressionViolinPlot = ({
           onPointClicked={onPointClicked}
           onViolinClicked={onViolinClicked}
           distributions={violinData}
-          axisLabel={
-            scale === "linearTPM"
-              ? `${entity.entityID} Expression: TPM`
-              : `${entity.entityID} Expression: Log\u2081\u2080(TPM + 1)`
-          }
+          axisLabel={getScaleLabel(entity.entityID, scale)}
           loading={loading}
           labelOrientation="leftDiagonal"
           violinProps={{
@@ -156,7 +152,7 @@ const GeneExpressionViolinPlot = ({
           ref={ref}
           downloadFileName={`${entity.entityID}_expression_violin_plot`}
           pointTooltipBody={(point) => {
-            const rawTPM = point.metadata?.gene_quantification_files[0].quantifications[0]?.tpm ?? 0;
+            const rawTPM = point.metadata ? getTPM(point.metadata) : 0;
             const displayTPM = scale === "linearTPM" ? rawTPM : Math.log10(rawTPM + 1);
 
             return (

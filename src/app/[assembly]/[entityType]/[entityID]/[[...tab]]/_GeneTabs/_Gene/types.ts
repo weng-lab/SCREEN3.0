@@ -6,6 +6,14 @@ import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
+/** Extract the TPM value from a row's nested quantification structure */
+export const getTPM = (d: PointMetadata): number =>
+  d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
+
+/** Build a scale-appropriate axis label for expression plots */
+export const getScaleLabel = (geneName: string, scale: GeneExpressionScale): string =>
+  scale === "linearTPM" ? `${geneName} Expression: TPM` : `${geneName} Expression: Log\u2081\u2080(TPM + 1)`;
+
 export type GeneExpressionViewBy = "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM";
 export type GeneExpressionScale = "linearTPM" | "logTPM";
 export type GeneExpressionReplicates = "mean" | "all";
