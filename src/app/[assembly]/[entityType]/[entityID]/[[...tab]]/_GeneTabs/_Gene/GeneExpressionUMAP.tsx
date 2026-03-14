@@ -1,6 +1,6 @@
 import { GeneExpressionUMAPProps, getTPM, PointMetadata } from "./types";
 import { Box, SelectChangeEvent, Typography } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Point, ScatterPlot } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
 import { theme } from "app/theme";
@@ -25,6 +25,20 @@ const GeneExpressionUMAP = ({
   ref,
 }: GeneExpressionUMAPProps) => {
   const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue">("expression");
+
+  // Band-aid: ScatterPlot's controls are absolutely positioned on the left of the container.
+  // The square plot uses min(width, height), so we keep height < width to ensure the controls
+  // don't overlap the plot. Measure the container width and cap height at width - CONTROLS_OFFSET.
+  const CONTROLS_OFFSET = 65;
+  const plotContainerRef = useRef<HTMLDivElement>(null);
+  const [plotContainerWidth, setPlotContainerWidth] = useState(0);
+  useEffect(() => {
+    const el = plotContainerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => setPlotContainerWidth(entry.contentRect.width));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const { data, loading } = geneExpressionData;
 
@@ -145,7 +159,15 @@ const GeneExpressionUMAP = ({
               colorScale={colorScale}
             />
           </Stack>
-          <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
+          <Box
+            ref={plotContainerRef}
+            sx={{
+              flex: 1,
+              minHeight: 0,
+              position: "relative",
+              ...(plotContainerWidth > 0 && { maxHeight: plotContainerWidth - CONTROLS_OFFSET }),
+            }}
+          >
             <ScatterPlot
               onSelectionChange={handlePointsSelected}
               onPointClicked={handlePointSelected}

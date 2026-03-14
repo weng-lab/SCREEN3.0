@@ -129,7 +129,8 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
     if (!container) return;
     const rect = container.getBoundingClientRect();
     const newPct = ((e.clientX - rect.left) / rect.width) * 100;
-    setLeftPct(Math.min(75, Math.max(15, newPct)));
+    //Specify min/max values of leftPct
+    setLeftPct(Math.min(70, Math.max(15, newPct)));
   };
 
   const handleDividerPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {

@@ -97,14 +97,13 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
           sortModel: initialSort,
         },
       }}
-      divHeight={{ height: "100%" }}
       toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
-      {...restTableProps}
       onReady={(api) => {
         const existing = tableSyncOnReady?.(api);
         const existingCleanups = Array.isArray(existing) ? existing : existing ? [existing] : [];
         return [...existingCleanups, ...autoSortOnReady(api)];
       }}
+      {...restTableProps}
     />
   );
 };
