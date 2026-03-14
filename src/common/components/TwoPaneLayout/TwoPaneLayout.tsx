@@ -112,7 +112,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
       <DownloadIcon />
     </IconButton>
   ) : (
-    <Button variant="text" startIcon={<DownloadIcon />} onClick={handleOpenDownload}>
+    <Button variant="text" startIcon={<DownloadIcon />} onClick={handleOpenDownload} sx={{ flexShrink: 0 }}>
       Download
     </Button>
   );
@@ -188,7 +188,7 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
               mx: "auto",
             }}
           >
-            <DragHandle sx={{ transform: "rotate(90deg)", color: "divider"}} />
+            <DragHandle sx={{ transform: "rotate(90deg)", color: "divider" }} />
           </Divider>
         </Box>
       )}
@@ -198,12 +198,16 @@ const TwoPaneLayout = ({ TableComponent, plots }: TwoPaneLayoutProps) => {
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        gap={2}
         gridRow={{ xs: tableOpen ? 3 : 1, lg: 1 }}
         gridColumn={{ xs: 1, lg: tableOpen ? 3 : 1 }}
       >
         {!tableOpen && tableIconButton}
-        <Tabs value={tabValue} onChange={handleSetTab} sx={{ flexGrow: 1 }}>
+        <Tabs
+          value={tabValue}
+          variant="scrollable"
+          onChange={handleSetTab}
+          sx={{ flexGrow: 1, "& .MuiTabs-scrollButtons.Mui-disabled": { opacity: 0.3 } }}
+        >
           {plotTabs.map((tab, i) => (
             <Tab
               label={isXs ? "" : tab.tabTitle}

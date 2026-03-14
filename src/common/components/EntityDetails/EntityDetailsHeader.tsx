@@ -112,7 +112,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           }
           target="_blank"
           rel="noopener noreferrer"
-          sx={{ width: "50%", height: "100%", backgroundColor: "transparent", borderColor: "divider" }}
+          sx={{ width: 150, height: "100%", backgroundColor: "transparent", borderColor: "divider" }}
         >
           <Image
             style={{ objectFit: "contain" }}
