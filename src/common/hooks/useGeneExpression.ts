@@ -17,6 +17,7 @@ query geneexpression($assembly: String!, $gene_id: [String]) {
     gene_quantification_files(assembly: $assembly) {
       accession
       biorep
+      techrep
       quantifications(gene_id_prefix: $gene_id) {
         tpm
         file_accession

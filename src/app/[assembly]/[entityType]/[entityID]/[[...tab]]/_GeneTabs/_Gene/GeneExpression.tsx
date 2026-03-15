@@ -92,6 +92,10 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
     return Boolean(geneExpressionData?.data?.length) && !hasTpm;
   }, [geneExpressionData?.data]);
 
+  /**
+   * Maps gene expression experiments to flat array, taking into account `replicates` and `RNAtype` and scaling based on `scale`.
+   * Returned rows' TPM values are log scaled if `scale === "logTPM"`
+   */
   const rows: PointMetadata[] = useMemo(() => {
     if (!geneExpressionData?.data?.length || isV40) return [];
 
