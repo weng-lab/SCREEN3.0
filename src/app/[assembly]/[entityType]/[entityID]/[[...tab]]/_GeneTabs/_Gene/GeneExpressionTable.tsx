@@ -1,4 +1,4 @@
-import { GeneExpressionTableProps, getTPM, getLogTPM, PointMetadata } from "./types";
+import { GeneExpressionTableProps, getScaledTPM, PointMetadata } from "./types";
 import { IconButton } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
@@ -53,7 +53,7 @@ const GeneExpressionTable = ({
         headerName: scale === "linearTPM" ? "TPM" : "Log10(TPM + 1)",
         type: "number",
         valueGetter: (_, row) => {
-          return scale === "logTPM" ? getLogTPM(row) : getTPM(row);
+          return getScaledTPM(row, scale);
         },
         valueFormatter: (value: number) => value.toFixed(2),
         minWidth: 75,

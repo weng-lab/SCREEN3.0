@@ -91,8 +91,6 @@ export default function UMAPLegend<T>({
                 height: "14px",
                 flexGrow: 1,
                 background: `linear-gradient(to right, ${gradientConfig.gradient})`,
-                border: "1px solid",
-                borderColor: "divider",
               }}
             />
             <Typography sx={{ ml: 1 }}>{gradientConfig.maxLabel}</Typography>

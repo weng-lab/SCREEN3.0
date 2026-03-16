@@ -17,58 +17,45 @@ import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
 function applyViewByTransform(rows: BiosampleRow[], viewBy: ViewBy, assay: string): BiosampleRow[] {
   if (!rows) return [];
 
-  let result = [...rows];
-
   // No sorting required. useAutoSort in Table handles resetting initial sort
-  switch (viewBy) {
-    case "value": {
-      break;
-    }
+  if (viewBy === "value") return [...rows];
 
+  const result = [...rows];
+
+  const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+    acc[item.ontology] = Math.max(acc[item.ontology] ?? -Infinity, item[assay]);
+    return acc;
+  }, {});
+
+  switch (viewBy) {
     /**
-     * Group by tissue, sort groups by max tpm in group, and sort descending within groups.
+     * Group by tissue, sort groups by max score in group, and sort descending within groups.
      * Table sorting should be disabled when viewBy === "tissue", as this ordering
      * cannot be accomplished by DataGrid sort state alone.
      */
-    case "tissue": {
-      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-        acc[item.ontology] = Math.max(acc[item.ontology] ?? -Infinity, item[assay]);
-        return acc;
-      }, {});
-
+    case "tissue":
       result.sort((a, b) => {
         const maxDiff = maxValuesByTissue[b.ontology] - maxValuesByTissue[a.ontology];
         if (maxDiff !== 0) return maxDiff;
         return b[assay] - a[assay];
       });
-      break;
-    }
+      return result;
 
-    // Filter out all but max tpm samples for each tissue
-    case "tissueMax": {
-      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-        acc[item.ontology] = Math.max(acc[item.ontology] ?? -Infinity, item[assay]);
-        return acc;
-      }, {});
-
-      result = result.filter((item) => item[assay] === maxValuesByTissue[item.ontology]);
-
-      break;
-    }
+    // Keep only the max-scoring biosample per tissue
+    case "tissueMax":
+      return result.filter((item) => item[assay] === maxValuesByTissue[item.ontology]);
   }
-
-  return result;
 }
 
-const AssayView = (props: AssayViewProps) => {
+const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
+  const { entityID } = entity;
+  const { assembly } = entity;
+
   const [viewBy, setViewBy] = useState<ViewBy>("value");
   const [cutoffLowSignal, setCutoffLowSignal] = useState<boolean>(true);
   const [show95Line, setShow95Line] = useState<boolean>(true);
 
-  const transformedRows = useMemo(
-    () => applyViewByTransform(props.rows, viewBy, props.assay),
-    [props.rows, viewBy, props.assay]
-  );
+  const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy, assay), [rows, viewBy, assay]);
 
   const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: transformedRows,
@@ -76,9 +63,9 @@ const AssayView = (props: AssayViewProps) => {
   });
 
   useEffect(() => {
-    if (!props.assay) return;
+    if (!assay) return;
     setSelected([]);
-  }, [props.assay, setSelected]);
+  }, [assay, setSelected]);
 
   const handleSetViewBy = (newView: ViewBy) => {
     setSelected([]);
@@ -90,9 +77,9 @@ const AssayView = (props: AssayViewProps) => {
       TableComponent={
         <AssayTable
           rows={transformedRows}
-          columns={props.columns}
-          assay={props.assay}
-          entityID={props.entity.entityID}
+          columns={columns}
+          assay={assay}
+          entityID={entityID}
           tableProps={tableProps}
           isPresorted={viewBy === "tissue"}
         />
@@ -107,8 +94,8 @@ const AssayView = (props: AssayViewProps) => {
               selected={selected}
               toggleSelection={toggleSelection}
               getRowId={getRowId}
-              assay={props.assay}
-              entityID={props.entity.entityID}
+              assay={assay}
+              entityID={entityID}
               viewBy={viewBy}
               setViewBy={handleSetViewBy}
               cutoffLowSignal={cutoffLowSignal}
@@ -123,13 +110,13 @@ const AssayView = (props: AssayViewProps) => {
           icon: <CandlestickChart />,
           plotComponent: (
             <AssayViolinPlot
-              rows={props.rows}
+              rows={rows}
               selected={selected}
               setSelected={setSelected}
               toggleSelection={toggleSelection}
               getRowId={getRowId}
-              assay={props.assay}
-              entityID={props.entity.entityID}
+              assay={assay}
+              entityID={entityID}
               viewBy={viewBy}
               setViewBy={handleSetViewBy}
               cutoffLowSignal={cutoffLowSignal}
@@ -139,20 +126,20 @@ const AssayView = (props: AssayViewProps) => {
             />
           ),
         },
-        ...(props.assay !== "atac"
+        ...(assay !== "atac"
           ? [
               {
                 tabTitle: "UMAP",
                 icon: <ScatterPlot />,
                 plotComponent: (
                   <AssayUMAP
-                    rows={props.rows}
+                    rows={rows}
                     selected={selected}
                     setSelected={setSelected}
                     toggleSelection={toggleSelection}
                     getRowId={getRowId}
-                    assay={props.assay}
-                    assembly={props.entity.assembly}
+                    assay={assay}
+                    assembly={assembly}
                   />
                 ),
               },

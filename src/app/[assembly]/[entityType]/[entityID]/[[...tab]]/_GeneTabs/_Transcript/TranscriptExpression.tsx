@@ -2,12 +2,13 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { useTranscriptExpression } from "common/hooks/useTranscriptExpression";
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import { getRPM } from "./types";
 import type {
   TranscriptMetadata,
   TranscriptExpressionViewBy,
@@ -18,88 +19,75 @@ import type {
 function applyViewByTransform(rows: TranscriptMetadata[], viewBy: TranscriptExpressionViewBy): TranscriptMetadata[] {
   if (!rows.length) return [];
 
-  let result = [...rows];
+  if (viewBy === "value") return [...rows];
+
+  const result = [...rows];
+
+  const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+    const tissue = item.organ ?? "unknown";
+    acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getRPM(item));
+    return acc;
+  }, {});
 
   switch (viewBy) {
-    case "value": {
-      result.sort((a, b) => b.value - a.value);
-      break;
-    }
-    case "tissue": {
-      const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
-      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-        const tissue = getTissue(item);
-        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
-        return acc;
-      }, {});
+    /**
+     * Group by tissue, sort groups by max RPM in group, and sort descending within groups.
+     * Table sorting should be disabled when viewBy === "tissue", as this ordering
+     * cannot be accomplished by DataGrid sort state alone.
+     */
+    case "tissue":
       result.sort((a, b) => {
-        const tissueA = getTissue(a);
-        const tissueB = getTissue(b);
+        const tissueA = a.organ ?? "unknown";
+        const tissueB = b.organ ?? "unknown";
         const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
         if (maxDiff !== 0) return maxDiff;
-        return b.value - a.value;
+        return getRPM(b) - getRPM(a);
       });
-      break;
-    }
-    case "tissueMax": {
-      const getTissue = (d: TranscriptMetadata) => d.organ ?? "unknown";
-      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-        const tissue = getTissue(item);
-        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item.value);
-        return acc;
-      }, {});
-      result = result.filter((item) => {
-        const tissue = getTissue(item);
-        return item.value === maxValuesByTissue[tissue];
-      });
-      result.sort((a, b) => b.value - a.value);
-      break;
-    }
-  }
+      return result;
 
-  return result;
+    // Keep only the max-RPM biosample per tissue
+    case "tissueMax":
+      return result.filter((item) => {
+        const tissue = item.organ ?? "unknown";
+        return getRPM(item) === maxValuesByTissue[tissue];
+      });
+  }
 }
 
 const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
-  const [peak, setPeak] = useState<string>("");
+  const [userPeak, setUserPeak] = useState<string | null>(null);
   const [viewBy, setViewBy] = useState<TranscriptExpressionViewBy>("value");
   const [scale, setScale] = useState<TranscriptExpressionScale>("linear");
 
   const transcriptExpressionData = useTranscriptExpression({ gene: entity.entityID });
 
-  useEffect(() => {
-    if (transcriptExpressionData && peak === "") {
-      setPeak(transcriptExpressionData.data?.[0]?.peakId ?? "");
-    }
-  }, [peak, transcriptExpressionData]);
+  // Use user-selected peak if set, otherwise default to the first peak from data
+  const peak = userPeak ?? transcriptExpressionData.data?.[0]?.peakId ?? "";
 
   const rows: TranscriptMetadata[] = useMemo(() => {
     if (!transcriptExpressionData?.data?.length) return [];
-
-    let filteredData = transcriptExpressionData.data.filter((d) => d.peakId === peak);
-
-    filteredData = filteredData.map((item) => ({
-      ...item,
-      value: scale === "log" ? Math.log10((item.value ?? 0) + 1) : (item.value ?? 0),
-    }));
-
-    return [...filteredData];
-  }, [transcriptExpressionData, scale, peak]);
+    return transcriptExpressionData.data.filter((d) => d.peakId === peak);
+  }, [transcriptExpressionData, peak]);
 
   const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy), [rows, viewBy]);
 
-  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection } = useTablePlotSync({
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: transformedRows,
     getRowId: (r) => r.expAccession,
   });
+
+  const handleSetViewBy = (newView: TranscriptExpressionViewBy) => {
+    setSelected([]);
+    setViewBy(newView);
+  };
 
   const controlProps: TranscriptExpressionControlProps = {
     scale,
     setScale,
     viewBy,
-    setViewBy,
+    setViewBy: handleSetViewBy,
     selectedPeak: peak,
-    setPeak,
+    setPeak: setUserPeak,
     transcriptExpressionData,
   };
 
@@ -110,10 +98,10 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
           rows={transformedRows}
           transcriptExpressionData={transcriptExpressionData}
           tableProps={tableProps}
-          viewBy={viewBy}
+          isPresorted={viewBy === "tissue"}
           scale={scale}
           selectedPeak={peak}
-          setPeak={setPeak}
+          setPeak={setUserPeak}
         />
       }
       plots={[
@@ -125,7 +113,8 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
               sortedFilteredData={sortedFilteredData}
               selected={selected}
               toggleSelection={toggleSelection}
-              entity={entity}
+              getRowId={getRowId}
+              geneName={entity.entityID}
               {...controlProps}
             />
           ),
@@ -139,7 +128,8 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
               selected={selected}
               setSelected={setSelected}
               toggleSelection={toggleSelection}
-              entity={entity}
+              getRowId={getRowId}
+              geneName={entity.entityID}
               {...controlProps}
             />
           ),

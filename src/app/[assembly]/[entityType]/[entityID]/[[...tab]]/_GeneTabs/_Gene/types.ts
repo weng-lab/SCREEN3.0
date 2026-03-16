@@ -17,6 +17,10 @@ export const getTPM = (d: PointMetadata): number => d.tpm;
 /** Extract the log10-transformed TPM value: log10(TPM + 1) */
 export const getLogTPM = (d: PointMetadata): number => Math.log10(getTPM(d) + 1);
 
+/** Get TPM value appropriate for the current scale */
+export const getScaledTPM = (d: PointMetadata, scale: GeneExpressionScale): number =>
+  scale === "logTPM" ? getLogTPM(d) : getTPM(d);
+
 /** Build a scale-appropriate axis label for expression plots */
 export const getScaleLabel = (geneName: string, scale: GeneExpressionScale): string =>
   scale === "linearTPM" ? `${geneName} Expression: TPM` : `${geneName} Expression: Log\u2081\u2080(TPM + 1)`;

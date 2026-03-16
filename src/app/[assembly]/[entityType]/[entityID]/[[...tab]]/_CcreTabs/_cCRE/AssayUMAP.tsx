@@ -101,7 +101,7 @@ const AssayUMAP = ({
     switch (scoreColorMode) {
       case "active":
         scaleConfig = {
-          domain: [1.64, 1.640000001, 4],
+          domain: [1.64, 1.65, 4],
           range: ["#DDD", interpolateRdYlBu(0.5), interpolateRdYlBu(0)],
         };
         break;
@@ -118,6 +118,23 @@ const AssayUMAP = ({
       clamp: true,
     });
   }, [scoreColorMode]);
+
+  const scoreGradientConfig = useMemo(() => {
+    switch (scoreColorMode) {
+      case "active":
+        return {
+          minLabel: "1.65",
+          maxLabel: "4",
+          gradient: [colorScale(1.65), colorScale(4)].join(", "),
+        };
+      case "all":
+        return {
+          minLabel: "-4",
+          maxLabel: "4",
+          gradient: [colorScale(-4), colorScale(0), colorScale(4)].join(", "),
+        };
+    }
+  }, [colorScale, scoreColorMode]);
 
   const getPointColor = useCallback(
     (metadata: BiosampleRow) => {
@@ -197,15 +214,7 @@ const AssayUMAP = ({
         <UMAPLegend
           colorScheme={colorScheme}
           scatterData={scatterData}
-          gradientConfig={{
-            minLabel: scoreColorMode === "active" ? "1.65" : "-4",
-            maxLabel: "4",
-            gradient: [
-              colorScale(scoreColorMode === "active" ? 1.65 : -4),
-              ...(scoreColorMode === "all" ? [colorScale(0)] : []),
-              colorScale(4),
-            ].join(", "),
-          }}
+          gradientConfig={scoreGradientConfig}
           getTissue={(x) => x.ontology}
           getSampleType={(x) => x.sampleType}
         />

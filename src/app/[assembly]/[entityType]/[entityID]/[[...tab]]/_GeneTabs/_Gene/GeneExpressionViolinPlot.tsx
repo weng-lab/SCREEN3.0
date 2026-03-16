@@ -1,4 +1,4 @@
-import { GeneExpressionViolinPlotProps, getScaleLabel, getTPM, getLogTPM, PointMetadata } from "./types";
+import { GeneExpressionViolinPlotProps, getScaleLabel, getScaledTPM, PointMetadata } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
@@ -28,8 +28,6 @@ const GeneExpressionViolinPlot = ({
   const [sortBy, setSortBy] = useState<ViolinSortBy>("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
-  const getValue = scale === "logTPM" ? getLogTPM : getTPM;
-
   const violinData: Distribution<PointMetadata>[] = useMemo(() => {
     if (!rows) return [];
 
@@ -44,7 +42,7 @@ const GeneExpressionViolinPlot = ({
     );
 
     const distributions = Object.entries(grouped).map(([tissue, group]) => {
-      const values = group.map((d) => getValue(d));
+      const values = group.map((d) => getScaledTPM(d, scale));
       const label = tissue;
       const violinColor =
         selected.length === 0 ||
@@ -77,7 +75,7 @@ const GeneExpressionViolinPlot = ({
     sortDistributions(distributions, sortBy);
 
     return distributions;
-  }, [rows, selected, getRowId, sortBy, getValue]);
+  }, [rows, selected, getRowId, sortBy, scale]);
 
   const onViolinClicked = (violin: Distribution<PointMetadata>) => {
     handleViolinToggle(violin, selected, setSelected, getRowId);

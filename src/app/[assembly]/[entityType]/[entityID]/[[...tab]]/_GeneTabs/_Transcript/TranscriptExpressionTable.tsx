@@ -1,42 +1,37 @@
 import { FormControl, IconButton, MenuItem, Select, Tooltip, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
-import { GRID_CHECKBOX_SELECTION_COL_DEF, GridSortDirection, GridSortModel } from "@mui/x-data-grid-premium";
-import { useEffect, useMemo, useState } from "react";
+import { GridSortModel } from "@mui/x-data-grid-premium";
+import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
-import type { TranscriptMetadata, TranscriptExpressionTableProps } from "./types";
+import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
+import { useAutoSort } from "common/hooks/useAutoSort";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
+import { getScaledRPM } from "./types";
+import type { TranscriptMetadata, TranscriptExpressionTableProps } from "./types";
 
 const TranscriptExpressionTable = ({
   rows,
   transcriptExpressionData,
   tableProps,
-  viewBy,
+  isPresorted,
   scale,
   selectedPeak,
   setPeak,
 }: TranscriptExpressionTableProps) => {
-  const [autoSort, setAutoSort] = useState<boolean>(false);
+  const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
   const { loading } = transcriptExpressionData;
 
-  const StopPropagationWrapper = (params) => (
-    <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
-      <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
-    </div>
-  );
+  const initialSort: GridSortModel = useMemo(() => [{ field: " ", sort: "desc" }], []);
+
+  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, initialSort, isPresorted);
 
   const columns: TableColDef<TranscriptMetadata>[] = useMemo(
     () => [
-      {
-        ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef<TranscriptMetadata>),
-        sortable: true,
-        hideable: false,
-        renderHeader: StopPropagationWrapper,
-      },
+      sortableTableCheckboxColumn,
       {
         field: "biosample",
         headerName: "Sample",
-        sortable: viewBy !== "tissue",
         valueGetter: (_, row) => {
           return capitalizeFirstLetter(row.biosampleSummary.replaceAll("_", " "));
         },
@@ -56,17 +51,15 @@ const TranscriptExpressionTable = ({
       },
       {
         field: " ",
-        headerName: `${scale === "linear" ? "RPM" : "Log10(RPM + 1)"}`,
+        headerName: scale === "linear" ? "RPM" : "Log10(RPM + 1)",
         type: "number",
-        sortable: viewBy !== "tissue",
         valueGetter: (_, row) => {
-          return row.value.toFixed(2);
+          return getScaledRPM(row, scale).toFixed(2);
         },
       },
       {
         field: "organ",
         headerName: "Tissue",
-        sortable: viewBy !== "tissue",
         valueGetter: (_, row) => {
           return capitalizeFirstLetter(row.organ);
         },
@@ -74,12 +67,10 @@ const TranscriptExpressionTable = ({
       {
         field: "strand",
         headerName: "Strand",
-        sortable: viewBy !== "tissue",
       },
       {
         field: "expAccession",
         headerName: "Experiment",
-        sortable: viewBy !== "tissue",
         renderCell: (params) => (
           <Tooltip title="View Experiment in ENCODE" arrow>
             <IconButton
@@ -94,39 +85,8 @@ const TranscriptExpressionTable = ({
         ),
       },
     ],
-    [viewBy, scale]
+    [scale]
   );
-
-  const AutoSortToolbar = useMemo(() => {
-    return <AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />;
-  }, [autoSort]);
-
-  const { apiRef, rowSelectionModel } = tableProps;
-
-  const initialSort: GridSortModel = useMemo(() => [{ field: "rpm", sort: "desc" as GridSortDirection }], []);
-
-  const hasSelection = rowSelectionModel.type === "include" && rowSelectionModel.ids.size > 0;
-
-  useEffect(() => {
-    const api = apiRef?.current;
-    if (!api) return;
-
-    if (viewBy === "tissue") {
-      if (!autoSort || !hasSelection) {
-        api.setSortModel([]);
-      } else {
-        api.setSortModel([{ field: "__check__", sort: "desc" }]);
-      }
-      return;
-    }
-
-    if (!autoSort) {
-      api.setSortModel(initialSort);
-      return;
-    }
-
-    api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
-  }, [apiRef, autoSort, initialSort, hasSelection, viewBy]);
 
   const TableLabel = useMemo(
     () => (
@@ -156,19 +116,23 @@ const TranscriptExpressionTable = ({
 
   return (
     <Table
-      {...tableProps}
       label={TableLabel}
       rows={rows}
       columns={columns}
       loading={loading}
+      apiRef={apiRef}
+      disableColumnSorting={isPresorted}
       initialState={{
-        sorting: {
-          sortModel: initialSort,
-        },
+        sorting: { sortModel: initialSort },
       }}
       downloadFileName={"TSS Expression at " + selectedPeak}
-      divHeight={{ height: "100%" }}
-      toolbarSlot={AutoSortToolbar}
+      toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
+      onReady={(api) => {
+        const existing = tableSyncOnReady?.(api);
+        const existingCleanups = Array.isArray(existing) ? existing : existing ? [existing] : [];
+        return [...existingCleanups, ...autoSortOnReady(api)];
+      }}
+      {...restTableProps}
     />
   );
 };
