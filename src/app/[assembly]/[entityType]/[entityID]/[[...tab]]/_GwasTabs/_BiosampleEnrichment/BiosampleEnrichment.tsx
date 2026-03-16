@@ -1,15 +1,32 @@
 "use client";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
-import { useState } from "react";
 import { BarChart } from "@mui/icons-material";
 import BiosampleEnrichmentTable from "./BiosampleEnrichmentTable";
 import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnrichmentData";
-import { BarData } from "@weng-lab/visualization";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
-import { Table } from "@weng-lab/ui-components";
-import { Typography } from "@mui/material";
+import { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import { Table, TableColDef } from "@weng-lab/ui-components";
+import { Alert } from "@mui/material";
+
+const emptyRows: GWASEnrichment[] = [];
+
+const gwasCols: TableColDef[] = [
+  {
+    headerName: "Platform",
+    field: "platform",
+  },
+  {
+    headerName: "Initial sample size",
+    field: "initial_sample_size",
+  },
+  {
+    headerName: "Replication sample size",
+    field: "replication_sample_size",
+  },
+];
+
 const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
   const {
     data: dataGWASEnrichment,
@@ -23,74 +40,48 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
     error: errorGWASMetadata,
   } = useGWASStudyMetaData({ studyid: [entity.entityID], entityType: "gwas" });
 
+  const { selected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
+    rows: dataGWASEnrichment ?? emptyRows,
+    getRowId: (r) => r.accession,
+  });
 
-  const [selected, setSelected] = useState<GWASEnrichment[]>([]);
-  const [sortedFilteredData, setSortedFilteredData] = useState<GWASEnrichment[]>([]);
-
-  const handleSelectionChange = (selected: GWASEnrichment[]) => {
-    setSelected(selected);
-  };
-
-  const handleBarClick = (bar: BarData<GWASEnrichment>) => {
-    if (selected.some((x) => x.accession === bar.metadata.accession)) {
-      setSelected(selected.filter((x) => x.accession !== bar.metadata.accession));
-    } else setSelected([...selected, bar.metadata]);
-  };
-
-  
   return (
     <>
       <Table
         label={`GWAS Study Metadata`}
-        columns={[
-          {
-            headerName: "Platform",
-            field: "platform",
-          },
-          {
-            headerName: "Initial sample size",
-            field: "initial_sample_size",
-
-          },
-          {
-            headerName: "Replication sample size",
-            field: "replication_sample_size",
-          }
-        ]}
+        columns={gwasCols}
         rows={dataGWASMetadata}
         loading={loadingGWASMetadata}
         error={!!errorGWASMetadata}
       />
-      {dataGWASEnrichment && dataGWASEnrichment.length === 0 && <Typography variant="h6">There is no biosample enrichment data for this study</Typography>}
-      {dataGWASEnrichment && dataGWASEnrichment.length > 0 && <TwoPaneLayout
-        TableComponent={
-          <BiosampleEnrichmentTable
-            enrichmentdata={{ data: dataGWASEnrichment, loading: loadingGWASEnrichment, error: errorGWASEnrichment }}
-            selected={selected}
-            onSelectionChange={handleSelectionChange}
-            sortedFilteredData={sortedFilteredData}
-            setSortedFilteredData={setSortedFilteredData}
-          />
-        }
-        plots={[
-          {
-            tabTitle: "Bar Plot",
-            icon: <BarChart />,
-            plotComponent:
-              dataGWASEnrichment && dataGWASEnrichment.length > 0 ? (
+      {!loadingGWASEnrichment && dataGWASEnrichment?.length === 0 && (
+        <Alert severity="info">There is no biosample enrichment data for this study</Alert>
+      )}
+      {(loadingGWASEnrichment || (dataGWASEnrichment && dataGWASEnrichment.length > 0)) && (
+        <TwoPaneLayout
+          TableComponent={
+            <BiosampleEnrichmentTable
+              enrichmentdata={{ data: dataGWASEnrichment, loading: loadingGWASEnrichment, error: errorGWASEnrichment }}
+              tableProps={tableProps}
+            />
+          }
+          plots={[
+            {
+              tabTitle: "Bar Plot",
+              icon: <BarChart />,
+              plotComponent: (
                 <BiosampleEnrichmentBarPlot
-                  data={{ data: dataGWASEnrichment, loading: loadingGWASEnrichment, error: errorGWASEnrichment }}
                   selected={selected}
                   sortedFilteredData={sortedFilteredData}
-                  onBarClicked={handleBarClick}
+                  toggleSelection={toggleSelection}
+                  getRowId={getRowId}
                   study={entity.entityID}
                 />
-              ) : (
-                <></>
               ),
-          },
-        ]}
-      />}
+            },
+          ]}
+        />
+      )}
     </>
   );
 };
