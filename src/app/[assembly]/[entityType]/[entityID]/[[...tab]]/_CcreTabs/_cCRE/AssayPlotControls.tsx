@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, styled } from "@mui/material";
+import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, styled, Tooltip } from "@mui/material";
 import type { ViewBy } from "./types";
 
 const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
@@ -52,9 +52,11 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
           <ToggleButton sx={{ textTransform: "none" }} value="value">
             Value
           </ToggleButton>
-          <ToggleButton sx={{ textTransform: "none" }} value="tissue">
-            Tissue
-          </ToggleButton>
+          <Tooltip title="Disables sorting in table">
+            <ToggleButton sx={{ textTransform: "none" }} value="tissue">
+              Tissue
+            </ToggleButton>
+          </Tooltip>
           <ToggleButton sx={{ textTransform: "none" }} value="tissueMax">
             Tissue Max
           </ToggleButton>

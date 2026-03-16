@@ -3,13 +3,14 @@ import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { capitalizeFirstLetter, formatAssay } from "common/utility";
 import { tissueColors } from "common/colors";
 import { useMemo, useState } from "react";
+import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/violinUtils";
 import AssayPlotControls from "./AssayPlotControls";
 import type { AssayViolinPlotProps, BiosampleRow } from "./types";
 
 const AssayViolinPlot = ({
   rows,
   assay,
-  entity,
+  entityID,
   selected,
   setSelected,
   toggleSelection,
@@ -22,7 +23,7 @@ const AssayViolinPlot = ({
   setShow95Line,
   ref,
 }: AssayViolinPlotProps) => {
-  const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
+  const [sortBy, setSortBy] = useState<ViolinSortBy>("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
   const violinData: Distribution<BiosampleRow>[] = useMemo(() => {
@@ -64,41 +65,13 @@ const AssayViolinPlot = ({
       return { label, data, violinColor };
     });
 
-    //apply sorting
-    distributions.sort((a, b) => {
-      if (sortBy === "tissue") {
-        return a.label.localeCompare(b.label);
-      }
-      if (sortBy === "median") {
-        const median = (arr: number[]) => {
-          const sorted = [...arr].sort((x, y) => x - y);
-          const mid = Math.floor(sorted.length / 2);
-          return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-        };
-        return median(b.data.map((d) => d.value)) - median(a.data.map((d) => d.value));
-      }
-      if (sortBy === "max") {
-        return Math.max(...b.data.map((d) => d.value)) - Math.max(...a.data.map((d) => d.value));
-      }
-      return 0;
-    });
+    sortDistributions(distributions, sortBy);
 
     return distributions;
   }, [assay, selected, rows, sortBy, getRowId]);
 
   const onViolinClicked = (distribution: Distribution<BiosampleRow>) => {
-    const rowsForDistribution = distribution.data.map((point) => point.metadata);
-
-    const allInDistributionSelected = rowsForDistribution.every((row) =>
-      selected.some((x) => getRowId(x) === getRowId(row))
-    );
-
-    if (allInDistributionSelected) {
-      setSelected((prev) => prev.filter((row) => !rowsForDistribution.some((x) => getRowId(x) === getRowId(row))));
-    } else {
-      const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => getRowId(x) === getRowId(row)));
-      setSelected((prev) => [...prev, ...toSelect]);
-    }
+    handleViolinToggle(distribution, selected, setSelected, getRowId);
   };
 
   const onPointClicked = (point: ViolinPoint<BiosampleRow>) => {
@@ -123,7 +96,7 @@ const AssayViolinPlot = ({
       <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ViolinPlot
           distributions={violinData}
-          axisLabel={`${entity.entityID} ${formatAssay(assay)} z-scores`}
+          axisLabel={`${entityID} ${formatAssay(assay)} z-scores`}
           loading={!violinData.length}
           onViolinClicked={onViolinClicked}
           onPointClicked={onPointClicked}

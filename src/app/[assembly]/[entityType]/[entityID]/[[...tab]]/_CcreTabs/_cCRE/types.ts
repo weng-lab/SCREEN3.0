@@ -1,7 +1,7 @@
 import type { TableColDef } from "@weng-lab/ui-components";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { AnyOpenEntity } from "common/OpenEntitiesContext";
-import type { CcreAssay, CcreClass } from "common/types/globalTypes";
+import type { Assembly, CcreAssay, CcreClass } from "common/types/globalTypes";
 import type { Dispatch, SetStateAction } from "react";
 import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
 
@@ -10,7 +10,7 @@ export type BiosampleRow = {
   displayname: string;
   sampleType?: string;
   lifeStage?: string;
-  ontology?: string;
+  ontology: string;
   class: CcreClass;
   collection: "core" | "partial" | "ancillary";
   dnase?: number;
@@ -40,7 +40,7 @@ export type AssayTableProps = {
   rows: BiosampleRow[];
   columns: TableColDef[];
   assay: CcreAssay;
-  entity: AnyOpenEntity;
+  entityID: string;
   tableProps: ReturnType<typeof useTablePlotSync<BiosampleRow>>["tableProps"];
   /**
    * True when rows are presorted, and sorting should not be allowed on the table
@@ -55,7 +55,7 @@ export type AssayBarPlotProps = {
   toggleSelection: (item: BiosampleRow) => void;
   getRowId: (item: BiosampleRow) => string;
   assay: CcreAssay;
-  entity: AnyOpenEntity;
+  entityID: string;
   viewBy: ViewBy;
   setViewBy: (view: ViewBy) => void;
   cutoffLowSignal: boolean;
@@ -73,7 +73,7 @@ export type AssayViolinPlotProps = {
   toggleSelection: (item: BiosampleRow) => void;
   getRowId: (item: BiosampleRow) => string;
   assay: CcreAssay;
-  entity: AnyOpenEntity;
+  entityID: string;
   viewBy: ViewBy;
   setViewBy: (view: ViewBy) => void;
   cutoffLowSignal: boolean;
@@ -91,6 +91,6 @@ export type AssayUMAPProps = {
   toggleSelection: (item: BiosampleRow) => void;
   getRowId: (item: BiosampleRow) => string;
   assay: CcreAssay;
-  entity: AnyOpenEntity;
+  assembly: Assembly;
   ref?: React.RefObject<DownloadPlotHandle>;
 };

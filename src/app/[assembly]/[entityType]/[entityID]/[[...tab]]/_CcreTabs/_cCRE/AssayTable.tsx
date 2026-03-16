@@ -17,10 +17,10 @@ const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel =
   return hidden;
 };
 
-const AssayTable = ({ rows, columns, assay, entity, tableProps, isPresorted }: AssayTableProps) => {
+const AssayTable = ({ rows, columns, assay, entityID, tableProps, isPresorted }: AssayTableProps) => {
   const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
 
-  const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" as const }], [assay]);
+  const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" }], [assay]);
 
   const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, initialSort, isPresorted);
 
@@ -28,31 +28,14 @@ const AssayTable = ({ rows, columns, assay, entity, tableProps, isPresorted }: A
   useEffect(() => {
     if (!apiRef.current) return;
     apiRef.current.setColumnVisibilityModel(makeColumnVisibiltyModel(assay));
-    apiRef.current.sortColumn(assay, "desc");
-  }, [apiRef, assay]);
-
-  /**
-   * Resize cols on assay change. Need to use requestAnimationFrame to queue this update until after
-   * the column changes are completed. This calls the autosize method right before the next repaint.
-   */
-  useEffect(() => {
-    if (!apiRef.current) return;
-    const frame = requestAnimationFrame(() => {
-      apiRef.current?.autosizeColumns({
-        expand: true,
-        includeHeaders: true,
-        outliersFactor: 1.5,
-      });
-    });
-
-    return () => cancelAnimationFrame(frame);
+    // apiRef.current.sortColumn(assay, "desc");
   }, [apiRef, assay]);
 
   const allColumns = useMemo(() => [sortableTableCheckboxColumn, ...columns], [columns]);
 
   return (
     <Table
-      label={`${entity.entityID} ${formatAssay(assay)} z-scores`}
+      label={`${entityID} ${formatAssay(assay)} z-scores`}
       rows={rows}
       loading={!rows}
       columns={allColumns}

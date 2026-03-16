@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "common/types/generated";
 import { TableColDef, Table } from "@weng-lab/ui-components";
-import { GRID_CHECKBOX_SELECTION_COL_DEF, GridRenderCellParams } from "@mui/x-data-grid-premium";
+import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
 import { CLASS_COLORS } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -81,6 +81,7 @@ const zScoreFormatting: Partial<TableColDef> = {
   },
   sortComparator: (v1, v2) => (v1 === "NA" ? -1 : v2 === "NA" ? 1 : v1 - v2),
   type: "number",
+  minWidth: 100,
 };
 
 const ctAgnosticCols: TableColDef[] = [
@@ -138,21 +139,8 @@ const silencersDataCols: TableColDef[] = [
     valueGetter: (value, row) => row.method,
   },
 ];
-//This is used to prevent sorting from happening when clicking on the header checkbox
-const StopPropagationWrapper = (params) => (
-  <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
-    <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
-  </div>
-);
 
-//Why is this here?
-const getCoreAndPartialCols = (): TableColDef[] => [
-  {
-    ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
-    sortable: true,
-    hideable: false,
-    renderHeader: StopPropagationWrapper,
-  },
+const coreAndPartialCols: TableColDef[] = [
   {
     headerName: "Cell Type",
     field: "displayname",
@@ -228,7 +216,7 @@ const assayInfo = (row: BiosampleRow) => {
   };
 };
 
-const getAncillaryCols = () => getCoreAndPartialCols().filter((col) => col.field !== "dnase" && col.field !== "class");
+const ancillaryCols = coreAndPartialCols.filter((col) => col.field !== "dnase" && col.field !== "class");
 
 export const GET_CCRE_CT_TF = gql(`
   query cCRETF($accession: String!, $assembly: String!) {
@@ -576,7 +564,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               label="Core Collection"
               labelTooltip={CORE_COLLECTION_TOOLTIP}
               rows={coreCollection}
-              columns={getCoreAndPartialCols()}
+              columns={coreAndPartialCols}
               loading={loadingCorePartialAncillary}
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
@@ -602,7 +590,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               label="Partial Data Collection"
               labelTooltip={PARTIAL_COLLECTION_TOOLTIP}
               rows={partialDataCollection}
-              columns={getCoreAndPartialCols()}
+              columns={coreAndPartialCols}
               loading={loadingCorePartialAncillary}
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
@@ -614,7 +602,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             label="Ancillary Collection"
             labelTooltip={ANCILLARY_COLLECTION_TOOLTIP}
             rows={ancillaryCollection}
-            columns={getAncillaryCols()}
+            columns={ancillaryCols}
             loading={loadingCorePartialAncillary}
             error={errorCorePartialAncillary}
             divHeight={{ height: "400px" }}
@@ -683,7 +671,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
           )}
         </Stack>
       ) : (
-        <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
+        <AssayView rows={assaySpecificRows} columns={coreAndPartialCols} assay={tab} entity={entity} />
       )}
     </>
   );

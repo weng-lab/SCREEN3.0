@@ -32,7 +32,7 @@ const AssayBarPlot = ({
   toggleSelection,
   getRowId,
   assay,
-  entity,
+  entityID,
   viewBy,
   setViewBy,
   cutoffLowSignal,
@@ -77,7 +77,7 @@ const AssayBarPlot = ({
       <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <BarPlot
           data={plotData}
-          topAxisLabel={`${entity.entityID} ${formatAssay(assay)} z-scores`}
+          topAxisLabel={`${entityID} ${formatAssay(assay)} z-scores`}
           cutoffNegativeValues={cutoffLowSignal}
           show95thPercentileLine={show95Line}
           onBarClicked={handleBarClick}

@@ -10,55 +10,49 @@ import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
 
 /**
  * Applies the viewBy transformation to rows.
- * - "value": sort by assay z-score descending
+ * - "value": no sort/filter needed
  * - "tissue": group by tissue (sorted by max within tissue), then by score within group
- * - "tissueMax": keep only the max-scoring biosample per tissue, sort by score descending
+ * - "tissueMax": keep only the max-scoring biosample per tissue
  */
 function applyViewByTransform(rows: BiosampleRow[], viewBy: ViewBy, assay: string): BiosampleRow[] {
   if (!rows) return [];
 
   let result = [...rows];
 
+  // No sorting required. useAutoSort in Table handles resetting initial sort
   switch (viewBy) {
     case "value": {
-      result.sort((a, b) => b[assay] - a[assay]);
       break;
     }
 
+    /**
+     * Group by tissue, sort groups by max tpm in group, and sort descending within groups.
+     * Table sorting should be disabled when viewBy === "tissue", as this ordering
+     * cannot be accomplished by DataGrid sort state alone.
+     */
     case "tissue": {
-      const getTissue = (d: BiosampleRow) => d.ontology ?? "unknown";
-
       const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-        const tissue = getTissue(item);
-        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item[assay]);
+        acc[item.ontology] = Math.max(acc[item.ontology] ?? -Infinity, item[assay]);
         return acc;
       }, {});
 
       result.sort((a, b) => {
-        const tissueA = getTissue(a);
-        const tissueB = getTissue(b);
-        const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
+        const maxDiff = maxValuesByTissue[b.ontology] - maxValuesByTissue[a.ontology];
         if (maxDiff !== 0) return maxDiff;
         return b[assay] - a[assay];
       });
       break;
     }
 
+    // Filter out all but max tpm samples for each tissue
     case "tissueMax": {
-      const getTissue = (d: BiosampleRow) => d.ontology ?? "unknown";
-
       const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-        const tissue = getTissue(item);
-        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, item[assay]);
+        acc[item.ontology] = Math.max(acc[item.ontology] ?? -Infinity, item[assay]);
         return acc;
       }, {});
 
-      result = result.filter((item) => {
-        const tissue = getTissue(item);
-        return item[assay] === maxValuesByTissue[tissue];
-      });
+      result = result.filter((item) => item[assay] === maxValuesByTissue[item.ontology]);
 
-      result.sort((a, b) => b[assay] - a[assay]);
       break;
     }
   }
@@ -98,7 +92,7 @@ const AssayView = (props: AssayViewProps) => {
           rows={transformedRows}
           columns={props.columns}
           assay={props.assay}
-          entity={props.entity}
+          entityID={props.entity.entityID}
           tableProps={tableProps}
           isPresorted={viewBy === "tissue"}
         />
@@ -114,7 +108,7 @@ const AssayView = (props: AssayViewProps) => {
               toggleSelection={toggleSelection}
               getRowId={getRowId}
               assay={props.assay}
-              entity={props.entity}
+              entityID={props.entity.entityID}
               viewBy={viewBy}
               setViewBy={handleSetViewBy}
               cutoffLowSignal={cutoffLowSignal}
@@ -135,7 +129,7 @@ const AssayView = (props: AssayViewProps) => {
               toggleSelection={toggleSelection}
               getRowId={getRowId}
               assay={props.assay}
-              entity={props.entity}
+              entityID={props.entity.entityID}
               viewBy={viewBy}
               setViewBy={handleSetViewBy}
               cutoffLowSignal={cutoffLowSignal}
@@ -158,7 +152,7 @@ const AssayView = (props: AssayViewProps) => {
                     toggleSelection={toggleSelection}
                     getRowId={getRowId}
                     assay={props.assay}
-                    entity={props.entity}
+                    assembly={props.entity.assembly}
                   />
                 ),
               },

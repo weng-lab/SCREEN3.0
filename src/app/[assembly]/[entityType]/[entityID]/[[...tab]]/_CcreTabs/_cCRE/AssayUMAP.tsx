@@ -48,13 +48,22 @@ const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: CcreA
         <b>Sample Type:</b> {metaData.sampleType}
       </Typography>
       <Typography>
-        <b>{formatAssay(assay)}:</b> {metaData[assay]}
+        <b>{formatAssay(assay)}:</b> {metaData[assay].toFixed(2)}
       </Typography>
     </>
   );
 };
 
-const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection, getRowId, ref }: AssayUMAPProps) => {
+const AssayUMAP = ({
+  rows,
+  assay,
+  assembly,
+  selected,
+  setSelected,
+  toggleSelection,
+  getRowId,
+  ref,
+}: AssayUMAPProps) => {
   const [colorScheme, setColorScheme] = useState<"score" | "organ/tissue" | "sampleType">("score");
   const [scoreColorMode, setScoreColorMode] = useState<"active" | "all">("active");
 
@@ -80,12 +89,9 @@ const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection
     setScoreColorMode(e.target.value as "active" | "all");
   };
 
-  const {
-    data: data_umap,
-    loading: loading_umap,
-  } = useQuery(BIOSAMPLE_UMAP, {
+  const { data: data_umap, loading: loading_umap } = useQuery(BIOSAMPLE_UMAP, {
     variables: {
-      assembly: entity.assembly.toLowerCase(),
+      assembly: assembly.toLowerCase(),
       assay,
     },
   });
@@ -191,9 +197,17 @@ const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection
         <UMAPLegend
           colorScheme={colorScheme}
           scatterData={scatterData}
-          maxValue={4}
-          colorScale={colorScale}
-          scoreColorMode={scoreColorMode}
+          gradientConfig={{
+            minLabel: scoreColorMode === "active" ? "1.65" : "-4",
+            maxLabel: "4",
+            gradient: [
+              colorScale(scoreColorMode === "active" ? 1.65 : -4),
+              ...(scoreColorMode === "all" ? [colorScale(0)] : []),
+              colorScale(4),
+            ].join(", "),
+          }}
+          getTissue={(x) => x.ontology}
+          getSampleType={(x) => x.sampleType}
         />
       </Stack>
       <Box

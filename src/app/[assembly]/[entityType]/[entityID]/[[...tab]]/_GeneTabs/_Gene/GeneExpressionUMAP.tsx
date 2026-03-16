@@ -11,7 +11,7 @@ import UMAPLegend from "common/components/UMAPLegend";
 import { ColorBySelect } from "common/components/ColorBySelect";
 
 //generate the domain for the gradient based on the max number
-export const generateDomain = (max: number, steps: number) => {
+const generateDomain = (max: number, steps: number) => {
   return Array.from({ length: steps }, (_, i) => (i / (steps - 1)) * max);
 };
 
@@ -26,7 +26,7 @@ const GeneExpressionUMAP = ({
   loading,
   ref,
 }: GeneExpressionUMAPProps) => {
-  const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue">("expression");
+  const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue" | "sampleType">("expression");
 
   // Band-aid: ScatterPlot's controls are absolutely positioned on the left of the container.
   // The square plot uses min(width, height), so we keep height < width to ensure the controls
@@ -43,7 +43,7 @@ const GeneExpressionUMAP = ({
   }, []);
 
   const handleColorSchemeChange = (event: SelectChangeEvent) => {
-    setColorScheme(event.target.value as "expression" | "organ/tissue");
+    setColorScheme(event.target.value as "expression" | "organ/tissue" | "sampleType");
   };
 
   //find the max logTPM for the domain of the gradient
@@ -72,11 +72,15 @@ const GeneExpressionUMAP = ({
       const gradientColor = interpolateYlOrRd(colorScale(getLogTPM(x)));
 
       const getColor = () => {
-        if (isHighlighted(x) || !anyHighlighted) {
-          if (colorScheme === "expression") {
+        if (!isHighlighted(x) && anyHighlighted) return "#CCCCCC";
+        switch (colorScheme) {
+          case "expression":
             return gradientColor;
-          } else return tissueColors[x.tissue];
-        } else return "#CCCCCC";
+          case "organ/tissue":
+            return tissueColors[x.tissue] ?? tissueColors.missing;
+          case "sampleType":
+            return tissueColors[x.biosample_type] ?? tissueColors.missing;
+        }
       };
 
       return {
@@ -119,13 +123,32 @@ const GeneExpressionUMAP = ({
     );
   };
 
+  const expressionGradient = useMemo(() => {
+    const stops = generateDomain(maxValue, 9).map((value) => {
+      const scaled = colorScale(value);
+      return interpolateYlOrRd(scaled);
+    });
+    return `#808080, ${stops.join(", ")}`;
+  }, [maxValue, colorScale]);
+
   if (!scatterData || scatterData.length === 0) return null;
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <ColorBySelect colorScheme={colorScheme} handleColorSchemeChange={handleColorSchemeChange} />
-        <UMAPLegend colorScheme={colorScheme} scatterData={scatterData} maxValue={maxValue} colorScale={colorScale} />
+        <UMAPLegend
+          colorScheme={colorScheme}
+          scatterData={scatterData}
+          gradientConfig={{
+            label: "Log₁₀(TPM + 1)",
+            minLabel: "0",
+            maxLabel: maxValue.toFixed(2),
+            gradient: expressionGradient,
+          }}
+          getTissue={(x) => x.tissue}
+          getSampleType={(x) => x.biosample_type}
+        />
       </Stack>
       <Box
         ref={plotContainerRef}
