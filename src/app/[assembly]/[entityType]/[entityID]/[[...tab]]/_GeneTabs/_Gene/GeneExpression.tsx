@@ -130,7 +130,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
 
   const isV40 = useMemo(() => {
     if (!geneExpressionData.data) return false;
-    return geneExpressionData?.data?.[0].replicates?.[0].tpm === undefined;
+    return geneExpressionData?.data?.[0]?.replicates?.[0]?.tpm === undefined;
   }, [geneExpressionData.data]);
 
   /**

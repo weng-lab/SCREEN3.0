@@ -46,8 +46,9 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
         headerName: scale === "linearTPM" ? "TPM" : "Log10(TPM + 1)",
         type: "number",
         valueGetter: (_, row) => {
-          return (scale === "logTPM" ? getLogTPM(row) : getTPM(row)).toFixed(2);
+          return scale === "logTPM" ? getLogTPM(row) : getTPM(row);
         },
+        valueFormatter: (value: number) => value.toFixed(2),
         sortable: viewBy !== "byTissueTPM",
         minWidth: 75,
       },

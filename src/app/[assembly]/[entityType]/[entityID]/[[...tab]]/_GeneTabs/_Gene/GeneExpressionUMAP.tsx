@@ -15,6 +15,8 @@ export const generateDomain = (max: number, steps: number) => {
   return Array.from({ length: steps }, (_, i) => (i / (steps - 1)) * max);
 };
 
+const MINIMAP_CONFIG = { position: { right: 50, bottom: 50 } };
+
 const GeneExpressionUMAP = ({
   entity,
   rows,
@@ -42,13 +44,6 @@ const GeneExpressionUMAP = ({
 
   const handleColorSchemeChange = (event: SelectChangeEvent) => {
     setColorScheme(event.target.value as "expression" | "organ/tissue");
-  };
-
-  const map = {
-    position: {
-      right: 50,
-      bottom: 50,
-    },
   };
 
   //find the max logTPM for the domain of the gradient
@@ -148,7 +143,7 @@ const GeneExpressionUMAP = ({
           pointData={scatterData}
           selectable
           loading={loading}
-          miniMap={map}
+          miniMap={MINIMAP_CONFIG}
           groupPointsAnchor="exp_accession"
           tooltipBody={(point) => <TooltipBody {...point} />}
           leftAxisLabel="UMAP-2"
