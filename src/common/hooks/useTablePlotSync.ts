@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  gridFilteredSortedRowEntriesSelector,
-  GridRowSelectionModel,
-  useGridApiRef,
-} from "@mui/x-data-grid-premium";
+import { gridFilteredSortedRowEntriesSelector, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid-premium";
 import type { GridApi } from "@mui/x-data-grid-premium";
 import type { RefObject } from "react";
 import { TableProps } from "@weng-lab/ui-components";
@@ -25,7 +21,7 @@ function arraysShallowEqual<T>(a: T[], b: T[]): boolean {
 type UseTablePlotSyncOptions<T> = {
   /** Pre-transformed rows to display in the table */
   rows: T[];
-  /** Extract a unique string ID from a row (must match getRowId passed to \<Table>) */
+  /** Extract a unique string ID from a row */
   getRowId: (row: T) => string;
 };
 
@@ -126,6 +122,6 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
     apiRef,
     tableProps,
     toggleSelection,
-    getRowId,
+    getRowId: stableGetRowId,
   };
 }

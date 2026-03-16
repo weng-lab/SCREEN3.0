@@ -1,4 +1,4 @@
-import { GeneExpressionBarPlotProps, getScaleLabel, getTPM, PointMetadata } from "./types";
+import { GeneExpressionBarPlotProps, getScaleLabel, getTPM, getLogTPM, PointMetadata } from "./types";
 import { useCallback, useMemo } from "react";
 import { capitalizeFirstLetter } from "common/utility";
 import { Box, Typography } from "@mui/material";
@@ -32,6 +32,8 @@ const GeneExpressionBarPlot = ({
     return `${tpm.toFixed(1)}, ${name} (${accession}${biorep ? ", rep. " + biorep : ""})`;
   };
 
+  const getValue = scale === "logTPM" ? getLogTPM : getTPM;
+
   const plotData: BarData<PointMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((x, i) => {
@@ -39,15 +41,15 @@ const GeneExpressionBarPlot = ({
       const isSelected = selected.some((y) => getRowId(y) === getRowId(x));
       return {
         category: capitalizeFirstLetter(x.tissue),
-        label: makeLabel(getTPM(x), x.biosample, x.accession),
-        value: getTPM(x),
+        label: makeLabel(getValue(x), x.biosample, x.accession),
+        value: getValue(x),
         color:
           (anySelected && isSelected) || !anySelected ? (tissueColors[x.tissue] ?? tissueColors.missing) : "#CCCCCC",
         id: i.toString(),
         metadata: x,
       };
     });
-  }, [sortedFilteredData, selected, getRowId]);
+  }, [sortedFilteredData, selected, getRowId, getValue]);
 
   const handleBarClick = (bar: BarData<PointMetadata>) => {
     toggleSelection(bar.metadata);

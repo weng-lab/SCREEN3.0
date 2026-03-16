@@ -20,7 +20,63 @@ import type {
   GeneExpressionControlProps,
 } from "./types";
 import { getTPM } from "./types";
+import type { UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
 const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
+
+/**
+ * Flattens gene expression data into one row per sample.
+ * Filters by RNAtype and handles replicate splitting/averaging. TPM values are always raw (unscaled).
+ */
+function buildRows(
+  data: UseGeneExpressionReturn["data"],
+  RNAtype: GeneExpressionRNAType,
+  replicates: GeneExpressionReplicates
+): PointMetadata[] {
+  if (!data?.length) return [];
+
+  const filteredData = data.filter((d) => RNAtype === "all" || d.assay_term_name === RNAtype);
+
+  return filteredData.flatMap((entry) => {
+    const files = entry.gene_quantification_files?.filter(Boolean) ?? [];
+
+    if (replicates === "all") {
+      return files.map((file, i) => {
+        const quant = file.quantifications?.filter(Boolean)?.[0];
+        const repLabel = files.length > 1 ? ` rep. ${i + 1}` : "";
+
+        return {
+          ...entry,
+          accession: `${entry.accession}${repLabel}`,
+          gene_quantification_files: [
+            {
+              ...file,
+              quantifications: [{ ...quant, tpm: quant?.tpm }],
+            },
+          ],
+        };
+      });
+    }
+
+    // replicates === "mean"
+    const allQuants = files.flatMap((file) => file.quantifications?.filter(Boolean) ?? []);
+    if (!allQuants.length) return [];
+
+    const avgTPM = allQuants.reduce((sum, q) => sum + q?.tpm, 0) / allQuants.length;
+
+    return [
+      {
+        ...entry,
+        gene_quantification_files: [
+          {
+            accession: files[0]?.accession,
+            biorep: null,
+            quantifications: [{ file_accession: "average", tpm: avgTPM }],
+          },
+        ],
+      },
+    ];
+  });
+}
 
 /**
  * Applies the viewBy transformation to rows.
@@ -93,75 +149,19 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
   }, [geneExpressionData?.data]);
 
   /**
-   * Maps gene expression experiments to flat array, taking into account `replicates` and `RNAtype` and scaling based on `scale`.
-   * Returned rows' TPM values are log scaled if `scale === "logTPM"`
+   * Flattens gene expression experiments into a row-per-sample array.
+   * Handles RNAtype filtering and replicate aggregation. TPM values are always raw (unscaled).
    */
-  const rows: PointMetadata[] = useMemo(() => {
-    if (!geneExpressionData?.data?.length || isV40) return [];
+  const rows: PointMetadata[] = useMemo(
+    () => buildRows(geneExpressionData.data, RNAtype, replicates),
+    [geneExpressionData.data, RNAtype, replicates]
+  );
 
-    const filteredData = geneExpressionData.data.filter((d) => RNAtype === "all" || d.assay_term_name === RNAtype);
-
-    const result: PointMetadata[] = filteredData.flatMap((entry) => {
-      const files = entry.gene_quantification_files?.filter(Boolean) ?? [];
-
-      if (replicates === "all") {
-        return files.flatMap((file, i) => {
-          const quants = file.quantifications?.filter(Boolean) ?? [];
-          const quant = quants[0];
-
-          const rawTPM = quant?.tpm;
-          const scaledTPM = scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
-
-          const repLabel = files.length > 1 ? ` rep. ${i + 1}` : "";
-          const modifiedAccession = `${entry.accession}${repLabel}`;
-
-          return {
-            ...entry,
-            accession: modifiedAccession,
-            gene_quantification_files: [
-              {
-                ...file,
-                quantifications: [
-                  {
-                    ...quant,
-                    tpm: scaledTPM,
-                  },
-                ],
-              },
-            ],
-          };
-        });
-      } else {
-        // replicates === "mean"
-        const allQuants = files.flatMap((file) => file.quantifications?.filter(Boolean) ?? []);
-        if (!allQuants.length) return [];
-
-        const avgTPM = allQuants.reduce((sum, q) => sum + q?.tpm, 0) / allQuants.length;
-
-        const scaledTPM = scale === "logTPM" ? Math.log10(avgTPM + 1) : avgTPM;
-
-        return [
-          {
-            ...entry,
-            gene_quantification_files: [
-              {
-                accession: files[0]?.accession,
-                biorep: null,
-                quantifications: [
-                  {
-                    file_accession: "average",
-                    tpm: scaledTPM,
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-      }
-    });
-
-    return result;
-  }, [geneExpressionData.data, isV40, RNAtype, replicates, scale]);
+  /** UMAP always uses mean replicates and all RNA types (each experiment has one x/y coordinate) */
+  const umapRows: PointMetadata[] = useMemo(
+    () => buildRows(geneExpressionData.data, "all", "mean"),
+    [geneExpressionData.data]
+  );
 
   const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy), [rows, viewBy]);
 
@@ -175,15 +175,25 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
     setReplicates(newReplicates);
   };
 
+  const handleSetRNAType = (newType: GeneExpressionRNAType) => {
+    setSelected([]);
+    setRNAType(newType);
+  };
+
+  const handleSetViewBy = (newView: GeneExpressionViewBy) => {
+    setSelected([]);
+    setViewBy(newView);
+  };
+
   const controlProps: GeneExpressionControlProps = {
     scale,
     setScale,
     replicates,
     setReplicates: handleSetReplicates,
     viewBy,
-    setViewBy,
+    setViewBy: handleSetViewBy,
     RNAtype,
-    setRNAType,
+    setRNAType: handleSetRNAType,
   };
 
   if (isV40) return <VersionFallback gene={entity.entityID} />;
@@ -226,7 +236,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               setSelected={setSelected}
               toggleSelection={toggleSelection}
               entity={entity}
-              geneExpressionData={geneExpressionData}
+              loading={geneExpressionData.loading}
               getRowId={getRowId}
               {...controlProps}
             />
@@ -238,10 +248,11 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
           plotComponent: (
             <GeneExpressionUMAP
               entity={entity}
+              rows={umapRows}
               selected={selected}
               setSelected={setSelected}
               toggleSelection={toggleSelection}
-              geneExpressionData={geneExpressionData}
+              loading={geneExpressionData.loading}
               getRowId={getRowId}
             />
           ),

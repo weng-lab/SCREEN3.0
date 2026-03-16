@@ -6,9 +6,11 @@ import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
 
 export type PointMetadata = UseGeneExpressionReturn["data"][number];
 
-/** Extract the TPM value from a row's nested quantification structure */
-export const getTPM = (d: PointMetadata): number =>
-  d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
+/** Extract the raw TPM value from a row's nested quantification structure */
+export const getTPM = (d: PointMetadata): number => d.gene_quantification_files?.[0]?.quantifications?.[0]?.tpm ?? 0;
+
+/** Extract the log10-transformed TPM value: log10(TPM + 1) */
+export const getLogTPM = (d: PointMetadata): number => Math.log10(getTPM(d) + 1);
 
 /** Build a scale-appropriate axis label for expression plots */
 export const getScaleLabel = (geneName: string, scale: GeneExpressionScale): string =>
@@ -48,7 +50,7 @@ export type GeneExpressionViolinPlotProps = GeneExpressionControlProps & {
   setSelected: Dispatch<SetStateAction<PointMetadata[]>>;
   toggleSelection: (item: PointMetadata) => void;
   entity: EntityViewComponentProps["entity"];
-  geneExpressionData: UseGeneExpressionReturn;
+  loading: boolean;
   getRowId: (item: PointMetadata) => string;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
@@ -56,10 +58,11 @@ export type GeneExpressionViolinPlotProps = GeneExpressionControlProps & {
 /** Props for GeneExpressionUMAP */
 export type GeneExpressionUMAPProps = {
   entity: EntityViewComponentProps["entity"];
+  rows: PointMetadata[];
   selected: PointMetadata[];
   setSelected: Dispatch<SetStateAction<PointMetadata[]>>;
   toggleSelection: (item: PointMetadata) => void;
-  geneExpressionData: UseGeneExpressionReturn;
+  loading: boolean;
   getRowId: (item: PointMetadata) => string;
   ref?: React.RefObject<DownloadPlotHandle>;
 };

@@ -1,4 +1,4 @@
-import { GeneExpressionViolinPlotProps, getScaleLabel, getTPM, PointMetadata } from "./types";
+import { GeneExpressionViolinPlotProps, getScaleLabel, getTPM, getLogTPM, PointMetadata } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
@@ -20,13 +20,13 @@ const GeneExpressionViolinPlot = ({
   ref,
   rows,
   entity,
-  geneExpressionData,
+  loading,
   getRowId,
 }: GeneExpressionViolinPlotProps) => {
   const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
-  const { loading } = geneExpressionData;
+  const getValue = scale === "logTPM" ? getLogTPM : getTPM;
 
   const violinData: Distribution<PointMetadata>[] = useMemo(() => {
     if (!rows) return [];
@@ -42,7 +42,7 @@ const GeneExpressionViolinPlot = ({
     );
 
     const distributions = Object.entries(grouped).map(([tissue, group]) => {
-      const values = group.map((d) => getTPM(d));
+      const values = group.map((d) => getValue(d));
       const label = tissue;
       const violinColor =
         selected.length === 0 ||
@@ -92,7 +92,7 @@ const GeneExpressionViolinPlot = ({
     });
 
     return distributions;
-  }, [rows, selected, getRowId, sortBy]);
+  }, [rows, selected, getRowId, sortBy, getValue]);
 
   const onViolinClicked = (violin: Distribution<PointMetadata>) => {
     const rowsForDistribution = violin.data.map((point) => point.metadata);
@@ -151,32 +151,27 @@ const GeneExpressionViolinPlot = ({
           animationBuffer={0.01}
           ref={ref}
           downloadFileName={`${entity.entityID}_expression_violin_plot`}
-          pointTooltipBody={(point) => {
-            const rawTPM = point.metadata ? getTPM(point.metadata) : 0;
-            const displayTPM = scale === "linearTPM" ? rawTPM : Math.log10(rawTPM + 1);
-
-            return (
-              <Box maxWidth={300}>
-                {point.outlier && (
-                  <div>
-                    <strong>Outlier</strong>
-                  </div>
-                )}
+          pointTooltipBody={(point) => (
+            <Box maxWidth={300}>
+              {point.outlier && (
                 <div>
-                  <strong>Accession:</strong> {point.metadata?.accession}
+                  <strong>Outlier</strong>
                 </div>
-                <div>
-                  <strong>Biosample:</strong> {point.metadata?.biosample}
-                </div>
-                <div>
-                  <strong>Tissue:</strong> {point.metadata?.tissue}
-                </div>
-                <div>
-                  <strong>{scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}:</strong> {displayTPM.toFixed(1)}
-                </div>
-              </Box>
-            );
-          }}
+              )}
+              <div>
+                <strong>Accession:</strong> {point.metadata?.accession}
+              </div>
+              <div>
+                <strong>Biosample:</strong> {point.metadata?.biosample}
+              </div>
+              <div>
+                <strong>Tissue:</strong> {point.metadata?.tissue}
+              </div>
+              <div>
+                <strong>{scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}:</strong> {point.value.toFixed(1)}
+              </div>
+            </Box>
+          )}
         />
       </Box>
     </Box>
