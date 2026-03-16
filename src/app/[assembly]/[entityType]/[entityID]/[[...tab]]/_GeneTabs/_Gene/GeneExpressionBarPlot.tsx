@@ -41,7 +41,7 @@ const GeneExpressionBarPlot = ({
       const isSelected = selected.some((y) => getRowId(y) === getRowId(x));
       return {
         category: capitalizeFirstLetter(x.tissue),
-        label: makeLabel(getValue(x), x.biosample, x.accession),
+        label: makeLabel(getValue(x), x.biosample, x.exp_accession, x.biorep),
         value: getValue(x),
         color:
           (anySelected && isSelected) || !anySelected ? (tissueColors[x.tissue] ?? tissueColors.missing) : "#CCCCCC",

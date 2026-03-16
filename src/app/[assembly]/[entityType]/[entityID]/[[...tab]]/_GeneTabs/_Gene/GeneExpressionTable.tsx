@@ -66,18 +66,20 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
         headerName: "Experiment",
         sortable: false,
         disableColumnMenu: true,
-        valueGetter: (_, row) => {
-          return row.accession.split(" ")[0];
-        },
+        valueGetter: (_, row) => row.exp_accession,
         renderCell: (params) => {
+          const biorep = params.row.biorep;
           return (
-            <IconButton
-              href={`https://www.encodeproject.org/experiments/${params.value}/`}
-              target="_blank"
-              size="small"
-            >
-              <OpenInNew fontSize="small" />
-            </IconButton>
+            <>
+              <IconButton
+                href={`https://www.encodeproject.org/experiments/${params.value}/`}
+                target="_blank"
+                size="small"
+              >
+                <OpenInNew fontSize="small" />
+              </IconButton>
+              {biorep != null && ` rep. ${biorep}`}
+            </>
           );
         },
       },
@@ -92,6 +94,7 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
       columns={columns}
       loading={loading}
       error={error}
+      apiRef={apiRef}
       initialState={{
         sorting: {
           sortModel: initialSort,

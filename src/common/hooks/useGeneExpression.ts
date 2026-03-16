@@ -1,49 +1,36 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useMemo } from "react";
 import { gql } from "common/types/generated/gql";
-import { GeneexpressionQuery } from "common/types/generated/graphql";
 import { Assembly } from "common/types/globalTypes";
 import { human_RNA_map, mouse_RNA_map } from "./consts";
 
 const GET_GENE_EXPRESSION = gql(`
-query geneexpression($assembly: String!, $gene_id: [String]) {
+query geneexpression($assembly: String!, $gene_id: String) {
   gene_dataset(processed_assembly: $assembly) {
     biosample
     tissue
-  	cell_compartment
     biosample_type
   	assay_term_name
-    accession  
-    gene_quantification_files(assembly: $assembly) {
-      accession
+    exp_accession: accession
+    replicates: gene_quantification_files(assembly: $assembly) {
+      file_accession: accession
       biorep
       techrep
-      quantifications(gene_id_prefix: $gene_id) {
+      quantification: quantifications(gene_id_prefix: [$gene_id]) {
         tpm
-        file_accession
       }
     }
   }
 }
  `);
 
-export type UseGeneDataParams = {
+export type UseGeneExpressionDataParams = {
   id: string;
   assembly: Assembly;
   skip?: boolean
 };
 
-type GeneDatasetWithUMAP = GeneexpressionQuery["gene_dataset"][number] & {
-  umap_1: number;
-  umap_2: number;
-};
-export type UseGeneExpressionReturn = {
-  data: GeneDatasetWithUMAP[] | undefined;
-  loading: boolean;
-  error: ApolloError;
-};
-
-export const useGeneExpression = ({ id, assembly, skip }: UseGeneDataParams): UseGeneExpressionReturn => {
+export const useGeneExpression = ({ id, assembly, skip }: UseGeneExpressionDataParams) => {
   const { data, loading, error } = useQuery(GET_GENE_EXPRESSION, {
     variables: {
       gene_id: id?.split(".")[0],
@@ -52,9 +39,6 @@ export const useGeneExpression = ({ id, assembly, skip }: UseGeneDataParams): Us
     skip: skip || !id,
   });
 
-  /**
-   * Need to correct the data, since encode samples sometimes have a ' \" ' before and after the true value
-   */
   const correctedData = useMemo(() => {
     if (!data) return undefined;
     return {
@@ -62,10 +46,20 @@ export const useGeneExpression = ({ id, assembly, skip }: UseGeneDataParams): Us
       gene_dataset: data.gene_dataset.map((x) => {
         return {
           ...x,
-          biosample: x.biosample.replaceAll('\"', ""),
-          biosampleid: x.biosample_type.replaceAll('\"', ""),
-          umap_1: assembly === "mm10" ? mouse_RNA_map[x.accession][0] : human_RNA_map[x.accession][0],
-          umap_2: assembly === "mm10" ? mouse_RNA_map[x.accession][1] : human_RNA_map[x.accession][1],
+          replicates: [
+            ...x.replicates.map((rep) => ({
+              file_accession: rep.file_accession,
+              biorep: rep.biorep,
+              techrep: rep.techrep,
+              tpm: rep.quantification[0]?.tpm,
+            })),
+          ],
+          umap_1: (assembly === "mm10"
+            ? mouse_RNA_map[x.exp_accession][0]
+            : human_RNA_map[x.exp_accession][0]) as number,
+          umap_2: (assembly === "mm10"
+            ? mouse_RNA_map[x.exp_accession][1]
+            : human_RNA_map[x.exp_accession][1]) as number,
         };
       }),
     };

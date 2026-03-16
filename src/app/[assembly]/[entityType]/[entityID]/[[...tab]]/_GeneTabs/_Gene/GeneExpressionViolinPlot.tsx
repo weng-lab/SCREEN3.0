@@ -159,7 +159,8 @@ const GeneExpressionViolinPlot = ({
                 </div>
               )}
               <div>
-                <strong>Accession:</strong> {point.metadata?.accession}
+                <strong>Accession:</strong> {point.metadata?.exp_accession}
+                {point.metadata?.biorep != null && ` (rep. ${point.metadata.biorep})`}
               </div>
               <div>
                 <strong>Biosample:</strong> {point.metadata?.biosample}

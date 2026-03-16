@@ -18,11 +18,10 @@ export const generateDomain = (max: number, steps: number) => {
 const GeneExpressionUMAP = ({
   entity,
   rows,
-  selected,
-  setSelected,
-  toggleSelection,
+  highlightedAccessions,
+  onPointToggle,
+  onLassoSelect,
   loading,
-  getRowId,
   ref,
 }: GeneExpressionUMAPProps) => {
   const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue">("expression");
@@ -71,13 +70,14 @@ const GeneExpressionUMAP = ({
   const scatterData: Point<PointMetadata>[] = useMemo(() => {
     if (!rows) return [];
 
-    const isHighlighted = (x: PointMetadata) => selected.some((y) => getRowId(y) === getRowId(x));
+    const anyHighlighted = highlightedAccessions.size > 0;
+    const isHighlighted = (x: PointMetadata) => highlightedAccessions.has(x.exp_accession);
 
     return rows.map((x) => {
       const gradientColor = interpolateYlOrRd(colorScale(getLogTPM(x)));
 
       const getColor = () => {
-        if (isHighlighted(x) || selected.length === 0) {
+        if (isHighlighted(x) || !anyHighlighted) {
           if (colorScheme === "expression") {
             return gradientColor;
           } else return tissueColors[x.tissue];
@@ -92,21 +92,21 @@ const GeneExpressionUMAP = ({
         metaData: x,
       };
     });
-  }, [rows, selected, colorScale, colorScheme, getRowId]);
+  }, [rows, highlightedAccessions, colorScale, colorScheme]);
 
   const handlePointsSelected = (selectedPoints: Point<PointMetadata>[]) => {
-    setSelected([...selected, ...selectedPoints.map((point) => point.metaData)]);
+    onLassoSelect(selectedPoints.map((point) => point.metaData));
   };
 
   const handlePointSelected = (selectedPoint: Point<PointMetadata>) => {
-    toggleSelection(selectedPoint.metaData);
+    onPointToggle(selectedPoint.metaData);
   };
 
   const TooltipBody = (point: Point<PointMetadata>) => {
     return (
       <>
         <Typography>
-          <b>Accession:</b> {point.metaData.accession}
+          <b>Accession:</b> {point.metaData.exp_accession}
         </Typography>
         <Typography>
           <b>Biosample:</b> {point.metaData.biosample}
@@ -149,7 +149,7 @@ const GeneExpressionUMAP = ({
           selectable
           loading={loading}
           miniMap={map}
-          groupPointsAnchor="accession"
+          groupPointsAnchor="exp_accession"
           tooltipBody={(point) => <TooltipBody {...point} />}
           leftAxisLabel="UMAP-2"
           bottomAxisLabel="UMAP-1"
