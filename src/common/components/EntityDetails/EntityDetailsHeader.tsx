@@ -102,6 +102,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
         display={entityType === "ccre" ? "flex" : "flex"}
         height={{ xs: 60 }}
         justifyContent={"flex-end"}
+        gap={1} 
        
       >
         {entityType !== "ccre" && <Button

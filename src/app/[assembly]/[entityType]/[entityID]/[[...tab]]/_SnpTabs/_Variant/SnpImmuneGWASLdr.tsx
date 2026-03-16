@@ -1,7 +1,7 @@
 import { Box, Skeleton } from "@mui/material";
 import useImmuneGWASLdr from "common/hooks/useImmuneGWASLdr";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 
 export default function SnpImmuneGWASLdr({ snpid }: { snpid: string }) {
@@ -21,7 +21,7 @@ export default function SnpImmuneGWASLdr({ snpid }: { snpid: string }) {
       zscore,
     };
   });
-  const cols: GridColDef[] = [
+  const cols: TableColDef[] = [
     {
       field: "disease",
       headerName: "Disease",

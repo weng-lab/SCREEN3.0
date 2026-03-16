@@ -3,6 +3,7 @@ import EntityDetailsLayout from "common/components/EntityDetails/EntityDetailsLa
 import { isValidAssembly } from "common/types/globalTypes";
 import { use } from "react";
 import { isValidEntityType } from "common/entityTabsConfig";
+import { notFound } from "next/navigation";
 
 export default function Layout({
   children,
@@ -14,11 +15,11 @@ export default function Layout({
   const { assembly, entityType, entityID } = use(params);
 
   if (!isValidAssembly(assembly)) {
-    throw new Error(`Unknown assembly: ${assembly}`);
+    notFound();
   }
 
   if (!isValidEntityType(assembly, entityType)) {
-    throw new Error(`Unknown entity for ${assembly}: ${entityType}`);
+    notFound();
   }
 
   return (

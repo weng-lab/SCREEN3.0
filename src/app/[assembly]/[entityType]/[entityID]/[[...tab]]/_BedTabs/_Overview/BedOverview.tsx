@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { GenomicRange } from "common/types/generated/graphql";
 import {
   // GRID_CHECKBOX_SELECTION_COL_DEF,
-  GridColDef,
+  TableColDef,
   // GridRowSelectionModel,
   Table,
   // useGridApiRef,
@@ -105,9 +105,9 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
   //   </div>
   // );
 
-  const columns: GridColDef<RegionRow>[] = [
+  const columns: TableColDef<RegionRow>[] = [
     // {
-    //   ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef<RegionRow>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
+    //   ...(GRID_CHECKBOX_SELECTION_COL_DEF as TableColDef<RegionRow>), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
     //   sortable: true,
     //   hideable: false,
     //   renderHeader: StopPropagationWrapper,

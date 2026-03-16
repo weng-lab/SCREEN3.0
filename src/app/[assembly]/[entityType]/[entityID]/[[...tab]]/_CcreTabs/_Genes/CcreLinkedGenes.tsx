@@ -3,7 +3,7 @@ import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import useClosestGenes from "common/hooks/useClosestGenes";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -93,7 +93,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       id: index.toString(),
     }));
 
-  const CompuLinkedGenes_columns: GridColDef<(typeof dataCompuGenes)[number]>[] = [
+  const CompuLinkedGenes_columns: TableColDef<(typeof dataCompuGenes)[number]>[] = [
     {
       field: "fileaccession",
       headerName: "File",
@@ -216,7 +216,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
     },
   ];
 
-  const closestGenesCols: GridColDef[] = [
+  const closestGenesCols: TableColDef[] = [
     {
       field: "name",
       headerName: "Name",

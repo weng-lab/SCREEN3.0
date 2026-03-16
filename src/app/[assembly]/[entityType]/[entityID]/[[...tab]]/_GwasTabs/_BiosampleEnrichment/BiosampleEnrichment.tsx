@@ -8,7 +8,8 @@ import { BarData, DownloadPlotHandle } from "@weng-lab/visualization";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
-import { Table, useGridEventPriority } from "@weng-lab/ui-components";
+import { Table } from "@weng-lab/ui-components";
+import { useGridEventPriority } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Typography } from "@mui/material";
 const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {

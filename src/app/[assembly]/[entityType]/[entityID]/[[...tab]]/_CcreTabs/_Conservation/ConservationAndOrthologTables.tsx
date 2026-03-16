@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useQuery } from "@apollo/client";
-import { GridColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
@@ -54,7 +54,7 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
     return [];
   }, [dataOrtholog]);
 
-  const orthologCols: GridColDef<(typeof orthologRows)[number]>[] = useMemo(
+  const orthologCols: TableColDef<(typeof orthologRows)[number]>[] = useMemo(
     () => [
       {
         headerName: "Accession",
@@ -81,7 +81,7 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
     [entity.assembly]
   );
 
-  const conservationCols: GridColDef[] = [
+  const conservationCols: TableColDef[] = [
     {
       field: "metric",
       headerName: "",
