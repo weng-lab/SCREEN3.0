@@ -19,7 +19,8 @@ const GeneExpressionBarPlot = ({
   replicates,
   setReplicates,
   ref,
-  entity,
+  geneName,
+  assembly,
   getRowId,
 }: GeneExpressionBarPlotProps) => {
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
@@ -89,7 +90,7 @@ const GeneExpressionBarPlot = ({
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <GenePlotControls
-        assembly={entity.assembly}
+        assembly={assembly}
         RNAtype={RNAtype}
         scale={scale}
         viewBy={viewBy}
@@ -103,10 +104,10 @@ const GeneExpressionBarPlot = ({
         <BarPlot
           onBarClicked={handleBarClick}
           data={plotData}
-          topAxisLabel={getScaleLabel(entity.entityID, scale)}
+          topAxisLabel={getScaleLabel(geneName, scale)}
           TooltipContents={PlotTooltip}
           ref={ref}
-          downloadFileName={`${entity.entityID}_expression_bar_plot`}
+          downloadFileName={`${geneName}_expression_bar_plot`}
           animation="slideRight"
           animationBuffer={0.01}
         />

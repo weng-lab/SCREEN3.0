@@ -11,10 +11,18 @@ import { useAutoSort } from "common/hooks/useAutoSort";
 
 const initialSort: GridSortModel = [{ field: "tpm", sort: "desc" }];
 
-const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, scale }: GeneExpressionTableProps) => {
+const GeneExpressionTable = ({
+  label,
+  rows,
+  loading,
+  error,
+  tableProps,
+  isPresorted,
+  scale,
+}: GeneExpressionTableProps) => {
   const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
 
-  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, viewBy, initialSort);
+  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, initialSort, isPresorted);
 
   const columns: TableColDef<PointMetadata>[] = useMemo(
     () => [
@@ -22,7 +30,6 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
       {
         field: "biosample",
         headerName: "Sample",
-        sortable: viewBy !== "byTissueTPM",
         valueGetter: (_, row) => {
           return capitalizeFirstLetter(row.biosample);
         },
@@ -49,18 +56,15 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
           return scale === "logTPM" ? getLogTPM(row) : getTPM(row);
         },
         valueFormatter: (value: number) => value.toFixed(2),
-        sortable: viewBy !== "byTissueTPM",
         minWidth: 75,
       },
       {
         field: "tissue",
         headerName: "Organ/Tissue",
-        sortable: viewBy !== "byTissueTPM",
       },
       {
         field: "biosample_type",
         headerName: "Biosample Type",
-        sortable: viewBy !== "byTissueTPM",
       },
       {
         field: "link",
@@ -85,7 +89,7 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
         },
       },
     ],
-    [viewBy, scale]
+    [scale]
   );
 
   return (
@@ -96,6 +100,7 @@ const GeneExpressionTable = ({ label, rows, loading, error, tableProps, viewBy, 
       loading={loading}
       error={error}
       apiRef={apiRef}
+      disableColumnSorting={isPresorted}
       initialState={{
         sorting: {
           sortModel: initialSort,

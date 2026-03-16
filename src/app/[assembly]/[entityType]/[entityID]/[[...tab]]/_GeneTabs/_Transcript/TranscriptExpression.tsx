@@ -2,11 +2,10 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { useTranscriptExpression } from "common/hooks/useTranscriptExpression";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
-import { DownloadPlotHandle } from "@weng-lab/visualization";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useTablePlotSync } from "common/hooks/useTablePlotSync";
 import type {
@@ -66,9 +65,6 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
   const [viewBy, setViewBy] = useState<TranscriptExpressionViewBy>("value");
   const [scale, setScale] = useState<TranscriptExpressionScale>("linear");
 
-  const barRef = useRef<DownloadPlotHandle>(null);
-  const violinRef = useRef<DownloadPlotHandle>(null);
-
   const transcriptExpressionData = useTranscriptExpression({ gene: entity.entityID });
 
   useEffect(() => {
@@ -126,7 +122,6 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
           icon: <BarChart />,
           plotComponent: (
             <TranscriptExpressionBarPlot
-              ref={barRef}
               sortedFilteredData={sortedFilteredData}
               selected={selected}
               toggleSelection={toggleSelection}
@@ -134,14 +129,12 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
               {...controlProps}
             />
           ),
-          ref: barRef,
         },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
           plotComponent: (
             <TranscriptExpressionViolinPlot
-              ref={violinRef}
               rows={rows}
               selected={selected}
               setSelected={setSelected}
@@ -150,7 +143,6 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
               {...controlProps}
             />
           ),
-          ref: violinRef,
         },
       ]}
     />

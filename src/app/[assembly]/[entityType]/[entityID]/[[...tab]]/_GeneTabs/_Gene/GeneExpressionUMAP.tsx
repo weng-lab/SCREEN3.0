@@ -18,7 +18,7 @@ export const generateDomain = (max: number, steps: number) => {
 const MINIMAP_CONFIG = { position: { right: 50, bottom: 50 } };
 
 const GeneExpressionUMAP = ({
-  entity,
+  geneName,
   rows,
   highlightedAccessions,
   onPointToggle,
@@ -149,7 +149,7 @@ const GeneExpressionUMAP = ({
           leftAxisLabel="UMAP-2"
           bottomAxisLabel="UMAP-1"
           ref={ref}
-          downloadFileName={`${entity.entityID}_expression_UMAP`}
+          downloadFileName={`${geneName}_expression_UMAP`}
           animation="scale"
           animationBuffer={0.01}
           animationGroupSize={15}

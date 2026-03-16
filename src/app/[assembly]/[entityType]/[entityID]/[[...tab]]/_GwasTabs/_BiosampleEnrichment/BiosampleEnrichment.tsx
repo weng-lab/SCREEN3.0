@@ -1,10 +1,10 @@
 "use client";
 import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { BarChart } from "@mui/icons-material";
 import BiosampleEnrichmentTable from "./BiosampleEnrichmentTable";
 import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnrichmentData";
-import { BarData, DownloadPlotHandle } from "@weng-lab/visualization";
+import { BarData } from "@weng-lab/visualization";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
@@ -26,8 +26,6 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
 
   const [selected, setSelected] = useState<GWASEnrichment[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<GWASEnrichment[]>([]);
-
-  const lollipopRef = useRef<DownloadPlotHandle>(null);
 
   const handleSelectionChange = (selected: GWASEnrichment[]) => {
     setSelected(selected);
@@ -85,13 +83,11 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
                   selected={selected}
                   sortedFilteredData={sortedFilteredData}
                   onBarClicked={handleBarClick}
-                  ref={lollipopRef}
                   study={entity.entityID}
                 />
               ) : (
                 <></>
               ),
-            ref: lollipopRef,
           },
         ]}
       />}

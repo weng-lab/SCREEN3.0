@@ -19,7 +19,8 @@ const GeneExpressionViolinPlot = ({
   setReplicates,
   ref,
   rows,
-  entity,
+  geneName,
+  assembly,
   loading,
   getRowId,
 }: GeneExpressionViolinPlotProps) => {
@@ -116,7 +117,7 @@ const GeneExpressionViolinPlot = ({
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <GenePlotControls
-        assembly={entity.assembly}
+        assembly={assembly}
         RNAtype={RNAtype}
         scale={scale}
         viewBy={viewBy}
@@ -136,7 +137,7 @@ const GeneExpressionViolinPlot = ({
           onPointClicked={onPointClicked}
           onViolinClicked={onViolinClicked}
           distributions={violinData}
-          axisLabel={getScaleLabel(entity.entityID, scale)}
+          axisLabel={getScaleLabel(geneName, scale)}
           loading={loading}
           labelOrientation="leftDiagonal"
           violinProps={{
@@ -150,7 +151,7 @@ const GeneExpressionViolinPlot = ({
           animation="slideUp"
           animationBuffer={0.01}
           ref={ref}
-          downloadFileName={`${entity.entityID}_expression_violin_plot`}
+          downloadFileName={`${geneName}_expression_violin_plot`}
           pointTooltipBody={(point) => (
             <Box maxWidth={300}>
               {point.outlier && (

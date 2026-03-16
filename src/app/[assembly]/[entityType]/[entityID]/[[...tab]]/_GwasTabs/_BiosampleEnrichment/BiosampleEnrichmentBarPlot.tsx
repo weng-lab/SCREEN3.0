@@ -10,7 +10,7 @@ export type BiosampleEnrichmentBarPlotProps = {
   selected: GWASEnrichment[];
   sortedFilteredData: GWASEnrichment[];
   onBarClicked: (bar: BarData<GWASEnrichment>) => void;
-  ref: React.RefObject<DownloadPlotHandle>;
+  ref?: React.RefObject<DownloadPlotHandle>;
   study: string;
 };
 

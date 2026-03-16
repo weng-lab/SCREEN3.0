@@ -20,8 +20,6 @@ import type {
   GeneExpressionControlProps,
 } from "./types";
 import { getTPM } from "./types";
-const getTissue = (d: PointMetadata) => d.tissue ?? "unknown";
-
 /**
  * Flattens gene expression data into one row per sample.
  * Filters by RNAtype and handles replicate splitting/averaging. TPM values are always raw (unscaled).
@@ -66,9 +64,9 @@ function buildRows(
 
 /**
  * Applies the viewBy transformation to rows.
- * - "byExperimentTPM": sort by TPM descending
+ * - "byExperimentTPM": no sort/filter needed
  * - "byTissueTPM": group by tissue (sorted by max TPM within tissue), then by TPM within group
- * - "byTissueMaxTPM": keep only the max-TPM experiment per tissue, sort by TPM descending
+ * - "byTissueMaxTPM": keep only the max-TPM experiment per tissue
  */
 function applyViewByTransform(rows: PointMetadata[], viewBy: GeneExpressionViewBy): PointMetadata[] {
   if (!rows.length) return [];
@@ -76,41 +74,39 @@ function applyViewByTransform(rows: PointMetadata[], viewBy: GeneExpressionViewB
   let result = [...rows];
 
   switch (viewBy) {
+    // No sorting required. useAutoSort in Table handles resetting initial sort
     case "byExperimentTPM": {
-      result.sort((a, b) => getTPM(b) - getTPM(a));
       break;
     }
 
+    /**
+     * Group by tissue, sort groups by max tpm in group, and sort descending within groups.
+     * Table sorting should be disabled when viewBy === "byTissueTPM", as this ordering
+     * cannot be accomplished by DataGrid sort state alone.
+     */
     case "byTissueTPM": {
       const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-        const tissue = getTissue(item);
-        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getTPM(item));
+        acc[item.tissue] = Math.max(acc[item.tissue] ?? -Infinity, getTPM(item));
         return acc;
       }, {});
 
       result.sort((a, b) => {
-        const tissueA = getTissue(a);
-        const tissueB = getTissue(b);
-        const maxDiff = maxValuesByTissue[tissueB] - maxValuesByTissue[tissueA];
+        const maxDiff = maxValuesByTissue[b.tissue] - maxValuesByTissue[a.tissue];
         if (maxDiff !== 0) return maxDiff;
         return getTPM(b) - getTPM(a);
       });
       break;
     }
 
+    // Filter out all but max tpm samples for each tissue
     case "byTissueMaxTPM": {
       const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
-        const tissue = getTissue(item);
-        acc[tissue] = Math.max(acc[tissue] ?? -Infinity, getTPM(item));
+        acc[item.tissue] = Math.max(acc[item.tissue] ?? -Infinity, getTPM(item));
         return acc;
       }, {});
 
-      result = result.filter((item) => {
-        const tissue = getTissue(item);
-        return getTPM(item) === maxValuesByTissue[tissue];
-      });
+      result = result.filter((item) => getTPM(item) === maxValuesByTissue[item.tissue]);
 
-      result.sort((a, b) => getTPM(b) - getTPM(a));
       break;
     }
   }
@@ -156,7 +152,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
   });
 
   /** Set of experiment accessions (ENCSR) that have at least one replicate selected */
-  const highlightedAccessions = useMemo(() => {
+  const umapHighlightedAccessions = useMemo(() => {
     if (!selected.length) return new Set<string>();
     return new Set(selected.map((s) => s.exp_accession));
   }, [selected]);
@@ -228,7 +224,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
           loading={geneExpressionData.loading}
           error={!!geneExpressionData.error}
           tableProps={tableProps}
-          viewBy={viewBy}
+          isPresorted={viewBy === "byTissueTPM"}
           scale={scale}
         />
       }
@@ -241,7 +237,8 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               sortedFilteredData={sortedFilteredData}
               selected={selected}
               toggleSelection={toggleSelection}
-              entity={entity}
+              geneName={entity.entityID}
+              assembly={entity.assembly}
               getRowId={getRowId}
               {...controlProps}
             />
@@ -256,7 +253,8 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               selected={selected}
               setSelected={setSelected}
               toggleSelection={toggleSelection}
-              entity={entity}
+              geneName={entity.entityID}
+              assembly={entity.assembly}
               loading={geneExpressionData.loading}
               getRowId={getRowId}
               {...controlProps}
@@ -268,9 +266,9 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
           icon: <ScatterPlot />,
           plotComponent: (
             <GeneExpressionUMAP
-              entity={entity}
+              geneName={entity.entityID}
               rows={umapRows}
-              highlightedAccessions={highlightedAccessions}
+              highlightedAccessions={umapHighlightedAccessions}
               onPointToggle={handleUmapToggle}
               onLassoSelect={handleUmapLassoSelect}
               loading={geneExpressionData.loading}

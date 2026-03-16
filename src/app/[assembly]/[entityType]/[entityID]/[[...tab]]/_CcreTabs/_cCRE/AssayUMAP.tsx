@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/system";
 import { Point, ScatterPlot } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { gql } from "common/types/generated";
 import { useQuery } from "@apollo/client";
 import {
@@ -33,6 +33,8 @@ const BIOSAMPLE_UMAP = gql(`
   }
 `);
 
+const MINIMAP_CONFIG = { position: { right: 50, bottom: 50 } };
+
 const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: CcreAssay }) => {
   return (
     <>
@@ -52,12 +54,26 @@ const TooltipBody = ({ metaData, assay }: { metaData: BiosampleRow; assay: CcreA
   );
 };
 
-const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection, ref }: AssayUMAPProps) => {
+const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection, getRowId, ref }: AssayUMAPProps) => {
   const [colorScheme, setColorScheme] = useState<"score" | "organ/tissue" | "sampleType">("score");
   const [scoreColorMode, setScoreColorMode] = useState<"active" | "all">("active");
 
-  const handleColorSchemeChange = (e: SelectChangeEvent<"score" | "organ/tissue" | "sampleType">) => {
-    setColorScheme(e.target.value);
+  // Band-aid: ScatterPlot's controls are absolutely positioned on the left of the container.
+  // The square plot uses min(width, height), so we keep height < width to ensure the controls
+  // don't overlap the plot. Measure the container width and cap height at width - CONTROLS_OFFSET.
+  const CONTROLS_OFFSET = 65;
+  const plotContainerRef = useRef<HTMLDivElement>(null);
+  const [plotContainerWidth, setPlotContainerWidth] = useState(0);
+  useEffect(() => {
+    const el = plotContainerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => setPlotContainerWidth(entry.contentRect.width));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const handleColorSchemeChange = (e: SelectChangeEvent) => {
+    setColorScheme(e.target.value as "score" | "organ/tissue" | "sampleType");
   };
 
   const handleScoreColorModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,12 +130,12 @@ const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection
   const scatterData: Point<BiosampleRow>[] = useMemo(() => {
     if (!rows || !data_umap || !colorScale) return [];
 
-    const isHighlighted = (x: BiosampleRow) => selected.some((y) => y.name === x.name);
+    const isHighlighted = (x: BiosampleRow) => selected.some((y) => getRowId(y) === getRowId(x));
 
     return rows
       .map((x) => {
         const coords = data_umap.ccREBiosampleQuery.biosamples.find(
-          (sample) => sample.name === x.name
+          (sample) => sample.name === getRowId(x)
         )?.umap_coordinates;
         return {
           x: coords[0] ?? 0,
@@ -130,33 +146,37 @@ const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection
           metaData: x,
         };
       })
-      .sort((a, b) => a.metaData[assay] - b.metaData[assay])
-      .sort((a, b) => (isHighlighted(b.metaData) ? -1 : 0));
-  }, [rows, data_umap, colorScale, selected, getPointColor, assay]);
+      .sort((a, b) => {
+        const aHighlighted = isHighlighted(a.metaData);
+        const bHighlighted = isHighlighted(b.metaData);
+        if (aHighlighted !== bHighlighted) return bHighlighted ? -1 : 1;
+        return a.metaData[assay] - b.metaData[assay];
+      });
+  }, [rows, data_umap, colorScale, selected, getPointColor, assay, getRowId]);
 
   const handlePointClick = (point: Point<BiosampleRow>) => {
     toggleSelection(point.metaData);
   };
 
   const handleLassoSelect = (points: Point<BiosampleRow>[]) => {
-    setSelected(prev => [...prev, ...points.map(x => x.metaData)])
-  }
+    const newItems = points.map((x) => x.metaData);
+    setSelected((prev) => {
+      const alreadySelected = new Set(prev.map(getRowId));
+      const toAdd = newItems.filter((item) => !alreadySelected.has(getRowId(item)));
+      return [...prev, ...toAdd];
+    });
+  };
 
   return (
-    <Stack
-      width={"100%"}
-      height={"100%"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
-      <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-        <Stack direction={"row"} spacing={1}>
+    <Box display="flex" flexDirection="column" height="100%">
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack direction="row" spacing={1}>
           <FormControl>
-            <InputLabel id="demo-simple-select-label">Color By</InputLabel>
+            <InputLabel>Color By</InputLabel>
             <Select value={colorScheme} label="Color By" onChange={handleColorSchemeChange} size="small">
-              <MenuItem value={"score"}>Z Score</MenuItem>
-              <MenuItem value={"organ/tissue"}>Organ/Tissue</MenuItem>
-              <MenuItem value={"sampleType"}>Sample Type</MenuItem>
+              <MenuItem value="score">Z Score</MenuItem>
+              <MenuItem value="organ/tissue">Organ/Tissue</MenuItem>
+              <MenuItem value="sampleType">Sample Type</MenuItem>
             </Select>
           </FormControl>
           {colorScheme === "score" && (
@@ -176,7 +196,15 @@ const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection
           scoreColorMode={scoreColorMode}
         />
       </Stack>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box
+        ref={plotContainerRef}
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          position: "relative",
+          ...(plotContainerWidth > 0 && { maxHeight: plotContainerWidth - CONTROLS_OFFSET }),
+        }}
+      >
         <ScatterPlot
           pointData={scatterData}
           onPointClicked={handlePointClick}
@@ -185,12 +213,7 @@ const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection
           bottomAxisLabel="UMAP-1"
           selectable
           loading={loading_umap}
-          miniMap={{
-            position: {
-              right: 50,
-              bottom: 50,
-            },
-          }}
+          miniMap={MINIMAP_CONFIG}
           tooltipBody={(point) => <TooltipBody metaData={point.metaData} assay={assay} />}
           ref={ref}
           downloadFileName={`${assay}_UMAP`}
@@ -199,7 +222,7 @@ const AssayUMAP = ({ rows, assay, entity, selected, setSelected, toggleSelection
           animationGroupSize={assay === "ctcf" ? 15 : assay === "dnase" ? 65 : 30}
         />
       </Box>
-    </Stack>
+    </Box>
   );
 };
 

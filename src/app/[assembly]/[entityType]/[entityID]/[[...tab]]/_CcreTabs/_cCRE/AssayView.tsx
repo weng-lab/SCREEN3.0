@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayout/TwoPaneLayout";
+import { useEffect, useMemo, useState } from "react";
+import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
-import { DownloadPlotHandle } from "@weng-lab/visualization";
 import { useTablePlotSync } from "common/hooks/useTablePlotSync";
 import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
 
@@ -77,99 +76,20 @@ const AssayView = (props: AssayViewProps) => {
     [props.rows, viewBy, props.assay]
   );
 
-  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection } = useTablePlotSync({
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: transformedRows,
     getRowId: (r) => r.name,
   });
-
-  const barRef = useRef<DownloadPlotHandle>(null);
-  const violinRef = useRef<DownloadPlotHandle>(null);
-  const scatterRef = useRef<DownloadPlotHandle>(null);
 
   useEffect(() => {
     if (!props.assay) return;
     setSelected([]);
   }, [props.assay, setSelected]);
 
-  const plots: TwoPanePlotConfig[] = useMemo(() => {
-    const plotList: TwoPanePlotConfig[] = [
-      {
-        tabTitle: "Bar Plot",
-        icon: <BarChart />,
-        plotComponent: (
-          <AssayBarPlot
-            ref={barRef}
-            sortedFilteredData={sortedFilteredData}
-            selected={selected}
-            toggleSelection={toggleSelection}
-            assay={props.assay}
-            entity={props.entity}
-            viewBy={viewBy}
-            setViewBy={setViewBy}
-            cutoffLowSignal={cutoffLowSignal}
-            setCutoffLowSignal={setCutoffLowSignal}
-            show95Line={show95Line}
-            setShow95Line={setShow95Line}
-          />
-        ),
-        ref: barRef,
-      },
-      {
-        tabTitle: "Violin Plot",
-        icon: <CandlestickChart />,
-        plotComponent: (
-          <AssayViolinPlot
-            ref={violinRef}
-            rows={props.rows}
-            selected={selected}
-            setSelected={setSelected}
-            toggleSelection={toggleSelection}
-            assay={props.assay}
-            entity={props.entity}
-            viewBy={viewBy}
-            setViewBy={setViewBy}
-            cutoffLowSignal={cutoffLowSignal}
-            setCutoffLowSignal={setCutoffLowSignal}
-            show95Line={show95Line}
-            setShow95Line={setShow95Line}
-          />
-        ),
-        ref: violinRef,
-      },
-    ];
-    if (!(props.assay === "atac")) {
-      plotList.push({
-        tabTitle: "UMAP",
-        icon: <ScatterPlot />,
-        plotComponent: (
-          <AssayUMAP
-            ref={scatterRef}
-            rows={props.rows}
-            selected={selected}
-            setSelected={setSelected}
-            toggleSelection={toggleSelection}
-            assay={props.assay}
-            entity={props.entity}
-          />
-        ),
-        ref: scatterRef,
-      });
-    }
-    return plotList;
-  }, [
-    props.assay,
-    props.entity,
-    props.rows,
-    sortedFilteredData,
-    selected,
-    setSelected,
-    toggleSelection,
-    viewBy,
-    cutoffLowSignal,
-    setCutoffLowSignal,
-    show95Line,
-    setShow95Line,
-  ]);
+  const handleSetViewBy = (newView: ViewBy) => {
+    setSelected([]);
+    setViewBy(newView);
+  };
 
   return (
     <TwoPaneLayout
@@ -180,10 +100,71 @@ const AssayView = (props: AssayViewProps) => {
           assay={props.assay}
           entity={props.entity}
           tableProps={tableProps}
-          viewBy={viewBy}
+          isPresorted={viewBy === "tissue"}
         />
       }
-      plots={plots}
+      plots={[
+        {
+          tabTitle: "Bar Plot",
+          icon: <BarChart />,
+          plotComponent: (
+            <AssayBarPlot
+              sortedFilteredData={sortedFilteredData}
+              selected={selected}
+              toggleSelection={toggleSelection}
+              getRowId={getRowId}
+              assay={props.assay}
+              entity={props.entity}
+              viewBy={viewBy}
+              setViewBy={handleSetViewBy}
+              cutoffLowSignal={cutoffLowSignal}
+              setCutoffLowSignal={setCutoffLowSignal}
+              show95Line={show95Line}
+              setShow95Line={setShow95Line}
+            />
+          ),
+        },
+        {
+          tabTitle: "Violin Plot",
+          icon: <CandlestickChart />,
+          plotComponent: (
+            <AssayViolinPlot
+              rows={props.rows}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              getRowId={getRowId}
+              assay={props.assay}
+              entity={props.entity}
+              viewBy={viewBy}
+              setViewBy={handleSetViewBy}
+              cutoffLowSignal={cutoffLowSignal}
+              setCutoffLowSignal={setCutoffLowSignal}
+              show95Line={show95Line}
+              setShow95Line={setShow95Line}
+            />
+          ),
+        },
+        ...(props.assay !== "atac"
+          ? [
+              {
+                tabTitle: "UMAP",
+                icon: <ScatterPlot />,
+                plotComponent: (
+                  <AssayUMAP
+                    rows={props.rows}
+                    selected={selected}
+                    setSelected={setSelected}
+                    toggleSelection={toggleSelection}
+                    getRowId={getRowId}
+                    assay={props.assay}
+                    entity={props.entity}
+                  />
+                ),
+              },
+            ]
+          : []),
+      ]}
     />
   );
 };

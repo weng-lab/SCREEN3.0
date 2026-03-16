@@ -1,8 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { useGeneExpression } from "common/hooks/useGeneExpression";
-import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import type { Assembly } from "common/types/globalTypes";
 
 type GeneExpressionReturnItem = ReturnType<typeof useGeneExpression>["data"][number]
 
@@ -43,7 +43,8 @@ export type GeneExpressionBarPlotProps = GeneExpressionControlProps & {
   sortedFilteredData: PointMetadata[];
   selected: PointMetadata[];
   toggleSelection: (item: PointMetadata) => void;
-  entity: EntityViewComponentProps["entity"];
+  geneName: string;
+  assembly: Assembly;
   getRowId: (item: PointMetadata) => string;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
@@ -54,7 +55,8 @@ export type GeneExpressionViolinPlotProps = GeneExpressionControlProps & {
   selected: PointMetadata[];
   setSelected: Dispatch<SetStateAction<PointMetadata[]>>;
   toggleSelection: (item: PointMetadata) => void;
-  entity: EntityViewComponentProps["entity"];
+  geneName: string;
+  assembly: Assembly;
   loading: boolean;
   getRowId: (item: PointMetadata) => string;
   ref?: React.RefObject<DownloadPlotHandle>;
@@ -62,7 +64,7 @@ export type GeneExpressionViolinPlotProps = GeneExpressionControlProps & {
 
 /** Props for GeneExpressionUMAP */
 export type GeneExpressionUMAPProps = {
-  entity: EntityViewComponentProps["entity"];
+  geneName: string;
   rows: PointMetadata[];
   highlightedAccessions: Set<string>;
   onPointToggle: (item: PointMetadata) => void;
@@ -78,6 +80,9 @@ export type GeneExpressionTableProps = {
   loading: boolean;
   error: boolean;
   tableProps: ReturnType<typeof useTablePlotSync<PointMetadata>>["tableProps"];
-  viewBy: GeneExpressionViewBy;
+  /**
+   * True when rows are presorted, and sorting should not be allowed on the table
+   */
+  isPresorted: boolean;
   scale: GeneExpressionScale;
 };

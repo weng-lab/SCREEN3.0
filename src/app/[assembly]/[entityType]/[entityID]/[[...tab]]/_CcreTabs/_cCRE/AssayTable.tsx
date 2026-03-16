@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Table } from "@weng-lab/ui-components";
-import {
-  GridColumnVisibilityModel,
-  GridSortDirection,
-  GridSortModel,
-} from "@mui/x-data-grid-premium";
+import { GridColumnVisibilityModel, GridSortModel } from "@mui/x-data-grid-premium";
 import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { CcreAssay } from "common/types/globalTypes";
 import { CCRE_ASSAYS } from "common/consts";
 import { formatAssay } from "common/utility";
+import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
+import { useAutoSort } from "common/hooks/useAutoSort";
 import type { AssayTableProps } from "./types";
 
 const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel => {
@@ -19,46 +17,19 @@ const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel =
   return hidden;
 };
 
-const AssayTable = ({ rows, columns, assay, entity, tableProps, viewBy }: AssayTableProps) => {
-  const [autoSort, setAutoSort] = useState<boolean>(false);
+const AssayTable = ({ rows, columns, assay, entity, tableProps, isPresorted }: AssayTableProps) => {
+  const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
 
-  const { apiRef, rowSelectionModel } = tableProps;
+  const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" as const }], [assay]);
 
+  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, initialSort, isPresorted);
+
+  // Update column visibility and sort column when assay changes
   useEffect(() => {
     if (!apiRef.current) return;
     apiRef.current.setColumnVisibilityModel(makeColumnVisibiltyModel(assay));
     apiRef.current.sortColumn(assay, "desc");
   }, [apiRef, assay]);
-
-  const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" as GridSortDirection }], [assay]);
-
-  // Derive selected from the rowSelectionModel for autoSort logic
-  const hasSelection = rowSelectionModel.type === "include" && rowSelectionModel.ids.size > 0;
-
-  // handle auto sorting
-  useEffect(() => {
-    const api = apiRef?.current;
-    if (!api) return;
-
-    // handle sort by tissue special case
-    if (viewBy === "tissue") {
-      if (!autoSort || !hasSelection) {
-        api.setSortModel([]); // clear when autoSort off OR no selection
-      } else {
-        api.setSortModel([{ field: "__check__", sort: "desc" }]);
-      }
-      return;
-    }
-
-    // all other views
-    if (!autoSort) {
-      api.setSortModel(initialSort);
-      return;
-    }
-
-    //sort by checkboxes if some selected, otherwise sort by tpm
-    api.setSortModel(hasSelection ? [{ field: "__check__", sort: "desc" }] : initialSort);
-  }, [apiRef, autoSort, initialSort, hasSelection, viewBy]);
 
   /**
    * Resize cols on assay change. Need to use requestAnimationFrame to queue this update until after
@@ -77,19 +48,27 @@ const AssayTable = ({ rows, columns, assay, entity, tableProps, viewBy }: AssayT
     return () => cancelAnimationFrame(frame);
   }, [apiRef, assay]);
 
+  const allColumns = useMemo(() => [sortableTableCheckboxColumn, ...columns], [columns]);
+
   return (
     <Table
       label={`${entity.entityID} ${formatAssay(assay)} z-scores`}
       rows={rows}
       loading={!rows}
-      columns={columns}
-      divHeight={{ height: "100%" }}
+      columns={allColumns}
+      apiRef={apiRef}
+      disableColumnSorting={isPresorted}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: initialSort },
       }}
       toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
-      {...tableProps}
+      onReady={(api) => {
+        const existing = tableSyncOnReady?.(api);
+        const existingCleanups = Array.isArray(existing) ? existing : existing ? [existing] : [];
+        return [...existingCleanups, ...autoSortOnReady(api)];
+      }}
+      {...restTableProps}
     />
   );
 };

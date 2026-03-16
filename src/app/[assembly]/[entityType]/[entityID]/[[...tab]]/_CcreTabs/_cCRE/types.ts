@@ -42,7 +42,10 @@ export type AssayTableProps = {
   assay: CcreAssay;
   entity: AnyOpenEntity;
   tableProps: ReturnType<typeof useTablePlotSync<BiosampleRow>>["tableProps"];
-  viewBy: ViewBy;
+  /**
+   * True when rows are presorted, and sorting should not be allowed on the table
+   */
+  isPresorted: boolean;
 };
 
 /** Props for the AssayBarPlot component */
@@ -50,6 +53,7 @@ export type AssayBarPlotProps = {
   sortedFilteredData: BiosampleRow[];
   selected: BiosampleRow[];
   toggleSelection: (item: BiosampleRow) => void;
+  getRowId: (item: BiosampleRow) => string;
   assay: CcreAssay;
   entity: AnyOpenEntity;
   viewBy: ViewBy;
@@ -67,6 +71,7 @@ export type AssayViolinPlotProps = {
   selected: BiosampleRow[];
   setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
   toggleSelection: (item: BiosampleRow) => void;
+  getRowId: (item: BiosampleRow) => string;
   assay: CcreAssay;
   entity: AnyOpenEntity;
   viewBy: ViewBy;
@@ -84,6 +89,7 @@ export type AssayUMAPProps = {
   selected: BiosampleRow[];
   setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
   toggleSelection: (item: BiosampleRow) => void;
+  getRowId: (item: BiosampleRow) => string;
   assay: CcreAssay;
   entity: AnyOpenEntity;
   ref?: React.RefObject<DownloadPlotHandle>;

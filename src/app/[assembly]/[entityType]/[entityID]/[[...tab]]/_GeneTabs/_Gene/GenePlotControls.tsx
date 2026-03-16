@@ -202,9 +202,11 @@ const GenePlotControls: React.FC<ControlProps> = ({
             <ToggleButton sx={{ textTransform: "none" }} value="byExperimentTPM">
               Experiment
             </ToggleButton>
-            <ToggleButton sx={{ textTransform: "none" }} value="byTissueTPM">
-              Tissue
-            </ToggleButton>
+            <Tooltip title="Disables sorting in table">
+              <ToggleButton sx={{ textTransform: "none" }} value="byTissueTPM">
+                Tissue
+              </ToggleButton>
+            </Tooltip>
             <ToggleButton sx={{ textTransform: "none" }} value="byTissueMaxTPM">
               Tissue Max
             </ToggleButton>

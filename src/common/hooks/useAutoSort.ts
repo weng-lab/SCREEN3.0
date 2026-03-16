@@ -9,7 +9,7 @@ type UseAutoSortReturn = {
 };
 
 /**
- * Manages the "auto-sort selected rows to top" behavior for a DataGrid.
+ * Manages the "auto-sort selected rows to top" behavior for a Table.
  *
  * Owns the autoSort toggle state and all related DataGrid behavior, returning
  * `autoSort` and `setAutoSort` for use in a toolbar toggle, and `onReady` to
@@ -23,7 +23,11 @@ type UseAutoSortReturn = {
  * The sort model reset remains a reactive useEffect because it must fire on every
  * autoSort/viewBy change, not just on mount.
  */
-export function useAutoSort(apiRef: RefObject<GridApi>, viewBy: string, initialSort: GridSortModel): UseAutoSortReturn {
+export function useAutoSort(
+  apiRef: RefObject<GridApi>,
+  initialSort: GridSortModel,
+  isPresorted: boolean
+): UseAutoSortReturn {
   const [autoSort, setAutoSort] = useState(false);
 
   // Track autoSort in a ref so event handlers always see the current value
@@ -39,9 +43,9 @@ export function useAutoSort(apiRef: RefObject<GridApi>, viewBy: string, initialS
     const api = apiRef?.current;
     if (!api) return;
 
-    const base: GridSortModel = viewBy === "byTissueTPM" ? [] : initialSort;
+    const base: GridSortModel = isPresorted ? [] : initialSort;
     api.setSortModel(autoSort ? [{ field: "__check__", sort: "desc" }, ...base] : base);
-  }, [apiRef, autoSort, viewBy, initialSort]);
+  }, [apiRef, autoSort, isPresorted, initialSort]);
 
   // Return a stable onReady callback that attaches event subscriptions once,
   // after the DataGrid has fully mounted. Handlers read autoSortRef at event

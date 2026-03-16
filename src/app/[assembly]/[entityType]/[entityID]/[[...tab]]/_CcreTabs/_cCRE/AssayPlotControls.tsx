@@ -1,9 +1,14 @@
 import React from "react";
-import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, styled } from "@mui/material";
+import type { ViewBy } from "./types";
+
+const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
+  ...theme.typography.body2,
+}));
 
 interface AssayPlotControlsProps {
-  viewBy: "value" | "tissue" | "tissueMax";
-  setViewBy: (view: "value" | "tissue" | "tissueMax") => void;
+  viewBy: ViewBy;
+  setViewBy: (view: ViewBy) => void;
   violin?: boolean;
   setSortBy?: (sortBy: "median" | "max" | "tissue") => void;
   sortBy?: "median" | "max" | "tissue";
@@ -28,17 +33,17 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
   show95Line = true,
   setShow95Line = () => {},
 }) => (
-  <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+  <Stack direction="row" gap={2} mb={2} flexWrap="wrap">
     {!violin && (
       <FormControl>
-        <FormLabel>View By</FormLabel>
+        <StyledFormLabel>View By</StyledFormLabel>
         <ToggleButtonGroup
           color="primary"
           value={viewBy}
           exclusive
           onChange={(_event, value) => {
             if (value !== null) {
-              setViewBy(value as "value" | "tissue" | "tissueMax");
+              setViewBy(value as ViewBy);
             }
           }}
           aria-label="View By"
@@ -59,7 +64,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
     {violin && (
       <Stack direction="row" spacing={2} alignItems="center">
         <FormControl>
-          <FormLabel>Sort By</FormLabel>
+          <StyledFormLabel>Sort By</StyledFormLabel>
           <ToggleButtonGroup
             color="primary"
             value={sortBy}
@@ -69,7 +74,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
                 setSortBy(value as "median" | "max" | "tissue");
               }
             }}
-            aria-label="View By"
+            aria-label="Sort By"
             size="small"
           >
             <ToggleButton sx={{ textTransform: "none" }} value="max">
@@ -84,7 +89,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
           </ToggleButtonGroup>
         </FormControl>
         <FormControl>
-          <FormLabel>Show Points</FormLabel>
+          <StyledFormLabel>Show Points</StyledFormLabel>
           <ToggleButtonGroup
             color="primary"
             value={showPoints}
@@ -94,7 +99,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
                 setShowPoints(value);
               }
             }}
-            aria-label="show points"
+            aria-label="Show Points"
             size="small"
           >
             <ToggleButton sx={{ textTransform: "none" }} value={true}>
@@ -108,7 +113,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
       </Stack>
     )}
     <FormControl>
-      <FormLabel>Hide Low Z-Scores</FormLabel>
+      <StyledFormLabel>Hide Low Z-Scores</StyledFormLabel>
       <ToggleButtonGroup
         color="primary"
         value={cutoffLowSignal}
@@ -118,7 +123,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
             setCutoffLowSignal(value);
           }
         }}
-        aria-label="show points"
+        aria-label="Hide Low Z-Scores"
         size="small"
       >
         <ToggleButton sx={{ textTransform: "none" }} value={true}>
@@ -130,7 +135,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
       </ToggleButtonGroup>
     </FormControl>
     <FormControl>
-      <FormLabel>95th Percentile Line (1.64)</FormLabel>
+      <StyledFormLabel>95th Percentile Line (1.64)</StyledFormLabel>
       <ToggleButtonGroup
         color="primary"
         value={show95Line}
@@ -140,7 +145,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
             setShow95Line(value);
           }
         }}
-        aria-label="show points"
+        aria-label="95th Percentile Line"
         size="small"
       >
         <ToggleButton sx={{ textTransform: "none" }} value={true}>
