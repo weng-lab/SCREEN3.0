@@ -41,6 +41,7 @@ const AssayTable = ({ rows, columns, assay, entityID, tableProps, isPresorted }:
       columns={allColumns}
       apiRef={apiRef}
       disableColumnSorting={isPresorted}
+      divHeight={{ height: "100%" }}
       initialState={{
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
         sorting: { sortModel: initialSort },

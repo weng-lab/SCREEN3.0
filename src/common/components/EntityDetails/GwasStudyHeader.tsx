@@ -38,12 +38,20 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
     return Array.from(map.values()).sort((a, b) => a.ldblock - b.ldblock);
   }, [data]);
 
-
   const subtitle =
     entityType === "gwas" && entityMetadata?.__typename === "GwasStudiesMetadata"
-      ? entityMetadata && entityMetadata.__typename === "GwasStudiesMetadata" && entityMetadata?.author.replaceAll("_", " ")
+      ? entityMetadata &&
+        entityMetadata.__typename === "GwasStudiesMetadata" &&
+        entityMetadata?.author.replaceAll("_", " ")
       : "";
-  const coordinatesGenomeBrowser = data && ldblockStats && ldblockStats.length > 0 ? expandCoordinates({ chromosome: ldblockStats[0].chromosome, start: ldblockStats[0].start, end: ldblockStats[0].end }, entityType) : undefined
+  const coordinatesGenomeBrowser =
+    data && ldblockStats && ldblockStats.length > 0
+      ? expandCoordinates(
+          { chromosome: ldblockStats[0].chromosome, start: ldblockStats[0].start, end: ldblockStats[0].end },
+          entityType
+        )
+      : undefined;
+
   return (
     <Grid
       sx={{ p: 1 }}
@@ -90,20 +98,26 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
         display={entityType === "ccre" ? "none" : "flex"}
         height={{ xs: 60 }}
         justifyContent={"flex-end"}
-        alignItems="center"
         gap={1}
       >
         <Button
-          variant="contained"
+          variant="outlined"
           href={
             coordinatesGenomeBrowser
               ? `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cCREs&position=${coordinatesGenomeBrowser}`
-              //: `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cCREs&position=chr19:50,417,519-50,417,853`
-              : `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cCREs&position=default`
+              : //: `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cCREs&position=chr19:50,417,519-50,417,853`
+                `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cCREs&position=default`
           }
           target="_blank"
           rel="noopener noreferrer"
-          sx={{ width: "48%", height: "100%", backgroundColor: "white" }}
+          sx={{
+            flex: 1,
+            maxWidth: { xs: "none", sm: 130 },
+            backgroundColor: "transparent",
+            borderColor: "divider",
+            "& img": { transition: "filter 0.2s ease" },
+            "&:hover img": { filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.25))" },
+          }}
         >
           <Image
             style={{ objectFit: "contain" }}
@@ -112,9 +126,6 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
             unoptimized
             alt="ucsc-gb-icon"
           />
-
-          Open in UCSC
-
         </Button>
       </Grid>
     </Grid>

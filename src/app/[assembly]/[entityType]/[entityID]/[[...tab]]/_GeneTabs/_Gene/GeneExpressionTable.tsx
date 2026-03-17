@@ -101,6 +101,7 @@ const GeneExpressionTable = ({
       error={error}
       apiRef={apiRef}
       disableColumnSorting={isPresorted}
+      divHeight={{ height: "100%" }}
       initialState={{
         sorting: {
           sortModel: initialSort,

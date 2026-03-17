@@ -125,6 +125,7 @@ const TranscriptExpressionTable = ({
       initialState={{
         sorting: { sortModel: initialSort },
       }}
+      divHeight={{ height: "100%" }}
       downloadFileName={"TSS Expression at " + selectedPeak}
       toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
       onReady={(api) => {

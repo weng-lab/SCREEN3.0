@@ -100,6 +100,7 @@ const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnric
       initialState={{
         sorting: { sortModel: initialSort },
       }}
+      divHeight={{ height: "100%" }}
       labelTooltip={LabelTooltip}
       toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
       onReady={(api) => {
