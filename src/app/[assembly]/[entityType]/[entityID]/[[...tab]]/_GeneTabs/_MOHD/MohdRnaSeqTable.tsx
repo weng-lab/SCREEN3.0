@@ -6,6 +6,7 @@ import { sortableTableCheckboxColumn } from "common/components/SortableTableChec
 import { useAutoSort } from "common/hooks/useAutoSort";
 import type { MohdRnaSeqRow, MohdRnaSeqTableProps } from "./MohdRnaSeqTypes";
 import { getScaledValue } from "./MohdRnaSeqTypes";
+import { mohdSexColors, mohdSiteColors, mohdStatusColors } from "common/colors";
 
 const initialSort: GridSortModel = [{ field: "value", sort: "desc" }];
 
@@ -17,7 +18,7 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
   const columns: TableColDef<MohdRnaSeqRow>[] = useMemo(
     () => [
       sortableTableCheckboxColumn,
-      { field: "sample_id", headerName: "Sample ID", width: 150 },
+      { field: "sample_id", headerName: "Dataset", width: 150 },
       {
         field: "value",
         headerName: scale === "linear" ? "TPM" : "Log\u2081\u2080(TPM + 1)",
@@ -27,9 +28,15 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
         valueFormatter: (v: number) => v?.toFixed(2),
       },
       { field: "kit", headerName: "Kit", width: 120 },
-      { field: "sex", headerName: "Sex", width: 80 },
-      { field: "site", headerName: "Site", width: 80 },
-      { field: "status", headerName: "Status", width: 100 },
+      { field: "sex", headerName: "Sex", width: 80, type: "singleSelect", valueOptions: Object.keys(mohdSexColors) },
+      { field: "site", headerName: "Site", width: 80, type: "singleSelect", valueOptions: Object.keys(mohdSiteColors) },
+      {
+        field: "status",
+        headerName: "Status",
+        width: 100,
+        type: "singleSelect",
+        valueOptions: Object.keys(mohdStatusColors),
+      },
     ],
     [scale]
   );

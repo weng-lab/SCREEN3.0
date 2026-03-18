@@ -19,26 +19,30 @@ import { getCategoryColor, colorMaps } from "./MohdAtacTypes";
 
 const TooltipBody = ({ metaData }: { metaData: MohdAtacRow }) => (
   <>
-    <Typography><b>Sample:</b> {metaData.sample_id}</Typography>
-    <Typography variant="body2"><b>Z-Score:</b> {metaData.value.toFixed(2)}</Typography>
-    <Typography variant="body2"><b>Protocol:</b> {metaData.protocol}</Typography>
-    <Typography variant="body2"><b>Sex:</b> {metaData.sex}</Typography>
-    <Typography variant="body2"><b>Site:</b> {metaData.site}</Typography>
-    <Typography variant="body2"><b>Status:</b> {metaData.status}</Typography>
+    <Typography>
+      <b>Sample:</b> {metaData.sample_id}
+    </Typography>
+    <Typography variant="body2">
+      <b>Z-Score:</b> {metaData.value.toFixed(2)}
+    </Typography>
+    <Typography variant="body2">
+      <b>Protocol:</b> {metaData.protocol}
+    </Typography>
+    <Typography variant="body2">
+      <b>Sex:</b> {metaData.sex}
+    </Typography>
+    <Typography variant="body2">
+      <b>Site:</b> {metaData.site}
+    </Typography>
+    <Typography variant="body2">
+      <b>Status:</b> {metaData.status}
+    </Typography>
   </>
 );
 
 const CONTROLS_OFFSET = 65;
 
-const MohdAtacUMAP = ({
-  rows,
-  selected,
-  setSelected,
-  toggleSelection,
-  getRowId,
-  loading,
-  ref,
-}: MohdAtacUMAPProps) => {
+const MohdAtacUMAP = ({ rows, selected, setSelected, toggleSelection, getRowId, loading, ref }: MohdAtacUMAPProps) => {
   const [colorBy, setColorBy] = useState<UmapColorBy>("zscore");
   const [scoreColorMode, setScoreColorMode] = useState<ScoreColorMode>("active");
 
@@ -152,7 +156,7 @@ const MohdAtacUMAP = ({
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 1, pt: 1 }}>
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={2} alignItems="center">
           <FormControl size="small">
             <InputLabel>Color By</InputLabel>
             <Select
@@ -174,8 +178,8 @@ const MohdAtacUMAP = ({
                 onChange={(e) => setScoreColorMode(e.target.value as ScoreColorMode)}
                 row
               >
-                <FormControlLabel value="active" control={<Radio />} label="Active Only" />
-                <FormControlLabel value="all" control={<Radio />} label="All" />
+                <FormControlLabel value="active" control={<Radio size="small" />} label="Active Only" />
+                <FormControlLabel value="all" control={<Radio size="small" />} label="All" />
               </RadioGroup>
             </FormControl>
           )}

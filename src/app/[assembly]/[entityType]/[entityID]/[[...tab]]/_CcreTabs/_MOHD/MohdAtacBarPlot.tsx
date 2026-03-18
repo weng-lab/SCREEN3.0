@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
-import { BarPlot, BarData, DownloadPlotHandle } from "@weng-lab/visualization";
+import { BarPlot, BarData } from "@weng-lab/visualization";
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import type { MohdAtacRow, MohdAtacBarPlotProps, BarColorBy } from "./MohdAtacTypes";
 import { getCategoryColor } from "./MohdAtacTypes";
 
 const PlotTooltip = (bar: BarData<MohdAtacRow>) => (
   <div style={{ padding: 2, maxWidth: 350 }}>
-    <Typography><b>Sample:</b> {bar.metadata.sample_id}</Typography>
+    <Typography>
+      <b>Sample:</b> {bar.metadata.sample_id}
+    </Typography>
     <Typography variant="body2">Z-Score: {bar.metadata.value.toFixed(3)}</Typography>
     <Typography variant="body2">Protocol: {bar.metadata.protocol}</Typography>
     <Typography variant="body2">Site: {bar.metadata.site}</Typography>
@@ -14,13 +16,7 @@ const PlotTooltip = (bar: BarData<MohdAtacRow>) => (
   </div>
 );
 
-const MohdAtacBarPlot = ({
-  sortedFilteredData,
-  selected,
-  toggleSelection,
-  getRowId,
-  ref,
-}: MohdAtacBarPlotProps) => {
+const MohdAtacBarPlot = ({ sortedFilteredData, selected, toggleSelection, getRowId, ref }: MohdAtacBarPlotProps) => {
   const [colorBy, setColorBy] = useState<BarColorBy>("protocol");
 
   const plotData: BarData<MohdAtacRow>[] = useMemo(() => {
@@ -29,7 +25,7 @@ const MohdAtacBarPlot = ({
       const anySelected = selected.length > 0;
       const isSelected = selected.some((y) => getRowId(y) === getRowId(x));
       return {
-        category: x[colorBy],
+        category: colorBy === "protocol" ? x[colorBy].replace(" method", "") : x[colorBy],
         label: `${x.value.toFixed(2)}, ${x.sample_id}`,
         value: x.value,
         color: (anySelected && isSelected) || !anySelected ? getCategoryColor(x, colorBy) : "#CCCCCC",

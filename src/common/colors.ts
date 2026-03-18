@@ -113,7 +113,7 @@ export const mohdSiteColors: Record<string, string> = {
 export const mohdStatusColors: Record<string, string> = {
   case: "#e41a1c",
   control: "#377eb8",
-  unknown: "lightgray",
+  unknown: "gray",
 };
 
 export const tissueColors = {
