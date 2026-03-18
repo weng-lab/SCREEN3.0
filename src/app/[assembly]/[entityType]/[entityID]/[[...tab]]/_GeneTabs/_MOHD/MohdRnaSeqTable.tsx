@@ -27,7 +27,6 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
         valueGetter: (_, row) => getScaledValue(row, scale),
         valueFormatter: (v: number) => v?.toFixed(2),
       },
-      { field: "kit", headerName: "Kit", width: 120 },
       { field: "sex", headerName: "Sex", width: 80, type: "singleSelect", valueOptions: Object.keys(mohdSexColors) },
       { field: "site", headerName: "Site", width: 80, type: "singleSelect", valueOptions: Object.keys(mohdSiteColors) },
       {
@@ -37,6 +36,7 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
         type: "singleSelect",
         valueOptions: Object.keys(mohdStatusColors),
       },
+      { field: "kit", headerName: "Kit", width: 120 },
     ],
     [scale]
   );
@@ -50,7 +50,7 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
       error={error}
       apiRef={apiRef}
       divHeight={{ height: "100%" }}
-      initialState={{ sorting: { sortModel: initialSort } }}
+      initialState={{ sorting: { sortModel: initialSort }, columns: { columnVisibilityModel: { opc_id: false } } }}
       toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
       onReady={(api) => {
         const existing = tableSyncOnReady?.(api);
