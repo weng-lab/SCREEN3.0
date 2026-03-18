@@ -1,0 +1,108 @@
+'use client'
+import { useMemo } from "react";
+import { useQuery } from "@apollo/client";
+import { BarChart, ScatterPlot } from "@mui/icons-material";
+import { mohdClient } from "common/apollo/mohd-client";
+import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { gql } from "common/types/generated";
+import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
+import { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import type { Mohd_Atac_ZScoresQuery } from "common/types/generated/graphql";
+import type { MohdAtacRow } from "./MohdAtacTypes";
+import MohdAtacTable from "./MohdAtacTable";
+import MohdAtacBarPlot from "./MohdAtacBarPlot";
+import MohdAtacUMAP from "./MohdAtacUMAP";
+
+const MOHD_ATAC_QUERY = gql(`
+  query MOHD_ATAC_ZScores($accessions: [String!]!) {
+    atac_zscore(accessions: $accessions) {
+      samples {
+        value
+        metadata {
+          umap_y
+          umap_x
+          opc_id
+          protocol
+          sample_id
+          sex
+          site
+          status
+        }
+      }
+      accession
+    }
+  }
+`);
+
+function buildRows(data: Mohd_Atac_ZScoresQuery | undefined): MohdAtacRow[] {
+  const result = data?.atac_zscore?.[0];
+  if (!result) return [];
+  return result.samples.map((s) => ({
+    value: s.value,
+    umap_x: s.metadata.umap_x ?? 0,
+    umap_y: s.metadata.umap_y ?? 0,
+    opc_id: s.metadata.opc_id,
+    protocol: s.metadata.protocol,
+    sample_id: s.metadata.sample_id,
+    sex: s.metadata.sex,
+    site: s.metadata.site,
+    status: s.metadata.status,
+  }));
+}
+
+const MohdAtac = ({ entity }: EntityViewComponentProps) => {
+  const { data, loading, error } = useQuery(MOHD_ATAC_QUERY, {
+    variables: { accessions: [entity.entityID] },
+    client: mohdClient,
+  });
+
+  const rows = useMemo(() => buildRows(data), [data]);
+
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
+    rows,
+    getRowId: (r) => r.sample_id,
+  });
+
+  return (
+    <TwoPaneLayout
+      TableComponent={
+        <MohdAtacTable
+          rows={rows}
+          tableProps={tableProps}
+          loading={loading}
+          error={!!error}
+        />
+      }
+      plots={[
+        {
+          tabTitle: "Bar Plot",
+          icon: <BarChart />,
+          plotComponent: (
+            <MohdAtacBarPlot
+              sortedFilteredData={sortedFilteredData}
+              selected={selected}
+              toggleSelection={toggleSelection}
+              getRowId={getRowId}
+            />
+          ),
+        },
+        {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: (
+            <MohdAtacUMAP
+              rows={rows}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              getRowId={getRowId}
+              loading={loading}
+            />
+          ),
+        },
+      ]}
+    />
+  );
+};
+
+export default MohdAtac;

@@ -23,6 +23,7 @@ import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedT
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
 import GwasBrowser from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/GwasBrowser";
+import MohdAtac from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_MOHD/MohdAtac";
 // import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
@@ -192,6 +193,11 @@ export const humanCcreTabs = [
     label: "Genome Browser",
     iconPath: GbIconPath,
     component: GenomeBrowser,
+  },
+  {
+    route: "mohd",
+    label: "MOHD ",
+    component: MohdAtac,
   },
   {
     route: "additional-chromatin-signatures",
