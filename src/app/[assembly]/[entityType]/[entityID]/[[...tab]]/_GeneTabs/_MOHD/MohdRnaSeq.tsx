@@ -13,6 +13,7 @@ import type { MohdRnaSeqRow, MohdRnaSeqScale } from "./MohdRnaSeqTypes";
 import MohdRnaSeqTable from "./MohdRnaSeqTable";
 import MohdRnaSeqBarPlot from "./MohdRnaSeqBarPlot";
 import MohdRnaSeqUMAP from "./MohdRnaSeqUMAP";
+import MohdInfoBanner from "common/components/MohdInfoBanner";
 
 const MOHD_RNA_SEQ_QUERY = gql(`
   query MOHD_RNA_TPM($gene_ids: [String!]!) {
@@ -68,47 +69,50 @@ const MohdRnaSeq = ({ entity }: EntityViewComponentProps) => {
   });
 
   return (
-    <TwoPaneLayout
-      TableComponent={
-        <MohdRnaSeqTable
-          rows={rows}
-          tableProps={tableProps}
-          loading={loading || geneData.loading}
-          error={!!error || !!geneData.error}
-          scale={scale}
-        />
-      }
-      plots={[
-        {
-          tabTitle: "Bar Plot",
-          icon: <BarChart />,
-          plotComponent: (
-            <MohdRnaSeqBarPlot
-              sortedFilteredData={sortedFilteredData}
-              selected={selected}
-              toggleSelection={toggleSelection}
-              getRowId={getRowId}
-              scale={scale}
-              setScale={setScale}
-            />
-          ),
-        },
-        {
-          tabTitle: "UMAP",
-          icon: <ScatterPlot />,
-          plotComponent: (
-            <MohdRnaSeqUMAP
-              rows={rows}
-              selected={selected}
-              setSelected={setSelected}
-              toggleSelection={toggleSelection}
-              getRowId={getRowId}
-              loading={loading || geneData.loading}
-            />
-          ),
-        },
-      ]}
-    />
+    <>
+      <MohdInfoBanner />
+      <TwoPaneLayout
+        TableComponent={
+          <MohdRnaSeqTable
+            rows={rows}
+            tableProps={tableProps}
+            loading={loading || geneData.loading}
+            error={!!error || !!geneData.error}
+            scale={scale}
+          />
+        }
+        plots={[
+          {
+            tabTitle: "Bar Plot",
+            icon: <BarChart />,
+            plotComponent: (
+              <MohdRnaSeqBarPlot
+                sortedFilteredData={sortedFilteredData}
+                selected={selected}
+                toggleSelection={toggleSelection}
+                getRowId={getRowId}
+                scale={scale}
+                setScale={setScale}
+              />
+            ),
+          },
+          {
+            tabTitle: "UMAP",
+            icon: <ScatterPlot />,
+            plotComponent: (
+              <MohdRnaSeqUMAP
+                rows={rows}
+                selected={selected}
+                setSelected={setSelected}
+                toggleSelection={toggleSelection}
+                getRowId={getRowId}
+                loading={loading || geneData.loading}
+              />
+            ),
+          },
+        ]}
+      />
+    </>
   );
 };
 

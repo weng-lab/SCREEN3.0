@@ -12,6 +12,7 @@ import type { MohdAtacRow } from "./MohdAtacTypes";
 import MohdAtacTable from "./MohdAtacTable";
 import MohdAtacBarPlot from "./MohdAtacBarPlot";
 import MohdAtacUMAP from "./MohdAtacUMAP";
+import MohdInfoBanner from "common/components/MohdInfoBanner";
 
 const MOHD_ATAC_QUERY = gql(`
   query MOHD_ATAC_ZScores($accessions: [String!]!) {
@@ -64,37 +65,40 @@ const MohdAtac = ({ entity }: EntityViewComponentProps) => {
   });
 
   return (
-    <TwoPaneLayout
-      TableComponent={<MohdAtacTable rows={rows} tableProps={tableProps} loading={loading} error={!!error} />}
-      plots={[
-        {
-          tabTitle: "Bar Plot",
-          icon: <BarChart />,
-          plotComponent: (
-            <MohdAtacBarPlot
-              sortedFilteredData={sortedFilteredData}
-              selected={selected}
-              toggleSelection={toggleSelection}
-              getRowId={getRowId}
-            />
-          ),
-        },
-        {
-          tabTitle: "UMAP",
-          icon: <ScatterPlot />,
-          plotComponent: (
-            <MohdAtacUMAP
-              rows={rows}
-              selected={selected}
-              setSelected={setSelected}
-              toggleSelection={toggleSelection}
-              getRowId={getRowId}
-              loading={loading}
-            />
-          ),
-        },
-      ]}
-    />
+    <>
+      <MohdInfoBanner />
+      <TwoPaneLayout
+        TableComponent={<MohdAtacTable rows={rows} tableProps={tableProps} loading={loading} error={!!error} />}
+        plots={[
+          {
+            tabTitle: "Bar Plot",
+            icon: <BarChart />,
+            plotComponent: (
+              <MohdAtacBarPlot
+                sortedFilteredData={sortedFilteredData}
+                selected={selected}
+                toggleSelection={toggleSelection}
+                getRowId={getRowId}
+              />
+            ),
+          },
+          {
+            tabTitle: "UMAP",
+            icon: <ScatterPlot />,
+            plotComponent: (
+              <MohdAtacUMAP
+                rows={rows}
+                selected={selected}
+                setSelected={setSelected}
+                toggleSelection={toggleSelection}
+                getRowId={getRowId}
+                loading={loading}
+              />
+            ),
+          },
+        ]}
+      />
+    </>
   );
 };
 
