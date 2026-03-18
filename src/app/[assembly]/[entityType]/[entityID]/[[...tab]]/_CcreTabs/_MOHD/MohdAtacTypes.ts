@@ -1,5 +1,11 @@
 import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
+import {
+  mohdProtocolColors,
+  mohdSexColors,
+  mohdSiteColors,
+  mohdStatusColors,
+} from "common/colors";
 
 export type MohdAtacRow = {
   value: number;
@@ -17,36 +23,11 @@ export type BarColorBy = "protocol" | "sex" | "site" | "status";
 export type UmapColorBy = "zscore" | "protocol" | "sex" | "site" | "status";
 export type ScoreColorMode = "active" | "all";
 
-export const protocolColors: Record<string, string> = {
-  "Buffy Coat method": "#d1495b",
-  "OPC method": "#00798c",
-  "CPT method": "#edae49",
-};
-
-export const sexColors: Record<string, string> = {
-  female: "#9d5ca3",
-  male: "#62A35C",
-};
-
-export const siteColors: Record<string, string> = {
-  CCH: "#BF3831",
-  CKD: "#79B4F0",
-  EXP: "#159875",
-  MOM: "#CDA0E8",
-  UIC: "#31487D",
-};
-
-export const statusColors: Record<string, string> = {
-  case: "#e41a1c",
-  control: "#377eb8",
-  unknown: "lightgray",
-};
-
 export const colorMaps: Record<BarColorBy, Record<string, string>> = {
-  protocol: protocolColors,
-  sex: sexColors,
-  site: siteColors,
-  status: statusColors,
+  protocol: mohdProtocolColors,
+  sex: mohdSexColors,
+  site: mohdSiteColors,
+  status: mohdStatusColors,
 };
 
 export const getCategoryColor = (row: MohdAtacRow, colorBy: BarColorBy): string =>
