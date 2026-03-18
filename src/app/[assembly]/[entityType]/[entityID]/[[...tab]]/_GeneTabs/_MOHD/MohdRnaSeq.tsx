@@ -93,6 +93,7 @@ const MohdRnaSeq = ({ entity }: EntityViewComponentProps) => {
                 getRowId={getRowId}
                 scale={scale}
                 setScale={setScale}
+                topAxisLabel={`${entity.entityID} Expression: ${scale === "linear" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}`}
               />
             ),
           },

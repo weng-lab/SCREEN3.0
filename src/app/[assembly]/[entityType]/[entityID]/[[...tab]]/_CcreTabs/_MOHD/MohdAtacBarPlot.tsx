@@ -56,7 +56,7 @@ const MohdAtacBarPlot = ({ sortedFilteredData, selected, toggleSelection, getRow
         <BarPlot
           data={plotData}
           onBarClicked={(bar) => toggleSelection(bar.metadata)}
-          topAxisLabel="Z-Score"
+          topAxisLabel="ATAC Z-Score"
           TooltipContents={PlotTooltip}
           ref={ref}
           downloadFileName="mohd_atac_bar_plot"

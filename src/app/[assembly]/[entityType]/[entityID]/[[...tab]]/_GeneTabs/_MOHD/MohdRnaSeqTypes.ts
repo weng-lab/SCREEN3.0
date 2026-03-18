@@ -19,9 +19,6 @@ export type MohdRnaSeqScale = "linear" | "log";
 export const getScaledValue = (d: MohdRnaSeqRow, scale: MohdRnaSeqScale): number =>
   scale === "log" ? Math.log10(d.value + 1) : d.value;
 
-export const getScaleLabel = (scale: MohdRnaSeqScale): string =>
-  scale === "linear" ? "TPM" : "Log\u2081\u2080(TPM + 1)";
-
 export type BarColorBy = "sex" | "site" | "status";
 export type UmapColorBy = "expression" | "sex" | "site" | "status";
 
@@ -49,6 +46,7 @@ export type MohdRnaSeqBarPlotProps = {
   getRowId: (item: MohdRnaSeqRow) => string;
   scale: MohdRnaSeqScale;
   setScale: (scale: MohdRnaSeqScale) => void;
+  topAxisLabel: string;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
 

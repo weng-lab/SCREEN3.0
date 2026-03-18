@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { BarPlot, BarData } from "@weng-lab/visualization";
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography } from "@mui/material";
 import type { MohdRnaSeqRow, MohdRnaSeqBarPlotProps, BarColorBy, MohdRnaSeqScale } from "./MohdRnaSeqTypes";
-import { getCategoryColor, getScaledValue, getScaleLabel } from "./MohdRnaSeqTypes";
+import { getCategoryColor, getScaledValue } from "./MohdRnaSeqTypes";
 
 const PlotTooltip = ({ bar, scale }: { bar: BarData<MohdRnaSeqRow>; scale: MohdRnaSeqScale }) => (
   <div style={{ padding: 2, maxWidth: 350 }}>
@@ -31,6 +31,7 @@ const MohdRnaSeqBarPlot = ({
   getRowId,
   scale,
   setScale,
+  topAxisLabel,
   ref,
 }: MohdRnaSeqBarPlotProps) => {
   const [colorBy, setColorBy] = useState<BarColorBy>("site");
@@ -82,7 +83,7 @@ const MohdRnaSeqBarPlot = ({
         <BarPlot
           data={plotData}
           onBarClicked={(bar) => toggleSelection(bar.metadata)}
-          topAxisLabel={getScaleLabel(scale)}
+          topAxisLabel={topAxisLabel}
           TooltipContents={(bar) => <PlotTooltip bar={bar} scale={scale} />}
           ref={ref}
           downloadFileName="mohd_rna_seq_bar_plot"

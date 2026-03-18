@@ -21,7 +21,7 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
       { field: "sample_id", headerName: "Dataset", width: 150 },
       {
         field: "value",
-        headerName: scale === "linear" ? "TPM" : "Log\u2081\u2080(TPM + 1)",
+        headerName: scale === "linear" ? "TPM" : "Log10(TPM + 1)",
         width: 130,
         type: "number",
         valueGetter: (_, row) => getScaledValue(row, scale),
