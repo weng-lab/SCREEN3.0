@@ -11,7 +11,6 @@ const initialSort: GridSortModel = [{ field: "value", sort: "desc" }];
 
 const columns: TableColDef<MohdAtacRow>[] = [
   { field: "sample_id", headerName: "Dataset", width: 150 },
-  { field: "opc_id", headerName: "Kit", width: 120 },
   { field: "value", headerName: "Z-Score", width: 100, type: "number", valueFormatter: (v: number) => v?.toFixed(2) },
   {
     field: "protocol",
@@ -29,6 +28,7 @@ const columns: TableColDef<MohdAtacRow>[] = [
     type: "singleSelect",
     valueOptions: Object.keys(mohdStatusColors),
   },
+  { field: "opc_id", headerName: "Kit", width: 120 },
 ];
 
 const MohdAtacTable = ({ rows, tableProps, loading, error }: MohdAtacTableProps) => {
@@ -47,7 +47,7 @@ const MohdAtacTable = ({ rows, tableProps, loading, error }: MohdAtacTableProps)
       error={error}
       apiRef={apiRef}
       divHeight={{ height: "100%" }}
-      initialState={{ sorting: { sortModel: initialSort } }}
+      initialState={{ sorting: { sortModel: initialSort }, columns: { columnVisibilityModel: { opc_id: false } } }}
       toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
       onReady={(api) => {
         const existing = tableSyncOnReady?.(api);
