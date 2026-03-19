@@ -38,6 +38,7 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
   return (
     <Table
       {...syncedTableProps}
+      divHeight={{ height: "100%" }}
       label="MOHD RNA-seq TPM"
       rows={rows}
       loading={loading}

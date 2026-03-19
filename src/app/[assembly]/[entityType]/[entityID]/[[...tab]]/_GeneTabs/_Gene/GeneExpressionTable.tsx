@@ -86,7 +86,16 @@ const GeneExpressionTable = ({
 
   const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted });
 
-  return <Table {...syncedTableProps} label={label} rows={rows} loading={loading} error={error} />;
+  return (
+    <Table
+      {...syncedTableProps}
+      divHeight={{ height: "100%" }}
+      label={label}
+      rows={rows}
+      loading={loading}
+      error={error}
+    />
+  );
 };
 
 export default GeneExpressionTable;

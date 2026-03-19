@@ -28,6 +28,7 @@ const AssayTable = ({ rows, columns, assay, entityID, tableProps, isPresorted }:
   return (
     <Table
       {...syncedTableProps}
+      divHeight={{ height: "100%" }}
       label={`${entityID} ${formatAssay(assay)} z-scores`}
       rows={rows}
       loading={!rows}
