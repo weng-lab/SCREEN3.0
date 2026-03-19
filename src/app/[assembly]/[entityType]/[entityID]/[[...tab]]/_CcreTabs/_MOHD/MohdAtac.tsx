@@ -5,7 +5,8 @@ import { BarChart, ScatterPlot } from "@mui/icons-material";
 import { mohdClient } from "common/apollo/mohd-client";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { gql } from "common/types/generated";
-import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
+import { TwoPaneLayout } from "@weng-lab/ui-components";
+import usePlotDownload from "common/hooks/usePlotDownload";
 import { useTablePlotSync } from "common/hooks/useTablePlotSync";
 import type { Mohd_Atac_ZScoresQuery } from "common/types/generated/graphql";
 import type { MohdAtacRow } from "./MohdAtacTypes";
@@ -64,10 +65,14 @@ const MohdAtac = ({ entity }: EntityViewComponentProps) => {
     getRowId: (r) => r.sample_id,
   });
 
+  const { ref: barRef, ...barDownload } = usePlotDownload();
+  const { ref: umapRef, ...umapDownload } = usePlotDownload();
+
   return (
     <>
       <MohdInfoBanner />
       <TwoPaneLayout
+        direction={{ xs: "column", lg: "row" }}
         TableComponent={<MohdAtacTable rows={rows} tableProps={tableProps} loading={loading} error={!!error} />}
         plots={[
           {
@@ -75,18 +80,21 @@ const MohdAtac = ({ entity }: EntityViewComponentProps) => {
             icon: <BarChart />,
             plotComponent: (
               <MohdAtacBarPlot
+                ref={barRef}
                 sortedFilteredData={sortedFilteredData}
                 selected={selected}
                 toggleSelection={toggleSelection}
                 getRowId={getRowId}
               />
             ),
+            ...barDownload,
           },
           {
             tabTitle: "UMAP",
             icon: <ScatterPlot />,
             plotComponent: (
               <MohdAtacUMAP
+                ref={umapRef}
                 rows={rows}
                 selected={selected}
                 setSelected={setSelected}
@@ -95,6 +103,7 @@ const MohdAtac = ({ entity }: EntityViewComponentProps) => {
                 loading={loading}
               />
             ),
+            ...umapDownload,
           },
         ]}
       />

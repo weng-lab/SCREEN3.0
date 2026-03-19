@@ -6,7 +6,8 @@ import { mohdClient } from "common/apollo/mohd-client";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
 import { gql } from "common/types/generated";
-import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
+import { TwoPaneLayout } from "@weng-lab/ui-components";
+import usePlotDownload from "common/hooks/usePlotDownload";
 import { useTablePlotSync } from "common/hooks/useTablePlotSync";
 import type { Mohd_Rna_TpmQuery } from "common/types/generated/graphql";
 import type { MohdRnaSeqRow, MohdRnaSeqScale } from "./MohdRnaSeqTypes";
@@ -68,10 +69,14 @@ const MohdRnaSeq = ({ entity }: EntityViewComponentProps) => {
     getRowId: (r) => r.sample_id,
   });
 
+  const { ref: barRef, ...barDownload } = usePlotDownload();
+  const { ref: umapRef, ...umapDownload } = usePlotDownload();
+
   return (
     <>
       <MohdInfoBanner />
       <TwoPaneLayout
+        direction={{ xs: "column", lg: "row" }}
         TableComponent={
           <MohdRnaSeqTable
             rows={rows}
@@ -87,6 +92,7 @@ const MohdRnaSeq = ({ entity }: EntityViewComponentProps) => {
             icon: <BarChart />,
             plotComponent: (
               <MohdRnaSeqBarPlot
+                ref={barRef}
                 sortedFilteredData={sortedFilteredData}
                 selected={selected}
                 toggleSelection={toggleSelection}
@@ -96,12 +102,14 @@ const MohdRnaSeq = ({ entity }: EntityViewComponentProps) => {
                 topAxisLabel={`${entity.entityID} Expression: ${scale === "linear" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}`}
               />
             ),
+            ...barDownload,
           },
           {
             tabTitle: "UMAP",
             icon: <ScatterPlot />,
             plotComponent: (
               <MohdRnaSeqUMAP
+                ref={umapRef}
                 rows={rows}
                 selected={selected}
                 setSelected={setSelected}
@@ -110,6 +118,7 @@ const MohdRnaSeq = ({ entity }: EntityViewComponentProps) => {
                 loading={loading || geneData.loading}
               />
             ),
+            ...umapDownload,
           },
         ]}
       />
