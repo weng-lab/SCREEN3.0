@@ -1,6 +1,7 @@
 "use client";
 import { BarChart, CandlestickChart } from "@mui/icons-material";
-import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
+import { TwoPaneLayout } from "@weng-lab/ui-components";
+import usePlotDownload from "common/hooks/usePlotDownload";
 import { useTranscriptExpression } from "common/hooks/useTranscriptExpression";
 import { useState, useMemo } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
@@ -91,8 +92,12 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
     transcriptExpressionData,
   };
 
+  const { ref: barRef, ...barDownload } = usePlotDownload();
+  const { ref: violinRef, ...violinDownload } = usePlotDownload();
+
   return (
     <TwoPaneLayout
+      direction={{ xs: "column", lg: "row" }}
       TableComponent={
         <TranscriptExpressionTable
           rows={transformedRows}
@@ -110,6 +115,7 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
           icon: <BarChart />,
           plotComponent: (
             <TranscriptExpressionBarPlot
+              ref={barRef}
               sortedFilteredData={sortedFilteredData}
               selected={selected}
               toggleSelection={toggleSelection}
@@ -118,12 +124,14 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
               {...controlProps}
             />
           ),
+          ...barDownload,
         },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
           plotComponent: (
             <TranscriptExpressionViolinPlot
+              ref={violinRef}
               rows={rows}
               selected={selected}
               setSelected={setSelected}
@@ -133,6 +141,7 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
               {...controlProps}
             />
           ),
+          ...violinDownload,
         },
       ]}
     />
