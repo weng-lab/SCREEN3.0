@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
+import { TwoPaneLayout } from "@weng-lab/ui-components";
+import usePlotDownload from "common/hooks/usePlotDownload";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
@@ -72,8 +73,13 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
     setViewBy(newView);
   };
 
+  const { ref: barRef, ...barDownload } = usePlotDownload();
+  const { ref: violinRef, ...violinDownload } = usePlotDownload();
+  const { ref: umapRef, ...umapDownload } = usePlotDownload();
+
   return (
     <TwoPaneLayout
+      direction={{ xs: "column", lg: "row" }}
       TableComponent={
         <AssayTable
           rows={transformedRows}
@@ -90,6 +96,7 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
           icon: <BarChart />,
           plotComponent: (
             <AssayBarPlot
+              ref={barRef}
               sortedFilteredData={sortedFilteredData}
               selected={selected}
               toggleSelection={toggleSelection}
@@ -104,12 +111,14 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
               setShow95Line={setShow95Line}
             />
           ),
+          ...barDownload,
         },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
           plotComponent: (
             <AssayViolinPlot
+              ref={violinRef}
               rows={rows}
               selected={selected}
               setSelected={setSelected}
@@ -125,6 +134,7 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
               setShow95Line={setShow95Line}
             />
           ),
+          ...violinDownload,
         },
         ...(assay !== "atac"
           ? [
@@ -133,6 +143,7 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
                 icon: <ScatterPlot />,
                 plotComponent: (
                   <AssayUMAP
+                    ref={umapRef}
                     rows={rows}
                     selected={selected}
                     setSelected={setSelected}
@@ -142,6 +153,7 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
                     assembly={assembly}
                   />
                 ),
+                ...umapDownload,
               },
             ]
           : []),

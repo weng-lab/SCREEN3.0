@@ -1,5 +1,4 @@
 "use client";
-import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { useCallback, useMemo, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
@@ -20,6 +19,8 @@ import type {
   GeneExpressionControlProps,
 } from "./types";
 import { getTPM } from "./types";
+import { TwoPaneLayout } from "@weng-lab/ui-components";
+import usePlotDownload from "common/hooks/usePlotDownload";
 /**
  * Flattens gene expression data into one row per sample.
  * Filters by RNAtype and handles replicate splitting/averaging. TPM values are always raw (unscaled).
@@ -213,10 +214,15 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
     setRNAType: handleSetRNAType,
   };
 
+  const { ref: barRef, ...barDownload } = usePlotDownload();
+  const { ref: violinRef, ...violinDownload } = usePlotDownload();
+  const { ref: umapRef, ...umapDownload } = usePlotDownload();
+
   if (isV40) return <VersionFallback gene={entity.entityID} />;
 
   return (
     <TwoPaneLayout
+      direction={{ xs: "column", lg: "row" }}
       TableComponent={
         <GeneExpressionTable
           rows={transformedRows}
@@ -234,6 +240,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
           icon: <BarChart />,
           plotComponent: (
             <GeneExpressionBarPlot
+              ref={barRef}
               sortedFilteredData={sortedFilteredData}
               selected={selected}
               toggleSelection={toggleSelection}
@@ -243,12 +250,14 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               {...controlProps}
             />
           ),
+          ...barDownload,
         },
         {
           tabTitle: "Violin Plot",
           icon: <CandlestickChart />,
           plotComponent: (
             <GeneExpressionViolinPlot
+              ref={violinRef}
               rows={rows}
               selected={selected}
               setSelected={setSelected}
@@ -260,12 +269,14 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               {...controlProps}
             />
           ),
+          ...violinDownload,
         },
         {
           tabTitle: "UMAP",
           icon: <ScatterPlot />,
           plotComponent: (
             <GeneExpressionUMAP
+              ref={umapRef}
               geneName={entity.entityID}
               rows={umapRows}
               highlightedAccessions={umapHighlightedAccessions}
@@ -274,6 +285,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               loading={geneExpressionData.loading}
             />
           ),
+          ...umapDownload,
         },
       ]}
     />

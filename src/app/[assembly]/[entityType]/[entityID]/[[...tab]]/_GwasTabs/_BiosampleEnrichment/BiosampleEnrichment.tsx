@@ -1,5 +1,4 @@
 "use client";
-import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
 import { BarChart } from "@mui/icons-material";
 import BiosampleEnrichmentTable from "./BiosampleEnrichmentTable";
 import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnrichmentData";
@@ -7,8 +6,9 @@ import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
 import { useTablePlotSync } from "common/hooks/useTablePlotSync";
-import { Table, TableColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef, TwoPaneLayout } from "@weng-lab/ui-components";
 import { Alert } from "@mui/material";
+import usePlotDownload from "common/hooks/usePlotDownload";
 
 const emptyRows: GWASEnrichment[] = [];
 
@@ -45,6 +45,8 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
     getRowId: (r) => r.accession,
   });
 
+  const { ref: barRef, ...barDownload } = usePlotDownload();
+
   return (
     <>
       <Table
@@ -59,6 +61,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
       )}
       {(loadingGWASEnrichment || (dataGWASEnrichment && dataGWASEnrichment.length > 0)) && (
         <TwoPaneLayout
+          direction={{ xs: "column", lg: "row" }}
           TableComponent={
             <BiosampleEnrichmentTable
               enrichmentdata={{ data: dataGWASEnrichment, loading: loadingGWASEnrichment, error: errorGWASEnrichment }}
@@ -71,6 +74,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
               icon: <BarChart />,
               plotComponent: (
                 <BiosampleEnrichmentBarPlot
+                  ref={barRef}
                   selected={selected}
                   sortedFilteredData={sortedFilteredData}
                   toggleSelection={toggleSelection}
@@ -78,6 +82,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
                   study={entity.entityID}
                 />
               ),
+              ...barDownload,
             },
           ]}
         />
