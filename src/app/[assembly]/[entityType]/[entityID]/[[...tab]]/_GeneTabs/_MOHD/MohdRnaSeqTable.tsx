@@ -45,7 +45,7 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
       columns={columns}
       loading={loading}
       error={error}
-      initialState={{ ...syncedTableProps.initialState, columns: { columnVisibilityModel: { opc_id: false } } }}
+      initialState={{ ...syncedTableProps.initialState, columns: { columnVisibilityModel: { kit: false } } }}
     />
   );
 };
