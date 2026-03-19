@@ -5,8 +5,7 @@ import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnric
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
-import { useTablePlotSync } from "common/hooks/useTablePlotSync";
-import { Table, TableColDef, TwoPaneLayout } from "@weng-lab/ui-components";
+import { Table, TableColDef, TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import { Alert } from "@mui/material";
 import usePlotDownload from "common/hooks/usePlotDownload";
 

@@ -1,9 +1,8 @@
-import type { TableColDef } from "@weng-lab/ui-components";
+import type { TableColDef, useTablePlotSync } from "@weng-lab/ui-components";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { AnyOpenEntity } from "common/OpenEntitiesContext";
 import type { Assembly, CcreAssay, CcreClass } from "common/types/globalTypes";
 import type { Dispatch, SetStateAction } from "react";
-import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
 
 export type BiosampleRow = {
   name?: string;

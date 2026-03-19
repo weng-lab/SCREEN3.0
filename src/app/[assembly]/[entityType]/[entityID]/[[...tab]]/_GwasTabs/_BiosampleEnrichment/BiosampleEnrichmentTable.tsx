@@ -2,14 +2,12 @@ import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnr
 import { useMemo } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { IconButton, Tooltip } from "@mui/material";
-import { Table, TableColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef, useSyncedTable } from "@weng-lab/ui-components";
+import type { useTablePlotSync } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
-import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
-import { useAutoSort } from "common/hooks/useAutoSort";
-import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
 
 export type BiosampleEnrichmentTableProps = {
   enrichmentdata: UseGWASEnrichmentReturn;
@@ -25,10 +23,8 @@ const LabelTooltip = (
 );
 
 const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnrichmentTableProps) => {
-  const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
+  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted: false });
   const { data, loading, error } = enrichmentdata;
-
-  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, initialSort, false);
 
   const columns: TableColDef<GWASEnrichment>[] = useMemo(
     () => [
@@ -89,26 +85,15 @@ const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnric
 
   return (
     <Table
+      {...syncedTableProps}
       showToolbar
       rows={data}
       columns={columns}
       loading={loading}
       error={!!error}
-      apiRef={apiRef}
       label={`Suggested Biosamples`}
       emptyTableFallback={"No Suggested Biosamples found for this study"}
-      initialState={{
-        sorting: { sortModel: initialSort },
-      }}
-      divHeight={{ height: "100%" }}
       labelTooltip={LabelTooltip}
-      toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
-      onReady={(api) => {
-        const existing = tableSyncOnReady?.(api);
-        const existingCleanups = Array.isArray(existing) ? existing : existing ? [existing] : [];
-        return [...existingCleanups, ...autoSortOnReady(api)];
-      }}
-      {...restTableProps}
     />
   );
 };

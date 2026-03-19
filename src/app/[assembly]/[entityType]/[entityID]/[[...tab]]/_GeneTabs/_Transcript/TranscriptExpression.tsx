@@ -1,6 +1,6 @@
 "use client";
 import { BarChart, CandlestickChart } from "@mui/icons-material";
-import { TwoPaneLayout } from "@weng-lab/ui-components";
+import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import usePlotDownload from "common/hooks/usePlotDownload";
 import { useTranscriptExpression } from "common/hooks/useTranscriptExpression";
 import { useState, useMemo } from "react";
@@ -8,7 +8,6 @@ import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";
 import TranscriptExpressionViolinPlot from "./TranscriptExpressionViolinPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useTablePlotSync } from "common/hooks/useTablePlotSync";
 import { getRPM } from "./types";
 import type {
   TranscriptMetadata,

@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { UseTranscriptExpressionReturn } from "common/hooks/useTranscriptExpression";
-import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import type { useTablePlotSync } from "@weng-lab/ui-components";
 
 export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 

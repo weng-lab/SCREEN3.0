@@ -1,4 +1,4 @@
-import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import type { useTablePlotSync } from "@weng-lab/ui-components";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import { mohdSexColors, mohdSiteColors, mohdStatusColors } from "common/colors";
 

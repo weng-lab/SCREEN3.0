@@ -1,12 +1,10 @@
 import { FormControl, IconButton, MenuItem, Select, Tooltip, Typography } from "@mui/material";
-import { TableColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table, useSyncedTable } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
 import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
 import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
-import { useAutoSort } from "common/hooks/useAutoSort";
-import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { getScaledRPM } from "./types";
 import type { TranscriptMetadata, TranscriptExpressionTableProps } from "./types";
 
@@ -19,12 +17,11 @@ const TranscriptExpressionTable = ({
   selectedPeak,
   setPeak,
 }: TranscriptExpressionTableProps) => {
-  const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
   const { loading } = transcriptExpressionData;
 
   const initialSort: GridSortModel = useMemo(() => [{ field: " ", sort: "desc" }], []);
 
-  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, initialSort, isPresorted);
+  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted });
 
   const columns: TableColDef<TranscriptMetadata>[] = useMemo(
     () => [
@@ -116,24 +113,12 @@ const TranscriptExpressionTable = ({
 
   return (
     <Table
+      {...syncedTableProps}
       label={TableLabel}
       rows={rows}
       columns={columns}
       loading={loading}
-      apiRef={apiRef}
-      disableColumnSorting={isPresorted}
-      initialState={{
-        sorting: { sortModel: initialSort },
-      }}
-      divHeight={{ height: "100%" }}
       downloadFileName={"TSS Expression at " + selectedPeak}
-      toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
-      onReady={(api) => {
-        const existing = tableSyncOnReady?.(api);
-        const existingCleanups = Array.isArray(existing) ? existing : existing ? [existing] : [];
-        return [...existingCleanups, ...autoSortOnReady(api)];
-      }}
-      {...restTableProps}
     />
   );
 };

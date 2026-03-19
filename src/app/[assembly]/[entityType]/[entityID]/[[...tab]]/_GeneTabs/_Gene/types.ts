@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { useGeneExpression } from "common/hooks/useGeneExpression";
-import type { useTablePlotSync } from "common/hooks/useTablePlotSync";
+import type { useTablePlotSync } from "@weng-lab/ui-components";
 import type { Assembly } from "common/types/globalTypes";
 
 type GeneExpressionReturnItem = ReturnType<typeof useGeneExpression>["data"][number]

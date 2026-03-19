@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { TwoPaneLayout } from "@weng-lab/ui-components";
+import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import usePlotDownload from "common/hooks/usePlotDownload";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
-import { useTablePlotSync } from "common/hooks/useTablePlotSync";
 import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
 
 /**

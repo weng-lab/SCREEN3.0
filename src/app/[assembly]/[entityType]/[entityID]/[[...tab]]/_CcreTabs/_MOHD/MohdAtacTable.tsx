@@ -1,9 +1,7 @@
 import { useMemo } from "react";
-import { Table, TableColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef, useSyncedTable } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
-import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
-import { useAutoSort } from "common/hooks/useAutoSort";
 import type { MohdAtacRow, MohdAtacTableProps } from "./MohdAtacTypes";
 import { mohdProtocolColors, mohdSexColors, mohdSiteColors, mohdStatusColors } from "common/colors";
 
@@ -32,29 +30,19 @@ const columns: TableColDef<MohdAtacRow>[] = [
 ];
 
 const MohdAtacTable = ({ rows, tableProps, loading, error }: MohdAtacTableProps) => {
-  const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
-
-  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, initialSort, false);
+  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted: false });
 
   const allColumns = useMemo(() => [sortableTableCheckboxColumn, ...columns], []);
 
   return (
     <Table
+      {...syncedTableProps}
       label="MOHD ATAC Z-Scores"
       rows={rows}
       columns={allColumns}
       loading={loading}
       error={error}
-      apiRef={apiRef}
-      divHeight={{ height: "100%" }}
-      initialState={{ sorting: { sortModel: initialSort }, columns: { columnVisibilityModel: { opc_id: false } } }}
-      toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
-      onReady={(api) => {
-        const existing = tableSyncOnReady?.(api);
-        const existingCleanups = Array.isArray(existing) ? existing : existing ? [existing] : [];
-        return [...existingCleanups, ...autoSortOnReady(api)];
-      }}
-      {...restTableProps}
+      initialState={{ ...syncedTableProps.initialState, columns: { columnVisibilityModel: { opc_id: false } } }}
     />
   );
 };

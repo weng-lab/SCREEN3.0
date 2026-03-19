@@ -9,7 +9,6 @@ import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import VersionFallback from "./GeneVersionFallback";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
-import { useTablePlotSync } from "common/hooks/useTablePlotSync";
 import type {
   PointMetadata,
   GeneExpressionViewBy,
@@ -19,7 +18,7 @@ import type {
   GeneExpressionControlProps,
 } from "./types";
 import { getTPM } from "./types";
-import { TwoPaneLayout } from "@weng-lab/ui-components";
+import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import usePlotDownload from "common/hooks/usePlotDownload";
 /**
  * Flattens gene expression data into one row per sample.

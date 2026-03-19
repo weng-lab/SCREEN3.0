@@ -1,13 +1,11 @@
 import { GeneExpressionTableProps, getScaledTPM, PointMetadata } from "./types";
 import { IconButton } from "@mui/material";
-import { TableColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table, useSyncedTable } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
 import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
-import AutoSortSwitch from "common/components/AutoSortSwitch";
 import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
-import { useAutoSort } from "common/hooks/useAutoSort";
 
 const initialSort: GridSortModel = [{ field: "tpm", sort: "desc" }];
 
@@ -20,9 +18,7 @@ const GeneExpressionTable = ({
   isPresorted,
   scale,
 }: GeneExpressionTableProps) => {
-  const { apiRef, onReady: tableSyncOnReady, ...restTableProps } = tableProps;
-
-  const { autoSort, setAutoSort, onReady: autoSortOnReady } = useAutoSort(apiRef, initialSort, isPresorted);
+  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted });
 
   const columns: TableColDef<PointMetadata>[] = useMemo(
     () => [
@@ -94,26 +90,12 @@ const GeneExpressionTable = ({
 
   return (
     <Table
+      {...syncedTableProps}
       label={label}
       rows={rows}
       columns={columns}
       loading={loading}
       error={error}
-      apiRef={apiRef}
-      disableColumnSorting={isPresorted}
-      divHeight={{ height: "100%" }}
-      initialState={{
-        sorting: {
-          sortModel: initialSort,
-        },
-      }}
-      toolbarSlot={<AutoSortSwitch autoSort={autoSort} setAutoSort={setAutoSort} />}
-      onReady={(api) => {
-        const existing = tableSyncOnReady?.(api);
-        const existingCleanups = Array.isArray(existing) ? existing : existing ? [existing] : [];
-        return [...existingCleanups, ...autoSortOnReady(api)];
-      }}
-      {...restTableProps}
     />
   );
 };
