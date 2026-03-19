@@ -4,9 +4,10 @@ import { GridSortModel } from "@mui/x-data-grid-premium";
 import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
-import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
 import { getScaledRPM } from "./types";
 import type { TranscriptMetadata, TranscriptExpressionTableProps } from "./types";
+
+const initialSort: GridSortModel = [{ field: " ", sort: "desc" }];
 
 const TranscriptExpressionTable = ({
   rows,
@@ -19,13 +20,8 @@ const TranscriptExpressionTable = ({
 }: TranscriptExpressionTableProps) => {
   const { loading } = transcriptExpressionData;
 
-  const initialSort: GridSortModel = useMemo(() => [{ field: " ", sort: "desc" }], []);
-
-  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted });
-
   const columns: TableColDef<TranscriptMetadata>[] = useMemo(
     () => [
-      sortableTableCheckboxColumn,
       {
         field: "biosample",
         headerName: "Sample",
@@ -85,6 +81,8 @@ const TranscriptExpressionTable = ({
     [scale]
   );
 
+  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted });
+
   const TableLabel = useMemo(
     () => (
       <>
@@ -116,7 +114,6 @@ const TranscriptExpressionTable = ({
       {...syncedTableProps}
       label={TableLabel}
       rows={rows}
-      columns={columns}
       loading={loading}
       downloadFileName={"TSS Expression at " + selectedPeak}
     />

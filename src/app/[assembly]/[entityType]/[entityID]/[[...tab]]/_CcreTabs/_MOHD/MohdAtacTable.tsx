@@ -1,7 +1,5 @@
-import { useMemo } from "react";
 import { Table, TableColDef, useSyncedTable } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
-import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
 import type { MohdAtacRow, MohdAtacTableProps } from "./MohdAtacTypes";
 import { mohdProtocolColors, mohdSexColors, mohdSiteColors, mohdStatusColors } from "common/colors";
 
@@ -30,16 +28,13 @@ const columns: TableColDef<MohdAtacRow>[] = [
 ];
 
 const MohdAtacTable = ({ rows, tableProps, loading, error }: MohdAtacTableProps) => {
-  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted: false });
-
-  const allColumns = useMemo(() => [sortableTableCheckboxColumn, ...columns], []);
+  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted: false });
 
   return (
     <Table
       {...syncedTableProps}
       label="MOHD ATAC Z-Scores"
       rows={rows}
-      columns={allColumns}
       loading={loading}
       error={error}
       initialState={{ ...syncedTableProps.initialState, columns: { columnVisibilityModel: { opc_id: false } } }}

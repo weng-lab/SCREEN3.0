@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Table, TableColDef, useSyncedTable } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
-import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
 import type { MohdRnaSeqRow, MohdRnaSeqTableProps } from "./MohdRnaSeqTypes";
 import { getScaledValue } from "./MohdRnaSeqTypes";
 import { mohdSexColors, mohdSiteColors, mohdStatusColors } from "common/colors";
@@ -9,11 +8,8 @@ import { mohdSexColors, mohdSiteColors, mohdStatusColors } from "common/colors";
 const initialSort: GridSortModel = [{ field: "value", sort: "desc" }];
 
 const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeqTableProps) => {
-  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted: false });
-
   const columns: TableColDef<MohdRnaSeqRow>[] = useMemo(
     () => [
-      sortableTableCheckboxColumn,
       { field: "sample_id", headerName: "Dataset", width: 150 },
       {
         field: "value",
@@ -37,12 +33,13 @@ const MohdRnaSeqTable = ({ rows, tableProps, loading, error, scale }: MohdRnaSeq
     [scale]
   );
 
+  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted: false });
+
   return (
     <Table
       {...syncedTableProps}
       label="MOHD RNA-seq TPM"
       rows={rows}
-      columns={columns}
       loading={loading}
       error={error}
       initialState={{ ...syncedTableProps.initialState, columns: { columnVisibilityModel: { kit: false } } }}

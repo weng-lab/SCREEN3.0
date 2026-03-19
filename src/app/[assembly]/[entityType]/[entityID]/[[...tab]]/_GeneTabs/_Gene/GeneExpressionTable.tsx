@@ -5,7 +5,6 @@ import { GridSortModel } from "@mui/x-data-grid-premium";
 import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
-import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
 
 const initialSort: GridSortModel = [{ field: "tpm", sort: "desc" }];
 
@@ -18,11 +17,8 @@ const GeneExpressionTable = ({
   isPresorted,
   scale,
 }: GeneExpressionTableProps) => {
-  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted });
-
   const columns: TableColDef<PointMetadata>[] = useMemo(
     () => [
-      sortableTableCheckboxColumn,
       {
         field: "biosample",
         headerName: "Sample",
@@ -88,16 +84,9 @@ const GeneExpressionTable = ({
     [scale]
   );
 
-  return (
-    <Table
-      {...syncedTableProps}
-      label={label}
-      rows={rows}
-      columns={columns}
-      loading={loading}
-      error={error}
-    />
-  );
+  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted });
+
+  return <Table {...syncedTableProps} label={label} rows={rows} loading={loading} error={error} />;
 };
 
 export default GeneExpressionTable;

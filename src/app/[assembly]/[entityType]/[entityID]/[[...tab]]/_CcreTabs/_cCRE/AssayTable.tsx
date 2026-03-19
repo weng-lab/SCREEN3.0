@@ -4,7 +4,6 @@ import { GridColumnVisibilityModel, GridSortModel } from "@mui/x-data-grid-premi
 import { CcreAssay } from "common/types/globalTypes";
 import { CCRE_ASSAYS } from "common/consts";
 import { formatAssay } from "common/utility";
-import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
 import type { AssayTableProps } from "./types";
 
 const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel => {
@@ -18,7 +17,7 @@ const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel =
 const AssayTable = ({ rows, columns, assay, entityID, tableProps, isPresorted }: AssayTableProps) => {
   const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" }], [assay]);
 
-  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted });
+  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted });
 
   // Update column visibility and sort column when assay changes
   useEffect(() => {
@@ -26,15 +25,12 @@ const AssayTable = ({ rows, columns, assay, entityID, tableProps, isPresorted }:
     syncedTableProps.apiRef.current.setColumnVisibilityModel(makeColumnVisibiltyModel(assay));
   }, [syncedTableProps.apiRef, assay]);
 
-  const allColumns = useMemo(() => [sortableTableCheckboxColumn, ...columns], [columns]);
-
   return (
     <Table
       {...syncedTableProps}
       label={`${entityID} ${formatAssay(assay)} z-scores`}
       rows={rows}
       loading={!rows}
-      columns={allColumns}
       initialState={{
         ...syncedTableProps.initialState,
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },

@@ -7,7 +7,6 @@ import type { useTablePlotSync } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utility";
-import { sortableTableCheckboxColumn } from "common/components/SortableTableCheckboxColumn";
 
 export type BiosampleEnrichmentTableProps = {
   enrichmentdata: UseGWASEnrichmentReturn;
@@ -23,12 +22,10 @@ const LabelTooltip = (
 );
 
 const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnrichmentTableProps) => {
-  const { syncedTableProps } = useSyncedTable({ tableProps, initialSort, isPresorted: false });
   const { data, loading, error } = enrichmentdata;
 
   const columns: TableColDef<GWASEnrichment>[] = useMemo(
     () => [
-      sortableTableCheckboxColumn,
       {
         field: "displayname",
         headerName: "Biosample",
@@ -83,12 +80,13 @@ const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnric
     []
   );
 
+  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted: false });
+
   return (
     <Table
       {...syncedTableProps}
       showToolbar
       rows={data}
-      columns={columns}
       loading={loading}
       error={!!error}
       label={`Suggested Biosamples`}
