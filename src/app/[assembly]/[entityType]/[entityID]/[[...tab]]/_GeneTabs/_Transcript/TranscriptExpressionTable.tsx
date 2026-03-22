@@ -112,7 +112,6 @@ const TranscriptExpressionTable = ({
   return (
     <Table
       {...syncedTableProps}
-      divHeight={{ height: "100%" }}
       label={TableLabel}
       rows={rows}
       loading={loading}

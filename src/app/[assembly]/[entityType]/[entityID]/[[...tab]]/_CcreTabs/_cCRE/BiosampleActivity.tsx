@@ -543,12 +543,11 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             rows={ctAgnosticRow}
             columns={ctAgnosticCols}
             loading={loading_Ct_Agnostic}
-            //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
-            divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
             error={!!error_Ct_Agnostic}
-            {...disableCsvEscapeChar}
+            autoHeight
             hideFooter
             showToolbar={false}
+            {...disableCsvEscapeChar}
           />
           <div>
             <ProportionsBar

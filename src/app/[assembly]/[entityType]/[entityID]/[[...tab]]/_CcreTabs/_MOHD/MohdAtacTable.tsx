@@ -33,7 +33,6 @@ const MohdAtacTable = ({ rows, tableProps, loading, error }: MohdAtacTableProps)
   return (
     <Table
       {...syncedTableProps}
-      divHeight={{ height: "100%" }}
       label="MOHD ATAC Z-Scores"
       rows={rows}
       loading={loading}

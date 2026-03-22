@@ -89,7 +89,6 @@ const GeneExpressionTable = ({
   return (
     <Table
       {...syncedTableProps}
-      divHeight={{ height: "100%" }}
       label={label}
       rows={rows}
       loading={loading}

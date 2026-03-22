@@ -54,6 +54,8 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
         rows={dataGWASMetadata}
         loading={loadingGWASMetadata}
         error={!!errorGWASMetadata}
+        autoHeight
+        hideFooter
       />
       {!loadingGWASEnrichment && dataGWASEnrichment?.length === 0 && (
         <Alert severity="info">There is no biosample enrichment data for this study</Alert>

@@ -85,7 +85,6 @@ const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnric
   return (
     <Table
       {...syncedTableProps}
-      divHeight={{ height: "100%" }}
       showToolbar
       rows={data}
       loading={loading}
