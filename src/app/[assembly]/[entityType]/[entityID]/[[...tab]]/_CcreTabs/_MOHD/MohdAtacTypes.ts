@@ -57,3 +57,12 @@ export type MohdAtacUMAPProps = {
   loading: boolean;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
+
+export type MohdAtacViolinPlotProps = {
+  rows: MohdAtacRow[];
+  selected: MohdAtacRow[];
+  setSelected: React.Dispatch<React.SetStateAction<MohdAtacRow[]>>;
+  toggleSelection: (item: MohdAtacRow) => void;
+  getRowId: (item: MohdAtacRow) => string;
+  ref?: React.RefObject<DownloadPlotHandle>;
+};

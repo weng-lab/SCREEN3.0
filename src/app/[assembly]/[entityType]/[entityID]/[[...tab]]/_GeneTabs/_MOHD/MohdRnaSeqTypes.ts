@@ -59,3 +59,14 @@ export type MohdRnaSeqUMAPProps = {
   loading: boolean;
   ref?: React.RefObject<DownloadPlotHandle>;
 };
+
+export type MohdRnaSeqViolinPlotProps = {
+  rows: MohdRnaSeqRow[];
+  selected: MohdRnaSeqRow[];
+  setSelected: React.Dispatch<React.SetStateAction<MohdRnaSeqRow[]>>;
+  toggleSelection: (item: MohdRnaSeqRow) => void;
+  getRowId: (item: MohdRnaSeqRow) => string;
+  scale: MohdRnaSeqScale;
+  setScale: (scale: MohdRnaSeqScale) => void;
+  ref?: React.RefObject<DownloadPlotHandle>;
+};

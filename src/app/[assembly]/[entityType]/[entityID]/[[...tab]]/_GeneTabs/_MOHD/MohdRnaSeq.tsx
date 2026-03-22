@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
-import { BarChart, ScatterPlot } from "@mui/icons-material";
+import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import { mohdClient } from "common/apollo/mohd-client";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
@@ -12,6 +12,7 @@ import type { Mohd_Rna_TpmQuery } from "common/types/generated/graphql";
 import type { MohdRnaSeqRow, MohdRnaSeqScale } from "./MohdRnaSeqTypes";
 import MohdRnaSeqTable from "./MohdRnaSeqTable";
 import MohdRnaSeqBarPlot from "./MohdRnaSeqBarPlot";
+import MohdRnaSeqViolinPlot from "./MohdRnaSeqViolinPlot";
 import MohdRnaSeqUMAP from "./MohdRnaSeqUMAP";
 import MohdInfoBanner from "common/components/MohdInfoBanner";
 
@@ -69,6 +70,7 @@ const MohdRnaSeq = ({ entity }: EntityViewComponentProps) => {
   });
 
   const { ref: barRef, ...barDownload } = usePlotDownload();
+  const { ref: violinRef, ...violinDownload } = usePlotDownload();
   const { ref: umapRef, ...umapDownload } = usePlotDownload();
 
   return (
@@ -102,6 +104,23 @@ const MohdRnaSeq = ({ entity }: EntityViewComponentProps) => {
               />
             ),
             ...barDownload,
+          },
+          {
+            tabTitle: "Violin Plot",
+            icon: <CandlestickChart />,
+            plotComponent: (
+              <MohdRnaSeqViolinPlot
+                ref={violinRef}
+                rows={rows}
+                selected={selected}
+                setSelected={setSelected}
+                toggleSelection={toggleSelection}
+                getRowId={getRowId}
+                scale={scale}
+                setScale={setScale}
+              />
+            ),
+            ...violinDownload,
           },
           {
             tabTitle: "UMAP",
