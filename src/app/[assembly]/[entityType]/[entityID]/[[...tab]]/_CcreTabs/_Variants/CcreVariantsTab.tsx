@@ -8,7 +8,7 @@ import { EntityViewComponentProps } from "common/entityTabsConfig";
 const CcreVariantsTab = ({ entity }: EntityViewComponentProps) => {
   return (
     <Stack spacing={2}>
-      <IntersectingSNPs entity={entity} />
+      <IntersectingSNPs entity={entity} divHeight={{ maxHeight: 400 }} />
       {entity.assembly === "GRCh38" && <ImmuneGWASLdr accession={entity.entityID} />}
       {entity.assembly === "GRCh38" && <EQTLs entity={entity} />}
     </Stack>

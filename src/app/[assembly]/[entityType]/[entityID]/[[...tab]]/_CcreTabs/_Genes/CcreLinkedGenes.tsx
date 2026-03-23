@@ -13,6 +13,48 @@ import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes
 import { InfoOutlineRounded } from "@mui/icons-material";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 
+const CompuLinkedGenes_columns: TableColDef<ReturnType<typeof useCompuLinkedGenes>["data"][number]>[] = [
+  {
+    field: "fileaccession",
+    headerName: "File",
+    renderCell: (params) => (
+      <LinkComponent href={`https://www.encodeproject.org/file/${params.value}`} openInNewTab showExternalIcon>
+        {params.value}
+      </LinkComponent>
+    ),
+  },
+  sharedColumns.genename,
+  {
+    field: "geneid",
+    headerName: "Gene ID",
+  },
+  sharedColumns.genetype,
+  {
+    field: "method",
+    headerName: "Method",
+    valueGetter: (_, row) => row.method.replaceAll("_", " "),
+  },
+  {
+    field: "methodregion",
+    headerName: "Method Region",
+    valueGetter: (_, row) => formatCoord(row.methodregion),
+  },
+  {
+    field: "celltype",
+    headerName: "Biosample",
+    valueGetter: (_, row) =>
+      row.celltype
+        .replaceAll("_", " ")
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+  },
+  {
+    ...sharedColumns.score,
+    valueGetter: (_, row) => row.score.toFixed(2),
+  },
+];
+
 export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
   const isHuman = entity.assembly === "GRCh38";
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
@@ -92,48 +134,6 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       ...x,
       id: index.toString(),
     }));
-
-  const CompuLinkedGenes_columns: TableColDef<(typeof dataCompuGenes)[number]>[] = [
-    {
-      field: "fileaccession",
-      headerName: "File",
-      renderCell: (params) => (
-        <LinkComponent href={`https://www.encodeproject.org/file/${params.value}`} openInNewTab showExternalIcon>
-          {params.value}
-        </LinkComponent>
-      ),
-    },
-    sharedColumns.genename,
-    {
-      field: "geneid",
-      headerName: "Gene ID",
-    },
-    sharedColumns.genetype,
-    {
-      field: "method",
-      headerName: "Method",
-      valueGetter: (_, row) => row.method.replaceAll("_", " "),
-    },
-    {
-      field: "methodregion",
-      headerName: "Method Region",
-      valueGetter: (_, row) => formatCoord(row.methodregion),
-    },
-    {
-      field: "celltype",
-      headerName: "Biosample",
-      valueGetter: (_, row) =>
-        row.celltype
-          .replaceAll("_", " ")
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-    },
-    {
-      ...sharedColumns.score,
-      valueGetter: (_, row) => row.score.toFixed(2),
-    },
-  ];
 
   const tables: TableDef<LinkedGeneInfo>[] = [
     {
@@ -246,6 +246,8 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
         emptyTableFallback={"No closest genes found"}
         loading={loadingClosest}
         error={!!errorClosest}
+        autoHeight
+        hideFooter
       />
       {isHuman && <LinkedElements tables={tables} />}
       <Box

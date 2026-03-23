@@ -1,21 +1,7 @@
-import {
-  TranscriptMetadata,
-  SharedTranscriptExpressionPlotProps,
-} from "./TranscriptExpression";
-import { useMemo } from "react";
-// import { capitalizeFirstLetter, capitalizeWords, truncateString } from "common/utility";
-export function capitalizeWords(input: string): string {
-  return input.replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-export const truncateString = (input: string, maxLength: number) => {
-  if (input.length <= maxLength) return input;
-  return input.slice(0, maxLength - 3) + "...";
-};
-const capitalizeFirstLetter = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
+import type { TranscriptMetadata, TranscriptExpressionBarPlotProps } from "./types";
+import { getScaledRPM } from "./types";
+import { useCallback, useMemo } from "react";
+import { capitalizeWords, capitalizeFirstLetter, truncateString } from "common/utility";
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
 import { BarPlot, BarData } from "@weng-lab/visualization";
@@ -27,41 +13,39 @@ const TranscriptExpressionBarPlot = ({
   setScale,
   scale,
   viewBy,
-  entity,
+  geneName,
   transcriptExpressionData,
   selected,
-  setSelected,
+  toggleSelection,
+  getRowId,
   selectedPeak,
   sortedFilteredData,
   ref,
-  ...rest
-}: SharedTranscriptExpressionPlotProps) => {
+}: TranscriptExpressionBarPlotProps) => {
   const plotData: BarData<TranscriptMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
-    return sortedFilteredData.map((x, i) => {
+    return sortedFilteredData.map((x) => {
       const anySelected = selected.length > 0;
-      const isSelected = selected.some((y) => y.expAccession === x.expAccession);
+      const isSelected = selected.some((y) => getRowId(y) === getRowId(x));
       return {
         category: capitalizeWords(x.organ),
-        label: capitalizeFirstLetter(truncateString(x.biosampleSummary, 20)),
-        value: x.value,
+        label: `${getScaledRPM(x, scale).toFixed(2)}, ${capitalizeFirstLetter(truncateString(x.biosampleSummary.replaceAll("_", " "), 20))} (${x.expAccession})`,
+        value: getScaledRPM(x, scale),
         color:
           (anySelected && isSelected) || !anySelected ? (tissueColors[x.organ] ?? tissueColors.missing) : "#CCCCCC",
         metadata: x,
-        id: i.toString(),
+        id: getRowId(x),
       };
     });
-  }, [sortedFilteredData, selected]);
+  }, [sortedFilteredData, selected, scale, getRowId]);
 
   const handleBarClick = (bar: BarData<TranscriptMetadata>) => {
-    if (selected.some((x) => x.expAccession === bar.metadata.expAccession)) {
-      setSelected(selected.filter((x) => x.expAccession !== bar.metadata.expAccession));
-    } else setSelected([...selected, bar.metadata]);
+    toggleSelection(bar.metadata);
   };
 
-  const PlotTooltip = (bar: BarData<TranscriptMetadata>) => {
-    return (
-      <>
+  const PlotTooltip = useCallback(
+    (bar: BarData<TranscriptMetadata>) => (
+      <Box maxWidth={300}>
         <Typography variant="body2">
           <b>Sample:</b> {capitalizeWords(bar.metadata.biosampleSummary.replaceAll("_", " "))}
         </Typography>
@@ -69,23 +53,30 @@ const TranscriptExpressionBarPlot = ({
           <b>Tissue:</b> {capitalizeWords(bar.metadata.organ)}
         </Typography>
         <Typography variant="body2">
-          <b>Strand:</b> {capitalizeWords(bar.metadata.strand)}
+          <b>Sample Type:</b> {capitalizeWords(bar.metadata.biosampleType)}
         </Typography>
         <Typography variant="body2">
-          <b>RPM:</b> {bar.value.toFixed(2)}
+          <b>Strand:</b> {capitalizeWords(bar.metadata.strand)}
         </Typography>
-      </>
-    );
-  };
+        {scale === "linear" ? (
+          <Typography variant="body2">
+            <b>RPM:</b> {bar.value.toFixed(2)}
+          </Typography>
+        ) : (
+          <Typography variant="body2">
+            <b>
+              Log<sub>10</sub>(RPM + 1):
+            </b>{" "}
+            {bar.value.toFixed(2)}
+          </Typography>
+        )}
+      </Box>
+    ),
+    [scale]
+  );
 
   return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
+    <Box display="flex" flexDirection="column" height="100%">
       <TranscriptPlotControls
         setViewBy={setViewBy}
         setPeak={setPeak}
@@ -95,16 +86,18 @@ const TranscriptExpressionBarPlot = ({
         transcriptExpressionData={transcriptExpressionData}
         selectedPeak={selectedPeak}
       />
-      <BarPlot
-        onBarClicked={handleBarClick}
-        data={plotData}
-        topAxisLabel={`TSS Expression at ${selectedPeak} of ${entity.entityID} - ${scale === "log" ? "log₁₀(RPM + 1)" : "RPM"}`}
-        TooltipContents={PlotTooltip}
-        ref={ref}
-        downloadFileName={`${entity.entityID}_TSS_bar_plot`}
-        animation="slideRight"
-        animationBuffer={0.01}
-      />
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
+        <BarPlot
+          onBarClicked={handleBarClick}
+          data={plotData}
+          topAxisLabel={`TSS Expression at ${selectedPeak} of ${geneName} - ${scale === "log" ? "log₁₀(RPM + 1)" : "RPM"}`}
+          TooltipContents={PlotTooltip}
+          ref={ref}
+          downloadFileName={`${geneName}_TSS_bar_plot`}
+          animation="slideRight"
+          animationBuffer={0.01}
+        />
+      </Box>
     </Box>
   );
 };

@@ -5,6 +5,7 @@ import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { useConservationData } from "common/hooks/useConservationData";
+import { Stack } from "@mui/system";
 
 const ORTHOLOG_QUERY = gql(`
   query orthologTab($assembly: String!, $accession: [String!]) {
@@ -105,7 +106,7 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
   ];
 
   return (
-    <>
+    <Stack spacing={2}>
       {entity.assembly == "GRCh38" && (
         <Table
           label={`Conservation`}
@@ -122,9 +123,9 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
                 }))
               : []
           }
+          autoHeight
           hideFooter
           emptyTableFallback={"No Conservation data found"}
-          sx={{ mb: 2 }}
         />
       )}
       <Table
@@ -134,8 +135,10 @@ const ConservationAndOrthologTables = ({ entity }: { entity: AnyOpenEntity }) =>
         columns={orthologCols}
         rows={orthologRows}
         emptyTableFallback={"No Orthologous cCREs found"}
+        autoHeight
+        hideFooter
       />
-    </>
+    </Stack>
   );
 };
 

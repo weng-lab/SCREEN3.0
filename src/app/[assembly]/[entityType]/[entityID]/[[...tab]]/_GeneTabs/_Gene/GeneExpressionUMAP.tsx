@@ -1,58 +1,56 @@
-import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
+import { GeneExpressionUMAPProps, getLogTPM, getTPM, PointMetadata } from "./types";
 import { Box, SelectChangeEvent, Typography } from "@mui/material";
-import { useMemo, useState } from "react";
-import { Point, ScatterPlot, ChartProps } from "@weng-lab/visualization";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Point, ScatterPlot } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
 import { theme } from "app/theme";
 import { scaleLinear } from "@visx/scale";
 import { interpolateYlOrRd } from "d3-scale-chromatic";
 import { Stack } from "@mui/system";
-import UMAPLegend from "../../../../../../../common/components/UMAPLegend";
+import UMAPLegend from "common/components/UMAPLegend";
 import { ColorBySelect } from "common/components/ColorBySelect";
 
 //generate the domain for the gradient based on the max number
-export const generateDomain = (max: number, steps: number) => {
+const generateDomain = (max: number, steps: number) => {
   return Array.from({ length: steps }, (_, i) => (i / (steps - 1)) * max);
 };
 
-export type GeneExpressionUmapProps<
-  T,
-  S extends boolean | undefined,
-  Z extends boolean | undefined,
-> = GeneExpressionProps & SharedGeneExpressionPlotProps & Partial<ChartProps<T, S, Z>>;
+const MINIMAP_CONFIG = { position: { right: 50, bottom: 50 } };
 
-const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends boolean | undefined>({
-  entity,
-  selected,
-  geneExpressionData,
-  setSelected,
+const GeneExpressionUMAP = ({
+  geneName,
+  rows,
+  highlightedAccessions,
+  onPointToggle,
+  onLassoSelect,
+  loading,
   ref,
-  ...rest
-}: GeneExpressionUmapProps<T, S, Z>) => {
-  const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue">("expression");
+}: GeneExpressionUMAPProps) => {
+  const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue" | "sampleType">("expression");
 
-  const { data, loading } = geneExpressionData;
+  // Band-aid: ScatterPlot's controls are absolutely positioned on the left of the container.
+  // The square plot uses min(width, height), so we keep height < width to ensure the controls
+  // don't overlap the plot. Measure the container width and cap height at width - CONTROLS_OFFSET.
+  const CONTROLS_OFFSET = 65;
+  const plotContainerRef = useRef<HTMLDivElement>(null);
+  const [plotContainerWidth, setPlotContainerWidth] = useState(0);
+  useEffect(() => {
+    const el = plotContainerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => setPlotContainerWidth(entry.contentRect.width));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const handleColorSchemeChange = (event: SelectChangeEvent) => {
-    setColorScheme(event.target.value as "expression" | "organ/tissue");
+    setColorScheme(event.target.value as "expression" | "organ/tissue" | "sampleType");
   };
 
-  const map = {
-    position: {
-      right: 50,
-      bottom: 50,
-    },
-  };
-
-  function logTransform(val: number) {
-    return Math.log10(val + 1);
-  }
-
-  //find the max logTPM for the domain fo the gradient
+  //find the max logTPM for the domain of the gradient
   const maxValue = useMemo(() => {
-    if (!data || data.length === 0) return 0;
-    return Math.max(...data.map((x) => logTransform(x.gene_quantification_files[0].quantifications[0]?.tpm)));
-  }, [data]);
+    if (!rows || rows.length === 0) return 0;
+    return Math.max(...rows.map((x) => getLogTPM(x)));
+  }, [rows]);
 
   const colorScale = useMemo(
     () =>
@@ -65,21 +63,24 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
   );
 
   const scatterData: Point<PointMetadata>[] = useMemo(() => {
-    if (!data) return [];
+    if (!rows) return [];
 
-    const isHighlighted = (x: PointMetadata) => selected.some((y) => y.accession === x.accession);
+    const anyHighlighted = highlightedAccessions.size > 0;
+    const isHighlighted = (x: PointMetadata) => highlightedAccessions.has(x.exp_accession);
 
-    return data.map((x) => {
-      const gradientColor = interpolateYlOrRd(
-        colorScale(logTransform(x.gene_quantification_files[0].quantifications[0]?.tpm))
-      );
+    return rows.map((x) => {
+      const gradientColor = interpolateYlOrRd(colorScale(getLogTPM(x)));
 
       const getColor = () => {
-        if (isHighlighted(x) || selected.length === 0) {
-          if (colorScheme === "expression") {
+        if (!isHighlighted(x) && anyHighlighted) return "#CCCCCC";
+        switch (colorScheme) {
+          case "expression":
             return gradientColor;
-          } else return tissueColors[x.tissue];
-        } else return "#CCCCCC";
+          case "organ/tissue":
+            return tissueColors[x.tissue] ?? tissueColors.missing;
+          case "sampleType":
+            return tissueColors[x.biosample_type] ?? tissueColors.missing;
+        }
       };
 
       return {
@@ -90,42 +91,21 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
         metaData: x,
       };
     });
-  }, [data, selected, colorScale, colorScheme]);
+  }, [rows, highlightedAccessions, colorScale, colorScheme]);
 
   const handlePointsSelected = (selectedPoints: Point<PointMetadata>[]) => {
-    setSelected([...selected, ...selectedPoints.map((point) => point.metaData)]);
+    onLassoSelect(selectedPoints.map((point) => point.metaData));
   };
 
   const handlePointSelected = (selectedPoint: Point<PointMetadata>) => {
-    const id = selectedPoint.metaData.accession;
-    if (selected.some((x) => x.accession === id)) {
-      setSelected(selected.filter((x) => x.accession !== id));
-    } else {
-      setSelected([...selected, selectedPoint.metaData]);
-    }
+    onPointToggle(selectedPoint.metaData);
   };
 
   const TooltipBody = (point: Point<PointMetadata>) => {
-    const avgTPM = (() => {
-      const files = point.metaData.gene_quantification_files || [];
-      const tpms: number[] = [];
-
-      files.forEach((file) => {
-        if (file.quantifications && file.quantifications.length > 0) {
-          const firstTPM = file.quantifications[0]?.tpm;
-          if (firstTPM !== undefined && firstTPM !== null) {
-            tpms.push(firstTPM);
-          }
-        }
-      });
-
-      if (tpms.length === 0) return null; // or 0 if you prefer
-      return tpms.reduce((a, b) => a + b, 0) / tpms.length;
-    })();
     return (
       <>
         <Typography>
-          <b>Accession:</b> {point.metaData.accession}
+          <b>Accession:</b> {point.metaData.exp_accession}
         </Typography>
         <Typography>
           <b>Biosample:</b> {point.metaData.biosample}
@@ -134,60 +114,71 @@ const GeneExpressionUMAP = <T extends PointMetadata, S extends true, Z extends b
           <b>Tissue:</b> {point.metaData.tissue}
         </Typography>
         <Typography>
-          <b>TPM:</b> {colorScheme === "expression" ? logTransform(avgTPM).toFixed(2) : avgTPM.toFixed(2)}
+          <b>Log₁₀(TPM + 1):</b> {getLogTPM(point.metaData).toFixed(2)}
+        </Typography>
+        <Typography>
+          <b>TPM:</b> {getTPM(point.metaData).toFixed(2)}
         </Typography>
       </>
     );
   };
 
+  const expressionGradient = useMemo(() => {
+    const stops = generateDomain(maxValue, 9).map((value) => {
+      const scaled = colorScale(value);
+      return interpolateYlOrRd(scaled);
+    });
+    return `#808080, ${stops.join(", ")}`;
+  }, [maxValue, colorScale]);
+
+  if (!scatterData || scatterData.length === 0) return null;
+
   return (
-    <>
-      <Stack
-        width={"100%"}
-        height={"100%"}
-        padding={1}
-        sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-      >
-        {scatterData &&
-        scatterData.length > 0 &&
-        scatterData[0].metaData.gene_quantification_files[0]?.quantifications[0]?.tpm !== undefined ? (
-          <>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <ColorBySelect colorScheme={colorScheme} handleColorSchemeChange={handleColorSchemeChange} />
-              <UMAPLegend
-                colorScheme={colorScheme}
-                scatterData={scatterData}
-                maxValue={maxValue}
-                colorScale={colorScale}
-              />
-            </Stack>
-            <Box sx={{ flexGrow: 1 }}>
-              <ScatterPlot
-                {...rest}
-                onSelectionChange={handlePointsSelected}
-                onPointClicked={handlePointSelected}
-                controlsHighlight={theme.palette.primary.light}
-                pointData={scatterData}
-                selectable
-                loading={loading}
-                miniMap={map}
-                groupPointsAnchor="accession"
-                tooltipBody={(point) => <TooltipBody {...point} />}
-                leftAxisLabel="UMAP-2"
-                bottomAxisLabel="UMAP-1"
-                ref={ref}
-                downloadFileName={`${entity.entityID}_expression_UMAP`}
-                animation="scale"
-                animationBuffer={0.01}
-                animationGroupSize={15}
-              />
-            </Box>
-          </>
-        ) : (
-          <></>
-        )}
+    <Box display="flex" flexDirection="column" height="100%">
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <ColorBySelect colorScheme={colorScheme} handleColorSchemeChange={handleColorSchemeChange} />
+        <UMAPLegend
+          colorScheme={colorScheme}
+          scatterData={scatterData}
+          gradientConfig={{
+            label: "Log₁₀(TPM + 1)",
+            minLabel: "0",
+            maxLabel: maxValue.toFixed(2),
+            gradient: expressionGradient,
+          }}
+          getTissue={(x) => x.tissue}
+          getSampleType={(x) => x.biosample_type}
+        />
       </Stack>
-    </>
+      <Box
+        ref={plotContainerRef}
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          position: "relative",
+          ...(plotContainerWidth > 0 && { maxHeight: plotContainerWidth - CONTROLS_OFFSET }),
+        }}
+      >
+        <ScatterPlot
+          onSelectionChange={handlePointsSelected}
+          onPointClicked={handlePointSelected}
+          controlsHighlight={theme.palette.primary.light}
+          pointData={scatterData}
+          selectable
+          loading={loading}
+          miniMap={MINIMAP_CONFIG}
+          groupPointsAnchor="exp_accession"
+          tooltipBody={(point) => <TooltipBody {...point} />}
+          leftAxisLabel="UMAP-2"
+          bottomAxisLabel="UMAP-1"
+          ref={ref}
+          downloadFileName={`${geneName}_expression_UMAP`}
+          animation="scale"
+          animationBuffer={0.01}
+          animationGroupSize={15}
+        />
+      </Box>
+    </Box>
   );
 };
 

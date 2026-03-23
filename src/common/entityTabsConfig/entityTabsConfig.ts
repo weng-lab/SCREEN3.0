@@ -23,6 +23,8 @@ import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedT
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
 import GwasBrowser from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/GwasBrowser";
+import MohdAtac from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_MOHD/MohdAtac";
+import MohdRnaSeq from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_MOHD/MohdRnaSeq";
 // import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
@@ -33,7 +35,8 @@ const OverviewIconPath = "/assets/OverviewIcon.svg";
 const BiosampleEnrichmentIconPath = "/assets/BiosampleEnrichmentIcon.svg";
 const ConservationIconPath = "/assets/ConservationIcon.svg";
 const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
-const TFMotifsIconPath = "/assets/TfMotif.svg"
+const TFMotifsIconPath = "/assets/TfMotif.svg";
+const MohdIconPath = "/assets/MOHD.png"
 
 /**
  * @todo rewrite these instructions now that types are separated in own file
@@ -119,6 +122,12 @@ export const humanGeneTabs = [
     component: GenomeBrowser,
   },
   {
+    route: "mohd",
+    label: "MOHD RNA-seq",
+    iconPath: MohdIconPath,
+    component: MohdRnaSeq,
+  },
+  {
     route: "transcript-expression",
     label: "Transcript Expression",
     component: TranscriptExpression,
@@ -194,11 +203,16 @@ export const humanCcreTabs = [
     component: GenomeBrowser,
   },
   {
+    route: "mohd",
+    label: "MOHD ATAC",
+    iconPath: MohdIconPath,
+    component: MohdAtac,
+  },
+  {
     route: "additional-chromatin-signatures",
     label: "Additional Chromatin Signatures",
     component: AdditionalChromatinSignatures,
   },
- 
 ] as const satisfies TabConfig[];
 
 export const humanRegionTabs = [

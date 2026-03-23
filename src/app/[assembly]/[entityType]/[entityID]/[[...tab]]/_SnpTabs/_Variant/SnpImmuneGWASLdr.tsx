@@ -1,4 +1,3 @@
-import { Box, Skeleton } from "@mui/material";
 import useImmuneGWASLdr from "common/hooks/useImmuneGWASLdr";
 import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
 import { Table, TableColDef } from "@weng-lab/ui-components";
@@ -65,22 +64,18 @@ export default function SnpImmuneGWASLdr({ snpid }: { snpid: string }) {
   ];
 
   return (
-    <Box width={"100%"}>
-      {loading ? (
-        <Skeleton variant="rounded" width={"100%"} height={100} />
-      ) : (
-        <Table
-          rows={gwasnps.filter((g) => g.disease !== "" && g.study_source !== "")}
-          columns={cols}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: "zscore", sort: "desc" }],
-            },
-          }}
-          label="Immune GWAS Hits"
-          emptyTableFallback={"This variant is not identified in any immune genome wide association studies (GWAS)"}
-        />
-      )}
-    </Box>
+    <Table
+      rows={gwasnps?.filter((g) => g.disease !== "" && g.study_source !== "")}
+      loading={loading}
+      columns={cols}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: "zscore", sort: "desc" }],
+        },
+      }}
+      label="Immune GWAS Hits"
+      emptyTableFallback={"This variant is not identified in any immune genome wide association studies (GWAS)"}
+      divHeight={{ height: 400 }}
+    />
   );
 }

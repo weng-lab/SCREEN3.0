@@ -1,73 +1,164 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import TwoPaneLayout, { TwoPanePlotConfig } from "common/components/TwoPaneLayout/TwoPaneLayout";
+import { useEffect, useMemo, useState } from "react";
+import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
+import usePlotDownload from "common/hooks/usePlotDownload";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
-import { DownloadPlotHandle } from "@weng-lab/visualization";
-import type { AssayViewProps, BiosampleRow, SharedAssayViewPlotProps } from "./types";
+import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
 
-const AssayView = (props: AssayViewProps) => {
-  const [selected, setSelected] = useState<BiosampleRow[]>([]);
-  const [sortedFilteredData, setSortedFilteredData] = useState<BiosampleRow[]>([]);
-  const [viewBy, setViewBy] = useState<"value" | "tissue" | "tissueMax">("value");
+/**
+ * Applies the viewBy transformation to rows.
+ * - "value": no sort/filter needed
+ * - "tissue": group by tissue (sorted by max within tissue), then by score within group
+ * - "tissueMax": keep only the max-scoring biosample per tissue
+ */
+function applyViewByTransform(rows: BiosampleRow[], viewBy: ViewBy, assay: string): BiosampleRow[] {
+  if (!rows) return [];
+
+  // No sorting required. useAutoSort in Table handles resetting initial sort
+  if (viewBy === "value") return [...rows];
+
+  const result = [...rows];
+
+  const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+    acc[item.ontology] = Math.max(acc[item.ontology] ?? -Infinity, item[assay]);
+    return acc;
+  }, {});
+
+  switch (viewBy) {
+    /**
+     * Group by tissue, sort groups by max score in group, and sort descending within groups.
+     * Table sorting should be disabled when viewBy === "tissue", as this ordering
+     * cannot be accomplished by DataGrid sort state alone.
+     */
+    case "tissue":
+      result.sort((a, b) => {
+        const maxDiff = maxValuesByTissue[b.ontology] - maxValuesByTissue[a.ontology];
+        if (maxDiff !== 0) return maxDiff;
+        return b[assay] - a[assay];
+      });
+      return result;
+
+    // Keep only the max-scoring biosample per tissue
+    case "tissueMax":
+      return result.filter((item) => item[assay] === maxValuesByTissue[item.ontology]);
+  }
+}
+
+const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
+  const { entityID } = entity;
+  const { assembly } = entity;
+
+  const [viewBy, setViewBy] = useState<ViewBy>("value");
   const [cutoffLowSignal, setCutoffLowSignal] = useState<boolean>(true);
   const [show95Line, setShow95Line] = useState<boolean>(true);
 
-  const barRef = useRef<DownloadPlotHandle>(null);
-  const violinRef = useRef<DownloadPlotHandle>(null);
-  const scatterRef = useRef<DownloadPlotHandle>(null);
+  const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy, assay), [rows, viewBy, assay]);
+
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
+    rows: transformedRows,
+    getRowId: (r) => r.name,
+  });
 
   useEffect(() => {
-    if (!props.assay) return;
+    if (!assay) return;
     setSelected([]);
-  }, [props.assay]);
+  }, [assay, setSelected]);
 
-  const sharedAssayViewPlotProps: SharedAssayViewPlotProps = useMemo(
-    () => ({
-      selected,
-      setSelected,
-      sortedFilteredData,
-      setSortedFilteredData,
-      viewBy,
-      setViewBy,
-      cutoffLowSignal,
-      setCutoffLowSignal,
-      show95Line,
-      setShow95Line,
-      ...props,
-    }),
-    [cutoffLowSignal, props, selected, show95Line, sortedFilteredData, viewBy]
+  const handleSetViewBy = (newView: ViewBy) => {
+    setSelected([]);
+    setViewBy(newView);
+  };
+
+  const { ref: barRef, ...barDownload } = usePlotDownload();
+  const { ref: violinRef, ...violinDownload } = usePlotDownload();
+  const { ref: umapRef, ...umapDownload } = usePlotDownload();
+
+  return (
+    <TwoPaneLayout
+      direction={{ xs: "column", lg: "row" }}
+      TableComponent={
+        <AssayTable
+          rows={transformedRows}
+          columns={columns}
+          assay={assay}
+          entityID={entityID}
+          tableProps={tableProps}
+          isPresorted={viewBy === "tissue"}
+        />
+      }
+      plots={[
+        {
+          tabTitle: "Bar Plot",
+          icon: <BarChart />,
+          plotComponent: (
+            <AssayBarPlot
+              ref={barRef}
+              sortedFilteredData={sortedFilteredData}
+              selected={selected}
+              toggleSelection={toggleSelection}
+              getRowId={getRowId}
+              assay={assay}
+              entityID={entityID}
+              viewBy={viewBy}
+              setViewBy={handleSetViewBy}
+              cutoffLowSignal={cutoffLowSignal}
+              setCutoffLowSignal={setCutoffLowSignal}
+              show95Line={show95Line}
+              setShow95Line={setShow95Line}
+            />
+          ),
+          ...barDownload,
+        },
+        {
+          tabTitle: "Violin Plot",
+          icon: <CandlestickChart />,
+          plotComponent: (
+            <AssayViolinPlot
+              ref={violinRef}
+              rows={rows}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              getRowId={getRowId}
+              assay={assay}
+              entityID={entityID}
+              viewBy={viewBy}
+              setViewBy={handleSetViewBy}
+              cutoffLowSignal={cutoffLowSignal}
+              setCutoffLowSignal={setCutoffLowSignal}
+              show95Line={show95Line}
+              setShow95Line={setShow95Line}
+            />
+          ),
+          ...violinDownload,
+        },
+        ...(assay !== "atac"
+          ? [
+              {
+                tabTitle: "UMAP",
+                icon: <ScatterPlot />,
+                plotComponent: (
+                  <AssayUMAP
+                    ref={umapRef}
+                    rows={rows}
+                    selected={selected}
+                    setSelected={setSelected}
+                    toggleSelection={toggleSelection}
+                    getRowId={getRowId}
+                    assay={assay}
+                    assembly={assembly}
+                  />
+                ),
+                ...umapDownload,
+              },
+            ]
+          : []),
+      ]}
+    />
   );
-
-  const plots: TwoPanePlotConfig[] = useMemo(() => {
-    const plots = [
-      {
-        tabTitle: "Bar Plot",
-        icon: <BarChart />,
-        plotComponent: <AssayBarPlot ref={barRef} {...sharedAssayViewPlotProps} />,
-        ref: barRef,
-      },
-      {
-        tabTitle: "Violin Plot",
-        icon: <CandlestickChart />,
-        plotComponent: <AssayViolinPlot ref={violinRef} {...sharedAssayViewPlotProps} />,
-        ref: violinRef,
-      },
-    ];
-    if (!(props.assay === "atac")) {
-      plots.push({
-        tabTitle: "UMAP",
-        icon: <ScatterPlot />,
-        plotComponent: <AssayUMAP ref={scatterRef} {...sharedAssayViewPlotProps} />,
-        ref: scatterRef,
-      });
-    }
-    return plots;
-  }, [props.assay, sharedAssayViewPlotProps]);
-
-  return <TwoPaneLayout TableComponent={<AssayTable {...sharedAssayViewPlotProps} />} plots={plots} />;
 };
 
 export default AssayView;

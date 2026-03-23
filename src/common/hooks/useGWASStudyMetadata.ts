@@ -1,4 +1,5 @@
 import { ApolloError, useQuery } from "@apollo/client";
+import { useMemo } from "react";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { GetGwasAllStudiesMetadataQuery } from "common/types/generated/graphql";
@@ -56,13 +57,17 @@ export const useGWASStudyMetaData = ({
     skip: entityType !== undefined && entityType !== "gwas",
   });
 
-  return {
-    data: data?.getGWASStudiesMetadata.map((d)=> {
-    return {
-      ...d,      
-      layer_2_terms: !d.layer_2_terms ? ["other"] : d.layer_2_terms
+  const transformedData = useMemo(
+    () =>
+      data?.getGWASStudiesMetadata.map((d) => ({
+        ...d,
+        layer_2_terms: !d.layer_2_terms ? ["other"] : d.layer_2_terms,
+      })),
+    [data]
+  );
 
-    }}),
+  return {
+    data: transformedData,
     loading,
     error,
   } as UseGWASStudyMetaDataReturn;
