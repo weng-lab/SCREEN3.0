@@ -89,6 +89,8 @@ const GeneConservation = ({ entity }: EntityViewComponentProps) => {
       }`}
       loading={loading}
       error={error}
+      autoHeight
+      hideFooter
     />
   );
 };

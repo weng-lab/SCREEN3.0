@@ -60,7 +60,6 @@ export const useTranscriptExpression = ({ gene }: ExpressionParams): UseTranscri
 
   const peaks: PeakInfo[] = useMemo(() => {
     if (!data?.tssrampageQuery) return [];
-
     return Array.from(
       new Map(
         data?.tssrampageQuery.map((x) => [
@@ -76,10 +75,15 @@ export const useTranscriptExpression = ({ gene }: ExpressionParams): UseTranscri
     );
   }, [data]);
 
-  return {
-    data: data?.tssrampageQuery ?? [],
-    peaks: peaks,
-    loading,
-    error,
-  };
+  const memoizedReturn = useMemo(
+    () => ({
+      data: data?.tssrampageQuery ?? [],
+      peaks: peaks,
+      loading,
+      error,
+    }),
+    [peaks, data, loading, error]
+  );
+
+  return memoizedReturn;
 };

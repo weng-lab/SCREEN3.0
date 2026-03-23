@@ -196,7 +196,7 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
           url: track.url,
         })) || [],
     },
-    skip: !chromHmmTracksWithTissue || assembly !== "GRCh38",
+    skip: !coordinates || !chromHmmTracksWithTissue || assembly !== "GRCh38",
   });
 
   // Process the data for the table view
