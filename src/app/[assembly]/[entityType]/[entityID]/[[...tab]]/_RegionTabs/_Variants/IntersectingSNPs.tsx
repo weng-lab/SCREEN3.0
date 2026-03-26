@@ -1,13 +1,13 @@
 "use client";
 import { useSnpData } from "common/hooks/useSnpData";
 import { LinkComponent } from "common/components/LinkComponent";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
-import { useMemo } from "react";
+import { CSSProperties, useMemo } from "react";
 import { decodeRegions } from "common/utility";
 
-const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
+const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { divHeight?: CSSProperties }) => {
   //fetch coordinates since this is used by cCRE entity for overlapping variants
   const { data: dataCoords, loading: loadingCoords, error: errorCoords } = useEntityMetadata(entity);
 
@@ -32,7 +32,7 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
     skip: !coordinates,
   });
 
-  const columns: GridColDef<(typeof dataSnps)[number]>[] = [
+  const columns: TableColDef<(typeof dataSnps)[number]>[] = [
     {
       field: "id",
       headerName: "rsID",
@@ -59,7 +59,6 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
 
   return (
     <Table
-      showToolbar
       rows={dataSnps}
       columns={columns}
       loading={loadingCoords || loadingSnps}
@@ -67,7 +66,7 @@ const IntersectingSNPs = ({ entity }: EntityViewComponentProps) => {
       label={`Intersecting SNPs`}
       emptyTableFallback={"No intersecting SNPs found in this region"}
       initialState={{ sorting: { sortModel: [{ field: "coordinates.start", sort: "asc" }] } }}
-      divHeight={{ maxHeight: "600px" }}
+      divHeight={{ maxHeight: "600px", ...divHeight }}
     />
   );
 };

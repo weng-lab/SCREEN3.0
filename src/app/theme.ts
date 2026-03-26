@@ -1,6 +1,6 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
-import type {} from "@weng-lab/ui-components"; // provides module augmentation to add DataGrid to theme
+import type {} from "@mui/x-data-grid-premium/themeAugmentation"; // provides module augmentation to add DataGrid to theme
 
 export const theme = createTheme({
   palette: {
@@ -16,16 +16,6 @@ export const theme = createTheme({
     },
   },
   components: {
-    //This came with file, not sure what it does
-    MuiAlert: {
-      styleOverrides: {
-        root: ({ ownerState }) => ({
-          ...(ownerState.severity === "info" && {
-            backgroundColor: "#60a5fa",
-          }),
-        }),
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {

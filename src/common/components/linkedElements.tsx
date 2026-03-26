@@ -6,16 +6,24 @@ import { Table, TableProps } from "@weng-lab/ui-components";
 import { useCompuLinkedcCREsReturn } from "common/hooks/useCompuLinkedcCREs";
 import { useCompuLinkedGenesReturn } from "common/hooks/useCompuLinkedGenes";
 
-export type TableDef<T extends LinkedGeneInfo | useCompuLinkedGenesReturn["data"][number] | useLinkedCcresReturn["data"][number] | useCompuLinkedcCREsReturn["data"][number]> = TableProps & {
+export type TableDef<
+  T extends
+    | LinkedGeneInfo
+    | useCompuLinkedGenesReturn["data"][number]
+    | useLinkedCcresReturn["data"][number]
+    | useCompuLinkedcCREsReturn["data"][number],
+> = TableProps & {
   sortColumn: keyof T & string; // Constrain to string keys
   sortDirection: "asc" | "desc";
 };
 
-export default function LinkedElements<T extends LinkedGeneInfo | useCompuLinkedGenesReturn["data"][number] | useLinkedCcresReturn["data"][number] | useCompuLinkedcCREsReturn["data"][number]>({
-  tables,
-}: {
-  tables: TableDef<T>[];
-}) {
+export default function LinkedElements<
+  T extends
+    | LinkedGeneInfo
+    | useCompuLinkedGenesReturn["data"][number]
+    | useLinkedCcresReturn["data"][number]
+    | useCompuLinkedcCREsReturn["data"][number],
+>({ tables }: { tables: TableDef<T>[] }) {
   return (
     <Stack spacing={2}>
       {tables.map((table, index) => (
@@ -27,7 +35,6 @@ export default function LinkedElements<T extends LinkedGeneInfo | useCompuLinked
             },
           }}
           {...table}
-          
           divHeight={{ height: "400px" }}
         />
       ))}

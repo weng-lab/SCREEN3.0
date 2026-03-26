@@ -1,16 +1,26 @@
 import React from "react";
-import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
+import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, Tooltip, styled } from "@mui/material";
+import type {
+  GeneExpressionRNAType,
+  GeneExpressionScale,
+  GeneExpressionViewBy,
+  GeneExpressionReplicates,
+} from "./types";
+
+const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
+  ...theme.typography.body2
+}));
 
 interface ControlProps {
   assembly: string;
-  RNAtype: string;
-  scale: string;
-  viewBy: string;
-  replicates: string;
-  setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void;
-  setScale: (newScale: "linearTPM" | "logTPM") => void;
-  setViewBy: (newView: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM") => void;
-  setReplicates: (newReplicates: "mean" | "all") => void;
+  RNAtype: GeneExpressionRNAType;
+  scale: GeneExpressionScale;
+  viewBy: GeneExpressionViewBy;
+  replicates: GeneExpressionReplicates;
+  setRNAType: (newType: GeneExpressionRNAType) => void;
+  setScale: (newScale: GeneExpressionScale) => void;
+  setViewBy: (newView: GeneExpressionViewBy) => void;
+  setReplicates: (newReplicates: GeneExpressionReplicates) => void;
   setSortBy?: (sortBy: "median" | "max" | "tissue") => void;
   sortBy?: "median" | "max" | "tissue";
   setShowPoints?: (showPoints: boolean) => void;
@@ -37,16 +47,16 @@ const GenePlotControls: React.FC<ControlProps> = ({
   disabled = false,
 }) => {
   return (
-    <Stack direction="row" spacing={2} mb={2} flexWrap="wrap">
+    <Stack direction="row" gap={2} mb={2} flexWrap="wrap">
       <FormControl>
-        <FormLabel>RNA-seq Type</FormLabel>
+        <StyledFormLabel>RNA-seq Type</StyledFormLabel>
         <ToggleButtonGroup
           color="primary"
           value={RNAtype}
           exclusive
           onChange={(_, value) => {
             if (value !== null) {
-              setRNAType(value as "all" | "polyA plus RNA-seq" | "total RNA-seq");
+              setRNAType(value as GeneExpressionRNAType);
             }
           }}
           aria-label="RNA-seq Type"
@@ -77,14 +87,14 @@ const GenePlotControls: React.FC<ControlProps> = ({
       </FormControl>
 
       <FormControl>
-        <FormLabel>Scale</FormLabel>
+        <StyledFormLabel>Scale</StyledFormLabel>
         <ToggleButtonGroup
           color="primary"
           value={scale}
           exclusive
           onChange={(_, value) => {
             if (value !== null) {
-              setScale(value as "linearTPM" | "logTPM");
+              setScale(value as GeneExpressionScale);
             }
           }}
           aria-label="Scale"
@@ -101,14 +111,14 @@ const GenePlotControls: React.FC<ControlProps> = ({
       </FormControl>
 
       <FormControl>
-        <FormLabel>Replicates</FormLabel>
+        <StyledFormLabel>Replicates</StyledFormLabel>
         <ToggleButtonGroup
           color="primary"
           value={replicates}
           exclusive
           onChange={(_, value) => {
             if (value !== null) {
-              setReplicates(value as "mean" | "all");
+              setReplicates(value as GeneExpressionReplicates);
             }
           }}
           aria-label="Replicates"
@@ -126,7 +136,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
       {violin ? (
         <Stack direction="row" spacing={2} alignItems="center">
           <FormControl>
-            <FormLabel>Sort By</FormLabel>
+            <StyledFormLabel>Sort By</StyledFormLabel>
             <ToggleButtonGroup
               color="primary"
               value={sortBy}
@@ -151,7 +161,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
             </ToggleButtonGroup>
           </FormControl>
           <FormControl>
-            <FormLabel>Show Points</FormLabel>
+            <StyledFormLabel>Show Points</StyledFormLabel>
             <ToggleButtonGroup
               color="primary"
               value={showPoints}
@@ -175,14 +185,14 @@ const GenePlotControls: React.FC<ControlProps> = ({
         </Stack>
       ) : (
         <FormControl>
-          <FormLabel>View By</FormLabel>
+          <StyledFormLabel>View By</StyledFormLabel>
           <ToggleButtonGroup
             color="primary"
             value={viewBy}
             exclusive
             onChange={(_, value) => {
               if (value !== null) {
-                setViewBy(value as "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM");
+                setViewBy(value as GeneExpressionViewBy);
               }
             }}
             aria-label="View By"
@@ -192,9 +202,11 @@ const GenePlotControls: React.FC<ControlProps> = ({
             <ToggleButton sx={{ textTransform: "none" }} value="byExperimentTPM">
               Experiment
             </ToggleButton>
-            <ToggleButton sx={{ textTransform: "none" }} value="byTissueTPM">
-              Tissue
-            </ToggleButton>
+            <Tooltip title="Disables sorting in table">
+              <ToggleButton sx={{ textTransform: "none" }} value="byTissueTPM">
+                Tissue
+              </ToggleButton>
+            </Tooltip>
             <ToggleButton sx={{ textTransform: "none" }} value="byTissueMaxTPM">
               Tissue Max
             </ToggleButton>

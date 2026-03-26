@@ -1,6 +1,5 @@
 "use client";
-import { GridColDef } from "@mui/x-data-grid-pro";
-import { Table } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { toScientificNotationElement } from "common/utility";
@@ -18,7 +17,7 @@ export function formatCoord(str: string) {
 }
 
 // Shared column definitions
-export const sharedColumns: { [key: string]: GridColDef } = {
+export const sharedColumns: { [key: string]: TableColDef } = {
   accession: {
     field: "accession",
     headerName: "Accession",
@@ -160,7 +159,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
   );
   const crisprLinked = dataGWASSnpscCREsGenes?.filter((x) => x.method === "CRISPR");
   const eqtlLinked = dataGWASSnpscCREsGenes?.filter((x) => x.method === "eQTLs");
-  const CompuLinkedGenes_columns: GridColDef<(typeof dataGWASSnpscCREsCompuGenes)[number]>[] = [
+  const CompuLinkedGenes_columns: TableColDef<(typeof dataGWASSnpscCREsCompuGenes)[number]>[] = [
     sharedColumns.accession,
     {
       field: "fileaccession",
@@ -203,7 +202,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
     },
   ];
 
-  const HiC_columns: GridColDef<(typeof HiCLinked)[number]>[] = [
+  const HiC_columns: TableColDef<(typeof HiCLinked)[number]>[] = [
     sharedColumns.accession,
     sharedColumns.gene,
     sharedColumns.genetype,
@@ -214,7 +213,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
     sharedColumns.p_val,
   ];
 
-  const eqtl_columns: GridColDef<(typeof eqtlLinked)[number]>[] = [
+  const eqtl_columns: TableColDef<(typeof eqtlLinked)[number]>[] = [
     sharedColumns.accession,
     sharedColumns.gene,
     sharedColumns.genetype,
@@ -237,7 +236,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
     sharedColumns.p_val,
   ];
 
-  const CRISPR_columns: GridColDef<(typeof crisprLinked)[number]>[] = [
+  const CRISPR_columns: TableColDef<(typeof crisprLinked)[number]>[] = [
     sharedColumns.accession,
     sharedColumns.gene,
     sharedColumns.genetype,
@@ -251,7 +250,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
     sharedColumns.p_val,
   ];
 
-  const ChIA_PET_columns: GridColDef<(typeof ChIAPETLinked)[number]>[] = [
+  const ChIA_PET_columns: TableColDef<(typeof ChIAPETLinked)[number]>[] = [
     sharedColumns.accession,
     sharedColumns.gene,
     sharedColumns.genetype,
@@ -281,7 +280,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Table
         showToolbar
@@ -296,7 +295,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "score", sort: "desc" }],
           },
         }}
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Table
         showToolbar
@@ -311,7 +310,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Table
         showToolbar
@@ -328,7 +327,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Table
         showToolbar
@@ -351,7 +350,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             </Button>
           </Tooltip>
         }
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Box
         onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

@@ -1,185 +1,293 @@
 "use client";
-import TwoPaneLayout from "common/components/TwoPaneLayout/TwoPaneLayout";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
-import { useGeneExpression, UseGeneExpressionReturn } from "common/hooks/useGeneExpression";
+import { useGeneExpression } from "common/hooks/useGeneExpression";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
-import { DownloadPlotHandle } from "@weng-lab/visualization";
 import VersionFallback from "./GeneVersionFallback";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/useGeneData";
+import type {
+  PointMetadata,
+  GeneExpressionViewBy,
+  GeneExpressionScale,
+  GeneExpressionReplicates,
+  GeneExpressionRNAType,
+  GeneExpressionControlProps,
+} from "./types";
+import { getTPM } from "./types";
+import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
+import usePlotDownload from "common/hooks/usePlotDownload";
+/**
+ * Flattens gene expression data into one row per sample.
+ * Filters by RNAtype and handles replicate splitting/averaging. TPM values are always raw (unscaled).
+ */
+function buildRows(
+  data: ReturnType<typeof useGeneExpression>["data"],
+  RNAtype: GeneExpressionRNAType,
+  handleReplicates: GeneExpressionReplicates
+): PointMetadata[] {
+  if (!data?.length) return [];
 
-export type PointMetadata = UseGeneExpressionReturn["data"][number];
+  //filter by rna type
+  const filteredData = data.filter((d) => RNAtype === "all" || d.assay_term_name === RNAtype);
 
-export interface GeneExpressionProps extends EntityViewComponentProps {}
+  return filteredData.flatMap((biosample) => {
+    const replicates = biosample.replicates;
 
-export type SharedGeneExpressionPlotProps = EntityViewComponentProps & {
-  rows: PointMetadata[];
-  selected: PointMetadata[];
-  setSelected: (selected: PointMetadata[]) => void;
-  geneExpressionData: UseGeneExpressionReturn;
-  sortedFilteredData: PointMetadata[];
-  setSortedFilteredData: (data: PointMetadata[]) => void;
-  scale: "linearTPM" | "logTPM";
-  setScale: (newScale: "linearTPM" | "logTPM") => void;
-  replicates: "mean" | "all";
-  setReplicates: (newReplicates: "mean" | "all") => void;
-  viewBy: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM";
-  setViewBy: (newView: "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM") => void;
-  RNAtype: "all" | "polyA plus RNA-seq" | "total RNA-seq";
-  setRNAType: (newType: "all" | "polyA plus RNA-seq" | "total RNA-seq") => void;
-  ref?: React.RefObject<DownloadPlotHandle>;
-  isV40?: boolean;
-};
+    // If including all replicates, create entry for each replicate
+    if (handleReplicates === "all") {
+      return replicates.map((rep) => {
+        return {
+          ...biosample,
+          ...rep,
+        };
+      });
+    } else {
+      // replicates === "mean"
+      const avgTPM = biosample.replicates.reduce((total, rep) => total + rep.tpm, 0) / biosample.replicates.length;
 
-const GeneExpression = ({ entity }: GeneExpressionProps) => {
+      return [
+        {
+          ...biosample,
+          file_accession: null,
+          biorep: null,
+          techrep: null,
+          tpm: avgTPM,
+        },
+      ];
+    }
+  });
+}
+
+/**
+ * Applies the viewBy transformation to rows.
+ * - "byExperimentTPM": no sort/filter needed
+ * - "byTissueTPM": group by tissue (sorted by max TPM within tissue), then by TPM within group
+ * - "byTissueMaxTPM": keep only the max-TPM experiment per tissue
+ */
+function applyViewByTransform(rows: PointMetadata[], viewBy: GeneExpressionViewBy): PointMetadata[] {
+  if (!rows.length) return [];
+
+  let result = [...rows];
+
+  switch (viewBy) {
+    // No sorting required. useAutoSort in Table handles resetting initial sort
+    case "byExperimentTPM": {
+      break;
+    }
+
+    /**
+     * Group by tissue, sort groups by max tpm in group, and sort descending within groups.
+     * Table sorting should be disabled when viewBy === "byTissueTPM", as this ordering
+     * cannot be accomplished by DataGrid sort state alone.
+     */
+    case "byTissueTPM": {
+      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+        acc[item.tissue] = Math.max(acc[item.tissue] ?? -Infinity, getTPM(item));
+        return acc;
+      }, {});
+
+      result.sort((a, b) => {
+        const maxDiff = maxValuesByTissue[b.tissue] - maxValuesByTissue[a.tissue];
+        if (maxDiff !== 0) return maxDiff;
+        return getTPM(b) - getTPM(a);
+      });
+      break;
+    }
+
+    // Filter out all but max tpm samples for each tissue
+    case "byTissueMaxTPM": {
+      const maxValuesByTissue = result.reduce<Record<string, number>>((acc, item) => {
+        acc[item.tissue] = Math.max(acc[item.tissue] ?? -Infinity, getTPM(item));
+        return acc;
+      }, {});
+
+      result = result.filter((item) => getTPM(item) === maxValuesByTissue[item.tissue]);
+
+      break;
+    }
+  }
+
+  return result;
+}
+
+const GeneExpression = ({ entity }: EntityViewComponentProps) => {
   const geneData = useGeneData({ name: entity.entityID, assembly: entity.assembly });
 
-  const [selected, setSelected] = useState<PointMetadata[]>([]);
-  const [sortedFilteredData, setSortedFilteredData] = useState<PointMetadata[]>([]);
-  const [scale, setScale] = useState<"linearTPM" | "logTPM">("linearTPM");
-  const [replicates, setReplicates] = useState<"mean" | "all">("mean");
-  const [viewBy, setViewBy] = useState<"byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM">("byExperimentTPM");
-  const [RNAtype, setRNAType] = useState<"all" | "polyA plus RNA-seq" | "total RNA-seq">(
-    entity.assembly === "GRCh38" ? "total RNA-seq" : "all"
-  );
-
-  const handleSetReplicates = (newReplicates: "mean" | "all") => {
-    setSelected([]);
-    setReplicates(newReplicates);
-  };
-
-  const barRef = useRef<DownloadPlotHandle>(null);
-  const violinRef = useRef<DownloadPlotHandle>(null);
-  const scatterRef = useRef<DownloadPlotHandle>(null);
+  const [scale, setScale] = useState<GeneExpressionScale>("linearTPM");
+  const [replicates, setReplicates] = useState<GeneExpressionReplicates>("mean");
+  const [viewBy, setViewBy] = useState<GeneExpressionViewBy>("byExperimentTPM");
+  const [RNAtype, setRNAType] = useState<GeneExpressionRNAType>(entity.assembly === "GRCh38" ? "total RNA-seq" : "all");
 
   const geneExpressionData = useGeneExpression({ id: geneData?.data?.id, assembly: entity.assembly, skip: !geneData });
 
   const isV40 = useMemo(() => {
-    const files = geneExpressionData?.data?.[0]?.gene_quantification_files?.[0];
-    const hasTpm = files?.quantifications?.[0]?.tpm !== undefined;
-    return Boolean(geneExpressionData?.data?.length) && !hasTpm;
-  }, [geneExpressionData?.data]);
+    if (!geneExpressionData.data) return false;
+    return geneExpressionData?.data?.[0]?.replicates?.[0]?.tpm === undefined;
+  }, [geneExpressionData.data]);
 
-  const rows: PointMetadata[] = useMemo(() => {
-    if (!geneExpressionData?.data?.length || isV40) return [];
-
-    const filteredData = geneExpressionData.data.filter((d) => RNAtype === "all" || d.assay_term_name === RNAtype);
-
-    const result: PointMetadata[] = filteredData.flatMap((entry) => {
-      const files = entry.gene_quantification_files?.filter(Boolean) ?? [];
-
-      if (replicates === "all") {
-        return files.flatMap((file, i) => {
-          const quants = file.quantifications?.filter(Boolean) ?? [];
-          const quant = quants[0];
-
-          const rawTPM = quant?.tpm;
-          const scaledTPM = scale === "logTPM" ? Math.log10(rawTPM + 1) : rawTPM;
-
-          const repLabel = files.length > 1 ? ` rep. ${i + 1}` : "";
-          const modifiedAccession = `${entry.accession}${repLabel}`;
-
-          return {
-            ...entry,
-            accession: modifiedAccession,
-            gene_quantification_files: [
-              {
-                ...file,
-                quantifications: [
-                  {
-                    ...quant,
-                    tpm: scaledTPM,
-                  },
-                ],
-              },
-            ],
-          };
-        });
-      } else {
-        // replicates === "mean"
-        const allQuants = files.flatMap((file) => file.quantifications?.filter(Boolean) ?? []);
-        if (!allQuants.length) return [];
-
-        const avgTPM = allQuants.reduce((sum, q) => sum + q?.tpm, 0) / allQuants.length;
-
-        const scaledTPM = scale === "logTPM" ? Math.log10(avgTPM + 1) : avgTPM;
-
-        return [
-          {
-            ...entry,
-            gene_quantification_files: [
-              {
-                accession: files[0]?.accession,
-                biorep: null,
-                quantifications: [
-                  {
-                    file_accession: "average",
-                    tpm: scaledTPM,
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-      }
-    });
-
-    return result;
-  }, [geneExpressionData.data, isV40, RNAtype, replicates, scale]);
-
-  const SharedGeneExpressionPlotProps: SharedGeneExpressionPlotProps = useMemo(
-    () => ({
-      rows,
-      selected,
-      setSelected,
-      sortedFilteredData,
-      setSortedFilteredData,
-      scale,
-      setScale,
-      replicates,
-      setReplicates: handleSetReplicates,
-      viewBy,
-      setViewBy,
-      RNAtype,
-      setRNAType,
-      geneExpressionData,
-      entity,
-    }),
-    [rows, selected, sortedFilteredData, scale, replicates, viewBy, RNAtype, geneExpressionData, entity]
+  /**
+   * Flattens gene expression experiments into a row-per-sample array.
+   * Handles RNAtype filtering and replicate aggregation. TPM values are always raw (unscaled).
+   */
+  const rows: PointMetadata[] = useMemo(
+    () => buildRows(geneExpressionData.data, RNAtype, replicates),
+    [geneExpressionData.data, RNAtype, replicates]
   );
 
+  /** UMAP always uses mean replicates and all RNA types (each experiment has one x/y coordinate) */
+  const umapRows: PointMetadata[] = useMemo(
+    () => buildRows(geneExpressionData.data, "all", "mean"),
+    [geneExpressionData.data]
+  );
+
+  const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy), [rows, viewBy]);
+
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
+    rows: transformedRows,
+    getRowId: (r) => r.file_accession ?? r.exp_accession,
+  });
+
+  /** Set of experiment accessions (ENCSR) that have at least one replicate selected */
+  const umapHighlightedAccessions = useMemo(() => {
+    if (!selected.length) return new Set<string>();
+    return new Set(selected.map((s) => s.exp_accession));
+  }, [selected]);
+
+  /** Toggle all replicates for a given experiment when clicking a UMAP point */
+  const handleUmapToggle = useCallback(
+    (item: PointMetadata) => {
+      const experimentAccession = item.exp_accession;
+      const replicateRows = rows.filter((r) => r.exp_accession === experimentAccession);
+      const allSelected = replicateRows.every((r) => selected.some((s) => getRowId(s) === getRowId(r)));
+      if (allSelected) {
+        const replicateIds = new Set(replicateRows.map(getRowId));
+        setSelected(selected.filter((s) => !replicateIds.has(getRowId(s))));
+      } else {
+        const alreadySelected = new Set(selected.map(getRowId));
+        const toAdd = replicateRows.filter((r) => !alreadySelected.has(getRowId(r)));
+        setSelected([...selected, ...toAdd]);
+      }
+    },
+    [rows, selected, setSelected, getRowId]
+  );
+
+  /** Select all replicates for each experiment lassoed in UMAP */
+  const handleUmapLassoSelect = useCallback(
+    (items: PointMetadata[]) => {
+      const experimentAccessions = new Set(items.map((item) => item.exp_accession));
+      const replicateRows = rows.filter((r) => experimentAccessions.has(r.exp_accession));
+      const alreadySelected = new Set(selected.map(getRowId));
+      const toAdd = replicateRows.filter((r) => !alreadySelected.has(getRowId(r)));
+      setSelected([...selected, ...toAdd]);
+    },
+    [rows, selected, setSelected, getRowId]
+  );
+
+  const handleSetReplicates = (newReplicates: GeneExpressionReplicates) => {
+    setSelected([]);
+    setReplicates(newReplicates);
+  };
+
+  const handleSetRNAType = (newType: GeneExpressionRNAType) => {
+    setSelected([]);
+    setRNAType(newType);
+  };
+
+  const handleSetViewBy = (newView: GeneExpressionViewBy) => {
+    setSelected([]);
+    setViewBy(newView);
+  };
+
+  const controlProps: GeneExpressionControlProps = {
+    scale,
+    setScale,
+    replicates,
+    setReplicates: handleSetReplicates,
+    viewBy,
+    setViewBy: handleSetViewBy,
+    RNAtype,
+    setRNAType: handleSetRNAType,
+  };
+
+  const { ref: barRef, ...barDownload } = usePlotDownload();
+  const { ref: violinRef, ...violinDownload } = usePlotDownload();
+  const { ref: umapRef, ...umapDownload } = usePlotDownload();
+
+  if (isV40) return <VersionFallback gene={entity.entityID} />;
+
   return (
-    <>
-      {isV40 && <VersionFallback gene={entity.entityID} />}
-      <TwoPaneLayout
-        TableComponent={<GeneExpressionTable {...SharedGeneExpressionPlotProps} />}
-        plots={[
-          {
-            tabTitle: "Bar Plot",
-            icon: <BarChart />,
-            plotComponent: <GeneExpressionBarPlot ref={barRef} {...SharedGeneExpressionPlotProps} isV40={isV40} />,
-            ref: barRef,
-          },
-          {
-            tabTitle: "Violin Plot",
-            icon: <CandlestickChart />,
-            plotComponent: <GeneExpressionViolinPlot ref={violinRef} {...SharedGeneExpressionPlotProps} />,
-            ref: violinRef,
-          },
-          {
-            tabTitle: "UMAP",
-            icon: <ScatterPlot />,
-            plotComponent: <GeneExpressionUMAP ref={scatterRef} {...SharedGeneExpressionPlotProps} />,
-            ref: scatterRef,
-          },
-        ]}
-        isV40={isV40}
-      />
-    </>
+    <TwoPaneLayout
+      direction={{ xs: "column", lg: "row" }}
+      TableComponent={
+        <GeneExpressionTable
+          rows={transformedRows}
+          label={`${entity.entityID} Expression`}
+          loading={geneExpressionData.loading}
+          error={!!geneExpressionData.error}
+          tableProps={tableProps}
+          isPresorted={viewBy === "byTissueTPM"}
+          scale={scale}
+        />
+      }
+      plots={[
+        {
+          tabTitle: "Bar Plot",
+          icon: <BarChart />,
+          plotComponent: (
+            <GeneExpressionBarPlot
+              ref={barRef}
+              sortedFilteredData={sortedFilteredData}
+              selected={selected}
+              toggleSelection={toggleSelection}
+              geneName={entity.entityID}
+              assembly={entity.assembly}
+              getRowId={getRowId}
+              {...controlProps}
+            />
+          ),
+          ...barDownload,
+        },
+        {
+          tabTitle: "Violin Plot",
+          icon: <CandlestickChart />,
+          plotComponent: (
+            <GeneExpressionViolinPlot
+              ref={violinRef}
+              rows={rows}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              geneName={entity.entityID}
+              assembly={entity.assembly}
+              loading={geneExpressionData.loading}
+              getRowId={getRowId}
+              {...controlProps}
+            />
+          ),
+          ...violinDownload,
+        },
+        {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: (
+            <GeneExpressionUMAP
+              ref={umapRef}
+              geneName={entity.entityID}
+              rows={umapRows}
+              highlightedAccessions={umapHighlightedAccessions}
+              onPointToggle={handleUmapToggle}
+              onLassoSelect={handleUmapLassoSelect}
+              loading={geneExpressionData.loading}
+            />
+          ),
+          ...umapDownload,
+        },
+      ]}
+    />
   );
 };
 

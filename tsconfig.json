@@ -20,9 +20,9 @@
     "noImplicitAny": false,
     "plugins": [
       {
-        "name": "next"
-      }
-    ]
+        "name": "next",
+      },
+    ],
   },
   "include": [
     "svgr.d.ts",
@@ -32,7 +32,7 @@
     ".next/types/**/*.ts",
     "next.config.mjs",
     "eslint.config.mjs",
-    "src/app/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_linkedICREs"
+    "src/app/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_linkedICREs",
   ],
-  "exclude": ["node_modules", "yarn.lock", "yarn-error.log", ".cache", "dist"]
+  "exclude": ["node_modules", "yarn.lock", "yarn-error.log", ".cache", "dist"],
 }

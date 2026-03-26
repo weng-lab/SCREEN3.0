@@ -16,25 +16,20 @@ export const truncateString = (input: string, maxLength: number) => {
 };
 
 /**
- * Very dumb parser for genomic range. No input checking. Assumes proper formatting and no commas in values.
- * Will handle URL encoding of ':' as '%3A'
+ * Converts input coordinate string into GenomicRange. Handles commas in coordinates and "%3A" URI encoding of ":"
  * @param input `String` with format chr:start-end
  * @returns `GenomicRange`
  */
 export function parseGenomicRangeString(input: string): GenomicRange {
-  if (input.includes("%3A")) {
-    return {
-      // %3A is URL encoding of ":"
-      chromosome: input.split("%3A")[0],
-      start: +input.split("%3A")[1].split("-")[0],
-      end: +input.split("%3A")[1].split("-")[1],
-    };
-  } else
-    return {
-      chromosome: input.split(":")[0],
-      start: +input.split(":")[1].split("-")[0],
-      end: +input.split(":")[1].split("-")[1],
-    };
+  const separator = input.includes("%3A") ? "%3A" : ":";
+  const [chromosome, rangeStr] = input.split(separator);
+  const [startStr, endStr] = rangeStr.split("-");
+
+  return {
+    chromosome,
+    start: +startStr.replace(/,/g, ""),
+    end: +endStr.replace(/,/g, ""),
+  };
 }
 
 /**

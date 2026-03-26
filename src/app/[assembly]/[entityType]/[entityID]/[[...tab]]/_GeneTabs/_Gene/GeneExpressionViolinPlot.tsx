@@ -1,21 +1,17 @@
-import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
+import { GeneExpressionViolinPlotProps, getScaleLabel, getScaledTPM, PointMetadata } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
-import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
+import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
+import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/violinUtils";
 import GenePlotControls from "./GenePlotControls";
 
-export type GeneExpressionViolinPlotProps = GeneExpressionProps &
-  SharedGeneExpressionPlotProps &
-  Partial<ViolinPlotProps<PointMetadata>> & {
-    scale: "linearTPM" | "logTPM";
-  };
-
-const GeneExpressionBarPlot = ({
+const GeneExpressionViolinPlot = ({
   scale,
   setScale,
   selected,
   setSelected,
+  toggleSelection,
   RNAtype,
   setRNAType,
   viewBy,
@@ -24,14 +20,13 @@ const GeneExpressionBarPlot = ({
   setReplicates,
   ref,
   rows,
-  entity,
-  geneExpressionData,
-  ...rest
+  geneName,
+  assembly,
+  loading,
+  getRowId,
 }: GeneExpressionViolinPlotProps) => {
-  const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
+  const [sortBy, setSortBy] = useState<ViolinSortBy>("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
-
-  const { loading } = geneExpressionData;
 
   const violinData: Distribution<PointMetadata>[] = useMemo(() => {
     if (!rows) return [];
@@ -47,13 +42,11 @@ const GeneExpressionBarPlot = ({
     );
 
     const distributions = Object.entries(grouped).map(([tissue, group]) => {
-      const values = group.map((d) => d.gene_quantification_files[0].quantifications[0]?.tpm);
+      const values = group.map((d) => getScaledTPM(d, scale));
       const label = tissue;
       const violinColor =
         selected.length === 0 ||
-        group.every((d) =>
-          selected.some((s) => s.gene_quantification_files[0].accession === d.gene_quantification_files[0].accession)
-        )
+        group.every((d) => selected.some((s) => getRowId(s) === getRowId(d)))
           ? (tissueColors[tissue] ?? tissueColors.missing)
           : "#CCCCCC";
 
@@ -61,9 +54,7 @@ const GeneExpressionBarPlot = ({
         const metadata = group[i];
         const isSelected =
           selected.length === 0 ||
-          selected.some(
-            (s) => s.gene_quantification_files[0].accession === metadata.gene_quantification_files[0].accession
-          );
+          selected.some((s) => getRowId(s) === getRowId(metadata));
         const pointColor = isSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 
@@ -81,62 +72,23 @@ const GeneExpressionBarPlot = ({
       return { label, data, violinColor };
     });
 
-    //apply sorting
-    distributions.sort((a, b) => {
-      if (sortBy === "tissue") {
-        return a.label.localeCompare(b.label); // alphabetical
-      }
-      if (sortBy === "median") {
-        const median = (arr: number[]) => {
-          const sorted = [...arr].sort((x, y) => x - y);
-          const mid = Math.floor(sorted.length / 2);
-          return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-        };
-        return median(b.data.map((d) => d.value)) - median(a.data.map((d) => d.value));
-      }
-      if (sortBy === "max") {
-        return Math.max(...b.data.map((d) => d.value)) - Math.max(...a.data.map((d) => d.value));
-      }
-      return 0;
-    });
+    sortDistributions(distributions, sortBy);
 
     return distributions;
-  }, [selected, rows, sortBy]);
+  }, [rows, selected, getRowId, sortBy, scale]);
 
   const onViolinClicked = (violin: Distribution<PointMetadata>) => {
-    const rowsForDistribution = violin.data.map((point) => point.metadata);
-
-    const allInDistributionSelected = rowsForDistribution.every((row) =>
-      selected.some((x) => x.accession === row.accession)
-    );
-
-    if (allInDistributionSelected) {
-      setSelected(selected.filter((row) => !rowsForDistribution.some((x) => x.accession === row.accession)));
-    } else {
-      const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.accession === row.accession));
-      setSelected([...selected, ...toSelect]);
-    }
+    handleViolinToggle(violin, selected, setSelected, getRowId);
   };
 
   const onPointClicked = (point: ViolinPoint<PointMetadata>) => {
-    const id = point.metadata.accession;
-    if (selected.some((x) => x.accession === id)) {
-      setSelected(selected.filter((x) => x.accession !== id));
-    } else {
-      setSelected([...selected, point.metadata]);
-    }
+    toggleSelection(point.metadata);
   };
 
   return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
+    <Box display="flex" flexDirection="column" height="100%">
       <GenePlotControls
-        assembly={entity.assembly}
+        assembly={assembly}
         RNAtype={RNAtype}
         scale={scale}
         viewBy={viewBy}
@@ -151,20 +103,12 @@ const GeneExpressionBarPlot = ({
         showPoints={showPoints}
         setShowPoints={setShowPoints}
       />
-      <Box
-        width={"100%"}
-        height={"calc(100% - 63px)"} // bad fix for adjusting height to account for controls
-      >
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ViolinPlot
-          {...rest}
           onPointClicked={onPointClicked}
           onViolinClicked={onViolinClicked}
           distributions={violinData}
-          axisLabel={
-            scale === "linearTPM"
-              ? `${entity.entityID} Expression - TPM`
-              : `${entity.entityID} Expression - Log\u2081\u2080(TPM + 1)`
-          }
+          axisLabel={getScaleLabel(geneName, scale)}
           loading={loading}
           labelOrientation="leftDiagonal"
           violinProps={{
@@ -175,38 +119,36 @@ const GeneExpressionBarPlot = ({
           crossProps={{
             outliers: showPoints ? "all" : "none",
           }}
+          animation="slideUp"
+          animationBuffer={0.01}
           ref={ref}
-          downloadFileName={`${entity.entityID}_expression_violin_plot`}
-          pointTooltipBody={(point) => {
-            const rawTPM = point.metadata?.gene_quantification_files[0].quantifications[0]?.tpm ?? 0;
-            const displayTPM = scale === "linearTPM" ? rawTPM : Math.log10(rawTPM + 1);
-
-            return (
-              <Box maxWidth={300}>
-                {point.outlier && (
-                  <div>
-                    <strong>Outlier</strong>
-                  </div>
-                )}
+          downloadFileName={`${geneName}_expression_violin_plot`}
+          pointTooltipBody={(point) => (
+            <Box maxWidth={300}>
+              {point.outlier && (
                 <div>
-                  <strong>Accession:</strong> {point.metadata?.accession}
+                  <strong>Outlier</strong>
                 </div>
-                <div>
-                  <strong>Biosample:</strong> {point.metadata?.biosample}
-                </div>
-                <div>
-                  <strong>Tissue:</strong> {point.metadata?.tissue}
-                </div>
-                <div>
-                  <strong>{scale === "linearTPM" ? "TPM" : "Log₁₀(TPM + 1)"}:</strong> {displayTPM.toFixed(2)}
-                </div>
-              </Box>
-            );
-          }}
+              )}
+              <div>
+                <strong>Accession:</strong> {point.metadata?.exp_accession}
+                {point.metadata?.biorep != null && ` (rep. ${point.metadata.biorep})`}
+              </div>
+              <div>
+                <strong>Biosample:</strong> {point.metadata?.biosample}
+              </div>
+              <div>
+                <strong>Tissue:</strong> {point.metadata?.tissue}
+              </div>
+              <div>
+                <strong>{scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}:</strong> {point.value.toFixed(1)}
+              </div>
+            </Box>
+          )}
         />
       </Box>
     </Box>
   );
 };
 
-export default GeneExpressionBarPlot;
+export default GeneExpressionViolinPlot;

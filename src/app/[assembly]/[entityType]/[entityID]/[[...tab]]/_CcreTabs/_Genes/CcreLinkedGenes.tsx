@@ -3,7 +3,7 @@ import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import useClosestGenes from "common/hooks/useClosestGenes";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -12,6 +12,48 @@ import { useState } from "react";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
+
+const CompuLinkedGenes_columns: TableColDef<ReturnType<typeof useCompuLinkedGenes>["data"][number]>[] = [
+  {
+    field: "fileaccession",
+    headerName: "File",
+    renderCell: (params) => (
+      <LinkComponent href={`https://www.encodeproject.org/file/${params.value}`} openInNewTab showExternalIcon>
+        {params.value}
+      </LinkComponent>
+    ),
+  },
+  sharedColumns.genename,
+  {
+    field: "geneid",
+    headerName: "Gene ID",
+  },
+  sharedColumns.genetype,
+  {
+    field: "method",
+    headerName: "Method",
+    valueGetter: (_, row) => row.method.replaceAll("_", " "),
+  },
+  {
+    field: "methodregion",
+    headerName: "Method Region",
+    valueGetter: (_, row) => formatCoord(row.methodregion),
+  },
+  {
+    field: "celltype",
+    headerName: "Biosample",
+    valueGetter: (_, row) =>
+      row.celltype
+        .replaceAll("_", " ")
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+  },
+  {
+    ...sharedColumns.score,
+    valueGetter: (_, row) => row.score.toFixed(2),
+  },
+];
 
 export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
   const isHuman = entity.assembly === "GRCh38";
@@ -32,7 +74,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
   const {
     data: dataCompuGenes,
     loading: loadingCompuGenes,
-    error: errorCompuGenes,
+    error: _,
   } = useCompuLinkedGenes({
     accessions: [entity.entityID],
     method,
@@ -67,8 +109,6 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
     }
   };
 
-
-
   // make types for the data
   const HiCLinked = linkedGenes
     ?.filter((x: LinkedGeneInfo) => x.assay === "Intact-HiC")
@@ -94,48 +134,6 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       ...x,
       id: index.toString(),
     }));
-
-  const CompuLinkedGenes_columns: GridColDef<(typeof dataCompuGenes)[number]>[] = [
-    {
-      field: "fileaccession",
-      headerName: "File",
-      renderCell: (params) => (
-        <LinkComponent href={`https://www.encodeproject.org/file/${params.value}`} openInNewTab showExternalIcon>
-          {params.value}
-        </LinkComponent>
-      ),
-    },
-    sharedColumns.genename,
-    {
-      field: "geneid",
-      headerName: "Gene ID",
-    },
-    sharedColumns.genetype,
-    {
-      field: "method",
-      headerName: "Method",
-      valueGetter: (_, row) => row.method.replaceAll("_", " "),
-    },
-    {
-      field: "methodregion",
-      headerName: "Method Region",
-      valueGetter: (_, row) => formatCoord(row.methodregion),
-    },
-    {
-      field: "celltype",
-      headerName: "Biosample",
-      valueGetter: (_, row) =>
-        row.celltype
-          .replaceAll("_", " ")
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-    },
-    {
-      ...sharedColumns.score,
-      valueGetter: (_, row) => row.score.toFixed(2),
-    },
-  ];
 
   const tables: TableDef<LinkedGeneInfo>[] = [
     {
@@ -184,7 +182,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       columns: CompuLinkedGenes_columns,
       sortColumn: "score",
       sortDirection: "desc",
-      emptyTableFallback:
+      emptyTableFallback: (
         <Stack
           direction={"row"}
           border={"1px solid #e0e0e0"}
@@ -195,7 +193,11 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
         >
           <Stack direction={"row"} spacing={1}>
             <InfoOutlineRounded />
-            {loadingCompuGenes ? <Typography>Fetching Computational Linked Genes by {method}</Typography> : <Typography>No Computational Predictions</Typography>}
+            {loadingCompuGenes ? (
+              <Typography>Fetching Computational Linked Genes by {method}</Typography>
+            ) : (
+              <Typography>No Computational Predictions</Typography>
+            )}
           </Stack>
           <Tooltip title="Advanced Filters">
             <Button variant="outlined" onClick={handleClick}>
@@ -203,16 +205,18 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
             </Button>
           </Tooltip>
         </Stack>
-      ,
-      toolbarSlot: <Tooltip title="Advanced Filters">
-        <Button variant="outlined" onClick={handleClick}>
-          Change Method
-        </Button>
-      </Tooltip>
-    }
+      ),
+      toolbarSlot: (
+        <Tooltip title="Advanced Filters">
+          <Button variant="outlined" onClick={handleClick}>
+            Change Method
+          </Button>
+        </Tooltip>
+      ),
+    },
   ];
 
-  const closestGenesCols: GridColDef[] = [
+  const closestGenesCols: TableColDef[] = [
     {
       field: "name",
       headerName: "Name",
@@ -242,6 +246,8 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
         emptyTableFallback={"No closest genes found"}
         loading={loadingClosest}
         error={!!errorClosest}
+        autoHeight
+        hideFooter
       />
       {isHuman && <LinkedElements tables={tables} />}
       <Box

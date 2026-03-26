@@ -1,10 +1,12 @@
 {
   "API": {
-    "CcreAPI": "https://screen.api.wenglab.org/graphql"
+    "CcreAPI": "https://screen.api.wenglab.org/graphql",
+    "MOHD_API": "https://mohd-api-251345758618.us-east4.run.app/graphql"
   },
   "Downloads": {
     "HumanCCREs": "https://downloads.wenglab.org/Registry-V4/GRCh38-cCREs.bed",
-    "HumanCCREsHg19": "https://storage.googleapis.com/gcp.wenglab.org/Registry-V4/cCRE.hg19.bed",
+    "HumanCCREsMultimappers": "https://downloads.wenglab.org/GRCh38-cCREs-All.bed",
+    "HumanCCREsHg19": "https://downloads.wenglab.org/Registry-V4/cCRE.hg19.bed",
     "HumanPromoters": "https://downloads.wenglab.org/Registry-V4/GRCh38-cCREs.PLS.bed",
     "HumanProximalEnhancers": "https://downloads.wenglab.org/Registry-V4/GRCh38-cCREs.pELS.bed",
     "HumanDistalEnhancers": "https://downloads.wenglab.org/Registry-V4/GRCh38-cCREs.dELS.bed",
@@ -25,8 +27,10 @@
     "HumanCRISPR": "https://downloads.wenglab.org/human_crispr_functional_characterization.tar.gz",
     "HumanVISTA": "https://downloads.wenglab.org/VISTA-hg38.04-22-2023.bed",
     "HumanChromHMM": "https://downloads.wenglab.org/humanchromhmmchipseq.tsv",
-
+    "HumanDynamicEnhancers": "https://downloads.wenglab.org/dynamic_enhancers.tar.gz",
+    "HumanT2TcCREs": "https://downloads.wenglab.org/GRCh38-cCREs.Lifted-hs1.bed",
     "MouseCCREs": "https://downloads.wenglab.org/Registry-V4/mm10-cCREs.bed",
+    "MouseCCREsMultimappers": "https://downloads.wenglab.org/mm10-cCREs-All.bed",
     "MousePromoters": "https://downloads.wenglab.org/Registry-V4/mm10-cCREs.PLS.bed",
     "MouseProximalEnhancers": "https://downloads.wenglab.org/Registry-V4/mm10-cCREs.pELS.bed",
     "MouseDistalEnhancers": "https://downloads.wenglab.org/Registry-V4/mm10-cCREs.dELS.bed",

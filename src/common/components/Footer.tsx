@@ -2,6 +2,7 @@
 import { Typography, Box, Grid, Link as MuiLink, Stack } from "@mui/material";
 import Image from "next/image";
 import { LinkComponent } from "./LinkComponent";
+import Link from "next/link";
 
 export default function Footer() {
   const sections = [
@@ -29,7 +30,7 @@ export default function Footer() {
       title: "Data",
       links: [
         { name: "Downloads", href: "/downloads" },
-        { name: "Version History", href: "/version-history" },
+        { name: "Version History", href: "/about#versions" },
       ],
     },
     {
@@ -74,9 +75,14 @@ export default function Footer() {
             </Typography>
             <Typography variant="body2" color={"#b2bcf0"}>
               How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN: <br />
-              <MuiLink href="https://www.nature.com/articles/s41586-020-2493-4" color={"#b2bcf0"} underline="always">
-                &quot;ENCODE Project Consortium, et al. Nature 2020.&quot;
-              </MuiLink>
+              <Link
+                href="https://www.nature.com/articles/s41586-025-09909-9"
+                target="_blank"
+                rel="noopener"
+                style={{ color: "inherit", textDecoration: "underline" }}
+              >
+                Moore...Weng (2026) <i>Nature</i>
+              </Link>
             </Typography>
           </Stack>
         </Grid>

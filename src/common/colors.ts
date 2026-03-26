@@ -16,12 +16,16 @@ export const CTCF_Bound = "#6495ED";
 export const LowDNase = "#e1e1e1";
 export const Unclassified = "#8c8c8c";
 
-export const ASSAY_COLORS = {
+export const ASSAY_COLORS: Record<string, string> = {
   dnase: "#06da93",
   h3k4me3: "#ff0000",
   h3k27ac: "#ffcd00",
   ctcf: "#00b0d0",
   atac: "#02c7b9",
+  "rna-seq": "#00aa00",
+  chromhmm: "#00ff00",
+  ccre: "#0c184a",
+  wgbs: "#648bd8",
 };
 
 export const CLASS_COLORS: Record<CcreClass, string> = {
@@ -83,6 +87,34 @@ export const TFChIP_seq = "#1262EB";
 export const RBP = "#f68800";
 
 export const Enhancer_GeneLinks = "#A872E5";
+
+/**
+ * MOHD Project
+ */
+export const mohdProtocolColors: Record<string, string> = {
+  "Buffy Coat method": "#d1495b",
+  "OPC method": "#00798c",
+  "CPT method": "#edae49",
+};
+
+export const mohdSexColors: Record<string, string> = {
+  female: "#9d5ca3",
+  male: "#62A35C",
+};
+
+export const mohdSiteColors: Record<string, string> = {
+  CCH: "#BF3831",
+  CKD: "#79B4F0",
+  EXP: "#159875",
+  MOM: "#CDA0E8",
+  UIC: "#31487D",
+};
+
+export const mohdStatusColors: Record<string, string> = {
+  case: "#e41a1c",
+  control: "#377eb8",
+  unknown: "gray",
+};
 
 export const tissueColors = {
   liver: "#aabb66",

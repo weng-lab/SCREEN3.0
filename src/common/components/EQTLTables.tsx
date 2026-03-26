@@ -1,10 +1,10 @@
 "use client";
 import { useQuery } from "@apollo/client";
-import { Stack, Box } from "@mui/material";
+import { Stack } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "./LinkComponent";
-import { GridColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 const EQTL_QUERY = gql(`
@@ -38,15 +38,15 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
   //Change query variables and table title based on element type
   if (entityType === "gene") {
     variables = { genes: [entityID] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    gtexTitle = `GTEx eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   } else if (entityType === "ccre") {
     variables = { ccre: [entityID] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    gtexTitle = `GTEx eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   } else {
     variables = { snps: [entityID] };
-    gtexTitle = `GTEX whole-blood eQTLs for ${entityID}`;
+    gtexTitle = `GTEx eQTLs for ${entityID}`;
     onekTitle = `OneK1K eQTLs for ${entityID}`;
   }
 
@@ -62,7 +62,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
   const gtexRows = eqtlData?.immuneeQTLsQuery.filter((i) => i.study === "GTEX");
   const oneK1KRows = eqtlData?.immuneeQTLsQuery.filter((i) => i.study === "OneK1K");
 
-  const gtexColumns: GridColDef<(typeof gtexRows)[number]>[] = [];
+  const gtexColumns: TableColDef<(typeof gtexRows)[number]>[] = [];
 
   gtexColumns.push({
     field: "variant_id",
@@ -113,16 +113,21 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
     },
     {
       field: "pval_nominal",
-      headerName: "Nominal P",
+      headerName: "Q Value",
       display: "flex",
       renderCell: (params) => toScientificNotationElement(params.value, 2, { variant: "body2" }),
+    },
+    {
+      field: "celltype",
+      headerName: "Celltype",
+      valueGetter: (_, row) => row.celltype.replaceAll("_", " "),
     }
   );
 
   if (entityType === "gene" || entityType === "variant") {
     gtexColumns.push({
       field: "ccre",
-      headerName: "ccre",
+      headerName: "cCRE",
       renderCell: (params) =>
         params.value === "." ? (
           <>{params.value}</>
@@ -132,7 +137,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
     });
   }
 
-  const oneK1KColumns: GridColDef<(typeof gtexRows)[number]>[] = [];
+  const oneK1KColumns: TableColDef<(typeof gtexRows)[number]>[] = [];
 
   if (entityType === "gene" || entityType === "ccre") {
     oneK1KColumns.push(
@@ -197,7 +202,7 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
   if (entityType === "gene" || entityType === "variant") {
     oneK1KColumns.push({
       field: "ccre",
-      headerName: "ccre",
+      headerName: "cCRE",
       renderCell: (params) =>
         params.value === "." ? (
           <>{params.value}</>
@@ -209,38 +214,34 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
 
   return (
     <Stack spacing={2}>
-      <Box sx={{ flex: "1 1 auto" }}>
-        <Table
-          columns={gtexColumns}
-          rows={gtexRows}
-          loading={loading}
-          error={!!error}
-          label={gtexTitle}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: "pval_nominal", sort: "asc" }],
-            },
-          }}
-          emptyTableFallback={"No GTEX whole-blood eQTLs found"}
-          divHeight={{ maxHeight: "400px" }}
-        />
-      </Box>
-      <Box sx={{ flex: "1 1 auto" }}>
-        <Table
-          columns={oneK1KColumns}
-          rows={oneK1KRows}
-          loading={loading}
-          error={!!error}
-          label={onekTitle}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: "fdr", sort: "asc" }],
-            },
-          }}
-          emptyTableFallback={"No OneK1K eQTLs found"}
-          divHeight={{ maxHeight: "400px" }}
-        />
-      </Box>
+      <Table
+        columns={gtexColumns}
+        rows={gtexRows}
+        loading={loading}
+        error={!!error}
+        label={gtexTitle}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "pval_nominal", sort: "asc" }],
+          },
+        }}
+        emptyTableFallback={"No GTEx eQTLs found"}
+        divHeight={{ maxHeight: "400px" }}
+      />
+      <Table
+        columns={oneK1KColumns}
+        rows={oneK1KRows}
+        loading={loading}
+        error={!!error}
+        label={onekTitle}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "fdr", sort: "asc" }],
+          },
+        }}
+        emptyTableFallback={"No OneK1K eQTLs found"}
+        divHeight={{ maxHeight: "400px" }}
+      />
     </Stack>
   );
 }

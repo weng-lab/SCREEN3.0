@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import Footer from "common/components/Footer";
 import Header from "common/components/Header/Header";
-import ScrollReset from "./ScrollReset";
 
 export default function ClientAppWrapper({ children }: { children: React.ReactNode }) {
   const [maintenance, setMaintenance] = useState(false);
@@ -29,14 +28,11 @@ export default function ClientAppWrapper({ children }: { children: React.ReactNo
   }, []);
 
   return (
-    <Stack height={"100vh"} minHeight={0} id="app-wrapper">
+    <Box id="app-wrapper" display={"grid"} gridTemplateRows={"auto minmax(0, 1fr) auto"} minHeight={"100vh"}>
       <Header maintenance={maintenance} />
-      {/* Overflow=auto provides scrolling ancestor for OpenElementsTab. This allows it to be position=sticky with top=0, and right under AppBar*/}
-      <Stack flexGrow={1} overflow={"auto"} minHeight={0} id="content-wrapper">
-        <ScrollReset />
-        <Stack flexGrow={1}>{children}</Stack>
-        <Footer />
-      </Stack>
-    </Stack>
+      {/* Wrap children to enure they will all be slotted together into the 1fr row if child is a fragment */}
+      <div id="main-content-wrapper">{children}</div>
+      <Footer />
+    </Box>
   );
 }

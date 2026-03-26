@@ -5,7 +5,6 @@ import React from "react";
 const AnnotationsContactUs: React.FC = () => (
   <Box
     sx={{
-      width: "100%",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",

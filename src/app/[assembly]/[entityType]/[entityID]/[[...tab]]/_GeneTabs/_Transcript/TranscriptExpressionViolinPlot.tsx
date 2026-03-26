@@ -1,29 +1,29 @@
-import {
-  TranscriptMetadata,
-  SharedTranscriptExpressionPlotProps,
-} from "./TranscriptExpression";
+import type { TranscriptMetadata, TranscriptExpressionViolinPlotProps } from "./types";
+import { getScaledRPM } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
-import { Distribution, ViolinPlot, ViolinPlotProps, ViolinPoint } from "@weng-lab/visualization";
+import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
+import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/violinUtils";
 import TranscriptPlotControls from "./TranscriptPlotControls";
 
-const TranscriptExpressionBarPlot = ({
+const TranscriptExpressionViolinPlot = ({
   setViewBy,
   setPeak,
   setScale,
   setSelected,
   scale,
   viewBy,
-  entity,
+  geneName,
   selectedPeak,
   transcriptExpressionData,
   selected,
+  toggleSelection,
+  getRowId,
   rows,
   ref,
-  ...rest
-}: SharedTranscriptExpressionPlotProps) => {
-  const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
+}: TranscriptExpressionViolinPlotProps) => {
+  const [sortBy, setSortBy] = useState<ViolinSortBy>("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
   const violinData: Distribution<TranscriptMetadata>[] = useMemo(() => {
@@ -40,80 +40,44 @@ const TranscriptExpressionBarPlot = ({
     );
 
     const distributions = Object.entries(grouped).map(([tissue, group]) => {
-      const values = group.map((d) => d.value);
-      const label = tissue;
-      const violinColor =
-        selected.length === 0 || group.every((d) => selected.some((s) => s.expAccession === d.expAccession))
-          ? (tissueColors[tissue] ?? tissueColors.missing)
-          : "#CCCCCC";
+      const noneSelected = selected.length === 0;
+      const allInViolinSelected = group.every((d) => selected.some((s) => getRowId(s) === getRowId(d)));
 
-      const data: ViolinPoint<TranscriptMetadata>[] = values.map((value, i) => {
-        const metadata = group[i];
-        const isSelected = selected.length === 0 || selected.some((s) => s.expAccession === metadata.expAccession);
+      const violinColor =
+        noneSelected || allInViolinSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
+
+      const data: ViolinPoint<TranscriptMetadata>[] = group.map((sample) => {
+        const isSelected = noneSelected || selected.some((s) => getRowId(s) === getRowId(sample));
         const pointColor = isSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 
-        return values.length < 3
-          ? { value, radius: pointRadius, tissue, metadata, color: pointColor }
-          : { value, radius: selected.length === 0 ? 2 : pointRadius, tissue, metadata, color: pointColor };
+        return {
+          value: getScaledRPM(sample, scale),
+          radius: pointRadius,
+          tissue,
+          metadata: sample,
+          color: pointColor,
+        };
       });
 
-      return { label, data, violinColor };
+      return { label: tissue, data, violinColor };
     });
 
-    //apply sorting
-    distributions.sort((a, b) => {
-      if (sortBy === "tissue") {
-        return a.label.localeCompare(b.label); // alphabetical
-      }
-      if (sortBy === "median") {
-        const median = (arr: number[]) => {
-          const sorted = [...arr].sort((x, y) => x - y);
-          const mid = Math.floor(sorted.length / 2);
-          return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-        };
-        return median(b.data.map((d) => d.value)) - median(a.data.map((d) => d.value));
-      }
-      if (sortBy === "max") {
-        return Math.max(...b.data.map((d) => d.value)) - Math.max(...a.data.map((d) => d.value));
-      }
-      return 0;
-    });
+    sortDistributions(distributions, sortBy);
 
     return distributions;
-  }, [selected, rows, sortBy]);
+  }, [selected, rows, sortBy, scale, getRowId]);
 
-  const onViolinClicked = (violin: Distribution<TranscriptMetadata>) => {
-    const rowsForDistribution = violin.data.map((point) => point.metadata);
-
-    const allInDistributionSelected = rowsForDistribution.every((row) =>
-      selected.some((x) => x.expAccession === row.expAccession)
-    );
-
-    if (allInDistributionSelected) {
-      setSelected(selected.filter((row) => !rowsForDistribution.some((x) => x.expAccession === row.expAccession)));
-    } else {
-      const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.expAccession === row.expAccession));
-      setSelected([...selected, ...toSelect]);
-    }
+  const onViolinClicked = (distribution: Distribution<TranscriptMetadata>) => {
+    handleViolinToggle(distribution, selected, setSelected, getRowId);
   };
 
   const onPointClicked = (point: ViolinPoint<TranscriptMetadata>) => {
-    const id = point.metadata.expAccession;
-    if (selected.some((x) => x.expAccession === id)) {
-      setSelected(selected.filter((x) => x.expAccession !== id));
-    } else {
-      setSelected([...selected, point.metadata]);
-    }
+    toggleSelection(point.metadata);
   };
 
   return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
+    <Box display="flex" flexDirection="column" height="100%">
       <TranscriptPlotControls
         setViewBy={setViewBy}
         setPeak={setPeak}
@@ -128,14 +92,10 @@ const TranscriptExpressionBarPlot = ({
         selectedPeak={selectedPeak}
         violin={true}
       />
-      <Box
-        width={"100%"}
-        height={"calc(100% - 63px)"} // bad fix for adjusting height to account for controls
-      >
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ViolinPlot
-          {...rest}
           distributions={violinData}
-          axisLabel={`TSS Expression at ${selectedPeak} of ${entity.entityID} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
+          axisLabel={`TSS Expression at ${selectedPeak} of ${geneName} (${scale === "log" ? "log₁₀RPM" : "RPM"})`}
           loading={transcriptExpressionData.loading}
           labelOrientation="leftDiagonal"
           onViolinClicked={onViolinClicked}
@@ -145,38 +105,47 @@ const TranscriptExpressionBarPlot = ({
             showAllPoints: showPoints,
             jitter: 10,
           }}
+          animation="slideUp"
+          animationBuffer={0.01}
           crossProps={{
             outliers: showPoints ? "all" : "none",
           }}
           ref={ref}
-          downloadFileName={`${entity.entityID}_TSS_violin_plot`}
-          pointTooltipBody={(point) => {
-            return (
-              <Box maxWidth={300}>
-                {point.outlier && (
-                  <div>
-                    <strong>Outlier</strong>
-                  </div>
-                )}
+          downloadFileName={`${geneName}_TSS_violin_plot`}
+          pointTooltipBody={(point) => (
+            <Box maxWidth={300}>
+              {point.outlier && (
                 <div>
-                  <strong>Sample:</strong> {point.metadata?.biosampleName}
+                  <strong>Outlier</strong>
                 </div>
-                <div>
-                  <strong>Tissue:</strong> {point.metadata?.organ}
-                </div>
-                <div>
-                  <strong>Strand:</strong> {point.metadata?.strand}
-                </div>
+              )}
+              <div>
+                <strong>Sample:</strong> {point.metadata?.biosampleName}
+              </div>
+              <div>
+                <strong>Tissue:</strong> {point.metadata?.organ}
+              </div>
+              <div>
+                <strong>Strand:</strong> {point.metadata?.strand}
+              </div>
+              {scale === "linear" ? (
                 <div>
                   <strong>RPM:</strong> {point.metadata?.value.toFixed(2)}
                 </div>
-              </Box>
-            );
-          }}
+              ) : (
+                <div>
+                  <strong>
+                    Log<sub>10</sub>(RPM + 1):
+                  </strong>{" "}
+                  {point.value.toFixed(2)}
+                </div>
+              )}
+            </Box>
+          )}
         />
       </Box>
     </Box>
   );
 };
 
-export default TranscriptExpressionBarPlot;
+export default TranscriptExpressionViolinPlot;

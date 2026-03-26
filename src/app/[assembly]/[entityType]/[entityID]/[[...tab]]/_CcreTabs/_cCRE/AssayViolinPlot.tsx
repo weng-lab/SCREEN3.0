@@ -3,15 +3,18 @@ import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { capitalizeFirstLetter, formatAssay } from "common/utility";
 import { tissueColors } from "common/colors";
 import { useMemo, useState } from "react";
+import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/violinUtils";
 import AssayPlotControls from "./AssayPlotControls";
-import type { SharedAssayViewPlotProps, BiosampleRow } from "./types";
+import type { AssayViolinPlotProps, BiosampleRow } from "./types";
 
 const AssayViolinPlot = ({
-  entity,
   rows,
   assay,
+  entityID,
   selected,
   setSelected,
+  toggleSelection,
+  getRowId,
   viewBy,
   setViewBy,
   cutoffLowSignal,
@@ -19,8 +22,8 @@ const AssayViolinPlot = ({
   show95Line,
   setShow95Line,
   ref,
-}: SharedAssayViewPlotProps) => {
-  const [sortBy, setSortBy] = useState<"median" | "max" | "tissue">("max");
+}: AssayViolinPlotProps) => {
+  const [sortBy, setSortBy] = useState<ViolinSortBy>("max");
   const [showPoints, setShowPoints] = useState<boolean>(true);
 
   const violinData: Distribution<BiosampleRow>[] = useMemo(() => {
@@ -39,82 +42,44 @@ const AssayViolinPlot = ({
     const distributions = Object.entries(tissueGroups).map(([tissue, group]) => {
       const label = capitalizeFirstLetter(tissue);
 
-      const isHighlighted = (x: BiosampleRow) => selected.some((y) => y.name === x.name);
-
       const noneSelected = selected.length === 0;
-      const allInViolinSelected = group.every((d) => selected.some((s) => s.name === d.name));
+      const allInViolinSelected = group.every((d) => selected.some((s) => getRowId(s) === getRowId(d)));
 
       const violinColor =
         noneSelected || allInViolinSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
 
-      const data: ViolinPoint<BiosampleRow>[] = group
-        .map((sample) => {
-          const pointColor =
-            noneSelected || isHighlighted(sample) ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
-          const pointRadius = isHighlighted(sample) ? 4 : 2;
+      const data: ViolinPoint<BiosampleRow>[] = group.map((sample) => {
+        const isSelected = noneSelected || selected.some((s) => getRowId(s) === getRowId(sample));
+        const pointColor = isSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
+        const pointRadius = isSelected ? 4 : 2;
 
-          return {
-            value: sample[assay] ?? 0,
-            radius: pointRadius,
-            tissue,
-            metadata: sample,
-            color: pointColor,
-          };
-        })
-        .sort((a, b) => (isHighlighted(b.metadata) ? -1 : 0));
+        return {
+          value: sample[assay] ?? 0,
+          radius: pointRadius,
+          tissue,
+          metadata: sample,
+          color: pointColor,
+        };
+      });
 
       return { label, data, violinColor };
     });
 
-    //apply sorting
-    distributions.sort((a, b) => {
-      if (sortBy === "tissue") {
-        return a.label.localeCompare(b.label);
-      }
-      if (sortBy === "median") {
-        const median = (arr: number[]) => {
-          const sorted = [...arr].sort((x, y) => x - y);
-          const mid = Math.floor(sorted.length / 2);
-          return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-        };
-        return median(b.data.map((d) => d.value)) - median(a.data.map((d) => d.value));
-      }
-      if (sortBy === "max") {
-        return Math.max(...b.data.map((d) => d.value)) - Math.max(...a.data.map((d) => d.value));
-      }
-      return 0;
-    });
+    sortDistributions(distributions, sortBy);
 
     return distributions;
-  }, [assay, selected, rows, sortBy]);
+  }, [assay, selected, rows, sortBy, getRowId]);
 
   const onViolinClicked = (distribution: Distribution<BiosampleRow>) => {
-    const rowsForDistribution = distribution.data.map((point) => point.metadata);
-
-    const allInDistributionSelected = rowsForDistribution.every((row) => selected.some((x) => x.name === row.name));
-
-    if (allInDistributionSelected) {
-      setSelected((prev) => prev.filter((row) => !rowsForDistribution.some((x) => x.name === row.name)));
-    } else {
-      const toSelect = rowsForDistribution.filter((row) => !selected.some((x) => x.name === row.name));
-      setSelected((prev) => [...prev, ...toSelect]);
-    }
+    handleViolinToggle(distribution, selected, setSelected, getRowId);
   };
 
   const onPointClicked = (point: ViolinPoint<BiosampleRow>) => {
-    if (selected.includes(point.metadata)) {
-      setSelected(selected.filter((x) => x.name !== point.metadata.name));
-    } else setSelected([...selected, point.metadata]);
+    toggleSelection(point.metadata);
   };
 
   return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
+    <Box display="flex" flexDirection="column" height="100%">
       <AssayPlotControls
         viewBy={viewBy}
         setViewBy={setViewBy}
@@ -128,13 +93,10 @@ const AssayViolinPlot = ({
         show95Line={show95Line}
         setShow95Line={setShow95Line}
       />
-      <Box
-        width={"100%"}
-        height={"calc(100% - 63px)"} // bad fix for adjusting height to account for controls
-      >
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ViolinPlot
           distributions={violinData}
-          axisLabel={`${entity.entityID} ${formatAssay(assay)} z-scores`}
+          axisLabel={`${entityID} ${formatAssay(assay)} z-scores`}
           loading={!violinData.length}
           onViolinClicked={onViolinClicked}
           onPointClicked={onPointClicked}
@@ -149,34 +111,34 @@ const AssayViolinPlot = ({
           crossProps={{
             outliers: showPoints ? "all" : "none",
           }}
+          animation="slideUp"
+          animationBuffer={0.01}
           ref={ref}
           downloadFileName={`${assay}_violin_plot`}
-          pointTooltipBody={(point) => {
-            return (
-              <Box maxWidth={300}>
-                {point.outlier && (
-                  <div>
-                    <strong>Outlier</strong>
-                  </div>
-                )}
+          pointTooltipBody={(point) => (
+            <Box maxWidth={300}>
+              {point.outlier && (
                 <div>
-                  <strong>Sample:</strong> {point.metadata?.displayname}
+                  <strong>Outlier</strong>
                 </div>
-                <div>
-                  <strong>Organ/Tissue:</strong> {point.metadata?.ontology}
-                </div>
-                <div>
-                  <strong>Sample Type:</strong> {point.metadata?.sampleType}
-                </div>
-                <div>
-                  <strong>{formatAssay(assay)} z-score:</strong> {point.metadata[assay]}
-                </div>
-                <div>
-                  <strong>Class in this sample:</strong> {point.metadata?.class}
-                </div>
-              </Box>
-            );
-          }}
+              )}
+              <div>
+                <strong>Sample:</strong> {point.metadata?.displayname}
+              </div>
+              <div>
+                <strong>Organ/Tissue:</strong> {point.metadata?.ontology}
+              </div>
+              <div>
+                <strong>Sample Type:</strong> {point.metadata?.sampleType}
+              </div>
+              <div>
+                <strong>{formatAssay(assay)} z-score:</strong> {point.metadata[assay]}
+              </div>
+              <div>
+                <strong>Class in this sample:</strong> {point.metadata?.class}
+              </div>
+            </Box>
+          )}
         />
       </Box>
     </Box>

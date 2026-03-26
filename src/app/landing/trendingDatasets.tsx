@@ -23,7 +23,7 @@ const trendingDataSets = [
     size: "50.6 MB",
     link: Config.Downloads.MouseCCREs,
   },
-  { name: "Mouse Promotes", subtitle: "27,332 cCREs", size: "1.5 MB", link: Config.Downloads.MousePromoters },
+  { name: "Mouse Promoters", subtitle: "27,332 cCREs", size: "1.5 MB", link: Config.Downloads.MousePromoters },
   { name: "Mouse Enhancers", subtitle: "512,001 cCREs", size: "28.2 MB", link: Config.Downloads.MouseEnhancers },
 ];
 

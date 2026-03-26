@@ -1,21 +1,15 @@
-import { GeneExpressionProps, PointMetadata, SharedGeneExpressionPlotProps } from "./GeneExpression";
+import { GeneExpressionBarPlotProps, getScaleLabel, getScaledTPM, PointMetadata } from "./types";
 import { useCallback, useMemo } from "react";
 import { capitalizeFirstLetter } from "common/utility";
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
-import { BarPlot, BarData, BarPlotProps } from "@weng-lab/visualization";
+import { BarPlot, BarData } from "@weng-lab/visualization";
 import GenePlotControls from "./GenePlotControls";
-
-export type GeneExpressionBarPlotProps = GeneExpressionProps &
-  SharedGeneExpressionPlotProps &
-  Partial<BarPlotProps<PointMetadata>> & {
-    scale: "linearTPM" | "logTPM";
-  };
 
 const GeneExpressionBarPlot = ({
   scale,
   selected,
-  setSelected,
+  toggleSelection,
   sortedFilteredData,
   RNAtype,
   setRNAType,
@@ -25,9 +19,9 @@ const GeneExpressionBarPlot = ({
   replicates,
   setReplicates,
   ref,
-  isV40,
-  entity,
-  ...rest
+  geneName,
+  assembly,
+  getRowId,
 }: GeneExpressionBarPlotProps) => {
   const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
     const maxLength = 20;
@@ -43,25 +37,21 @@ const GeneExpressionBarPlot = ({
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((x, i) => {
       const anySelected = selected.length > 0;
-      const isSelected = selected.some(
-        (y) => y.gene_quantification_files[0].accession === x.gene_quantification_files[0].accession
-      );
+      const isSelected = selected.some((y) => getRowId(y) === getRowId(x));
       return {
         category: capitalizeFirstLetter(x.tissue),
-        label: makeLabel(x.gene_quantification_files[0].quantifications[0]?.tpm, x.biosample, x.accession),
-        value: x.gene_quantification_files[0].quantifications[0]?.tpm, //indexing into 0th position, only one gene so quantifications should always be length 1
+        label: makeLabel(getScaledTPM(x, scale), x.biosample, x.exp_accession, x.biorep),
+        value: getScaledTPM(x, scale),
         color:
           (anySelected && isSelected) || !anySelected ? (tissueColors[x.tissue] ?? tissueColors.missing) : "#CCCCCC",
         id: i.toString(),
         metadata: x,
       };
     });
-  }, [sortedFilteredData, selected]);
+  }, [sortedFilteredData, selected, getRowId, scale]);
 
   const handleBarClick = (bar: BarData<PointMetadata>) => {
-    if (selected.some((x) => x.accession === bar.metadata.accession)) {
-      setSelected(selected.filter((x) => x.accession !== bar.metadata.accession));
-    } else setSelected([...selected, bar.metadata]);
+    toggleSelection(bar.metadata);
   };
 
   const PlotTooltip = useCallback(
@@ -79,14 +69,14 @@ const GeneExpressionBarPlot = ({
           </Typography>
           {scale === "linearTPM" ? (
             <Typography variant="body2">
-              <b>TPM:</b> {bar.value.toFixed(2)}
+              <b>TPM:</b> {bar.value.toFixed(1)}
             </Typography>
           ) : (
             <Typography variant="body2">
               <b>
                 Log<sub>10</sub>(TPM + 1):
               </b>{" "}
-              {bar.value.toFixed(2)}
+              {bar.value.toFixed(1)}
             </Typography>
           )}
         </Box>
@@ -96,15 +86,9 @@ const GeneExpressionBarPlot = ({
   );
 
   return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
+    <Box display="flex" flexDirection="column" height="100%">
       <GenePlotControls
-        assembly={entity.assembly}
+        assembly={assembly}
         RNAtype={RNAtype}
         scale={scale}
         viewBy={viewBy}
@@ -113,25 +97,19 @@ const GeneExpressionBarPlot = ({
         setViewBy={setViewBy}
         setScale={setScale}
         setReplicates={setReplicates}
-        disabled={isV40}
       />
-      {isV40 ? (
-        <Typography>No Gene expression data available on GENCODE V40 genes</Typography>
-      ) : (
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <BarPlot
-          {...rest}
           onBarClicked={handleBarClick}
           data={plotData}
-          topAxisLabel={
-            scale === "linearTPM"
-              ? `${entity.entityID} Expression - TPM`
-              : `${entity.entityID} Expression - log\u2081\u2080(TPM + 1)`
-          }
+          topAxisLabel={getScaleLabel(geneName, scale)}
           TooltipContents={PlotTooltip}
           ref={ref}
-          downloadFileName={`${entity.entityID}_expression_bar_plot`}
+          downloadFileName={`${geneName}_expression_bar_plot`}
+          animation="slideRight"
+          animationBuffer={0.01}
         />
-      )}
+      </Box>
     </Box>
   );
 };

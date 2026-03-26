@@ -1,7 +1,7 @@
 "use client";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
-import { useMemo, useState } from "react";
-import { Table, GridColDef, EncodeBiosample } from "@weng-lab/ui-components";
+import { Fragment, useMemo, useState } from "react";
+import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { CancelRounded } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
@@ -84,7 +84,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const showH3k27ac = !selectedBiosample || !!selectedBiosample.h3k27ac_experiment_accession;
   const showH3k4me3 = !selectedBiosample || !!selectedBiosample.h3k4me3_experiment_accession;
 
-  const ldblocks_columns: GridColDef<typeof data>[] = useMemo(
+  const ldblocks_columns: TableColDef<typeof data>[] = useMemo(
     () => [
       //skip specifying type: "number" to avoid manual left align. Nobody is filtering this table so doesn't matter
       {
@@ -108,7 +108,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
     []
   );
 
-  const columns: GridColDef<(typeof mergedData)[number]>[] = useMemo(
+  const columns: TableColDef<(typeof mergedData)[number]>[] = useMemo(
     () => [
       {
         field: "ccre",
@@ -131,12 +131,10 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
           if (params.value === "Lead") return "Lead";
           const rsIDs = (params.value as string)?.split(",");
           const links = rsIDs?.map((rsID: string, index: number) => (
-            <>
-              <LinkComponent href={`/GRCh38/variant/${rsID}`} key={rsID}>
-                {rsID}
-              </LinkComponent>
+            <Fragment key={rsID}>
+              <LinkComponent href={`/GRCh38/variant/${rsID}`}>{rsID}</LinkComponent>
               {index < rsIDs.length - 1 ? ", " : ""}
-            </>
+            </Fragment>
           ));
           return <span>{links}</span>;
         },
@@ -250,6 +248,8 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
         labelTooltip={
           "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)"
         }
+        autoHeight
+        hideFooter
       />
       {selectedBiosample && (
         <Stack

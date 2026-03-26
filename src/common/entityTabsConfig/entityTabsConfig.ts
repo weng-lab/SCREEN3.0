@@ -15,7 +15,6 @@ import BiosampleEnrichment from "app/[assembly]/[entityType]/[entityID]/[[...tab
 import { GWASStudySNPs } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Variant/GWASStudySNPs";
 import GWASStudyCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Ccre/GWASStudyCcres";
 import { GWASStudyGenes } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/GWASStudyGenes";
-import GWASGenomeBrowserView from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/gwasgenomebrowserview";
 import IntersectingCcres from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_cCREs/IntersectingCcres";
 import IntersectingGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Genes/IntersectingGenes";
 import IntersectingSNPs from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_RegionTabs/_Variants/IntersectingSNPs";
@@ -23,15 +22,21 @@ import { TfBinding } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_Cc
 import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedTabs/_Overview/BedOverview";
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
+import GwasBrowser from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/GwasBrowser";
+import MohdAtac from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_MOHD/MohdAtac";
+import MohdRnaSeq from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_MOHD/MohdRnaSeq";
 // import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
 const GeneIconPath = "/assets/GeneIcon.svg";
 const VariantIconPath = "/assets/VariantIcon.svg";
+const OverviewIconPath = "/assets/OverviewIcon.svg";
 const BiosampleEnrichmentIconPath = "/assets/BiosampleEnrichmentIcon.svg";
 const ConservationIconPath = "/assets/ConservationIcon.svg";
 const FunctionalIconPath = "/assets/FunctionalCharacterizationIcon.svg";
+const TFMotifsIconPath = "/assets/TfMotif.svg";
+const MohdIconPath = "/assets/MOHD.png"
 
 /**
  * @todo rewrite these instructions now that types are separated in own file
@@ -117,6 +122,12 @@ export const humanGeneTabs = [
     component: GenomeBrowser,
   },
   {
+    route: "mohd",
+    label: "MOHD RNA-seq",
+    iconPath: MohdIconPath,
+    component: MohdRnaSeq,
+  },
+  {
     route: "transcript-expression",
     label: "Transcript Expression",
     component: TranscriptExpression,
@@ -129,7 +140,7 @@ export const humanGwasTabs = [
     label: "Biosample Enrichment",
     iconPath: BiosampleEnrichmentIconPath,
     component: BiosampleEnrichment,
-   // getIsDisabled: hasNoEnrichmentData,
+    // getIsDisabled: hasNoEnrichmentData,
   },
   {
     route: "variants",
@@ -144,7 +155,7 @@ export const humanGwasTabs = [
     component: GWASStudyCcres,
   },
   { route: "genes", label: "Genes", iconPath: GeneIconPath, component: GWASStudyGenes },
-  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GWASGenomeBrowserView },
+  { route: "browser", label: "Genome Browser", iconPath: GbIconPath, component: GwasBrowser },
 ] as const satisfies TabConfig[];
 
 export const humanCcreTabs = [
@@ -179,20 +190,28 @@ export const humanCcreTabs = [
     component: FunctionalCharacterization,
   },
   {
+    route: "tf",
+    label: "TF Motifs",
+    iconPath: TFMotifsIconPath,
+    component: TfBinding,
+
+  },
+  {
     route: "browser",
     label: "Genome Browser",
     iconPath: GbIconPath,
     component: GenomeBrowser,
   },
   {
+    route: "mohd",
+    label: "MOHD ATAC",
+    iconPath: MohdIconPath,
+    component: MohdAtac,
+  },
+  {
     route: "additional-chromatin-signatures",
     label: "Additional Chromatin Signatures",
     component: AdditionalChromatinSignatures,
-  },
-  {
-    route: "tf",
-    label: "TF Motifs",
-    component: TfBinding,
   },
 ] as const satisfies TabConfig[];
 
@@ -211,7 +230,7 @@ export const humanRegionTabs = [
   },
   {
     route: "variants",
-    label: "Variant",
+    label: "Variants",
     iconPath: VariantIconPath,
     component: IntersectingSNPs,
   },
@@ -227,7 +246,7 @@ export const humanBedTabs = [
   {
     route: "overview",
     label: "Overview",
-    iconPath: CcreIconPath,
+    iconPath: OverviewIconPath,
     component: BedOverview,
   },
   {
@@ -244,7 +263,7 @@ export const humanBedTabs = [
   },
   {
     route: "variants",
-    label: "Variant",
+    label: "Variants",
     iconPath: VariantIconPath,
     component: IntersectingSNPs,
   },

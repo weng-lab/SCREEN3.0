@@ -3,20 +3,20 @@ import { gql } from "common/types/generated";
 import { LinkedCcresQuery } from "common/types/generated/graphql";
 
 export type useLinkedCcresParams = {
-  geneid: string
-}
+  geneid: string;
+};
 
-type BaseReturn = LinkedCcresQuery["linkedcCREs"][number]
+type BaseReturn = LinkedCcresQuery["linkedcCREs"][number];
 
 interface LinkedCcreInfo extends BaseReturn {
   assay?: "RNAPII-ChIAPET" | "CTCF-ChIAPET" | "Intact-HiC" | "CRISPRi-FlowFISH";
-};
+}
 
-export type useLinkedCcresReturn = { data: LinkedCcreInfo[] | undefined; loading: boolean; error: ApolloError }
+export type useLinkedCcresReturn = { data: LinkedCcreInfo[] | undefined; loading: boolean; error: ApolloError };
 
 export function useLinkedCcres({ geneid }: useLinkedCcresParams) {
   const { data, loading, error } = useQuery(LINKED_CCRE_QUERY, {
-    variables: { geneid: [geneid.split(".")[0]], assembly: "grch38" },
+    variables: { geneid: [geneid?.split(".")[0]], assembly: "grch38" },
     skip: !geneid,
   });
 

@@ -1,7 +1,7 @@
-import type { GridColDef } from "@weng-lab/ui-components";
+import type { TableColDef, useTablePlotSync } from "@weng-lab/ui-components";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { AnyOpenEntity } from "common/OpenEntitiesContext";
-import type { CcreAssay, CcreClass } from "common/types/globalTypes";
+import type { Assembly, CcreAssay, CcreClass } from "common/types/globalTypes";
 import type { Dispatch, SetStateAction } from "react";
 
 export type BiosampleRow = {
@@ -9,7 +9,7 @@ export type BiosampleRow = {
   displayname: string;
   sampleType?: string;
   lifeStage?: string;
-  ontology?: string;
+  ontology: string;
   class: CcreClass;
   collection: "core" | "partial" | "ancillary";
   dnase?: number;
@@ -27,21 +27,69 @@ export type BiosampleRow = {
 
 export type AssayViewProps = {
   rows: BiosampleRow[];
-  columns: GridColDef[];
+  columns: TableColDef[];
   assay: CcreAssay;
   entity: AnyOpenEntity;
 };
 
-export type SharedAssayViewPlotProps = AssayViewProps & {
-  selected: BiosampleRow[];
-  setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
+export type ViewBy = "value" | "tissue" | "tissueMax";
+
+/** Props for the AssayTable component */
+export type AssayTableProps = {
+  rows: BiosampleRow[];
+  columns: TableColDef[];
+  assay: CcreAssay;
+  entityID: string;
+  tableProps: ReturnType<typeof useTablePlotSync<BiosampleRow>>["tableProps"];
+  /**
+   * True when rows are presorted, and sorting should not be allowed on the table
+   */
+  isPresorted: boolean;
+};
+
+/** Props for the AssayBarPlot component */
+export type AssayBarPlotProps = {
   sortedFilteredData: BiosampleRow[];
-  setSortedFilteredData: Dispatch<SetStateAction<BiosampleRow[]>>;
-  viewBy: "value" | "tissue" | "tissueMax";
-  setViewBy: (newView: "value" | "tissue" | "tissueMax") => void;
-  ref?: React.RefObject<DownloadPlotHandle>;
+  selected: BiosampleRow[];
+  toggleSelection: (item: BiosampleRow) => void;
+  getRowId: (item: BiosampleRow) => string;
+  assay: CcreAssay;
+  entityID: string;
+  viewBy: ViewBy;
+  setViewBy: (view: ViewBy) => void;
   cutoffLowSignal: boolean;
   setCutoffLowSignal: (cutoff: boolean) => void;
   show95Line: boolean;
   setShow95Line: (show: boolean) => void;
+  ref?: React.RefObject<DownloadPlotHandle>;
+};
+
+/** Props for the AssayViolinPlot component */
+export type AssayViolinPlotProps = {
+  rows: BiosampleRow[];
+  selected: BiosampleRow[];
+  setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
+  toggleSelection: (item: BiosampleRow) => void;
+  getRowId: (item: BiosampleRow) => string;
+  assay: CcreAssay;
+  entityID: string;
+  viewBy: ViewBy;
+  setViewBy: (view: ViewBy) => void;
+  cutoffLowSignal: boolean;
+  setCutoffLowSignal: (cutoff: boolean) => void;
+  show95Line: boolean;
+  setShow95Line: (show: boolean) => void;
+  ref?: React.RefObject<DownloadPlotHandle>;
+};
+
+/** Props for the AssayUMAP component */
+export type AssayUMAPProps = {
+  rows: BiosampleRow[];
+  selected: BiosampleRow[];
+  setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
+  toggleSelection: (item: BiosampleRow) => void;
+  getRowId: (item: BiosampleRow) => string;
+  assay: CcreAssay;
+  assembly: Assembly;
+  ref?: React.RefObject<DownloadPlotHandle>;
 };

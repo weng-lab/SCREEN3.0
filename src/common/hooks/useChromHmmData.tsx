@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 /**
  * @todo we are relying on this transient dependency that is only present because of umms-gb. If we remove umms-gb this will break
  */
-import { BigBedData } from "bigwig-reader";
+import { BigBedData } from "genomic-reader";
 import { gql } from "common/types/generated/gql";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import Config from "common/config.json";
@@ -199,7 +199,7 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
           url: track.url,
         })) || [],
     },
-    skip: !chromHmmTracksWithTissue || assembly !== "GRCh38",
+    skip: !coordinates || !chromHmmTracksWithTissue || assembly !== "GRCh38",
   });
 
   // Process the data for the table view
