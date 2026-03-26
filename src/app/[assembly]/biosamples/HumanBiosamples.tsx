@@ -3,7 +3,6 @@ import HumanBodyMap from "./bodyMaps/human/HumanBodyMap";
 import { Box, IconButton, Stack, Tooltip } from "@mui/material";
 import Insets from "./bodyMaps/InsetSvgs";
 import { HumanCellsList } from "./bodyMaps/human/humanMapping";
-import BiosampleTables from "common/components/BiosampleTables/BiosampleTables";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 
@@ -97,16 +96,6 @@ export default function Human() {
           },
         }}
       >
-        <BiosampleTables
-          assembly="GRCh38"
-          onAccordionHover={(organ) => setHovered(organ)}
-          onAccordionClick={(organ) => setSelected((prev) => (prev === organ ? null : organ))}
-          hoveredAccordian={hovered}
-          selectedAccordian={selected}
-          slotProps={{
-            paperStack: { overflow: "auto", flexGrow: 1, height: "700px" },
-          }}
-        />
       </Box>
     </Stack>
   );
