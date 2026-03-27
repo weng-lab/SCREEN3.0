@@ -19,12 +19,11 @@ interface SvgMapProps {
   ColorMap: ColorMap;
   paths: SvgElement[];
   viewBox?: string;
-  selected: string;
-  setSelected: React.Dispatch<React.SetStateAction<string>>;
+  selected: string | null;
+  setSelected: React.Dispatch<React.SetStateAction<string | null>>;
+  onHoverChange: (organ: string | null) => void;
   width?: string;
   height?: string;
-  hovered: string | null;
-  setHovered: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const clipMap: Record<string, string> = {
@@ -52,8 +51,7 @@ export default function SVGMap({
   height,
   selected,
   setSelected,
-  hovered,
-  setHovered,
+  onHoverChange,
 }: SvgMapProps) {
   const classToOrgan = useMemo(() => {
     const map: Record<string, string> = {};
@@ -73,8 +71,7 @@ export default function SVGMap({
 
   const handleHover = (cls: string | null) => {
     const organ = classToOrgan[cls];
-    if (!organ) setHovered(null);
-    setHovered(organ);
+    onHoverChange(organ ?? null);
   };
 
   const getStyle = (cls: string) => {
@@ -82,8 +79,6 @@ export default function SVGMap({
     if (!path) return {};
 
     const isActive = selected && BodyList[selected]?.includes(cls);
-    const isHovered = hovered && BodyList[hovered]?.includes(cls);
-
     if (path.disabled) {
       return {
         fill: path.fill,
@@ -95,7 +90,7 @@ export default function SVGMap({
     if (path.outlineOnly) {
       return {
         fill: path.fill,
-        stroke: isActive ? (path.activeFill ?? path.fill) : isHovered ? "#63326e79" : "none",
+        stroke: isActive ? (path.activeFill ?? path.fill) : "none",
         opacity: path.opacity ?? 1,
         strokeWidth: 1.5,
         cursor: "pointer",
@@ -104,8 +99,8 @@ export default function SVGMap({
     }
 
     return {
-      fill: isActive ? (path.activeFill ?? path.fill) : isHovered ? "#63326e79" : path.fill,
-      stroke: isActive ? (path.activeStroke ?? "none") : isHovered ? "#63326eff" : (path.stroke ?? "none"),
+      fill: isActive ? (path.activeFill ?? path.fill) : path.fill,
+      stroke: isActive ? (path.activeStroke ?? "none") : (path.stroke ?? "none"),
       opacity: path.opacity ?? 1,
       transition: "fill 0.2s ease",
       cursor: "pointer",
@@ -159,6 +154,7 @@ export default function SVGMap({
         const tag = el.tag;
         const props = el.props;
         const cls = props.className;
+        const organ = classToOrgan[cls];
         const style = getStyle(cls);
 
         // skip rendering if no BodyList match or no fill
@@ -168,7 +164,8 @@ export default function SVGMap({
         return React.createElement(tag, {
           key: `${tag}-${i}-${cls}`,
           ...props,
-          className: cls,
+          className: `${cls} biosample-map-organ`,
+          "data-organ": organ,
           style,
           clipPath: clipMap[cls] ? `url(#${clipMap[cls]})` : undefined,
           onClick: () => handleClick(cls),

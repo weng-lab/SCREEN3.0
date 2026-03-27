@@ -4,13 +4,12 @@ import { MouseColorMap, MouseList } from "./mouseMapping";
 import { mousePaths } from "./mousePathsArray";
 
 interface MouseBodyMapProps {
-  selected: string;
-  setSelected: React.Dispatch<React.SetStateAction<string>>;
-  hovered: string | null;
-  setHovered: React.Dispatch<React.SetStateAction<string | null>>;
+  selected: string | null;
+  setSelected: React.Dispatch<React.SetStateAction<string | null>>;
+  onHoverChange: (organ: string | null) => void;
 }
 
-export default function MouseBodyMap({ selected, setSelected, hovered, setHovered }: MouseBodyMapProps) {
+export default function MouseBodyMap({ selected, setSelected, onHoverChange }: MouseBodyMapProps) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -24,8 +23,7 @@ export default function MouseBodyMap({ selected, setSelected, hovered, setHovere
       height={isXs ? "200px" : "300px"}
       selected={selected}
       setSelected={setSelected}
-      hovered={hovered}
-      setHovered={setHovered}
+      onHoverChange={onHoverChange}
     />
   );
 }

@@ -9,13 +9,12 @@ import { capitalizeWords } from "common/utility";
 type InsetProps = {
   Assembly: Assembly;
   cellsList: BodyListMap;
-  selected: string;
-  setSelected: React.Dispatch<React.SetStateAction<string>>;
-  hovered: string | null;
-  setHovered: React.Dispatch<React.SetStateAction<string | null>>;
+  selected: string | null;
+  setSelected: React.Dispatch<React.SetStateAction<string | null>>;
+  onHoverChange: (organ: string | null) => void;
 };
 
-const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelected, hovered, setHovered }) => {
+const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelected, onHoverChange }) => {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -55,9 +54,11 @@ const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelect
           <Tooltip key={organ} title={capitalizeWords(organ)} arrow>
             <Button
               key={organ}
+              className="biosample-inset-button"
+              data-organ={organ}
               onClick={() => handleClick(organ)}
-              onMouseEnter={() => setHovered(organ)}
-              onMouseLeave={() => setHovered(null)}
+              onMouseEnter={() => onHoverChange(organ)}
+              onMouseLeave={() => onHoverChange(null)}
               sx={{
                 minWidth: 0,
                 p: 0,
@@ -80,19 +81,14 @@ const Insets: React.FC<InsetProps> = ({ Assembly, cellsList, selected, setSelect
                 }}
               />
               <Box
+                className="biosample-inset-overlay"
                 sx={{
                   position: "absolute",
                   inset: 0,
                   borderRadius: "50%",
-                  backgroundColor:
-                    hovered === organ
-                      ? "rgba(128, 90, 213, 0.25)" // soft purple tint when active
-                      : "transparent",
+                  backgroundColor: "transparent",
                   transition: "background-color 0.2s ease",
-                  pointerEvents: "none", // ensures clicks go through
-                  "&:hover": {
-                    backgroundColor: "rgba(128, 90, 213, 0.25)", // hover tint
-                  },
+                  pointerEvents: "none",
                 }}
               />
             </Button>

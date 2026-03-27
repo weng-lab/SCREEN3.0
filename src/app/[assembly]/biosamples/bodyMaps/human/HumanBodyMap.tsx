@@ -4,13 +4,12 @@ import { HumanColorMap, HumanList } from "./humanMapping";
 import { useMediaQuery, useTheme } from "@mui/material";
 
 interface HumanBodyMapProps {
-  selected: string;
-  setSelected: React.Dispatch<React.SetStateAction<string>>;
-  hovered: string | null;
-  setHovered: React.Dispatch<React.SetStateAction<string | null>>;
+  selected: string | null;
+  setSelected: React.Dispatch<React.SetStateAction<string | null>>;
+  onHoverChange: (organ: string | null) => void;
 }
 
-export default function HumanBodyMap({ selected, setSelected, hovered, setHovered }: HumanBodyMapProps) {
+export default function HumanBodyMap({ selected, setSelected, onHoverChange }: HumanBodyMapProps) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -24,8 +23,7 @@ export default function HumanBodyMap({ selected, setSelected, hovered, setHovere
       height={isXs ? "400px" : "550px"}
       selected={selected}
       setSelected={setSelected}
-      hovered={hovered}
-      setHovered={setHovered}
+      onHoverChange={onHoverChange}
     />
   );
 }
