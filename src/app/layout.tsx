@@ -7,10 +7,10 @@ import { OpenEntitiesContextProvider } from "common/OpenEntitiesContext";
 import { MenuControlProvider } from "common/components/MenuContext";
 import MuiXLicense from "common/components/MuiXLicense";
 import { Suspense } from "react";
-import Script from "next/script";
 import { theme } from "./theme";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import ClientAppWrapper from "common/components/ClientAppWrapper";
+// import Script from "next/script";
 
 export const metadata = {
   title: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV !== "production") {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
+      {/* <head>
         {process.env.NODE_ENV !== "production" && (
           <Script
             src="//unpkg.com/react-scan/dist/auto.global.js"
@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             strategy="beforeInteractive"
           />
         )}
-      </head>
+      </head> */}
       <body>
         <Suspense>
           <ApolloWrapper>
