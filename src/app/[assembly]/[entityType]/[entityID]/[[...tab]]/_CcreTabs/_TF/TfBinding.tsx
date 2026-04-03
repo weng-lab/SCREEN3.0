@@ -16,7 +16,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "common/types/globalTypes";
-import { Tabs, Tab, Box } from "@mui/material";
+import { Tabs, Tab } from "@mui/material";
 import { useCcreRpeaks } from "common/hooks/useCcreRpeaks";
 
 export const CRE_TF_DCC_QUERY = gql(`
@@ -395,10 +395,10 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
           },
         }}
       >
-        <Tab value="overlapping_peaks" label="Overlapping ChIP-seq Peaks" />
         <Tab value="binding_tfs" label="Bound Transcription Factors" />
+        <Tab value="overlapping_peaks" label="Overlapping ChIP-seq Peaks" />
       </Tabs>
-      <Box display={tab === "overlapping_peaks" ? "initial" : "none"}>
+      {tab === "overlapping_peaks" && (
         <Table
           label={`Overlapping Representative ChIP-seq Peaks for transcription factors and other DNA-associated proteins`}
           loading={loadingCcreRPeaks}
@@ -410,8 +410,8 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
           divHeight={{ height: 600 }}
           emptyTableFallback={"No Overlapping Representative ChIP-seq Peaks found"}
         />
-      </Box>
-      <Box display={tab === "binding_tfs" ? "initial" : "none"}>
+      )}
+      {tab === "binding_tfs" && (
         <Table
           apiRef={apiRef}
           rows={rows}
@@ -431,7 +431,7 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
             },
           }}
         />
-      </Box>
+      )}
     </>
   );
 };

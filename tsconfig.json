@@ -18,6 +18,9 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
+    "paths": {
+      "public/*": ["../public/*"]
+    },
     "plugins": [
       {
         "name": "next",
