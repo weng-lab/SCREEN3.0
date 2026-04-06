@@ -1,4 +1,5 @@
 import { ApolloError, useQuery } from "@apollo/client";
+import { useMemo } from "react";
 import { gql } from "common/types/generated/gql";
 
 const CCRE_BIOSAMPLE_QUERY = gql(`
@@ -73,22 +74,21 @@ export const useGWASEnrichmentData = ({ study }: UseGWASEnrichmentParams): UseGW
   const loading = enrichmentLoading || biosampleLoading;
   const error = enrichmentError || biosampleError;
 
-  const isReady = !biosampleLoading && !enrichmentLoading && biosampleData && enrichmentData;
-
-  const data: GWASEnrichment[] | undefined = isReady
-    ? enrichmentData.getGWASBiosampleEnrichmentQuery.map((item) => {
-        const matchedBiosample = biosampleData.ccREBiosampleQuery.biosamples.find((b) => b.name === item.celltype);
-        return {
-          ...item,
-          // fc is already log2 transformed
-          fc: Math.log2(item.fc + FCaugmentation),
-          pvalue: item.pvalue === 0 ? minFDRval : item.pvalue,
-          fdr: item.fdr === 0 ? minFDRval : item.fdr,
-          ontology: matchedBiosample?.ontology,
-          displayname: matchedBiosample?.displayname,
-        };
-      })
-    : undefined;
+  const data: GWASEnrichment[] | undefined = useMemo(() => {
+    if (biosampleLoading || enrichmentLoading || !biosampleData || !enrichmentData) return undefined;
+    return enrichmentData.getGWASBiosampleEnrichmentQuery.map((item) => {
+      const matchedBiosample = biosampleData.ccREBiosampleQuery.biosamples.find((b) => b.name === item.celltype);
+      return {
+        ...item,
+        // fc is already log2 transformed
+        fc: Math.log2(item.fc + FCaugmentation),
+        pvalue: item.pvalue === 0 ? minFDRval : item.pvalue,
+        fdr: item.fdr === 0 ? minFDRval : item.fdr,
+        ontology: matchedBiosample?.ontology,
+        displayname: matchedBiosample?.displayname,
+      };
+    });
+  }, [biosampleLoading, enrichmentLoading, biosampleData, enrichmentData]);
 
   return {
     data,

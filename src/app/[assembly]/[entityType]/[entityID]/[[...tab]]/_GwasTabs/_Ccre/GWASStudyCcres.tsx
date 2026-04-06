@@ -1,6 +1,6 @@
 "use client";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { CancelRounded } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
@@ -131,12 +131,10 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
           if (params.value === "Lead") return "Lead";
           const rsIDs = (params.value as string)?.split(",");
           const links = rsIDs?.map((rsID: string, index: number) => (
-            <>
-              <LinkComponent href={`/GRCh38/variant/${rsID}`} key={rsID}>
-                {rsID}
-              </LinkComponent>
+            <Fragment key={rsID}>
+              <LinkComponent href={`/GRCh38/variant/${rsID}`}>{rsID}</LinkComponent>
               {index < rsIDs.length - 1 ? ", " : ""}
-            </>
+            </Fragment>
           ));
           return <span>{links}</span>;
         },
@@ -250,6 +248,8 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
         labelTooltip={
           "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)"
         }
+        autoHeight
+        hideFooter
       />
       {selectedBiosample && (
         <Stack

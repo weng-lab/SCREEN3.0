@@ -280,7 +280,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Table
         showToolbar
@@ -295,7 +295,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "score", sort: "desc" }],
           },
         }}
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Table
         showToolbar
@@ -310,7 +310,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Table
         showToolbar
@@ -327,7 +327,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             sortModel: [{ field: "p_val", sort: "asc" }],
           },
         }}
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Table
         showToolbar
@@ -350,7 +350,7 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
             </Button>
           </Tooltip>
         }
-        divHeight={{ height: "600px" }}
+        divHeight={{ height: "400px" }}
       />
       <Box
         onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

@@ -97,50 +97,55 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           </Box>
         </Stack>
       </Grid>
-      <Grid
-        size={{ xs: 12, sm: 3 }}
-        display={entityType === "ccre" ? "flex" : "flex"}
-        height={{ xs: 60 }}
-        justifyContent={"flex-end"}
-        gap={1} 
-       
-      >
-        {entityType !== "ccre" && <Button
-          variant="contained"
-          href={
-            entityID
-              ? entityType === "gene"
-                ? "https://www.genecards.org/cgi-bin/carddisp.pl?gene=" + entityID
-                : `https://www.ncbi.nlm.nih.gov/snp/${entityID}`
-              : undefined
-          }
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ width: "50%", height: "100%", backgroundColor: "white" }}
-        >
-          <Image
-            style={{ objectFit: "contain" }}
-            src={
-              entityType === "gene"
-                ? "https://geneanalytics.genecards.org/media/81632/gc.png"
-                : "https://www.ncbi.nlm.nih.gov/core/assets/style-guide/img/NLM-square-logo.png"
+      <Grid size={{ xs: 12, sm: 3 }} display={"flex"} height={{ xs: 60 }} justifyContent={"flex-end"} gap={1}>
+        {entityType !== "ccre" && (
+          <Button
+            variant="outlined"
+            href={
+              entityID
+                ? entityType === "gene"
+                  ? "https://www.genecards.org/cgi-bin/carddisp.pl?gene=" + entityID
+                  : `https://www.ncbi.nlm.nih.gov/snp/${entityID}`
+                : undefined
             }
-            fill
-            alt="genecard-snpcard-button"
-          />
-        </Button>}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              flex: 1,
+              backgroundColor: "transparent",
+              borderColor: "divider",
+              "& img": { transition: "filter 0.2s ease" },
+              "&:hover img": { filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.25))" },
+            }}
+          >
+            <Image
+              style={{ objectFit: "contain" }}
+              src={
+                entityType === "gene"
+                  ? "https://geneanalytics.genecards.org/media/81632/gc.png"
+                  : "https://www.ncbi.nlm.nih.gov/core/assets/style-guide/img/NLM-square-logo.png"
+              }
+              fill
+              alt="genecard-snpcard-button"
+            />
+          </Button>
+        )}
         <Button
-          variant="contained"
+          variant="outlined"
           href={
-            //https://users.wenglab.org/niship/ucsc_gb_icon.png
             coordinatesGenomeBrowser
               ? `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=${assemblyDb}&g=${ucscTrack}&position=${coordinatesGenomeBrowser}`
-              //: `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=cCREs&position=chr19:50,417,519-50,417,853`
               : `https://genome.ucsc.edu/cgi-bin/hgTrackUi?db=${assemblyDb}&g=${ucscTrack}&position=default`
           }
           target="_blank"
           rel="noopener noreferrer"
-          sx={{ width: "48%", height: "100%", backgroundColor: "white" }}
+          sx={{
+            flex: 1,
+            backgroundColor: "transparent",
+            borderColor: "divider",
+            "& img": { transition: "filter 0.2s ease" },
+            "&:hover img": { filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.25))" },
+          }}
         >
           <Image
             style={{ objectFit: "contain" }}
@@ -149,8 +154,6 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             unoptimized
             alt="ucsc-gb-icon"
           />
-
-          Open in UCSC
         </Button>
       </Grid>
     </Grid>

@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@apollo/client";
-import { Stack, Box } from "@mui/material";
+import { Stack } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "./LinkComponent";
@@ -116,13 +116,11 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
       headerName: "Q Value",
       display: "flex",
       renderCell: (params) => toScientificNotationElement(params.value, 2, { variant: "body2" }),
-    },    
+    },
     {
       field: "celltype",
       headerName: "Celltype",
-      valueGetter: (_, row) =>
-        row.celltype
-          .replaceAll("_", " ")
+      valueGetter: (_, row) => row.celltype.replaceAll("_", " "),
     }
   );
 
@@ -216,38 +214,34 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
 
   return (
     <Stack spacing={2}>
-      <Box sx={{ flex: "1 1 auto" }}>
-        <Table
-          columns={gtexColumns}
-          rows={gtexRows}
-          loading={loading}
-          error={!!error}
-          label={gtexTitle}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: "pval_nominal", sort: "asc" }],
-            },
-          }}
-          emptyTableFallback={"No GTEx eQTLs found"}
-          divHeight={{ maxHeight: "400px" }}
-        />
-      </Box>
-      <Box sx={{ flex: "1 1 auto" }}>
-        <Table
-          columns={oneK1KColumns}
-          rows={oneK1KRows}
-          loading={loading}
-          error={!!error}
-          label={onekTitle}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: "fdr", sort: "asc" }],
-            },
-          }}
-          emptyTableFallback={"No OneK1K eQTLs found"}
-          divHeight={{ maxHeight: "400px" }}
-        />
-      </Box>
+      <Table
+        columns={gtexColumns}
+        rows={gtexRows}
+        loading={loading}
+        error={!!error}
+        label={gtexTitle}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "pval_nominal", sort: "asc" }],
+          },
+        }}
+        emptyTableFallback={"No GTEx eQTLs found"}
+        divHeight={{ maxHeight: "400px" }}
+      />
+      <Table
+        columns={oneK1KColumns}
+        rows={oneK1KRows}
+        loading={loading}
+        error={!!error}
+        label={onekTitle}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "fdr", sort: "asc" }],
+          },
+        }}
+        emptyTableFallback={"No OneK1K eQTLs found"}
+        divHeight={{ maxHeight: "400px" }}
+      />
     </Stack>
   );
 }

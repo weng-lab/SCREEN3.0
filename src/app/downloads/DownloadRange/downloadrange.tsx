@@ -143,8 +143,8 @@ export const DownloadRange: React.FC = () => {
   };
 
   return (
-    <Grid container spacing={3} paddingX={6}>
-      <Grid size={{ xs: 6 }}>
+    <Grid container spacing={2}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <BiosampleTable
           assembly={assembly}
           disableMultipleRowSelection
@@ -159,7 +159,7 @@ export const DownloadRange: React.FC = () => {
           divHeight={{ height: 600 }}
         />
       </Grid>
-      <Grid size={{ xs: 6 }} flexGrow={1}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <FormControl sx={{ mb: 1 }}>
           <FormLabel id="demo-row-radio-buttons-group-label">Assembly</FormLabel>
           <RadioGroup row value={assembly} onChange={(_, value: string) => handleSetAssembly(value)}>

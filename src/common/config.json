@@ -1,6 +1,7 @@
 {
   "API": {
-    "CcreAPI": "https://screen.api.wenglab.org/graphql"
+    "CcreAPI": "https://screen.api.wenglab.org/graphql",
+    "MOHD_API": "https://mohd-api-251345758618.us-east4.run.app/graphql"
   },
   "Downloads": {
     "HumanCCREs": "https://downloads.wenglab.org/Registry-V4/GRCh38-cCREs.bed",

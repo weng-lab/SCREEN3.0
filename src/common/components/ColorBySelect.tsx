@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from "@mui/material";
 
 type ColorBySelectProps = {
-  colorScheme: "expression" | "organ/tissue";
+  colorScheme: "expression" | "organ/tissue" | "sampleType";
   handleColorSchemeChange: (event: SelectChangeEvent) => void;
 };
 
@@ -19,6 +19,7 @@ export const ColorBySelect = ({ colorScheme, handleColorSchemeChange }: ColorByS
     >
       <MenuItem value={"expression"}>Expression</MenuItem>
       <MenuItem value={"organ/tissue"}>Tissue</MenuItem>
+      <MenuItem value={"sampleType"}>Sample Type</MenuItem>
     </Select>
   </FormControl>
 );
