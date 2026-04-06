@@ -218,6 +218,7 @@ function generateTrack(
         id: sel.id,
         title,
         range: { min: 0, max: 100 },
+        maskCpgByCoverage: true,
         urls: {
           plusStrand: {
             cpg: { url: sel.cpgPlus ?? "" },
