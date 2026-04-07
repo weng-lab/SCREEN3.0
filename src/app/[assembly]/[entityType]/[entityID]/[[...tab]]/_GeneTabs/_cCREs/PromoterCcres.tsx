@@ -63,9 +63,9 @@ export default function PromoterCcres({
         rows={data || []}
         columns={cols}
         error={!!error}
-        label={"Promoters cCREs"}
+        label={"Promoter cCREs"}
         loading={loading}               
-        emptyTableFallback={"No Promoters cCREs Found"}
+        emptyTableFallback={"No Promoter cCREs Found"}
       />     
     </Box>
   );
