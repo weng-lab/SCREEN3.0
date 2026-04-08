@@ -13,7 +13,7 @@ const StyledTabPanel = styled(TabPanel)(() => ({
 }));
 
 export const Conservation = ({ entity }: EntityViewComponentProps) => {
-  const [tab, setTab] = useState<number>(1);
+  const [tab, setTab] = useState<number>(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
