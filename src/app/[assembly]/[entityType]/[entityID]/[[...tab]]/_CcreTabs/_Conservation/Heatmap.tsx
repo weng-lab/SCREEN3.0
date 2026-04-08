@@ -226,7 +226,7 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
 
   return (
     <Box>
-      <Box ref={heatmapsRef} sx={{ display: "flex", gap: 5, flexDirection: "row", flexWrap: "wrap" }}>
+      <Box ref={heatmapsRef} sx={{ display: "flex", gap: 2, flexDirection: "row", flexWrap: "wrap" }}>
         <HeatmapPlot
           src={imgSrc}
           alt={`${group} plot`}
