@@ -62,7 +62,7 @@ const HeatmapPlot = ({
         </Typography>
         <Box>
           <Box sx={{ position: "relative", width: PLOT_WIDTH, height: plotHeight }}>
-            <Image src={src} alt={alt} fill unoptimized/>
+            <Image src={src} alt={alt} fill unoptimized loading="eager"/>
             <svg
               viewBox={`0 0 ${240 * xScale} 240`}
               width={PLOT_WIDTH}
