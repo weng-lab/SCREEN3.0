@@ -185,6 +185,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
                           style={{
                             filter: tabIsDisabled ? "grayscale(100%) blur(1px)" : "none",
                           }}
+                          unoptimized
                         />
                       }
                       sx={{ fontSize: "12px", width: "100%" }}

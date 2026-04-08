@@ -1,13 +1,13 @@
 import { Box, Tooltip, Typography } from "@mui/material";
 import Image, { StaticImageData } from "next/image";
 import AllcCREs from "public/conservation/AllcCREs.png";
-import PromoterImg from "public/conservation/Promoter.png";
-import ProximalEnhancerImg from "public/conservation/ProximalEnhancer.png";
+import PromoterImg from "public/conservation/PLS.png";
+import ProximalEnhancerImg from "public/conservation/pELS.png";
 import CACTCFImg from "public/conservation/CA-CTCF.png";
 import CAH3K4me3Img from "public/conservation/CA-H3K4me3.png";
 import CATFImg from "public/conservation/CA-TF.png";
 import CAImg from "public/conservation/CA.png";
-import DistalEnhancerImg from "public/conservation/DistalEnhancer.png";
+import DistalEnhancerImg from "public/conservation/dELS.png";
 import TFImg from "public/conservation/TF.png";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
@@ -62,7 +62,7 @@ const HeatmapPlot = ({
         </Typography>
         <Box>
           <Box sx={{ position: "relative", width: PLOT_WIDTH, height: plotHeight }}>
-            <Image src={src} alt={alt} width={PLOT_WIDTH} height={plotHeight} unoptimized />
+            <Image src={src} alt={alt} fill />
             <svg
               viewBox={`0 0 ${240 * xScale} 240`}
               width={PLOT_WIDTH}
@@ -115,10 +115,17 @@ const HeatmapPlot = ({
                 <circle
                   cx={point.x * xScale}
                   cy={240 - point.y}
-                  r={5}
+                  r={6}
                   fill={point.color}
                   stroke="white"
                   strokeWidth={2}
+                  style={{
+                    transition: "transform 0.15s ease-in-out",
+                    transformOrigin: `${point.x * xScale}px ${240 - point.y}px`,
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.setAttribute("transform", `scale(1.25)`)}
+                  onMouseLeave={(e) => e.currentTarget.removeAttribute("transform")}
                 />
               </Tooltip>
             </svg>
@@ -220,7 +227,12 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
   return (
     <Box>
       <Box ref={heatmapsRef} sx={{ display: "flex", gap: 5, flexDirection: "row", flexWrap: "wrap" }}>
-        <HeatmapPlot src={imgSrc} alt={`${group} plot`} title={CLASS_DESCRIPTIONS[group]} point={heatmapPoint} />
+        <HeatmapPlot
+          src={imgSrc}
+          alt={`${group} plot`}
+          title={`Class: ${CLASS_DESCRIPTIONS[group]}`}
+          point={heatmapPoint}
+        />
         <HeatmapPlot src={AllcCREs} alt="All cCRE classes" title="All cCRE classes" point={heatmapPoint} />
         <Legend />
       </Box>

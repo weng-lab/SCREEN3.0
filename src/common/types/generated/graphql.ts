@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -1045,6 +1045,16 @@ export type GeneOrtholog = {
   mmusculus_homolog_wga_coverage?: Maybe<Scalars['Float']['output']>;
   start_position?: Maybe<Scalars['Int']['output']>;
   strand?: Maybe<Scalars['String']['output']>;
+};
+
+export type GenePromoterData = {
+  __typename?: 'GenePromoterData';
+  accession?: Maybe<Scalars['String']['output']>;
+  ccre_group?: Maybe<Scalars['String']['output']>;
+  chromosome?: Maybe<Scalars['String']['output']>;
+  geneid?: Maybe<Scalars['String']['output']>;
+  start?: Maybe<Scalars['Int']['output']>;
+  stop?: Maybe<Scalars['Int']['output']>;
 };
 
 export type GeneQuantification = {
@@ -2392,6 +2402,7 @@ export type Query = {
   fieldQuery: Array<Maybe<FieldResult>>;
   functionalCharacterizationQuery?: Maybe<Array<Maybe<Fcdata>>>;
   gene?: Maybe<Array<Maybe<Gene>>>;
+  genePromoterQuery?: Maybe<Array<Maybe<GenePromoterData>>>;
   geneSpecificity?: Maybe<Array<Maybe<GeneSpecificity>>>;
   gene_count?: Maybe<Array<Maybe<GenesCountResponse>>>;
   gene_dataset?: Maybe<Array<Maybe<GeneDataset>>>;
@@ -2936,6 +2947,12 @@ export type QueryGeneArgs = {
   start?: InputMaybe<Scalars['Int']['input']>;
   strand?: InputMaybe<Scalars['String']['input']>;
   version?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGenePromoterQueryArgs = {
+  accession?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  geneid?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 
@@ -4795,7 +4812,28 @@ export type Tfpeaks_1QueryVariables = Exact<{
 }>;
 
 
-export type Tfpeaks_1Query = { __typename?: 'Query', peaks: { __typename?: 'PCollection', peaks: Array<{ __typename?: 'Peak', chrom: string, chrom_start: number, chrom_end: number, dataset: { __typename?: 'PeakDataset', biosample: string, accession: string, target?: string | null, files: Array<{ __typename?: 'BigBedReplicatedPeaks', accession: string } | { __typename?: 'BigBedUnreplicatedPeaks', accession: string } | { __typename?: 'FilteredAlignments', accession: string } | { __typename?: 'NormalizedSignal', accession: string } | { __typename?: 'ReplicatedPeaks', accession: string } | { __typename?: 'SequenceReads', accession: string } | { __typename?: 'UnfilteredAlignments', accession: string } | { __typename?: 'UnreplicatedPeaks', accession: string }> } }> } | { __typename?: 'TargetPeaksPartitionCollection', peaks: Array<{ __typename?: 'Peak', chrom: string, chrom_start: number, chrom_end: number, dataset: { __typename?: 'PeakDataset', biosample: string, accession: string, target?: string | null, files: Array<{ __typename?: 'BigBedReplicatedPeaks', accession: string } | { __typename?: 'BigBedUnreplicatedPeaks', accession: string } | { __typename?: 'FilteredAlignments', accession: string } | { __typename?: 'NormalizedSignal', accession: string } | { __typename?: 'ReplicatedPeaks', accession: string } | { __typename?: 'SequenceReads', accession: string } | { __typename?: 'UnfilteredAlignments', accession: string } | { __typename?: 'UnreplicatedPeaks', accession: string }> } }> } };
+export type Tfpeaks_1Query = { __typename?: 'Query', peaks:
+    | { __typename?: 'PCollection', peaks: Array<{ __typename?: 'Peak', chrom: string, chrom_start: number, chrom_end: number, dataset: { __typename?: 'PeakDataset', biosample: string, accession: string, target?: string | null, files: Array<
+            | { __typename?: 'BigBedReplicatedPeaks', accession: string }
+            | { __typename?: 'BigBedUnreplicatedPeaks', accession: string }
+            | { __typename?: 'FilteredAlignments', accession: string }
+            | { __typename?: 'NormalizedSignal', accession: string }
+            | { __typename?: 'ReplicatedPeaks', accession: string }
+            | { __typename?: 'SequenceReads', accession: string }
+            | { __typename?: 'UnfilteredAlignments', accession: string }
+            | { __typename?: 'UnreplicatedPeaks', accession: string }
+          > } }> }
+    | { __typename?: 'TargetPeaksPartitionCollection', peaks: Array<{ __typename?: 'Peak', chrom: string, chrom_start: number, chrom_end: number, dataset: { __typename?: 'PeakDataset', biosample: string, accession: string, target?: string | null, files: Array<
+            | { __typename?: 'BigBedReplicatedPeaks', accession: string }
+            | { __typename?: 'BigBedUnreplicatedPeaks', accession: string }
+            | { __typename?: 'FilteredAlignments', accession: string }
+            | { __typename?: 'NormalizedSignal', accession: string }
+            | { __typename?: 'ReplicatedPeaks', accession: string }
+            | { __typename?: 'SequenceReads', accession: string }
+            | { __typename?: 'UnfilteredAlignments', accession: string }
+            | { __typename?: 'UnreplicatedPeaks', accession: string }
+          > } }> }
+   };
 
 export type Tfpeaks_2QueryVariables = Exact<{
   assembly?: InputMaybe<Scalars['String']['input']>;
@@ -4804,7 +4842,15 @@ export type Tfpeaks_2QueryVariables = Exact<{
 }>;
 
 
-export type Tfpeaks_2Query = { __typename?: 'Query', peaks: { __typename?: 'PCollection', peaks: Array<{ __typename?: 'Peak', chrom: string, chrom_start: number, chrom_end: number, dataset: { __typename?: 'PeakDataset', biosample: string, accession: string, target?: string | null } }> } | { __typename?: 'TargetPeaksPartitionCollection', peaks: Array<{ __typename?: 'Peak', chrom: string, chrom_start: number, chrom_end: number, dataset: { __typename?: 'PeakDataset', biosample: string, accession: string, target?: string | null } }> }, peakDataset: { __typename?: 'BiosamplePartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> } | { __typename?: 'Collection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> } | { __typename?: 'LabPartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> } | { __typename?: 'TargetPartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> } };
+export type Tfpeaks_2Query = { __typename?: 'Query', peaks:
+    | { __typename?: 'PCollection', peaks: Array<{ __typename?: 'Peak', chrom: string, chrom_start: number, chrom_end: number, dataset: { __typename?: 'PeakDataset', biosample: string, accession: string, target?: string | null } }> }
+    | { __typename?: 'TargetPeaksPartitionCollection', peaks: Array<{ __typename?: 'Peak', chrom: string, chrom_start: number, chrom_end: number, dataset: { __typename?: 'PeakDataset', biosample: string, accession: string, target?: string | null } }> }
+  , peakDataset:
+    | { __typename?: 'BiosamplePartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> }
+    | { __typename?: 'Collection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> }
+    | { __typename?: 'LabPartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> }
+    | { __typename?: 'TargetPartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> }
+   };
 
 export type Tf_Binding_QueryQueryVariables = Exact<{
   assembly?: InputMaybe<Scalars['String']['input']>;
@@ -4812,14 +4858,22 @@ export type Tf_Binding_QueryQueryVariables = Exact<{
 }>;
 
 
-export type Tf_Binding_QueryQuery = { __typename?: 'Query', peaks: { __typename?: 'PCollection', peaks: Array<{ __typename?: 'Peak', experiment_accession: string, file_accession: string, dataset: { __typename?: 'PeakDataset', target?: string | null, biosample: string } }> } | { __typename?: 'TargetPeaksPartitionCollection', peaks: Array<{ __typename?: 'Peak', experiment_accession: string, file_accession: string, dataset: { __typename?: 'PeakDataset', target?: string | null, biosample: string } }> } };
+export type Tf_Binding_QueryQuery = { __typename?: 'Query', peaks:
+    | { __typename?: 'PCollection', peaks: Array<{ __typename?: 'Peak', experiment_accession: string, file_accession: string, dataset: { __typename?: 'PeakDataset', target?: string | null, biosample: string } }> }
+    | { __typename?: 'TargetPeaksPartitionCollection', peaks: Array<{ __typename?: 'Peak', experiment_accession: string, file_accession: string, dataset: { __typename?: 'PeakDataset', target?: string | null, biosample: string } }> }
+   };
 
 export type Tf_Exp_TotalsQueryVariables = Exact<{
   species?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type Tf_Exp_TotalsQuery = { __typename?: 'Query', peakDataset: { __typename?: 'BiosamplePartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> } | { __typename?: 'Collection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> } | { __typename?: 'LabPartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> } | { __typename?: 'TargetPartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> } };
+export type Tf_Exp_TotalsQuery = { __typename?: 'Query', peakDataset:
+    | { __typename?: 'BiosamplePartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> }
+    | { __typename?: 'Collection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> }
+    | { __typename?: 'LabPartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> }
+    | { __typename?: 'TargetPartitionCollection', partitionByTarget: Array<{ __typename?: 'TargetPartitionCollection', target?: { __typename?: 'Target', name?: string | null } | null, counts: { __typename?: 'DatasetCounts', total: number } }> }
+   };
 
 export type BiosampleUmapQueryVariables = Exact<{
   assembly: Scalars['String']['input'];
