@@ -16,9 +16,11 @@ import { gql } from "common/types/generated";
 import { useRef } from "react";
 import { useQuery } from "@apollo/client";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
+import { CcreClass } from "common/types/globalTypes";
+import { CLASS_COLORS } from "common/colors";
 import { CLASS_DESCRIPTIONS } from "common/consts";
 
-  const CONSERVATION_HEATMAP_QUERY = gql(`
+const CONSERVATION_HEATMAP_QUERY = gql(`
     query getconservationHeatmapCoords($accession: [String]!) {
       conservationHeatmapQuery(accession: $accession) {
         x_coord
@@ -29,22 +31,21 @@ import { CLASS_DESCRIPTIONS } from "common/consts";
     }
   `);
 
-const plotWidth = 250;
+const PLOT_WIDTH = 300;
 
 const HeatmapPlot = ({
   src,
   alt,
   title,
   point,
-  accession,
 }: {
   src: StaticImageData;
   alt: string;
   title: string;
-  point: { x: number; y: number };
-  accession: string
+  point: { x: number; y: number; accession: string; group: CcreClass; color: string };
 }) => {
-  const plotHeight = plotWidth * (src.height / src.width);
+  const plotHeight = PLOT_WIDTH * (src.height / src.width);
+  const xScale = src.width / src.height;
 
   return (
     <Box>
@@ -52,8 +53,7 @@ const HeatmapPlot = ({
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Typography
           sx={{
-            writingMode: "vertical-rl",
-            transform: "rotate(180deg)",
+            transform: "rotate(270deg)",
             mr: 0.5,
           }}
           variant="body2"
@@ -61,26 +61,65 @@ const HeatmapPlot = ({
           N1
         </Typography>
         <Box>
-          <Box sx={{ position: "relative", width: plotWidth, height: plotHeight }}>
-            <Image src={src} alt={alt} width={plotWidth} height={plotHeight} unoptimized />
+          <Box sx={{ position: "relative", width: PLOT_WIDTH, height: plotHeight }}>
+            <Image src={src} alt={alt} width={PLOT_WIDTH} height={plotHeight} unoptimized />
             <svg
-              viewBox="0 0 240 240"
-              width={plotWidth}
+              viewBox={`0 0 ${240 * xScale} 240`}
+              width={PLOT_WIDTH}
               height={plotHeight}
               preserveAspectRatio="xMinYMin meet"
               style={{ position: "absolute", left: 0, top: 0 }}
             >
-              <Tooltip title="G1: highly conserved elements (N1 ≥ 120 and N2 ≤ 25)">
-                <rect fill="transparent" x={0} y={0} width={33} height={122} />
+              <Tooltip
+                arrow
+                placement="right-start"
+                slotProps={{
+                  popper: {
+                    modifiers: [
+                      {
+                        name: "offset",
+                        options: {
+                          offset: [25, 20],
+                        },
+                      },
+                    ],
+                  },
+                }}
+                title="G1: highly conserved elements (N1 ≥ 120 and N2 ≤ 25)"
+              >
+                <rect fill="transparent" x={0} y={0} width={25 * xScale} height={240 - 120} />
               </Tooltip>
-              <Tooltip title="G2: actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)">
-                <rect fill="transparent" x={0} y={187} width={146} height={34} />
+              <Tooltip
+                arrow
+                placement="bottom"
+                slotProps={{
+                  popper: {
+                    modifiers: [
+                      {
+                        name: "offset",
+                        options: {
+                          offset: [0, 21],
+                        },
+                      },
+                    ],
+                  },
+                }}
+                title="G2: actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)"
+              >
+                <rect fill="transparent" x={0} y={240 - 50} width={120 * xScale} height={30} />
               </Tooltip>
-              <Tooltip title="G3: primate-specific elements (N1 ≤ 50 and N2 ≥ 180)">
-                <rect fill="transparent" x={214} y={187} width={74} height={53} />
+              <Tooltip arrow placement="bottom" title="G3: primate-specific elements (N1 ≤ 50 and N2 ≥ 180)">
+                <rect fill="transparent" x={180 * xScale} y={240 - 50} width={(240 - 180) * xScale} height={50} />
               </Tooltip>
-              <Tooltip title={`${accession}: N1 = ${point.y}, N2 = ${point.x}`}>
-                <circle cx={point.x} cy={240 - point.y} r={5} fill="red" stroke="white" strokeWidth={2} />
+              <Tooltip arrow title={`${point.accession} (${point.group}): N1 = ${point.y}, N2 = ${point.x}`}>
+                <circle
+                  cx={point.x * xScale}
+                  cy={240 - point.y}
+                  r={5}
+                  fill={point.color}
+                  stroke="white"
+                  strokeWidth={2}
+                />
               </Tooltip>
             </svg>
           </Box>
@@ -91,6 +130,50 @@ const HeatmapPlot = ({
       </Box>
     </Box>
   );
+};
+
+const Legend = () => (
+  <Box
+    border={(theme) => `1px solid ${theme.palette.divider}`}
+    borderRadius={1}
+    padding={2}
+    mb={2}
+    width={"fit-content"}
+    height={"min-content"}
+  >
+    <Typography>Axes:</Typography>
+    <Typography variant="body2">
+      N1: Number of aligned species with ≥90% coverage of the cCRE’s nucleotide positions
+    </Typography>
+    <Typography variant="body2">N2: Number of species with ≤10% coverage</Typography>
+    <Typography mt={1}>Groups:</Typography>
+    <Typography variant="body2">G1 (red): highly conserved elements (N1 ≥ 120 and N2 ≤ 25)</Typography>
+    <Typography variant="body2">G2 (green): actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)</Typography>
+    <Typography variant="body2">G3 (blue): primate-specific elements (N1 ≤ 50 and N2 ≥ 180)</Typography>
+  </Box>
+);
+
+const getImageSrc = (group: CcreClass): StaticImageData => {
+  switch (group) {
+    case "PLS":
+      return PromoterImg;
+    case "pELS":
+      return ProximalEnhancerImg;
+    case "dELS":
+      return DistalEnhancerImg;
+    case "CA-CTCF":
+      return CACTCFImg;
+    case "CA-H3K4me3":
+      return CAH3K4me3Img;
+    case "CA-TF":
+      return CATFImg;
+    case "CA":
+      return CAImg;
+    case "TF":
+      return TFImg;
+    default:
+      return AllcCREs;
+  }
 };
 
 export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
@@ -116,76 +199,34 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
     variables: { accession: [entity.entityID] },
   });
 
-  const cCREType = heatmapData ? CLASS_DESCRIPTIONS[heatmapData.conservationHeatmapQuery[0].ccre_class] : "";
+  const group = heatmapData ? (heatmapData.conservationHeatmapQuery[0].ccre_class as CcreClass) : null;
 
-  const imgSrc =
-    cCREType === "Promoter"
-      ? PromoterImg
-      : cCREType === "Proximal Enhancer"
-        ? ProximalEnhancerImg
-        : cCREType === "CA-CTCF"
-          ? CACTCFImg
-          : cCREType === "CA-H3K4me3"
-            ? CAH3K4me3Img
-            : cCREType === "CA-TF"
-              ? CATFImg
-              : cCREType === "CA"
-                ? CAImg
-                : cCREType === "Distal Enhancer"
-                  ? DistalEnhancerImg
-                  : cCREType === "TF"
-                    ? TFImg
-                    : AllcCREs;
+  const imgSrc = getImageSrc(group);
 
-  const point = heatmapData?.conservationHeatmapQuery?.[0];
+  const pointData = heatmapData?.conservationHeatmapQuery?.[0];
+
+  const heatmapPoint = {
+    x: pointData?.x_coord,
+    y: pointData?.y_coord,
+    accession: pointData?.accession,
+    group,
+    color: CLASS_COLORS[group],
+  };
+
+  if (heatmapLoading) {
+    return <CircularProgress />;
+  }
 
   return (
-    <>
-      {heatmapLoading && entity.assembly !== "mm10" && (
-        <Box sx={{ display: "flex" }}>
-          <CircularProgress />
-        </Box>
-      )}
-      {point && entity.assembly !== "mm10" && (
-        <Box>
-          <Box
-            border={(theme) => `1px solid ${theme.palette.divider}`}
-            borderRadius={1}
-            padding={2}
-            mb={2}
-            width={"fit-content"}
-          >
-            <Typography>Axes:</Typography>
-            <Typography variant="body2">
-              N1: Number of aligned species with ≥90% coverage of the cCRE’s nucleotide positions
-            </Typography>
-            <Typography variant="body2">N2: Number of species with ≤10% coverage</Typography>
-            <Typography mt={1}>Groups:</Typography>
-            <Typography variant="body2">G1 (red): highly conserved elements (N1 ≥ 120 and N2 ≤ 25)</Typography>
-            <Typography variant="body2">G2 (green): actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)</Typography>
-            <Typography variant="body2">G3 (blue): primate-specific elements (N1 ≤ 50 and N2 ≥ 180)</Typography>
-          </Box>
-          <Box ref={heatmapsRef} sx={{ display: "flex", gap: 5, flexDirection: "row", flexWrap: "wrap" }}>
-            <HeatmapPlot
-              src={AllcCREs}
-              alt="All cCRE Regions plot"
-              title="All cCRE Regions"
-              point={{ x: point.x_coord, y: point.y_coord }}
-              accession={point.accession}
-            />
-            <HeatmapPlot
-              src={imgSrc}
-              alt={`${cCREType} plot`}
-              title={cCREType}
-              point={{ x: point.x_coord, y: point.y_coord }}
-              accession={point.accession}
-            />
-          </Box>
-          <Button variant="outlined" color="primary" size="small" onClick={download}>
-            Download Plots
-          </Button>
-        </Box>
-      )}
-    </>
+    <Box>
+      <Box ref={heatmapsRef} sx={{ display: "flex", gap: 5, flexDirection: "row", flexWrap: "wrap" }}>
+        <HeatmapPlot src={imgSrc} alt={`${group} plot`} title={CLASS_DESCRIPTIONS[group]} point={heatmapPoint} />
+        <HeatmapPlot src={AllcCREs} alt="All cCRE classes" title="All cCRE classes" point={heatmapPoint} />
+        <Legend />
+      </Box>
+      <Button variant="outlined" color="primary" size="small" onClick={download}>
+        Download Plots
+      </Button>
+    </Box>
   );
 };
