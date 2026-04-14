@@ -10,10 +10,7 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
     ssrMode: true,
     cache: new InMemoryCache(),
     link: new HttpLink({
-      uri: Config.API.CcreAPI,
-      headers: {
-        "api-key": process.env.SCREEN_API_KEY!,
-      },
+      uri: Config.API.CcreAPI
     }),
   });
 });
