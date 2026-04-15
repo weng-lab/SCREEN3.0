@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "export": "next export",
-    "gen-types": "graphql-codegen",
-    "gen-types -w": "graphql-codegen -w"
+    "gen-types": "dotenv -e .env.local -- graphql-codegen",
+    "gen-types -w": "dotenv -e .env.local -- graphql-codegen -w"
   },
   "dependencies": {
     "@apollo/client": "^3.11.8",
@@ -58,6 +58,7 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.38.0",
     "eslint-config-next": "15.4.2",
     "eslint-config-prettier": "^10.1.8",
