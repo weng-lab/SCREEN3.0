@@ -15,6 +15,7 @@ query getcCRERPeaksData($accession: [String]!) {
     rpeak_start
     rpeak_stop
     tf
+    metadata
     tf_number
     decorator_stop
     decorator_start

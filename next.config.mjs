@@ -21,7 +21,11 @@ const nextConfig = {
     ];
   },
   images: {
-    remotePatterns: [new URL("https://www.ncbi.nlm.nih.gov/**"), new URL("https://geneanalytics.genecards.org/**"), new URL("https://genome.ucsc.edu/**")],
+    remotePatterns: [
+      new URL("https://www.ncbi.nlm.nih.gov/**"),
+      new URL("https://geneanalytics.genecards.org/**"),
+      new URL("https://genome.ucsc.edu/**"),
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,

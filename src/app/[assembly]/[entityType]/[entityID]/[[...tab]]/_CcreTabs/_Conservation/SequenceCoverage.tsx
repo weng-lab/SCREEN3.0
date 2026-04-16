@@ -230,7 +230,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
       >
         {/* wrapper flex child div to allow child Box to set negative margin for vertical alignment */}
         <div>
-          <Box width={{ sm: 300 }} marginBottom={{ sm: -2 }}>
+          <Box width={300} marginBottom={{ sm: -2 }}>
             <Typography variant="body2" display={"flex"} alignItems={"center"}>
               Sequence Coverage Threshold: {coveragePercentage * 100}%{"\u00A0"}
               <Tooltip
@@ -248,7 +248,8 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
               min={sliderValues[0]}
               max={sliderValues[sliderValues.length - 1]}
               step={sliderValues[1] - sliderValues[0]}
-              marks
+              size="small"
+              valueLabelDisplay="auto"
             />
           </Box>
         </div>
