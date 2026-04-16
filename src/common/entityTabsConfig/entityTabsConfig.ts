@@ -120,7 +120,7 @@ export const humanGeneTabs = [
   },
   {
     route: "transcript-expression",
-    label: "",
+    label: "Transcript Expression",
     component: TranscriptExpression,
   },
 ] as const satisfies TabConfig[];
