@@ -145,12 +145,16 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
         </Stack>
       }
       autoHeight
-      toolbarSlot={<DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />}
-      labelTooltip={
-        <Typography component="span" variant="subtitle2">
-          (Within {distance}bp of {entity.entityID})
-        </Typography>
-      }
+      slotProps={{
+        toolbar: {
+          extra: <DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />,
+          labelTooltip: (
+            <Typography component="span" variant="subtitle2">
+              (Within {distance}bp of {entity.entityID})
+            </Typography>
+          ),
+        },
+      }}
     />
   );
 };

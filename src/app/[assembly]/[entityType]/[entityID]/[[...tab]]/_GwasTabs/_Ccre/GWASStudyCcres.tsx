@@ -13,29 +13,10 @@ import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
 const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const { data, loading, error } = useGWASStudyData({ studyid: [entity.entityID] });
 
-  //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
-  //setting the anchorEl to the button
-  const [virtualAnchor, setVirtualAnchor] = useState<{
-    getBoundingClientRect: () => DOMRect;
-  } | null>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (virtualAnchor) {
-      // If already open, close it
-      setVirtualAnchor(null);
-    } else {
-      // Open it, store the current position
-      const rect = event.currentTarget.getBoundingClientRect();
-      setVirtualAnchor({
-        getBoundingClientRect: () => rect,
-      });
-    }
-  };
+  const [open, setOpen] = useState(false);
 
   const handleClickClose = () => {
-    if (virtualAnchor) {
-      setVirtualAnchor(null);
-    }
+    setOpen(false);
   };
   const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);
 
@@ -245,9 +226,11 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
         emptyTableFallback={"Error fetching information about this study"}
         //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
         divHeight={!data ? { height: "182px" } : undefined}
-        labelTooltip={
-          "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)"
-        }
+        slotProps={{
+          toolbar: {
+            labelTooltip: "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)",
+          },
+        }}
         autoHeight
         hideFooter
       />
@@ -285,18 +268,22 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
           },
         }}
         divHeight={{ height: "600px" }}
-        labelTooltip={"cCREs intersected against SNPs identified by selected GWAS study"}
-        toolbarSlot={
-          <Tooltip title="Advanced Filters">
-            <Button variant="outlined" onClick={handleClick}>
-              Select Biosample
-            </Button>
-          </Tooltip>
-        }
+        slotProps={{
+          toolbar: {
+            labelTooltip: "cCREs intersected against SNPs identified by selected GWAS study",
+            extra: (
+              <Tooltip title="Advanced Filters">
+                <Button variant="outlined" onClick={() => setOpen(true)}>
+                  Select Biosample
+                </Button>
+              </Tooltip>
+            ),
+          },
+        }}
       />
       <BiosampleSelectDialog
         assembly={entity.assembly}
-        open={Boolean(virtualAnchor)}
+        open={open}
         onClose={handleClickClose}
         onSelectionChange={handleBiosampleSelected}
         selected={selectedBiosample}

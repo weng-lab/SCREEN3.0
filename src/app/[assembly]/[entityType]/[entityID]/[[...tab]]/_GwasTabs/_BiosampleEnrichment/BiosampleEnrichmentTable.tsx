@@ -91,7 +91,11 @@ const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnric
       error={!!error}
       label={`Suggested Biosamples`}
       emptyTableFallback={"No Suggested Biosamples found for this study"}
-      labelTooltip={LabelTooltip}
+      slotProps={{
+        toolbar: {
+          labelTooltip: LabelTooltip,
+        },
+      }}
     />
   );
 };

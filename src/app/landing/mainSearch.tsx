@@ -79,16 +79,13 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
             sx={{ display: { xs: "flex", md: "flex" } }}
             style={{ width: "100%" }}
             slots={{
-              button: (
-                <IconButton sx={{ color: "white" }}>
-                  <Search />
-                </IconButton>
-              ),
+              button: IconButton,
             }}
             assembly={assembly}
             id="main-search-component"
             slotProps={{
               box: { gap: 1 },
+              button: { sx: { color: "white" }, children: <Search /> },
               input: {
                 size: "small",
                 label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant, GWAS," : ""} or locus`,
