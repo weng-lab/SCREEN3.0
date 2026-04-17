@@ -141,7 +141,7 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
     <GenomeSearch
       assembly={props.assembly}
       geneVersion={geneVersion}
-      graphqlUrl="api/graphql"
+      graphqlUrl="/api/graphql"
       showiCREFlag={false}
       queries={["Gene", "cCRE", "SNP", "Coordinate", "Study", "Legacy cCRE"]}
       onSearchSubmit={handleSearchSubmit}
