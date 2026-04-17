@@ -488,7 +488,9 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     ? [{ ...data_Ct_Agnostic.cCREQuery[0], displayname: "Cell Type Agnostic" }]
     : undefined;
 
-  const disableCsvEscapeChar = { slotProps: { toolbar: { csvOptions: { escapeFormulas: false } } } };
+  const disableCsvEscapeChar = {
+    toolbar: { csvOptions: { escapeFormulas: false }, excelOptions: { escapeFormulas: false } },
+  };
 
   const partialCollectionChromAccess = useMemo(() => {
     if (!partialDataCollection) return;
@@ -547,7 +549,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             autoHeight
             hideFooter
             showToolbar={false}
-            {...disableCsvEscapeChar}
+            slotProps={disableCsvEscapeChar}
           />
           <div>
             <ProportionsBar
@@ -561,14 +563,18 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             />
             <Table
               label="Core Collection"
-              labelTooltip={CORE_COLLECTION_TOOLTIP}
               rows={coreCollection}
               columns={coreAndPartialCols}
               loading={loadingCorePartialAncillary}
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
               initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-              {...disableCsvEscapeChar}
+              slotProps={{
+                toolbar: {
+                  labelTooltip: CORE_COLLECTION_TOOLTIP,
+                  ...disableCsvEscapeChar.toolbar,
+                },
+              }}
             />
           </div>
           <div>
@@ -587,26 +593,34 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             />
             <Table
               label="Partial Data Collection"
-              labelTooltip={PARTIAL_COLLECTION_TOOLTIP}
               rows={partialDataCollection}
               columns={coreAndPartialCols}
               loading={loadingCorePartialAncillary}
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
               initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-              {...disableCsvEscapeChar}
+              slotProps={{
+                toolbar: {
+                  labelTooltip: PARTIAL_COLLECTION_TOOLTIP,
+                  ...disableCsvEscapeChar.toolbar,
+                },
+              }}
             />
           </div>
           <Table
             label="Ancillary Collection"
-            labelTooltip={ANCILLARY_COLLECTION_TOOLTIP}
             rows={ancillaryCollection}
             columns={ancillaryCols}
             loading={loadingCorePartialAncillary}
             error={errorCorePartialAncillary}
             divHeight={{ height: "400px" }}
             initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
-            {...disableCsvEscapeChar}
+            slotProps={{
+              toolbar: {
+                labelTooltip: ANCILLARY_COLLECTION_TOOLTIP,
+                ...disableCsvEscapeChar.toolbar,
+              },
+            }}
           />
         </Stack>
       ) : tab === "add_classification" ? (

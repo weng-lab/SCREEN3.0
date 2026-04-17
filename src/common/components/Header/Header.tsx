@@ -278,15 +278,12 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
                 style={{ width: 400 }}
                 id="desktop-search-component"
                 slots={{
-                  button: (
-                    <IconButton sx={{ color: "white" }}>
-                      <Search />
-                    </IconButton>
-                  ),
+                  button: IconButton,
                 }}
                 assembly={assembly}
                 slotProps={{
                   box: { gap: 1 },
+                  button: { sx: { color: "white" }, children: <Search /> },
                   input: {
                     size: "small",
                     label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,

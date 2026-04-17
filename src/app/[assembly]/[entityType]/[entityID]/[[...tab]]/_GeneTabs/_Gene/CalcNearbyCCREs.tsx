@@ -16,7 +16,7 @@ import { Assembly } from "common/types/globalTypes";
 
 interface CalculateNearbyCCREsPopperProps {
   open: boolean;
-  anchorEl: any; // virtual anchor object
+  anchorEl: HTMLButtonElement | null;
   handleClickAway: () => void;
   geneName: string;
   calcMethod: "body" | "tss" | "3gene";
