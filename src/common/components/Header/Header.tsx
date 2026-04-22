@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import { AppBar, Box, Toolbar, Menu, MenuItem, IconButton, Stack, Typography } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -8,7 +7,7 @@ import Image from "next/image";
 import AutoComplete from "../autocomplete";
 import { Search } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import MobileMenu from "./MobileMenu";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { LinkComponent } from "../LinkComponent";
@@ -17,6 +16,7 @@ import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 import { usePathname } from "next/navigation";
 import { PageInfo } from "./types";
+import NewVersionBanner from "./NewVersionBanner";
 
 const pageLinks: PageInfo[] = [
   {
@@ -30,6 +30,7 @@ const pageLinks: PageInfo[] = [
     subPages: [
       { pageName: "Overview", link: "/about" },
       { pageName: "Contact Us", link: "/about#contact-us" },
+      { pageName: "Version History", link: "/about/versions" },
     ],
   },
   {
@@ -45,6 +46,12 @@ type ResponsiveAppBarProps = {
 function Header({ maintenance }: ResponsiveAppBarProps) {
   const { openMenu } = useMenuControl();
   const pathname = usePathname();
+  //version banner was flickering on page refresh
+  const hasHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const isHomePage = pathname === "/";
 
@@ -160,164 +167,173 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
         </Typography>
         <WarningAmberIcon />
       </Stack>
-        <Toolbar sx={{ justifyContent: "space-between", backgroundColor: "primary.main" }}>
-          {/* Main navigation items for desktop */}
-          <Stack direction={"row"} spacing={1}>
-            <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
-              <Image
-                priority
-                src="/on-dark@16x.png"
-                fill
-                alt="SCREEN logo"
-                style={{ objectFit: "contain", objectPosition: "left center" }}
-              />
-            </Box>
-            <Stack spacing={3} direction={"row"} display={{ xs: "none", md: "flex" }} alignItems={"center"}>
-              {pageLinks.map((page) => (
-                <Box
-                  key={page.pageName}
+      <Toolbar sx={{ justifyContent: "space-between", backgroundColor: "primary.main" }}>
+        {/* Main navigation items for desktop */}
+        <Stack direction={"row"} spacing={1}>
+          <Box component={Link} href={"/"} height={45} width={110} position={"relative"}>
+            <Image
+              priority
+              src="/on-dark@16x.png"
+              fill
+              alt="SCREEN logo"
+              style={{ objectFit: "contain", objectPosition: "left center" }}
+            />
+          </Box>
+          <Stack spacing={3} direction={"row"} display={{ xs: "none", md: "flex" }} alignItems={"center"}>
+            {pageLinks.map((page) => (
+              <Box
+                key={page.pageName}
+                display={"flex"}
+                alignItems={"center"}
+                onMouseMove={(event) => handleMouseMoveLink(event, page)}
+                onMouseLeave={(event) => handleMouseLeaveLink(event, page)}
+                id="LinkBox"
+                sx={{ mr: 2 }}
+              >
+                <LinkComponent
+                  id="Link"
                   display={"flex"}
-                  alignItems={"center"}
-                  onMouseMove={(event) => handleMouseMoveLink(event, page)}
-                  onMouseLeave={(event) => handleMouseLeaveLink(event, page)}
-                  id="LinkBox"
-                  sx={{ mr: 2 }}
+                  color="primary.contrastText"
+                  href={page.link}
+                  underline="none"
                 >
-                  <LinkComponent
-                    id="Link"
-                    display={"flex"}
-                    color="primary.contrastText"
-                    href={page.link}
-                    underline="none"
+                  {page.pageName}
+                  {page.subPages && <ArrowDropDownIcon />}
+                </LinkComponent>
+                {/* Create popup menu if page has subpages */}
+                {page.subPages && (
+                  <Menu
+                    id={`${page.pageName}-dropdown-appbar`}
+                    // This logic would need to change when adding another dropdown
+                    anchorEl={page.dropdownID === 0 ? anchorDropdown0 : anchorDropdown1}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                    open={page.dropdownID === 0 ? Boolean(anchorDropdown0) : Boolean(anchorDropdown1)}
+                    onClose={() => handleCloseDropdown(page.dropdownID)}
+                    slotProps={{
+                      paper: {
+                        onMouseLeave: () => handleCloseDropdown(page.dropdownID),
+                        sx: { pointerEvents: "auto" },
+                      },
+                    }}
+                    sx={{ pointerEvents: "none", zIndex: 2000 }} //z index of AppBar is 1100 for whatever reason
                   >
-                    {page.pageName}
-                    {page.subPages && <ArrowDropDownIcon />}
-                  </LinkComponent>
-                  {/* Create popup menu if page has subpages */}
-                  {page.subPages && (
-                    <Menu
-                      id={`${page.pageName}-dropdown-appbar`}
-                      // This logic would need to change when adding another dropdown
-                      anchorEl={page.dropdownID === 0 ? anchorDropdown0 : anchorDropdown1}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left",
-                      }}
-                      open={page.dropdownID === 0 ? Boolean(anchorDropdown0) : Boolean(anchorDropdown1)}
-                      onClose={() => handleCloseDropdown(page.dropdownID)}
-                      slotProps={{
-                        paper: {
-                          onMouseLeave: () => handleCloseDropdown(page.dropdownID),
-                          sx: { pointerEvents: "auto" },
-                        },
-                      }}
-                      sx={{ pointerEvents: "none", zIndex: 2000 }} //z index of AppBar is 1100 for whatever reason
-                    >
-                      {page.subPages &&
-                        page.subPages.map((subPage) => (
-                          <LinkComponent key={subPage.pageName} color="#000000" href={subPage.link}>
-                            <MenuItem>{subPage.pageName}</MenuItem>
-                          </LinkComponent>
-                        ))}
-                    </Menu>
-                  )}
-                </Box>
-              ))}
-            </Stack>
-          </Stack>
-          {isHomePage ? (
-            <IconButton sx={{ color: "white", display: { xs: "none", md: "flex" } }} onClick={handleFocusSearch}>
-              <Search />
-            </IconButton>
-          ) : (
-            <Stack direction={"row"} spacing={2} alignItems={"center"} sx={{ display: { xs: "none", md: "flex" } }}>
-              <Stack direction="row" alignItems="center" spacing={-1}>
-                {assembly === "GRCh38" ? (
-                  <IconButton onClick={handleIconMenuOpen}>
-                    <HumanIcon color="white" size={45} />
-                  </IconButton>
-                ) : (
-                  <IconButton onClick={handleIconMenuOpen}>
-                    <MouseIcon color="white" size={45} />
-                  </IconButton>
+                    {page.subPages &&
+                      page.subPages.map((subPage) => (
+                        <LinkComponent key={subPage.pageName} color="#000000" href={subPage.link}>
+                          <MenuItem>{subPage.pageName}</MenuItem>
+                        </LinkComponent>
+                      ))}
+                  </Menu>
                 )}
-                <IconButton
-                  ref={dropdownRef}
-                  onClick={handleIconMenuOpen}
-                  size="small"
-                  sx={{ color: "white" }}
-                  aria-controls={iconMenuAnchor ? "icon-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={iconMenuAnchor ? "true" : undefined}
-                >
-                  <ArrowDropDownIcon />
+              </Box>
+            ))}
+          </Stack>
+        </Stack>
+        {isHomePage ? (
+          <IconButton sx={{ color: "white", display: { xs: "none", md: "flex" } }} onClick={handleFocusSearch}>
+            <Search />
+          </IconButton>
+        ) : (
+          <Stack direction={"row"} spacing={2} alignItems={"center"} sx={{ display: { xs: "none", md: "flex" } }}>
+            <Stack direction="row" alignItems="center" spacing={-1}>
+              {assembly === "GRCh38" ? (
+                <IconButton onClick={handleIconMenuOpen}>
+                  <HumanIcon color="white" size={45} />
                 </IconButton>
-                <Menu
-                  id="icon-menu"
-                  anchorEl={iconMenuAnchor}
-                  open={Boolean(iconMenuAnchor)}
-                  onClose={handleIconMenuClose}
-                  PaperProps={{ sx: { minWidth: 120, mt: 1 } }}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                >
-                  <MenuItem selected={assembly === "GRCh38"} onClick={() => handleIconSelect("GRCh38")}>
-                    Human
-                  </MenuItem>
-                  <MenuItem selected={assembly === "mm10"} onClick={() => handleIconSelect("mm10")}>
-                    Mouse
-                  </MenuItem>
-                </Menu>
-              </Stack>
-              <AutoComplete
-                style={{ width: 400 }}
-                id="desktop-search-component"
-                slots={{
-                  button: IconButton,
+              ) : (
+                <IconButton onClick={handleIconMenuOpen}>
+                  <MouseIcon color="white" size={45} />
+                </IconButton>
+              )}
+              <IconButton
+                ref={dropdownRef}
+                onClick={handleIconMenuOpen}
+                size="small"
+                sx={{ color: "white" }}
+                aria-controls={iconMenuAnchor ? "icon-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={iconMenuAnchor ? "true" : undefined}
+              >
+                <ArrowDropDownIcon />
+              </IconButton>
+              <Menu
+                id="icon-menu"
+                anchorEl={iconMenuAnchor}
+                open={Boolean(iconMenuAnchor)}
+                onClose={handleIconMenuClose}
+                PaperProps={{ sx: { minWidth: 120, mt: 1 } }}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
                 }}
-                assembly={assembly}
-                slotProps={{
-                  box: { gap: 1 },
-                  button: { sx: { color: "white" }, children: <Search /> },
-                  input: {
-                    size: "small",
-                    label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
-                    placeholder: "Enter a gene, cCRE, variant or locus",
-                    sx: {
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "#ffffff",
-                        "& fieldset": { border: "none" },
-                        "&:hover fieldset": { border: "none" },
-                        "&.Mui-focused fieldset": { border: "none" },
-                      },
-                      "& .MuiInputLabel-root": {
-                        color: "#666666",
-                        "&.Mui-focused": { color: "#444444" },
-                      },
-                      "& .MuiInputLabel-shrink": {
-                        display: "none",
-                      },
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                <MenuItem selected={assembly === "GRCh38"} onClick={() => handleIconSelect("GRCh38")}>
+                  Human
+                </MenuItem>
+                <MenuItem selected={assembly === "mm10"} onClick={() => handleIconSelect("mm10")}>
+                  Mouse
+                </MenuItem>
+              </Menu>
+            </Stack>
+            <AutoComplete
+              style={{ width: 400 }}
+              id="desktop-search-component"
+              slots={{
+                button: (
+                  <IconButton sx={{ color: "white" }}>
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+              assembly={assembly}
+              slotProps={{
+                box: { gap: 1 },
+                input: {
+                  size: "small",
+                  label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
+                  placeholder: "Enter a gene, cCRE, variant or locus",
+                  sx: {
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: "#ffffff",
+                      "& fieldset": { border: "none" },
+                      "&:hover fieldset": { border: "none" },
+                      "&.Mui-focused fieldset": { border: "none" },
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#666666",
+                      "&.Mui-focused": { color: "#444444" },
+                    },
+                    "& .MuiInputLabel-shrink": {
+                      display: "none",
                     },
                   },
-                }}
-              />
-            </Stack>
-          )}
-          {/* mobile view */}
-          <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
-            <IconButton size="large" onClick={openMenu} color="inherit">
-              <MenuIcon />
-            </IconButton>
-          </Box>
-          <MobileMenu pageLinks={pageLinks} />
-        </Toolbar>
-      </AppBar>
+                },
+              }}
+            />
+          </Stack>
+        )}
+        {/* mobile view */}
+        <Box display={{ xs: "flex", md: "none" }} alignItems={"center"} gap={2}>
+          <IconButton size="large" onClick={openMenu} color="inherit">
+            <MenuIcon />
+          </IconButton>
+        </Box>
+        <MobileMenu pageLinks={pageLinks} />
+      </Toolbar>
+      {hasHydrated && isHomePage && (
+        <NewVersionBanner
+          versionId="v3.2026.1"
+          message="ChIP-seq peaks, PhastCons scores, CpG coverage, and promoter cCREs"
+        />
+      )}
+    </AppBar>
   );
 }
 export default Header;
