@@ -30,7 +30,7 @@ export default function Footer() {
       title: "Data",
       links: [
         { name: "Downloads", href: "/downloads" },
-        { name: "Version History", href: "/about#versions" },
+        { name: "Version History", href: "/about/versions" },
       ],
     },
     {
