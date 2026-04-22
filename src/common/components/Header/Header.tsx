@@ -286,11 +286,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               style={{ width: 400 }}
               id="desktop-search-component"
               slots={{
-                button: (
-                  <IconButton sx={{ color: "white" }}>
-                    <Search />
-                  </IconButton>
-                ),
+                button: IconButton
               }}
               assembly={assembly}
               slotProps={{
