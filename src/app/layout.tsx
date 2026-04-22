@@ -7,9 +7,9 @@ import { OpenEntitiesContextProvider } from "common/OpenEntitiesContext";
 import { MenuControlProvider } from "common/components/MenuContext";
 import MuiXLicense from "common/components/MuiXLicense";
 import { Suspense } from "react";
-import { theme } from "./theme";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import ClientAppWrapper from "common/components/ClientAppWrapper";
+import Theme from "common/components/Theme";
 
 export const metadata = {
   title: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
@@ -28,14 +28,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Suspense>
           <ApolloWrapper>
             <AppRouterCacheProvider>
-              <ThemeProvider theme={theme}>
+              <Theme>
                 <MenuControlProvider>
                   <OpenEntitiesContextProvider>
                     {/* Overall wrapper set to be screen height */}
                     <ClientAppWrapper>{children}</ClientAppWrapper>
                   </OpenEntitiesContextProvider>
                 </MenuControlProvider>
-              </ThemeProvider>
+              </Theme>
             </AppRouterCacheProvider>
           </ApolloWrapper>
         </Suspense>
