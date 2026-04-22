@@ -283,36 +283,37 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               </Menu>
             </Stack>
             <AutoComplete
-              style={{ width: 400 }}
-              id="desktop-search-component"
-              slots={{
-                button: IconButton
-              }}
-              assembly={assembly}
-              slotProps={{
-                box: { gap: 1 },
-                input: {
-                  size: "small",
-                  label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
-                  placeholder: "Enter a gene, cCRE, variant or locus",
-                  sx: {
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#ffffff",
-                      "& fieldset": { border: "none" },
-                      "&:hover fieldset": { border: "none" },
-                      "&.Mui-focused fieldset": { border: "none" },
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "#666666",
-                      "&.Mui-focused": { color: "#444444" },
-                    },
-                    "& .MuiInputLabel-shrink": {
-                      display: "none",
+                style={{ width: 400 }}
+                id="desktop-search-component"
+                slots={{
+                  button: IconButton,
+                }}
+                assembly={assembly}
+                slotProps={{
+                  box: { gap: 1 },
+                  button: { sx: { color: "white" }, children: <Search /> },
+                  input: {
+                    size: "small",
+                    label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
+                    placeholder: "Enter a gene, cCRE, variant or locus",
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: "#ffffff",
+                        "& fieldset": { border: "none" },
+                        "&:hover fieldset": { border: "none" },
+                        "&.Mui-focused fieldset": { border: "none" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: "#666666",
+                        "&.Mui-focused": { color: "#444444" },
+                      },
+                      "& .MuiInputLabel-shrink": {
+                        display: "none",
+                      },
                     },
                   },
-                },
-              }}
-            />
+                }}
+              />
           </Stack>
         )}
         {/* mobile view */}
