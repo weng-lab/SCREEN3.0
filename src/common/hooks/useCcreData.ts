@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { CCrescreenSearchQueryQuery } from "common/types/generated/graphql";
@@ -95,12 +96,12 @@ export type UseCcreDataReturn<T extends UseCcreDataParams> = T extends
   ? {
       data: (CCrescreenSearchQueryQuery["cCRESCREENSearch"][number] & { isicre?: boolean })[] | undefined;
       loading: boolean;
-      error: Error;
+      error: ErrorLike;
     }
   : {
       data: (CCrescreenSearchQueryQuery["cCRESCREENSearch"][0] & { isicre?: boolean }) | undefined;
       loading: boolean;
-      error: Error;
+      error: ErrorLike;
     };
 
 export const useCcreData = <T extends UseCcreDataParams>({

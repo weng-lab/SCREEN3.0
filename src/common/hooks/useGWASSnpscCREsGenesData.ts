@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { gql } from "common/types/generated/gql";
 import { LinkedGenesQuery } from "../types/generated/graphql";
 import { ComputationalGeneLinksQuery } from "../types/generated/graphql";
@@ -106,7 +107,7 @@ export type useGWASSnpscCREsGenesReturn = {
   data: LinkedGenesQuery["linkedGenes"] | undefined;
   compudata: ComputationalGeneLinksQuery["ComputationalGeneLinksQuery"] | undefined;
   loading: boolean;
-  error: Error | undefined;
+  error: ErrorLike | undefined;
 };
 
 export const useGWASSnpscCREsGenesData = ({

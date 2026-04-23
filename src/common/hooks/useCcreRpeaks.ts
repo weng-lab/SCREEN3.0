@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { gql } from "common/types/generated/gql";
 import { GetcCrerPeaksDataQuery } from "common/types/generated/graphql";
 
@@ -26,7 +27,7 @@ query getcCRERPeaksData($accession: [String]!) {
 }
 `)
 
-export type useCcreRpeaksReturn = { data: GetcCrerPeaksDataQuery['getcCRERPeaksQuery'] | undefined; loading: boolean; error: Error }
+export type useCcreRpeaksReturn = { data: GetcCrerPeaksDataQuery['getcCRERPeaksQuery'] | undefined; loading: boolean; error: ErrorLike }
 
 export function useCcreRpeaks({ accession, assembly }: useCcreRpeaksParams) {
   const { data, loading, error } = useQuery(cCRERPeaksDataQuery, {

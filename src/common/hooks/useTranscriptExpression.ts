@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { useMemo } from "react";
 import { gql } from "common/types/generated/gql";
 import { TssRampageQuery } from "common/types/generated/graphql";
@@ -36,7 +37,7 @@ export type UseTranscriptExpressionReturn = {
   data: TssRampage[] | undefined;
   peaks: PeakInfo[];
   loading: boolean;
-  error: Error;
+  error: ErrorLike;
 };
 
 export type PeakInfo = {

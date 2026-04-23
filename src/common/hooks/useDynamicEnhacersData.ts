@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { FetchDynamicEnhancersQuery } from "common/types/generated/graphql";
@@ -17,7 +18,7 @@ query fetchDynamicEnhancers($accession: [String]!) {
 }
 `)
 
-export type useDynamicEnhancersDataReturn = { data: FetchDynamicEnhancersQuery['dynamicEnhancersQuery'] | undefined; loading: boolean; error: Error }
+export type useDynamicEnhancersDataReturn = { data: FetchDynamicEnhancersQuery['dynamicEnhancersQuery'] | undefined; loading: boolean; error: ErrorLike }
 
 export function useDynamicEnhancersData({ accession, assembly }: useDynamicEnhancersDataParams) {
   const { data, loading, error } = useQuery(DynamicEnhancers_Query, {

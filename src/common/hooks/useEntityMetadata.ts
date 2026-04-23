@@ -1,3 +1,4 @@
+import type { ErrorLike } from "@apollo/client";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { useGeneData, UseGeneDataReturn } from "./useGeneData";
 import { useSnpData, UseSnpDataReturn } from "./useSnpData";
@@ -16,13 +17,13 @@ type useEntityMetadataParams<T extends AnyEntityType> = {
 type UseGenomicRangeReturn = {
   data: { __typename?: "Region"; coordinates: GenomicRange };
   loading: boolean;
-  error: Error;
+  error: ErrorLike;
 };
 
 type UseBedReturn = {
   data: { __typename?: "Bed" };
   loading: boolean;
-  error: Error;
+  error: ErrorLike;
 };
 
 /**

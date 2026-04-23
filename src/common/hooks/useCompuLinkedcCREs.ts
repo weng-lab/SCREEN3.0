@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { gql } from "common/types/generated/gql";
 
 import { ComputationalcCreLinksQuery } from "../types/generated/graphql";
@@ -29,7 +30,7 @@ export type useCompuLinkedcCREsParams = {
 export type useCompuLinkedcCREsReturn = {
   data: ComputationalcCreLinksQuery["ComputationalCcreLinksQuery"] | undefined;
   loading: boolean;
-  error: Error | undefined;
+  error: ErrorLike | undefined;
 };
 
 export const useCompuLinkedcCREs = ({ geneid, method }: useCompuLinkedcCREsParams): useCompuLinkedcCREsReturn => {
