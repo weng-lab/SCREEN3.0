@@ -1,4 +1,4 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { GetGwasStudyMetadataQuery } from "common/types/generated/graphql";
@@ -40,7 +40,7 @@ export type UseGWASStudyDataParams = {
 export type UseGWASStudyDataReturn = {
   data: GetGwasStudyMetadataQuery["getGWASStudiesMetadata"][0] | undefined;
   loading: boolean;
-  error: ApolloError;
+  error: Error;
 };
 
 export const useGWASStudyData = ({

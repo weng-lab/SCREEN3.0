@@ -1,7 +1,8 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 
 function useLinkedGenes(accession: string[], skip?: boolean) {
-  const { loading, error, data } = useQuery(LINKED_GENES, {
+  const { loading, error, data } = useQuery<any>(LINKED_GENES, {
     variables: {
       accessions: accession,
       assembly: "grch38",

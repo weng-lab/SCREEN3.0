@@ -1,4 +1,4 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated/gql";
 import { GetSnPsIdentifiedbyGivenStudyQuery } from "common/types/generated/graphql";
 
@@ -24,7 +24,7 @@ export type UseGWASSnpsParams = {
 export type UseGWASSnpsReturn = {
   data: GetSnPsIdentifiedbyGivenStudyQuery["getSNPsforGivenGWASStudy"] | undefined;
   loading: boolean;
-  error: ApolloError;
+  error: Error;
 };
 
 export const useGWASSnpsData = ({ studyid }: UseGWASSnpsParams): UseGWASSnpsReturn => {

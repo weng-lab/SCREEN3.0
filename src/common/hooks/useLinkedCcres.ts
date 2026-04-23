@@ -1,4 +1,4 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
 import { LinkedCcresQuery } from "common/types/generated/graphql";
 
@@ -12,7 +12,7 @@ interface LinkedCcreInfo extends BaseReturn {
   assay?: "RNAPII-ChIAPET" | "CTCF-ChIAPET" | "Intact-HiC" | "CRISPRi-FlowFISH";
 }
 
-export type useLinkedCcresReturn = { data: LinkedCcreInfo[] | undefined; loading: boolean; error: ApolloError };
+export type useLinkedCcresReturn = { data: LinkedCcreInfo[] | undefined; loading: boolean; error: Error };
 
 export function useLinkedCcres({ geneid }: useLinkedCcresParams) {
   const { data, loading, error } = useQuery(LINKED_CCRE_QUERY, {

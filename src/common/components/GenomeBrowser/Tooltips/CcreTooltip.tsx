@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { CLASS_COLORS } from "common/colors";
 import { CLASS_DESCRIPTIONS } from "common/consts";
 import React, { useMemo } from "react";
@@ -57,7 +58,7 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
     [biosample]
   );
 
-  const { data, loading, error } = useQuery(biosample ? QUERY : MAXZ_QUERY, {
+  const { data, loading, error } = useQuery<any>(biosample ? QUERY : MAXZ_QUERY, {
     variables: {
       assembly,
       accession: name,

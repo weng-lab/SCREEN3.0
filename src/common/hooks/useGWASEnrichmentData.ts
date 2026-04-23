@@ -1,4 +1,4 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { useMemo } from "react";
 import { gql } from "common/types/generated/gql";
 
@@ -47,7 +47,7 @@ export type UseGWASEnrichmentParams = {
 export type UseGWASEnrichmentReturn = {
   data: GWASEnrichment[] | undefined;
   loading: boolean;
-  error: ApolloError;
+  error: Error;
 };
 const minFDRval: number = 1e-300;
 const FCaugmentation: number = 0.000001;

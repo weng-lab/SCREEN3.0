@@ -1,4 +1,4 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { GetGenePromoterDataQuery } from "common/types/generated/graphql";
@@ -19,7 +19,7 @@ query getGenePromoterData($geneid: [String]){
 }
 `)
 
-export type useGenePromotersDataReturn = { data: GetGenePromoterDataQuery['genePromoterQuery'] | undefined; loading: boolean; error: ApolloError }
+export type useGenePromotersDataReturn = { data: GetGenePromoterDataQuery['genePromoterQuery'] | undefined; loading: boolean; error: Error }
 
 export function useGenePromotersData({ geneid }: useGenePromotersDataParams) {
   const { data, loading, error } = useQuery(genePromoterData_Query, {

@@ -1,5 +1,5 @@
 "use client";
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { useMemo } from "react";
@@ -47,8 +47,8 @@ export type UseGeneDataParams =
 export type UseGeneDataReturn<T extends UseGeneDataParams> = T extends
   | { coordinates: GenomicRange | GenomicRange[] }
   | { name: string[] }
-  ? { data: GeneQuery["gene"] | undefined; loading: boolean; error: ApolloError }
-  : { data: GeneQuery["gene"][0] | undefined; loading: boolean; error: ApolloError };
+  ? { data: GeneQuery["gene"] | undefined; loading: boolean; error: Error }
+  : { data: GeneQuery["gene"][0] | undefined; loading: boolean; error: Error };
 
 const toBedRange = (c: GenomicRange): ChromRange => ({
   chromosome: c.chromosome,

@@ -3,7 +3,7 @@ import { Point, ScatterPlot } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { gql } from "common/types/generated";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
   FormControl,
   FormControlLabel,

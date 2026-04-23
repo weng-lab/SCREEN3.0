@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";

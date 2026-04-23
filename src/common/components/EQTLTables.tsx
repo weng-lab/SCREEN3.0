@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Stack } from "@mui/material";
 import { toScientificNotationElement } from "common/utility";
 import { gql } from "common/types/generated";

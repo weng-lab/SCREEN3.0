@@ -1,4 +1,4 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated/gql";
 
 import { ComputationalGeneLinksQuery } from "../types/generated/graphql";
@@ -27,7 +27,7 @@ export type useCompuLinkedGenesParams = {
 export type useCompuLinkedGenesReturn = {
   data: ComputationalGeneLinksQuery["ComputationalGeneLinksQuery"] | undefined;
   loading: boolean;
-  error: ApolloError | undefined;
+  error: Error | undefined;
 };
 
 export const useCompuLinkedGenes = ({ accessions, method }: useCompuLinkedGenesParams): useCompuLinkedGenesReturn => {
