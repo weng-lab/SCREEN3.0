@@ -1,6 +1,6 @@
 "use client";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import React, { useState } from "react";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { Box, Stack, Tab } from "@mui/material";

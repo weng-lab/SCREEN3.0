@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "common/types/generated/gql";
+import { useQuery } from "@apollo/client/react";
 import { Transcript } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/DistanceLinkedCcres";
 import { useMemo } from "react";
 import { Assembly } from "common/types/globalTypes";
