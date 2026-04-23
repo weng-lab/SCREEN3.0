@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "common/types/generated/gql";
 import { useQuery } from "@apollo/client/react";
 import { Transcript } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_cCREs/DistanceLinkedCcres";
 import { useMemo } from "react";
@@ -41,7 +41,7 @@ export default function useNearbycCREs(
     }
   }, [geneData, distance, method]);
 
-  const { data: regionCcreData, loading: regionCcreLoading } = useQuery<any>(CCRE_RANGE_QUERY, {
+  const { data: regionCcreData, loading: regionCcreLoading } = useQuery(CCRE_RANGE_QUERY, {
     variables: {
       assembly,
       coordinates: regions,
@@ -53,7 +53,7 @@ export default function useNearbycCREs(
     data: nearbyGeneData,
     loading: nearbyGeneLoading,
     error,
-  } = useQuery<any>(NEAR_BY_CCRES_QUERY, {
+  } = useQuery(NEAR_BY_CCRES_QUERY, {
     variables: { geneid: [geneData.data?.id.split(".")[0]] },
     skip: !geneData.data || method !== "3gene",
   });
@@ -63,7 +63,7 @@ export default function useNearbycCREs(
       ? [...new Set(nearbyGeneData?.closestGenetocCRE.map((l) => l.ccre))]
       : [...new Set(regionCcreData?.cCRESCREENSearch.map((l) => l.info.accession))];
 
-  const { data: ccredata } = useQuery<any>(CCRE_ICRE_QUERY, {
+  const { data: ccredata } = useQuery(CCRE_ICRE_QUERY, {
     variables: {
       assembly,
       includeiCREs: true,

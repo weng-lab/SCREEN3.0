@@ -1,38 +1,12 @@
-import { gql } from "@apollo/client";
+import { gql } from "common/types/generated/gql";
 import { useQuery } from "@apollo/client/react";
 import { CLASS_COLORS } from "common/colors";
 import { CLASS_DESCRIPTIONS } from "common/consts";
-import React, { useMemo } from "react";
 
 interface CCRETooltipProps {
   assembly: string;
   name: string;
-  biosample?: {
-    displayname?: string;
-    dnase?: string;
-    h3k4me3?: string;
-    h3k27ac?: string;
-    ctcf?: string;
-    atac?: string;
-    name?: string;
-  };
 }
-
-const QUERY = gql(`
-  query cCRE_1(
-    $assembly: String!
-    $accession: [String!]
-    $experiments: [String!]
-  ) {
-    cCREQuery(assembly: $assembly, accession: $accession) {
-      group
-      zScores(experiments: $experiments) {
-        experiment
-        score
-      }
-    }
-  }
-`);
 
 const MAXZ_QUERY = gql(`
   query cCRE_2($assembly: String!, $accession: [String!]) {
@@ -47,28 +21,20 @@ const MAXZ_QUERY = gql(`
   }
 `);
 
-const biosampleExperiments = (x) => [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac].filter((xx) => !!xx);
+const MARKS: [string, "dnase" | "h3k4me3" | "h3k27ac" | "ctcf" | "atac"][] = [
+  ["DNase", "dnase"],
+  ["H3K4me3", "h3k4me3"],
+  ["H3K27ac", "h3k27ac"],
+  ["CTCF", "ctcf"],
+  ["ATAC", "atac"],
+];
 
-const MARKS = ["DNase", "H3K4me3", "H3K27ac", "CTCF", "ATAC"];
-const marks = (x) => [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac].map((x, i) => x && MARKS[i]).filter((xx) => !!xx);
-
-export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipProps) {
-  const experiments = useMemo(
-    () => (biosample ? biosampleExperiments(biosample) : ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"]),
-    [biosample]
-  );
-
-  const { data, loading, error } = useQuery<any>(biosample ? QUERY : MAXZ_QUERY, {
-    variables: {
-      assembly,
-      accession: name,
-      experiments,
-    },
+export default function CCRETooltip({ assembly, name }: CCRETooltipProps) {
+  const { data, loading, error } = useQuery(MAXZ_QUERY, {
+    variables: { assembly, accession: name },
   });
 
-  if (error) {
-    return null;
-  }
+  if (error) return null;
 
   const width = 400;
   const height = loading || !data?.cCREQuery?.[0] ? 40 : 210;
@@ -78,12 +44,10 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
 
   return (
     <svg width={width} height={height}>
-      {/* Background rectangle with nice border */}
       <rect width={width} height={height} fill="#ffffff" stroke="#000000" strokeWidth="2" rx="4" ry="4" />
 
       {loading || !data?.cCREQuery?.[0] ? (
         <g>
-          {/* Loading indicator - simplified circle */}
           <circle
             cx={width / 2}
             cy={height / 2}
@@ -105,7 +69,6 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
         </g>
       ) : (
         <g>
-          {/* cCRE group color indicator */}
           <rect
             x={padding}
             y={padding + 3}
@@ -113,23 +76,15 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
             height={10}
             fill={CLASS_COLORS[data.cCREQuery[0].group] ?? "#8c8c8c"}
           />
-
-          {/* cCRE name */}
           <text x={padding + 16} y={padding + 12} fontSize="24" fontFamily="Arial, sans-serif" fill="#000000">
             {name}
           </text>
-
-          {/* cCRE group type */}
           <text x={padding} y={startY} fontSize="21" fontFamily="Arial, sans-serif" fill="#000000">
             {CLASS_DESCRIPTIONS[data.cCREQuery[0].group]}
           </text>
-
-          {/* Click instruction */}
           <text x={padding} y={startY + lineHeight} fontSize="19" fontFamily="Arial, sans-serif" fill="#666666">
             Click for details about this cCRE
           </text>
-
-          {/* Header text */}
           <text
             x={padding}
             y={startY + lineHeight * 2.5}
@@ -138,20 +93,15 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
             fontWeight="bold"
             fill="#000000"
           >
-            {biosample ? "Z-scores in " + biosample.displayname : "Max Z-scores across all biosamples:"}
+            Max Z-scores across all biosamples:
           </text>
-
-          {/* Z-scores data */}
-          {(biosample ? marks(biosample) : MARKS).map((mark, i) => {
+          {MARKS.map(([label, key], i) => {
             const y = startY + lineHeight * (3.5 + i);
-            const score = biosample
-              ? data.cCREQuery[0].zScores.find((xx) => xx.experiment === experiments[i])?.score.toFixed(2)
-              : data.cCREQuery[0][experiments[i]]?.toFixed(2);
-
+            const score = data.cCREQuery[0][key]?.toFixed(2);
             return (
-              <g key={i}>
+              <g key={key}>
                 <text x={padding} y={y} fontSize="19" fontFamily="Arial, sans-serif" fontWeight="bold" fill="#000000">
-                  {mark}:
+                  {label}:
                 </text>
                 <text x={padding + 120} y={y} fontSize="19" fontFamily="Arial, sans-serif" fill="#000000">
                   {score}

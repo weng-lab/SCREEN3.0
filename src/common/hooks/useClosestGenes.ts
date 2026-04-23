@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "common/types/generated/gql";
 import { useQuery } from "@apollo/client/react";
 
 
@@ -51,7 +51,7 @@ export default function useClosestGenes(accession: string, assembly: string) {
     data: closestGeneData,
     loading: closestGeneLoading,
     error: closestGeneError,
-  } = useQuery<any>(CLOSEST_GENE_QUERY, {
+  } = useQuery(CLOSEST_GENE_QUERY, {
     variables: {
       accessions: [accession],
       assembly: assembly,
@@ -62,7 +62,7 @@ export default function useClosestGenes(accession: string, assembly: string) {
     data: geneData,
     loading: geneLoading,
     error: geneError,
-  } = useQuery<any>(GENES_DATA_QUERY, {
+  } = useQuery(GENES_DATA_QUERY, {
     variables: {
       name: closestGeneData && closestGeneData.cCRESCREENSearch[0].nearestgenes.map((item: any) => item.gene),
       version: assembly == "GRCh38" ? 40 : 25,
