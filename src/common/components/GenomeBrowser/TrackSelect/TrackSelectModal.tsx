@@ -13,8 +13,30 @@ import { ASSAY_COLORS } from "common/colors";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { defaultBigBed, defaultBigWig, defaultMethylC, defaultTranscript } from "./defaultConfigs";
 import { injectCallbacks, TrackCallbacks } from "./defaultTracks";
+import humanBiosampleData from "@weng-lab/genomebrowser-ui/src/TrackSelect/Folders/biosamples/data/human_with_wgbs.json";
+import mouseBiosampleData from "@weng-lab/genomebrowser-ui/src/TrackSelect/Folders/biosamples/data/mouse.json";
 
 type Assembly = "GRCh38" | "mm10";
+
+type BiosampleTrackMetadata = {
+  name: string;
+  displayName: string;
+};
+
+type BiosampleTrackData = {
+  tracks: Array<{
+    name: string;
+    displayName: string;
+    assays: Array<{
+      id: string;
+    }>;
+  }>;
+};
+
+const biosampleMetadataByAssembly: Record<Assembly, Map<string, BiosampleTrackMetadata>> = {
+  GRCh38: createBiosampleTrackMetadataMap(humanBiosampleData as BiosampleTrackData),
+  mm10: createBiosampleTrackMetadataMap(mouseBiosampleData as BiosampleTrackData),
+};
 
 const defaultHumanSelections = new Map<string, Set<string>>([
   ["human-genes", new Set(["gencode-basic"])],
@@ -176,6 +198,7 @@ function generateTrack(
   const sel = row as BiosampleRowInfo;
   const color = ASSAY_COLORS[sel.assay.toLowerCase()] || "#000000";
   const isAggregate = sel.id.includes("aggregate");
+  const biosampleMetadata = biosampleMetadataByAssembly[assembly].get(sel.id);
   let track: Track;
 
   // Generate display title
@@ -201,6 +224,12 @@ function generateTrack(
         url: sel.url ?? "",
         title,
         color,
+        ...(sel.assay.toLowerCase() === "ccre" && !isAggregate && biosampleMetadata
+          ? {
+              biosampleName: biosampleMetadata.name,
+              biosampleDisplayName: biosampleMetadata.displayName,
+            }
+          : {}),
       };
       break;
     case "rna-seq":
@@ -246,4 +275,18 @@ function generateTrack(
   }
 
   return callbacks ? injectCallbacks(track, callbacks) : track;
+}
+
+function createBiosampleTrackMetadataMap(data: BiosampleTrackData): Map<string, BiosampleTrackMetadata> {
+  return new Map(
+    data.tracks.flatMap((track) =>
+      track.assays.map((assay) => [
+        assay.id,
+        {
+          name: track.name,
+          displayName: track.displayName,
+        },
+      ])
+    )
+  );
 }

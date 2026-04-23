@@ -121,7 +121,9 @@ export default function GenomeBrowserView({
       onLeave,
       onCCREClick,
       onGeneClick,
-      ccreTooltip: (item: Rect) => <CCRETooltip assembly={entity.assembly} name={item.name} />,
+      ccreTooltip: (item: Rect, biosample) => (
+        <CCRETooltip assembly={entity.assembly} name={item.name} biosample={biosample} />
+      ),
       chromHmmTooltip: (rect: BulkBedRect, tissue: string, displayName: string) => (
         <ChromHmmTooltip rect={rect} tissue={tissue} displayName={displayName} />
       ),
