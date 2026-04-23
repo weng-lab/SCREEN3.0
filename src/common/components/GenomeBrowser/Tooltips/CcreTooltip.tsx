@@ -1,8 +1,9 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import { gql } from "common/types/generated";
 import { CLASS_COLORS } from "common/colors";
 import { CLASS_DESCRIPTIONS } from "common/consts";
 import { CcreTooltipBiosample } from "../TrackSelect/defaultTracks";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 
 interface CCRETooltipProps {
   assembly: string;
@@ -71,11 +72,6 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
     skip: !biosample,
   });
 
-  if (ccreError || biosampleError) {
-    return null;
-  }
-
-  const loading = ccreLoading || (biosample ? biosampleLoading : false);
   const biosampleScores = useMemo(() => {
     if (!biosample) return [];
 
@@ -86,6 +82,7 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
       return score == null ? [] : [{ label: MARKS[index], score: score.toFixed(2) }];
     });
   }, [biosample, biosampleData]);
+
   const maxZSscores = useMemo(() => {
     if (biosample || !ccreData?.cCREQuery?.[0]) return [];
 
@@ -94,6 +91,13 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
       return score == null ? [] : [{ label: MARKS[index], score: score.toFixed(2) }];
     });
   }, [biosample, ccreData]);
+
+  if (ccreError || biosampleError) {
+    return null;
+  }
+
+  const loading = ccreLoading || (biosample ? biosampleLoading : false);
+
   const scoreRows = biosample ? biosampleScores : maxZSscores;
   const biosampleDisplayName = biosampleData?.ccREBiosampleQuery?.biosamples?.[0]?.displayname ?? biosample?.displayname;
   const hasData = !!ccreData?.cCREQuery?.[0] && (!biosample || !!biosampleData?.ccREBiosampleQuery?.biosamples?.[0]);
@@ -111,7 +115,14 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
 
   return (
     <svg width={width} height={height}>
-      <rect width={width} height={height} fill="white" rx="4" ry="4" style={{ filter: `drop-shadow(0 0 2px #000000)` }} />
+      <rect
+        width={width}
+        height={height}
+        fill="white"
+        rx="4"
+        ry="4"
+        style={{ filter: `drop-shadow(0 0 2px #000000)` }}
+      />
 
       {loading || !hasData ? (
         <g>
@@ -136,7 +147,13 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
         </g>
       ) : (
         <g>
-          <rect x={padding} y={10} width={10} height={10} fill={CLASS_COLORS[ccreData?.cCREQuery?.[0]?.group] ?? "#8c8c8c"} />
+          <rect
+            x={padding}
+            y={10}
+            width={10}
+            height={10}
+            fill={CLASS_COLORS[ccreData?.cCREQuery?.[0]?.group] ?? "#8c8c8c"}
+          />
           <text x={padding + 16} y={titleY} fontSize={12} fontWeight="bold" fill="#000000">
             {name}
           </text>
