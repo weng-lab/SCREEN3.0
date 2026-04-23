@@ -1,3 +1,4 @@
+"use client";
 import { Launch } from "@mui/icons-material";
 import { Link as MuiLink, LinkProps as MuiLinkProps } from "@mui/material";
 import NextLink, { LinkProps as NextLinkProps } from "next/link";
