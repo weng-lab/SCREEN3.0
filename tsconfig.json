@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "src/",
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -19,7 +18,9 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
     "paths": {
-      "public/*": ["../public/*"]
+      "common/*": ["./src/common/*"],
+      "app/*": ["./src/app/*"],
+      "public/*": ["./public/*"]
     },
     "plugins": [
       {
