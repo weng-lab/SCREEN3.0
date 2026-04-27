@@ -37,9 +37,14 @@ const LegacyVersionsTable = () => {
               </Link>
             </TableCell>
             <TableCell rowSpan={2}>
-              Moore…Weng (2026)
-              <br />
-              <i>Nature</i>
+              <Link
+                href="https://www.nature.com/articles/s41586-025-09909-9"
+                target="_blank"
+                rel="noopener"
+                style={{ color: "inherit", textDecoration: "underline" }}
+              >
+                Moore...Weng (2026) <br /> <i>Nature</i>
+              </Link>
             </TableCell>
           </TableRow>
           <TableRow>
@@ -60,11 +65,18 @@ const LegacyVersionsTable = () => {
               </Link>
             </TableCell>
             <TableCell rowSpan={2}>
-              The ENCODE Project Consortium,
-              <br />
-              Moore…Weng (2020)
-              <br />
-              <i>Nature</i>
+              <Link
+                href="https://www.nature.com/articles/s41586-020-2493-4"
+                target="_blank"
+                rel="noopener"
+                style={{ color: "inherit", textDecoration: "underline" }}
+              >
+                The ENCODE Project Consortium,
+                <br />
+                Moore…Weng (2020)
+                <br />
+                <i>Nature</i>
+              </Link>
             </TableCell>
           </TableRow>
           <TableRow>
