@@ -11,20 +11,24 @@ import {
 import Config from "common/config.json";
 
 export function makeClient() {
-  const isServer = typeof window === "undefined";
-
-  const httpLink = isServer
-    ? new HttpLink({
-        uri: Config.API.CcreAPI,
-        headers: { "api-key": process.env.SCREEN_API_KEY! },
-      })
-    : new HttpLink({ uri: "/api/graphql" });
+  if (typeof window === "undefined") {
+    return new ApolloClient({
+      // SSR: hit the backend directly to avoid the /api/graphql proxy hop,
+      // attaching the API key which is only available server-side.
+      cache: new InMemoryCache(),
+      link: ApolloLink.from([
+        new SSRMultipartLink({ stripDefer: true }),
+        new HttpLink({
+          uri: Config.API.CcreAPI,
+          headers: { "api-key": process.env.SCREEN_API_KEY! },
+        }),
+      ]),
+    });
+  }
 
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link: isServer
-      ? ApolloLink.from([new SSRMultipartLink({ stripDefer: true }), httpLink])
-      : httpLink,
+    link: new HttpLink({ uri: "/api/graphql" }),
   });
 }
 
