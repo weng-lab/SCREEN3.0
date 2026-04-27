@@ -8,23 +8,23 @@ import {
   InMemoryCache,
   SSRMultipartLink,
 } from "@apollo/client-integration-nextjs";
+import Config from "common/config.json";
 
 export function makeClient() {
-  const httpLink = new HttpLink({
-    uri: "/api/graphql",
-  });
+  const isServer = typeof window === "undefined";
+
+  const httpLink = isServer
+    ? new HttpLink({
+        uri: Config.API.CcreAPI,
+        headers: { "api-key": process.env.SCREEN_API_KEY! },
+      })
+    : new HttpLink({ uri: "/api/graphql" });
 
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link:
-      typeof window === "undefined"
-        ? ApolloLink.from([
-            new SSRMultipartLink({
-              stripDefer: true,
-            }),
-            httpLink,
-          ])
-        : httpLink,
+    link: isServer
+      ? ApolloLink.from([new SSRMultipartLink({ stripDefer: true }), httpLink])
+      : httpLink,
   });
 }
 
