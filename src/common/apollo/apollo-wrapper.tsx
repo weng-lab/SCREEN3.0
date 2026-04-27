@@ -7,8 +7,7 @@ import {
   ApolloNextAppProvider,
   InMemoryCache,
   SSRMultipartLink,
-} from "@apollo/experimental-nextjs-app-support";
-// See https://www.apollographql.com/blog/using-apollo-client-with-next-js-13-releasing-an-official-library-to-support-the-app-router
+} from "@apollo/client-integration-nextjs";
 
 export function makeClient() {
   const httpLink = new HttpLink({
