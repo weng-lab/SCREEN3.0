@@ -30,7 +30,7 @@ const pageLinks: PageInfo[] = [
     subPages: [
       { pageName: "Overview", link: "/about" },
       { pageName: "Contact Us", link: "/about#contact-us" },
-      { pageName: "Version History", link: "/about/versions" },
+      { pageName: "Release History", link: "/about/versions" },
     ],
   },
   {

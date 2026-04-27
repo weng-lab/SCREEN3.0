@@ -1,9 +1,17 @@
 export type ReleaseNoteChild = {
-  title: string;
+  title?: string;
   description: string;
   screenshot?: string;
   imgWidth?: number;
   link?: string;
+};
+
+export type ReleaseNoteSection = {
+  title?: string;
+  description?: string;
+  screenshot?: string;
+  imgWidth?: number;
+  children?: ReleaseNoteChild[];
 };
 
 export type ReleaseNote = {
@@ -11,7 +19,7 @@ export type ReleaseNote = {
   version: string;
   date: string;
   title: string;
-  children: ReleaseNoteChild[];
+  sections: ReleaseNoteSection[];
 };
 
 export const releaseNotes: ReleaseNote[] = [
@@ -20,31 +28,63 @@ export const releaseNotes: ReleaseNote[] = [
     version: "v3.2026.1",
     date: "April 2026",
     title: "April Release",
-    children: [
+    sections: [
       {
-        title: "Overlapping Representative ChIP-seq Peaks",
-        link: "/GRCh38/gene/SOX4?open=BYegjCDKDyAaAsIAMQ",
-        description:
-          "The TF motif tab for cCREs now includes a table of overlapping representative ChIP-seq peaks, allowing users to view transcription factors, peak locations, and corresponding motif logos and coordinates when motifs are present. Additionally, a new genome browser track displays representative ChIP-seq peaks, with green boxes highlighting regions containing motifs.",
-        screenshot: "rpeakstable.png",
-        imgWidth: 500,
+        title: "Features, Updates, Status",
+        children: [
+          {
+            description:
+              "The transcription factor (TF) motifs tab for cCREs, accessible via the More icon in the sidebar, now includes a table of representative TF ChIP-seq peaks overlapping each cCRE. This feature enables users to identify TFs binding at a given cCRE, examine individual ChIP-seq peak locations, and view corresponding TF motif logos and motif coordinates when motif sites are present. In addition, a new genome browser track, accessible via the Genome Browser icon, displays representative ChIP-seq peaks, with motif sites within peaks highlighted as green boxes.",
+            link: "/GRCh38/gene/SOX4?open=BYegjCDKDyAaAsIAMQ",
+            screenshot: "rpeakstable.png",
+            imgWidth: 500,
+          },
+          {
+            description:
+              "cCREs now include PhastCons conservation scores across mammals (240 species), vertebrates (100 species), and primates (43 species), enabling improved assessment of evolutionary conservation.",
+            link: "/GRCh38/ccre/EH38E3314260/conservation?open=BYegDCCiASDMAclawIwBYBMA2CB2IA",
+          },
+          {
+            description:
+              "Users can now select and view whole-genome bisulfite sequencing (WGBS) tracks for selected ENCODE human biosamples in the genome browser, with visualization limited to CpG methylation.",
+            screenshot: "cpgCoverage.png",
+            imgWidth: 800,
+          },
+          {
+            description:
+              "The gene page now includes a table of promoter cCREs, enabling users to explore associated promoter regulatory elements.",
+            link: "/GRCh38/gene/SP1/ccres?open=BYegDCCiASDMAclawIwBYBMA2CB2ANKCiAMoAKxKQA",
+          },
+          {
+            description:
+              "Users can now search by gene ID (e.g., “ENSG…”). Searches using full cCRE accessions are now consistently faster, addressing prior latency issues.",
+          },
+        ],
       },
       {
-        title: "PhastCons Conservation Scores",
+        title: "Notes / Dependencies",
         description:
-          "cCREs now include PhastCons conservation scores across mammals (241 species), vertebrates (100 species), and primates (43 species), enabling better assessment of evolutionary conservation.",
+          "Requests now go through a server-side route handler which attaches an API key to all requests. This adds a small but significant time cost to each request. Going forward, where appropriate, we can gradually transition to server components and server-side fetches, which would avoid this extra hop.",
       },
+    ],
+  },
+  {
+    id: "screen-2024",
+    version: "SCREEN 2024",
+    date: "2024",
+    title: "Legacy release supporting cCRE Registry Version 4",
+    sections: [
       {
-        title: "CpG Coverage",
-        description:
-          "Users can now select and view WGBS (CpG coverage) tracks for some of ENCODE human biosamples directly in the genome browser.",
-        screenshot: "cpgCoverage.png",
-        imgWidth: 800,
-      },
-      {
-        title: "Promoter cCREs",
-        description:
-          "Gene entity page now include a table of promoter cCREs, allowing users to explore associated promoter regulatory elements.",
+        title: "Highlights",
+        children: [
+          {
+            description:
+              "The SCREEN 2024 release carried over the core features and data from the previous release, with updates to support cCRE Registry Version 4. The best feature of this release was the new and improved user interface which made navigation and data exploration more intuitive and efficient.",
+            link: "https://screen-v4.wenglab.org/",
+            screenshot: "SCREEN2024.png",
+            imgWidth: 500,
+          },
+        ],
       },
     ],
   },
@@ -52,17 +92,29 @@ export const releaseNotes: ReleaseNote[] = [
     id: "screen-2020",
     version: "SCREEN 2020",
     date: "2020",
-    title: "Legacy releases supporting Registry Versions 2 and 3 during the earlier SCREEN platform cycle.",
-    children: [
+    title: "Legacy releases supporting cCRE Registry Versions 2 and 3",
+    sections: [
       {
-        title: "Registry expansion era",
-        description:
-          "This period captures the transition through earlier Registry versions and preserves the interface used for a large portion of the prior SCREEN lifecycle.",
-      },
-      {
-        title: "Reproducibility support",
-        description:
-          "Maintaining these releases helps users revisit analyses, screenshots, and workflows that were created against older platform states.",
+        screenshot: "SCREEN2020v2v3.png",
+        imgWidth: 500,
+        children: [
+          {
+            title: "Highlights",
+            description:
+              "The SCREEN 2020 release supported cCRE Registry Versions 2 and 3, providing users with access to new data types and enhanced visualization tools. The UI also allowed for users to search for elements in the form of a gene name or alias, a SNP rsID, a cCRE accession, or a genomic region",
+          },
+          {
+            title: "Versions",
+            description:
+              "cCRE Registry Version 2",
+            link: "https://screen-v2.wenglab.org/",
+          },
+          {
+            description:
+              "cCRE Registry Version 3",
+            link: "https://screen-v3.wenglab.org/",
+          },
+        ],
       },
     ],
   },
@@ -70,17 +122,18 @@ export const releaseNotes: ReleaseNote[] = [
     id: "screen-2018",
     version: "SCREEN 2018",
     date: "2018",
-    title: "Original hg19-era SCREEN release that introduced the earlier browser and data access experience.",
-    children: [
+    title: "hg19 SCREEN release supporting cCRE Registry Version 1",
+    sections: [
       {
-        title: "Initial launch",
-        description:
-          "The first SCREEN release established the original browsing and discovery workflow for regulatory annotations in the hg19-era experience.",
-      },
-      {
-        title: "Historical reference",
-        description:
-          "This version serves as the earliest point in the release timeline and anchors the long-term history of the application.",
+        children: [
+          {
+            description:
+              "The initial release of SCREEN in 2018 supported cCRE Registry Version 1 and was based on the hg19 human genome assembly. This release provided users with download access to the V1 cCREs",
+            link: "https://screen-v1.wenglab.org/",
+            screenshot: "SCREEN2018.png",
+            imgWidth: 500,
+          },
+        ],
       },
     ],
   },

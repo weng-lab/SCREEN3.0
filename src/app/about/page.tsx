@@ -266,7 +266,7 @@ export default function About() {
               </Typography>
               <Typography variant="body1" paragraph>
                 Earlier versions of SCREEN remain available for reference and reproducibility but are no longer actively
-                updated. Users should be aware that data, annotations, and features in legacy versions may differ from
+                updated. Users should be aware that data, annotations, and features in legacy releases may differ from
                 the current release.
               </Typography>
               <Typography variant="body1" paragraph>
@@ -309,7 +309,7 @@ export default function About() {
             </Grid>
             <Grid size={12} id="versions">
               <Typography variant="body1" paragraph>
-                <b>Legacy versions:</b>
+                <b>Legacy releases:</b>
               </Typography>
               <LegacyVersionsTable />
             </Grid>

@@ -12,13 +12,13 @@ const LegacyVersionsModal = () => {
   return (
     <>
       <Button startIcon={<InfoOutlinedIcon />} variant="outlined" onClick={() => setOpen(true)}>
-        Legacy Versions
+        Legacy Releases
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
         <DialogTitle sx={{ pr: 6 }}>
-          Legacy Versions
+          Legacy Releases
           <IconButton
-            aria-label="Close legacy versions"
+            aria-label="Close legacy releases"
             onClick={() => setOpen(false)}
             sx={{ position: "absolute", right: 12, top: 12 }}
           >

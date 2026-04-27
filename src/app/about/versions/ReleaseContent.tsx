@@ -1,4 +1,5 @@
-import { Box, Link, Stack, Typography } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Box, IconButton, Link, Stack, Typography } from "@mui/material";
 import { ReleaseNote } from "./releaseNotes";
 
 type ReleaseContentProps = {
@@ -34,43 +35,118 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
       <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
         {release.title}
       </Typography>
-      <Stack spacing={2}>
-        {release.children.map((child) => (
-          <Box key={`${release.id}-${child.title}`}>
+      <Stack spacing={4}>
+        {release.sections.map((section, sectionIndex) => (
+          <Stack key={`${release.id}-section-${section.title ?? sectionIndex}`} spacing={2}>
+            {section.title && (
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                {section.title}
+              </Typography>
+            )}
             <Box
               sx={{
                 display: "grid",
-                gridTemplateColumns: child.screenshot
-                  ? { xs: "1fr", md: "minmax(0, 1fr) " + (child.imgWidth ? child.imgWidth + "px" : "280px") }
+                gridTemplateColumns: section.screenshot
+                  ? {
+                      xs: "1fr",
+                      md: "minmax(0, 1fr) " + (section.imgWidth ? section.imgWidth + "px" : "280px"),
+                    }
                   : "1fr",
                 gap: 2,
                 alignItems: "start",
               }}
             >
-              <Box>
-                {child.link ? (
-                  <Link
-                    href={child.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    underline="hover"
-                    color="black"
-                    sx={{ display: "inline-block", mb: 1 }}
-                  >
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                      {child.title}
-                    </Typography>
-                  </Link>
-                ) : (
-                  <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
-                    {child.title}
+              <Stack spacing={2}>
+                {section.description && (
+                  <Typography variant="body1" color="text.secondary">
+                    {section.description}
                   </Typography>
                 )}
-                <Typography variant="body1" color="text.secondary">
-                  {child.description}
-                </Typography>
-              </Box>
-              {child.screenshot && (
+                {section.children?.map((child, childIndex) => (
+                  <Box key={`${release.id}-${sectionIndex}-${child.title ?? childIndex}`}>
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: child.screenshot
+                          ? {
+                              xs: "1fr",
+                              md: "minmax(0, 1fr) " + (child.imgWidth ? child.imgWidth + "px" : "280px"),
+                            }
+                          : "1fr",
+                        gap: 2,
+                        alignItems: "start",
+                      }}
+                    >
+                      <Box>
+                        {child.title ? (
+                          child.link ? (
+                            <Link
+                              href={child.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              underline="hover"
+                              color="black"
+                              sx={{ display: "inline-block", mb: 1 }}
+                            >
+                              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                {child.title}
+                              </Typography>
+                            </Link>
+                          ) : (
+                            <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                              {child.title}
+                            </Typography>
+                          )
+                        ) : null}
+                        {child.link ? (
+                          <Typography variant="body1" color="text.secondary">
+                            {child.description}{" "}
+                            <IconButton
+                              component="a"
+                              href={child.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Open ${child.title ?? "release note link"} in a new tab`}
+                              size="small"
+                              sx={{
+                                ml: 0.25,
+                                p: 0.25,
+                                verticalAlign: "middle",
+                                color: "primary.main",
+                              }}
+                            >
+                              <OpenInNewIcon fontSize="inherit" />
+                            </IconButton>
+                          </Typography>
+                        ) : (
+                          <Typography variant="body1" color="text.secondary">
+                            {child.description}
+                          </Typography>
+                        )}
+                      </Box>
+                      {child.screenshot && (
+                        <Box
+                          sx={{
+                            overflow: "hidden",
+                            borderRadius: 2,
+                            border: "1px solid",
+                            borderColor: "grey.300",
+                            bgcolor: "grey.100",
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={`/versionScreenshots/${child.screenshot}`}
+                            alt={`${child.title ?? section.title ?? release.title} screenshot`}
+                            sx={{ display: "block", width: "100%", height: "auto" }}
+                          />
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                ))}
+              </Stack>
+              {section.screenshot && (
                 <Box
                   sx={{
                     overflow: "hidden",
@@ -82,14 +158,14 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
                 >
                   <Box
                     component="img"
-                    src={`/versionScreenshots/${child.screenshot}`}
-                    alt={`${child.title} screenshot`}
+                    src={`/versionScreenshots/${section.screenshot}`}
+                    alt={`${section.title ?? release.title} screenshot`}
                     sx={{ display: "block", width: "100%", height: "auto" }}
                   />
                 </Box>
               )}
             </Box>
-          </Box>
+          </Stack>
         ))}
       </Stack>
     </Box>
