@@ -27,9 +27,6 @@ const nextConfig = {
       new URL("https://genome.ucsc.edu/**"),
     ],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 };
 
 export default nextConfig;

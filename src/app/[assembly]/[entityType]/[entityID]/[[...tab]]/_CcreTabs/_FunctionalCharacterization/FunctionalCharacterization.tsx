@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Table } from "@weng-lab/ui-components";
 import { Stack } from "@mui/material";
 import { gql } from "common/types/generated/gql";
