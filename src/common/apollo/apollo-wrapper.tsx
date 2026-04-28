@@ -7,25 +7,28 @@ import {
   ApolloNextAppProvider,
   InMemoryCache,
   SSRMultipartLink,
-} from "@apollo/experimental-nextjs-app-support";
-// See https://www.apollographql.com/blog/using-apollo-client-with-next-js-13-releasing-an-official-library-to-support-the-app-router
+} from "@apollo/client-integration-nextjs";
+import Config from "common/config.json";
 
 export function makeClient() {
-  const httpLink = new HttpLink({
-    uri: "/api/graphql",
-  });
+  if (typeof window === "undefined") {
+    return new ApolloClient({
+      // SSR: hit the backend directly to avoid the /api/graphql proxy hop,
+      // attaching the API key which is only available server-side.
+      cache: new InMemoryCache(),
+      link: ApolloLink.from([
+        new SSRMultipartLink({ stripDefer: true }),
+        new HttpLink({
+          uri: Config.API.CcreAPI,
+          headers: { "api-key": process.env.SCREEN_API_KEY! },
+        }),
+      ]),
+    });
+  }
 
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link:
-      typeof window === "undefined"
-        ? ApolloLink.from([
-            new SSRMultipartLink({
-              stripDefer: true,
-            }),
-            httpLink,
-          ])
-        : httpLink,
+    link: new HttpLink({ uri: "/api/graphql" }),
   });
 }
 

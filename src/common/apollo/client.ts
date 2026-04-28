@@ -1,5 +1,5 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
-import { registerApolloClient } from "@apollo/experimental-nextjs-app-support";
+import { registerApolloClient } from "@apollo/client-integration-nextjs";
 import Config from "common/config.json";
 /**
  * @returns an ApolloClient instance scoped for the current request
