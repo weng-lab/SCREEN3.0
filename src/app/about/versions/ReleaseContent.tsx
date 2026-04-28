@@ -63,7 +63,34 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
                   </Typography>
                 )}
                 {section.children?.map((child, childIndex) => (
-                  <Box key={`${release.id}-${sectionIndex}-${child.title ?? childIndex}`}>
+                  <Box
+                    key={`${release.id}-${sectionIndex}-${child.title ?? childIndex}`}
+                    sx={
+                      section.bulletedChildren
+                        ? {
+                            display: "grid",
+                            gridTemplateColumns: "16px minmax(0, 1fr)",
+                            columnGap: 1,
+                            alignItems: "start",
+                          }
+                        : undefined
+                    }
+                  >
+                    {section.bulletedChildren && (
+                      <Box
+                        aria-hidden="true"
+                        sx={{
+                          alignSelf: "start",
+                          color: "text.secondary",
+                          fontSize: "2rem",
+                          lineHeight: 1,
+                          mt: "-0.10em",
+                          textAlign: "center",
+                        }}
+                      >
+                        •
+                      </Box>
+                    )}
                     <Box
                       sx={{
                         display: "grid",

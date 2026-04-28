@@ -17,7 +17,7 @@ const LegacyVersionsTable = () => {
               <b>Registry of cCREs Version</b>
             </TableCell>
             <TableCell>
-              <b>UI Version</b>
+              <b>UI Release</b>
             </TableCell>
             <TableCell>
               <b>URL</b>

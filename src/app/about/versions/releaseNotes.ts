@@ -11,6 +11,7 @@ export type ReleaseNoteSection = {
   description?: string;
   screenshot?: string;
   imgWidth?: number;
+  bulletedChildren?: boolean;
   children?: ReleaseNoteChild[];
 };
 
@@ -31,6 +32,7 @@ export const releaseNotes: ReleaseNote[] = [
     sections: [
       {
         title: "Features, Updates, Status",
+        bulletedChildren: true,
         children: [
           {
             description:
@@ -60,11 +62,6 @@ export const releaseNotes: ReleaseNote[] = [
               "Users can now search by gene ID (e.g., “ENSG…”). Searches using full cCRE accessions are now consistently faster, addressing prior latency issues.",
           },
         ],
-      },
-      {
-        title: "Notes / Dependencies",
-        description:
-          "Requests now go through a server-side route handler which attaches an API key to all requests. This adds a small but significant time cost to each request. Going forward, where appropriate, we can gradually transition to server components and server-side fetches, which would avoid this extra hop.",
       },
     ],
   },
