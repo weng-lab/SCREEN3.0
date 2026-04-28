@@ -115,7 +115,12 @@ const TranscriptExpressionTable = ({
       label={TableLabel}
       rows={rows}
       loading={loading}
-      downloadFileName={"TSS Expression at " + selectedPeak}
+      slotProps={{
+        toolbar: {
+          csvOptions: { fileName: "TSS Expression at " + selectedPeak },
+          excelOptions: { fileName: "TSS Expression at " + selectedPeak },
+        },
+      }}
     />
   );
 };

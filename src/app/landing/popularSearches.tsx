@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Grid, Grow, Box, Stack, Typography, IconButton } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";

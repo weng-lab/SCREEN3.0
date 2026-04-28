@@ -1,4 +1,5 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { SilencersQueryQuery } from "common/types/generated/graphql";
@@ -16,7 +17,7 @@ query silencersQuery($accession: [String]!){
 }
 `)
 
-export type useSilencersDataReturn = { data: SilencersQueryQuery['silencersQuery'] | undefined; loading: boolean; error: ApolloError }
+export type useSilencersDataReturn = { data: SilencersQueryQuery['silencersQuery'] | undefined; loading: boolean; error: ErrorLike }
 
 export function useSilencersData({ accession, assembly }: useSilencersDataParams) {
   const { data, loading, error } = useQuery(Silencers_Query, {

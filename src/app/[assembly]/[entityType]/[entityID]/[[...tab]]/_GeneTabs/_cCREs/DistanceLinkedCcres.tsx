@@ -6,7 +6,7 @@ import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import CalculateIcon from "@mui/icons-material/Calculate";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { Assembly } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
@@ -33,6 +33,8 @@ export default function DistanceLinkedCcres({
 }) {
   const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
   const [distance, setDistance] = useState<number>(10000);
+  const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { data: dataNearby, loading: loadingNearby } = useNearbycCREs(
     geneData,
@@ -40,21 +42,6 @@ export default function DistanceLinkedCcres({
     assembly as Assembly,
     distance
   );
-
-  const [virtualAnchor, setVirtualAnchor] = React.useState<{
-    getBoundingClientRect: () => DOMRect;
-  } | null>(null);
-
-  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    if (virtualAnchor) {
-      setVirtualAnchor(null);
-    } else {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setVirtualAnchor({
-        getBoundingClientRect: () => rect,
-      });
-    }
-  }, [virtualAnchor]);
 
   const handleMethodChange = (method: "body" | "tss" | "3gene") => {
     setCalcMethod(method);
@@ -65,9 +52,7 @@ export default function DistanceLinkedCcres({
   };
 
   const handleClickAway = () => {
-    if (virtualAnchor) {
-      setVirtualAnchor(null);
-    }
+    setOpen(false);
   };
 
   const { data: dataCcreDetails, loading: loadingCcreDetails } = useCcreData({
@@ -199,24 +184,34 @@ export default function DistanceLinkedCcres({
           <Typography>No Nearby cCREs Found</Typography>
         </Stack>
         <Tooltip title="Calculate Nearby cCREs by">
-          <Button onClick={handleClick} variant="outlined" endIcon={<CalculateIcon />}>
+          <Button
+            ref={buttonRef}
+            onClick={() => setOpen(true)}
+            variant="outlined"
+            endIcon={<CalculateIcon />}
+          >
             Change Method
           </Button>
         </Tooltip>
       </Stack>
     ),
-    [handleClick]
+    []
   );
 
-  const toolbarSlot = useMemo(
+  const toolbarExtra = useMemo(
     () => (
       <Tooltip title="Calculate Nearby cCREs by">
-        <Button onClick={handleClick} variant="outlined" endIcon={<CalculateIcon />}>
+        <Button
+          ref={buttonRef}
+          onClick={() => setOpen(true)}
+          variant="outlined"
+          endIcon={<CalculateIcon />}
+        >
           Change Method
         </Button>
       </Tooltip>
     ),
-    [handleClick]
+    []
   );
 
   const labelTooltip = useMemo(
@@ -256,12 +251,16 @@ export default function DistanceLinkedCcres({
         }}
         emptyTableFallback={emptyTableFallback}
         divHeight={{ height: assembly === "GRCh38" ? "400px" : "600px" }}
-        toolbarSlot={toolbarSlot}
-        labelTooltip={labelTooltip}
+        slotProps={{
+          toolbar: {
+            extra: toolbarExtra,
+            labelTooltip: labelTooltip,
+          },
+        }}
       />
       <CalculateNearbyCCREsPopper
-        open={Boolean(virtualAnchor)}
-        anchorEl={virtualAnchor}
+        open={open}
+        anchorEl={buttonRef.current}
         handleClickAway={handleClickAway}
         distance={distance}
         geneName={geneData.data?.name}

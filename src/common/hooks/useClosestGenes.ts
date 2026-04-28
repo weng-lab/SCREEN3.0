@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "common/types/generated/gql";
 import { useQuery } from "@apollo/client/react";
 
 

@@ -80,33 +80,14 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
     method,
   });
 
-  //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
-  //setting the anchorEl to the button
-  const [virtualAnchor, setVirtualAnchor] = useState<{
-    getBoundingClientRect: () => DOMRect;
-  } | null>(null);
+  const [open, setOpen] = useState(false);
 
   const handleClickClose = () => {
-    if (virtualAnchor) {
-      setVirtualAnchor(null);
-    }
+    setOpen(false);
   };
 
   const handleMethodSelected = (method: string) => {
     setMethod(method);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (virtualAnchor) {
-      // If already open, close it
-      setVirtualAnchor(null);
-    } else {
-      // Open it, store the current position
-      const rect = event.currentTarget.getBoundingClientRect();
-      setVirtualAnchor({
-        getBoundingClientRect: () => rect,
-      });
-    }
   };
 
   // make types for the data
@@ -200,19 +181,23 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
             )}
           </Stack>
           <Tooltip title="Advanced Filters">
-            <Button variant="outlined" onClick={handleClick}>
+            <Button variant="outlined" onClick={() => setOpen(true)}>
               Change Method
             </Button>
           </Tooltip>
         </Stack>
       ),
-      toolbarSlot: (
-        <Tooltip title="Advanced Filters">
-          <Button variant="outlined" onClick={handleClick}>
-            Change Method
-          </Button>
-        </Tooltip>
-      ),
+      slotProps: {
+        toolbar: {
+          extra: (
+            <Tooltip title="Advanced Filters">
+              <Button variant="outlined" onClick={() => setOpen(true)}>
+                Change Method
+              </Button>
+            </Tooltip>
+          ),
+        },
+      },
     },
   ];
 
@@ -257,7 +242,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       >
         <SelectCompuGenesMethod
           method={method}
-          open={Boolean(virtualAnchor)}
+          open={open}
           setOpen={handleClickClose}
           onMethodSelect={handleMethodSelected}
         />

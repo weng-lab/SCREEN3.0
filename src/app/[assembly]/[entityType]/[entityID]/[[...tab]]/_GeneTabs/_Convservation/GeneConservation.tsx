@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";

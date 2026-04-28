@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { Button, Stack, InputLabel, Select, MenuItem, SelectChangeEvent, Box } from "@mui/material";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Download } from "@mui/icons-material";
 import { allColsHidden, BiosampleTable, EncodeBiosample } from "@weng-lab/ui-components";
 import { GridColumnVisibilityModel } from "@mui/x-data-grid-premium";

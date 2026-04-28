@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { DNALogo } from "logo-test";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import {
   GRID_ROW_GROUPING_SINGLE_GROUPING_FIELD,  

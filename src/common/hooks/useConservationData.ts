@@ -1,4 +1,5 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { GetcCreConservationDataQuery } from "common/types/generated/graphql";
@@ -24,7 +25,7 @@ query getcCREConservationData($accession: [String]!){
 }
 `)
 
-export type usecCREConservationDataReturn = { data: GetcCreConservationDataQuery['getcCREConservationDataQuery'] | undefined; loading: boolean; error: ApolloError }
+export type usecCREConservationDataReturn = { data: GetcCreConservationDataQuery['getcCREConservationDataQuery'] | undefined; loading: boolean; error: ErrorLike }
 
 export function useConservationData({ accession, assembly }: usecCREConservationDataParams) {
   const { data, loading, error } = useQuery(cCREConservationData_Query, {

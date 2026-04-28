@@ -83,7 +83,7 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
     {
       data: data,
       loading: loading,
-      error: error,
+      error: error as any,
     },
     dataStore
   );

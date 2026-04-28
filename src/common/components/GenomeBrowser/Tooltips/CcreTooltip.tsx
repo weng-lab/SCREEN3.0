@@ -1,33 +1,27 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import { gql } from "common/types/generated";
 import { CLASS_COLORS } from "common/colors";
 import { CLASS_DESCRIPTIONS } from "common/consts";
-import React, { useMemo } from "react";
+import { CcreTooltipBiosample } from "../TrackSelect/defaultTracks";
+import { useMemo } from "react";
 
 interface CCRETooltipProps {
   assembly: string;
   name: string;
-  biosample?: {
-    displayname?: string;
-    dnase?: string;
-    h3k4me3?: string;
-    h3k27ac?: string;
-    ctcf?: string;
-    atac?: string;
-    name?: string;
-  };
+  biosample?: CcreTooltipBiosample;
 }
 
-const QUERY = gql(`
-  query cCRE_1(
-    $assembly: String!
-    $accession: [String!]
-    $experiments: [String!]
-  ) {
-    cCREQuery(assembly: $assembly, accession: $accession) {
-      group
-      zScores(experiments: $experiments) {
-        experiment
-        score
+const BIOSAMPLE_QUERY = gql(`
+  query cCREBiosampleTooltip($assembly: String!, $biosampleName: [String!], $accession: [String!]) {
+    ccREBiosampleQuery(assembly: $assembly, name: $biosampleName) {
+      biosamples {
+        name
+        displayname
+        cCREZScores(accession: $accession) {
+          assay
+          score
+          experiment_accession
+        }
       }
     }
   }
@@ -46,43 +40,92 @@ const MAXZ_QUERY = gql(`
   }
 `);
 
-const biosampleExperiments = (x) => [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac].filter((xx) => !!xx);
-
 const MARKS = ["DNase", "H3K4me3", "H3K27ac", "CTCF", "ATAC"];
-const marks = (x) => [x.dnase, x.h3k4me3, x.h3k27ac, x.ctcf, x.atac].map((x, i) => x && MARKS[i]).filter((xx) => !!xx);
+const ASSAY_ORDER = ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"];
+
+function truncate(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength - 3)}...`;
+}
 
 export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipProps) {
-  const experiments = useMemo(
-    () => (biosample ? biosampleExperiments(biosample) : ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"]),
-    [biosample]
-  );
-
-  const { data, loading, error } = useQuery(biosample ? QUERY : MAXZ_QUERY, {
+  const {
+    data: ccreData,
+    loading: ccreLoading,
+    error: ccreError,
+  } = useQuery(MAXZ_QUERY, {
     variables: {
       assembly,
-      accession: name,
-      experiments,
+      accession: [name],
     },
   });
+  const {
+    data: biosampleData,
+    loading: biosampleLoading,
+    error: biosampleError,
+  } = useQuery(BIOSAMPLE_QUERY, {
+    variables: {
+      assembly: assembly.toLowerCase(),
+      accession: [name],
+      biosampleName: biosample?.name ? [biosample.name] : undefined,
+    },
+    skip: !biosample,
+  });
 
-  if (error) {
+  const biosampleScores = useMemo(() => {
+    if (!biosample) return [];
+
+    const zScores = biosampleData?.ccREBiosampleQuery?.biosamples?.[0]?.cCREZScores ?? [];
+
+    return ASSAY_ORDER.flatMap((assay, index) => {
+      const score = zScores.find((entry) => entry?.assay?.toLowerCase() === assay)?.score;
+      return score == null ? [] : [{ label: MARKS[index], score: score.toFixed(2) }];
+    });
+  }, [biosample, biosampleData]);
+
+  const maxZSscores = useMemo(() => {
+    if (biosample || !ccreData?.cCREQuery?.[0]) return [];
+
+    return ASSAY_ORDER.flatMap((assay, index) => {
+      const score = ccreData.cCREQuery[0][assay];
+      return score == null ? [] : [{ label: MARKS[index], score: score.toFixed(2) }];
+    });
+  }, [biosample, ccreData]);
+
+  if (ccreError || biosampleError) {
     return null;
   }
 
-  const width = 400;
-  const height = loading || !data?.cCREQuery?.[0] ? 40 : 210;
-  const padding = 16;
-  const lineHeight = 20;
-  const startY = padding + 35;
+  const loading = ccreLoading || (biosample ? biosampleLoading : false);
+
+  const scoreRows = biosample ? biosampleScores : maxZSscores;
+  const biosampleDisplayName = biosampleData?.ccREBiosampleQuery?.biosamples?.[0]?.displayname ?? biosample?.displayname;
+  const hasData = !!ccreData?.cCREQuery?.[0] && (!biosample || !!biosampleData?.ccREBiosampleQuery?.biosamples?.[0]);
+  const width = 236;
+  const padding = 10;
+  const compactLineHeight = 16;
+  const titleY = 22;
+  const groupY = 40;
+  const hintY = 56;
+  const sectionLabelY = 74;
+  const biosampleY = 90;
+  const scoresStartY = biosample ? 108 : 90;
+  const height = loading || !hasData ? 44 : scoresStartY + scoreRows.length * compactLineHeight + 2;
+  const truncatedBiosampleName = biosampleDisplayName ? truncate(biosampleDisplayName, 34) : undefined;
 
   return (
     <svg width={width} height={height}>
-      {/* Background rectangle with nice border */}
-      <rect width={width} height={height} fill="#ffffff" stroke="#000000" strokeWidth="2" rx="4" ry="4" />
+      <rect
+        width={width}
+        height={height}
+        fill="white"
+        rx="4"
+        ry="4"
+        style={{ filter: `drop-shadow(0 0 2px #000000)` }}
+      />
 
-      {loading || !data?.cCREQuery?.[0] ? (
+      {loading || !hasData ? (
         <g>
-          {/* Loading indicator - simplified circle */}
           <circle
             cx={width / 2}
             cy={height / 2}
@@ -104,56 +147,40 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
         </g>
       ) : (
         <g>
-          {/* cCRE group color indicator */}
           <rect
             x={padding}
-            y={padding + 3}
+            y={10}
             width={10}
             height={10}
-            fill={CLASS_COLORS[data.cCREQuery[0].group] ?? "#8c8c8c"}
+            fill={CLASS_COLORS[ccreData?.cCREQuery?.[0]?.group] ?? "#8c8c8c"}
           />
-
-          {/* cCRE name */}
-          <text x={padding + 16} y={padding + 12} fontSize="24" fontFamily="Arial, sans-serif" fill="#000000">
+          <text x={padding + 16} y={titleY} fontSize={12} fontWeight="bold" fill="#000000">
             {name}
           </text>
-
-          {/* cCRE group type */}
-          <text x={padding} y={startY} fontSize="21" fontFamily="Arial, sans-serif" fill="#000000">
-            {CLASS_DESCRIPTIONS[data.cCREQuery[0].group]}
+          <text x={padding} y={groupY} fontSize={12} fill="#000000">
+            {CLASS_DESCRIPTIONS[ccreData?.cCREQuery?.[0]?.group]}
           </text>
-
-          {/* Click instruction */}
-          <text x={padding} y={startY + lineHeight} fontSize="19" fontFamily="Arial, sans-serif" fill="#666666">
+          <text x={padding} y={hintY} fontSize={12} fill="#666666">
             Click for details about this cCRE
           </text>
-
-          {/* Header text */}
-          <text
-            x={padding}
-            y={startY + lineHeight * 2.5}
-            fontSize="19"
-            fontFamily="Arial, sans-serif"
-            fontWeight="bold"
-            fill="#000000"
-          >
-            {biosample ? "Z-scores in " + biosample.displayname : "Max Z-scores across all biosamples:"}
+          <text x={padding} y={sectionLabelY} fontSize={12} fontWeight="bold" fill="#000000">
+            {biosample ? "Biosample z-scores" : "Max z-scores across biosamples"}
           </text>
-
-          {/* Z-scores data */}
-          {(biosample ? marks(biosample) : MARKS).map((mark, i) => {
-            const y = startY + lineHeight * (3.5 + i);
-            const score = biosample
-              ? data.cCREQuery[0].zScores.find((xx) => xx.experiment === experiments[i])?.score.toFixed(2)
-              : data.cCREQuery[0][experiments[i]]?.toFixed(2);
+          {biosample && truncatedBiosampleName && (
+            <text x={padding} y={biosampleY} fontSize={12} fill="#000000">
+              {truncatedBiosampleName}
+            </text>
+          )}
+          {scoreRows.map((row, i) => {
+            const y = scoresStartY + i * compactLineHeight;
 
             return (
               <g key={i}>
-                <text x={padding} y={y} fontSize="19" fontFamily="Arial, sans-serif" fontWeight="bold" fill="#000000">
-                  {mark}:
+                <text x={padding} y={y} fontSize={12} fontWeight="bold" fill="#000000">
+                  {row.label}:
                 </text>
-                <text x={padding + 120} y={y} fontSize="19" fontFamily="Arial, sans-serif" fill="#000000">
-                  {score}
+                <text x={padding + 76} y={y} fontSize={12} fill="#000000">
+                  {row.score}
                 </text>
               </g>
             );
