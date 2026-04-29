@@ -6,6 +6,8 @@ type ReleaseContentProps = {
   release: ReleaseNote;
 };
 
+const DESCRIPTION_MIN_WIDTH = 340;
+
 const ReleaseContent = ({ release }: ReleaseContentProps) => {
   return (
     <Box
@@ -45,18 +47,19 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
             )}
             <Box
               sx={{
-                display: "grid",
-                gridTemplateColumns: section.screenshot
-                  ? {
-                      xs: "1fr",
-                      md: "minmax(0, 1fr) " + (section.imgWidth ? section.imgWidth + "px" : "280px"),
-                    }
-                  : "1fr",
+                display: "flex",
+                flexWrap: "wrap",
                 gap: 2,
                 alignItems: "start",
               }}
             >
-              <Stack spacing={2}>
+              <Stack
+                spacing={2}
+                sx={{
+                  flex: "1 1 0",
+                  minWidth: `min(100%, ${DESCRIPTION_MIN_WIDTH}px)`,
+                }}
+              >
                 {section.description && (
                   <Typography variant="body1" color="text.secondary">
                     {section.description}
@@ -93,18 +96,18 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
                     )}
                     <Box
                       sx={{
-                        display: "grid",
-                        gridTemplateColumns: child.screenshot
-                          ? {
-                              xs: "1fr",
-                              md: "minmax(0, 1fr) " + (child.imgWidth ? child.imgWidth + "px" : "280px"),
-                            }
-                          : "1fr",
+                        display: "flex",
+                        flexWrap: "wrap",
                         gap: 2,
                         alignItems: "start",
                       }}
                     >
-                      <Box>
+                      <Box
+                        sx={{
+                          flex: "1 1 0",
+                          minWidth: `min(100%, ${DESCRIPTION_MIN_WIDTH}px)`,
+                        }}
+                      >
                         {child.title ? (
                           child.link ? (
                             <Link
@@ -154,6 +157,9 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
                       {child.screenshot && (
                         <Box
                           sx={{
+                            flex: `0 1 ${child.imgWidth ?? 280}px`,
+                            width: "100%",
+                            maxWidth: child.imgWidth ?? 280,
                             overflow: "hidden",
                             borderRadius: 2,
                             border: "1px solid",
@@ -176,6 +182,9 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
               {section.screenshot && (
                 <Box
                   sx={{
+                    flex: `0 1 ${section.imgWidth ?? 280}px`,
+                    width: "100%",
+                    maxWidth: section.imgWidth ?? 280,
                     overflow: "hidden",
                     borderRadius: 2,
                     border: "1px solid",
