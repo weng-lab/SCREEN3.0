@@ -1,0 +1,242 @@
+rank	species	common_name	order	primate_group	color_group	dist_to_human	color_label
+1	Homo_sapiens	Human	PRIMATES	GREAT_APES	GREAT_APES	0	Great Apes
+2	Pan_paniscus	Bonobo	PRIMATES	GREAT_APES	GREAT_APES	0.01215039	Great Apes
+3	Pan_troglodytes	Chimpanzee	PRIMATES	GREAT_APES	GREAT_APES	0.0120009	Great Apes
+4	Gorilla_gorilla	Western Lowland Gorilla	PRIMATES	GREAT_APES	GREAT_APES	0.0156446	Great Apes
+5	Pongo_abelii	Sumatran Orangutan	PRIMATES	GREAT_APES	GREAT_APES	0.03226714	Great Apes
+6	Nomascus_leucogenys	Northern White cheeked Gibbon	PRIMATES	GIBBONS	GIBBONS	0.03868789	Gibbons
+7	Macaca_fascicularis	Crab eating Macaque	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.064162194	Old World Monkeys
+8	Macaca_mulatta	Rhesus Macaque	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.065221024	Old World Monkeys
+9	Macaca_nemestrina	Pig tailed Macaque	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06553685	Old World Monkeys
+10	Papio_anubis	Olive Baboon	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06544282	Old World Monkeys
+11	Mandrillus_leucophaeus	Drill	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.0655577	Old World Monkeys
+12	Cercocebus_atys	Sooty Mangabey	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06670684	Old World Monkeys
+13	Erythrocebus_patas	Patas Monkey	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06572519	Old World Monkeys
+14	Chlorocebus_sabaeus	Green Monkey	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06591018	Old World Monkeys
+15	Cercopithecus_neglectus	De Brazzas Monkey	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.0657473	Old World Monkeys
+16	Rhinopithecus_roxellana	Golden Snub nosed Monkey	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.066078306	Old World Monkeys
+17	Rhinopithecus_bieti	Black Snub nosed Monkey	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.066223466	Old World Monkeys
+18	Pygathrix_nemaeus	Red shanked Douc	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.066268676	Old World Monkeys
+19	Nasalis_larvatus	Proboscis Monkey	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06560925	Old World Monkeys
+20	Semnopithecus_entellus	Northern Plains Gray Langur	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06598764	Old World Monkeys
+21	Colobus_angolensis	Angolan Colobus	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06662409	Old World Monkeys
+22	Piliocolobus_tephrosceles	Ugandan Red Colobus	PRIMATES	OLD_WORLD_MONKEYS	OLD_WORLD_MONKEYS	0.06669549	Old World Monkeys
+23	Pithecia_pithecia	White faced Saki	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.10670662	New World Monkeys
+24	Callicebus_donacophilus	White eared Titi	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.11025662	New World Monkeys
+25	Ateles_geoffroyi	Geoffroys Spider Monkey	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.10709547	New World Monkeys
+26	Alouatta_palliata	Mexican Howler Monkey	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.11142887	New World Monkeys
+27	Cebus_capucinus	White faced Sapajou	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.11401208	New World Monkeys
+28	Cebus_albifrons	White fronted Capuchin	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.11394333	New World Monkeys
+29	Saimiri_boliviensis	Bolivian Squirrel Monkey	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.11870027	New World Monkeys
+30	Aotus_nancymaae	Mas Night Monkey	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.109025629	New World Monkeys
+31	Saguinus_imperator	Emperor Tamarin	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.117581629	New World Monkeys
+32	Callithrix_jacchus	White tufted ear Marmoset	PRIMATES	NEW_WORLD_MONKEYS	NEW_WORLD_MONKEYS	0.118927629	New World Monkeys
+33	Daubentonia_madagascariensis	Aye aye	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.21984955	Lemurs & Lorises
+34	Lemur_catta	Ring Tailed Lemur	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.24012235	Lemurs & Lorises
+35	Eulemur_fulvus	Common Brown Lemur	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.24035865	Lemurs & Lorises
+36	Eulemur_flavifrons	Sclaters Lemur	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.24071386	Lemurs & Lorises
+37	Propithecus_coquereli	Coquerels Sifaka	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.24101634	Lemurs & Lorises
+38	Indri_indri	Indri	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.24260374	Lemurs & Lorises
+39	Cheirogaleus_medius	Fat tailed Dwarf Lemur	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.24383814	Lemurs & Lorises
+40	Mirza_coquereli	Coquerels Giant Mouse Lemur	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.25567754	Lemurs & Lorises
+41	Microcebus_murinus	Gray Mouse Lemur	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.25746804	Lemurs & Lorises
+42	Nycticebus_coucang	Sunda Slow Loris	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.29988975	Lemurs & Lorises
+43	Otolemur_garnettii	Small eared Galago	PRIMATES	STREPSIRRHINI	STREPSIRRHINI	0.30317835	Lemurs & Lorises
+44	Galeopterus_variegatus	Sunda Flying Lemur	DERMOPTERA	NA	DERMOPTERA	0.25911486	Flying Lemurs
+45	Tupaia_tana	Large Treeshrew	SCANDENTIA	NA	SCANDENTIA	0.35935315	Treeshrews
+46	Tupaia_chinensis	Northern Tree Shrew	SCANDENTIA	NA	SCANDENTIA	0.36102645	Treeshrews
+47	Hystrix_cristata	Northern Crested Porcupine	RODENTIA	NA	RODENTIA	0.42030831	Rodents
+48	Cuniculus_paca	Lowland Paca	RODENTIA	NA	RODENTIA	0.44180501	Rodents
+49	Dasyprocta_punctata	Central American Agouti	RODENTIA	NA	RODENTIA	0.44991277	Rodents
+50	Dolichotis_patagonum	Patagonian Mara	RODENTIA	NA	RODENTIA	0.4723855	Rodents
+51	Hydrochoerus_hydrochaeris	Capybara	RODENTIA	NA	RODENTIA	0.4737947	Rodents
+52	Cavia_porcellus	Domestic Guinea Pig	RODENTIA	NA	RODENTIA	0.482952759	Rodents
+53	Cavia_tschudii	Montane Guinea Pig	RODENTIA	NA	RODENTIA	0.48292944	Rodents
+54	Cavia_aperea	Brazilian Guinea Pig	RODENTIA	NA	RODENTIA	0.48309037	Rodents
+55	Chinchilla_lanigera	Long tailed Chinchilla	RODENTIA	NA	RODENTIA	0.44652381	Rodents
+56	Dinomys_branickii	Pacarana	RODENTIA	NA	RODENTIA	0.46573311	Rodents
+57	Octodon_degus	Degu	RODENTIA	NA	RODENTIA	0.50510711	Rodents
+58	Ctenomys_sociabilis	Social Tuco tuco	RODENTIA	NA	RODENTIA	0.52090871	Rodents
+59	Capromys_pilorides	Desmarests Hutia	RODENTIA	NA	RODENTIA	0.52229221	Rodents
+60	Myocastor_coypus	Coypu	RODENTIA	NA	RODENTIA	0.53447311	Rodents
+61	Heterocephalus_glaber	Naked Mole rat	RODENTIA	NA	RODENTIA	0.42124051	Rodents
+62	Fukomys_damarensis	Damara Mole rat	RODENTIA	NA	RODENTIA	0.45460381	Rodents
+63	Thryonomys_swinderianus	Greater Cane Rat	RODENTIA	NA	RODENTIA	0.50422971	Rodents
+64	Petromus_typicus	Dassie Rat	RODENTIA	NA	RODENTIA	0.51120711	Rodents
+65	Ctenodactylus_gundi	Common Gundi	RODENTIA	NA	RODENTIA	0.46275491	Rodents
+66	Xerus_inauris	Cape Ground Squirrel	RODENTIA	NA	RODENTIA	0.38711189	Rodents
+67	Spermophilus_dauricus	Daurian Ground Squirrel	RODENTIA	NA	RODENTIA	0.40121269	Rodents
+68	Ictidomys_tridecemlineatus	Thirteen lined Ground Squirrel	RODENTIA	NA	RODENTIA	0.404747166	Rodents
+69	Marmota_marmota	Alpine Marmot	RODENTIA	NA	RODENTIA	0.412859266	Rodents
+70	Aplodontia_rufa	Mountain Beaver	RODENTIA	NA	RODENTIA	0.40863759	Rodents
+71	Glis_glis	Edible Dormouse	RODENTIA	NA	RODENTIA	0.36166701	Rodents
+72	Graphiurus_murinus	Woodland Doormouse	RODENTIA	NA	RODENTIA	0.38692621	Rodents
+73	Muscardinus_avellanarius	Hazel Dormouse	RODENTIA	NA	RODENTIA	0.42136879	Rodents
+74	Castor_canadensis	North American Beaver	RODENTIA	NA	RODENTIA	0.40137869	Rodents
+75	Dipodomys_ordii	Ords Kangaroo Rat	RODENTIA	NA	RODENTIA	0.49794049	Rodents
+76	Dipodomys_stephensi	Stephens Kangaroo Rat	RODENTIA	NA	RODENTIA	0.49824999	Rodents
+77	Perognathus_longimembris	Pacific Pocket Mouse	RODENTIA	NA	RODENTIA	0.51148349	Rodents
+78	Allactaga_bullata	Gobi Jerboa	RODENTIA	NA	RODENTIA	0.50790079	Rodents
+79	Jaculus_jaculus	Lesser Egyptian Jerboa	RODENTIA	NA	RODENTIA	0.52021339	Rodents
+80	Zapus_hudsonius	Meadow Jumping Mouse	RODENTIA	NA	RODENTIA	0.51448249	Rodents
+81	Nannospalax_galili	Upper Galilee Mountains Blind Mole Rat	RODENTIA	NA	RODENTIA	0.50380339	Rodents
+82	Cricetomys_gambianus	Gambian Pouched Rat	RODENTIA	NA	RODENTIA	0.54498989	Rodents
+83	Peromyscus_maniculatus	Prairie Deer Mouse	RODENTIA	NA	RODENTIA	0.55124509	Rodents
+84	Onychomys_torridus	Scorpion Mouse	RODENTIA	NA	RODENTIA	0.55697279	Rodents
+85	Ellobius_talpinus	Northern Mole Vole	RODENTIA	NA	RODENTIA	0.57968815	Rodents
+86	Ellobius_lutescens	Transcaucasian Mole Vole	RODENTIA	NA	RODENTIA	0.58553785	Rodents
+87	Microtus_ochrogaster	Prairie Vole	RODENTIA	NA	RODENTIA	0.58986947	Rodents
+88	Ondatra_zibethicus	Muskrat	RODENTIA	NA	RODENTIA	0.59052487	Rodents
+89	Cricetulus_griseus	Chinese Hamster	RODENTIA	NA	RODENTIA	0.56881715	Rodents
+90	Mesocricetus_auratus	Golden Hamster	RODENTIA	NA	RODENTIA	0.58166595	Rodents
+91	Sigmodon_hispidus	Hispid Cotton Rat	RODENTIA	NA	RODENTIA	0.59147693	Rodents
+92	Psammomys_obesus	Fat Sand Rat	RODENTIA	NA	RODENTIA	0.58560059	Rodents
+93	Meriones_unguiculatus	Mongolian Jird	RODENTIA	NA	RODENTIA	0.58711179	Rodents
+94	Acomys_cahirinus	Cairo Spiny Mouse	RODENTIA	NA	RODENTIA	0.59089219	Rodents
+95	Mus_musculus	House Mouse	RODENTIA	NA	RODENTIA	0.59868191	Rodents
+96	Mus_spretus	Western Wild Mouse	RODENTIA	NA	RODENTIA	0.59958849	Rodents
+97	Mus_caroli	Ryukyu Mouse	RODENTIA	NA	RODENTIA	0.59876679	Rodents
+98	Mus_pahari	Shrew Mouse	RODENTIA	NA	RODENTIA	0.60043789	Rodents
+99	Rattus_norvegicus	Norway Rat	RODENTIA	NA	RODENTIA	0.60562069	Rodents
+100	Oryctolagus_cuniculus	Rabbit	LAGOMORPHA	NA	LAGOMORPHA	0.40971291	Rabbits & Pikas
+101	Lepus_americanus	Snowshoe Hare	LAGOMORPHA	NA	LAGOMORPHA	0.41270211	Rabbits & Pikas
+102	Ochotona_princeps	American Pika	LAGOMORPHA	NA	LAGOMORPHA	0.50225101	Rabbits & Pikas
+103	Ceratotherium_simum_cottoni	Northern White Rhino	PERISSODACTYLA	NA	PERISSODACTYLA	0.321613705	Odd-toed Ungulates
+104	Ceratotherium_simum	Southern White Rhinoceros	PERISSODACTYLA	NA	PERISSODACTYLA	0.32179569	Odd-toed Ungulates
+105	Diceros_bicornis	Black Rhinocerous	PERISSODACTYLA	NA	PERISSODACTYLA	0.32216943	Odd-toed Ungulates
+106	Dicerorhinus_sumatrensis	Sumatran Rhinoceros	PERISSODACTYLA	NA	PERISSODACTYLA	0.32276556	Odd-toed Ungulates
+107	Tapirus_indicus	Malayan Tapir	PERISSODACTYLA	NA	PERISSODACTYLA	0.32431076	Odd-toed Ungulates
+108	Tapirus_terrestris	South American Tapir	PERISSODACTYLA	NA	PERISSODACTYLA	0.32474706	Odd-toed Ungulates
+109	Equus_asinus	Ass	PERISSODACTYLA	NA	PERISSODACTYLA	0.3401555	Odd-toed Ungulates
+110	Equus_przewalskii	Przewalskis Horse	PERISSODACTYLA	NA	PERISSODACTYLA	0.34056935	Odd-toed Ungulates
+111	Equus_caballus	Horse	PERISSODACTYLA	NA	PERISSODACTYLA	0.3406724	Odd-toed Ungulates
+112	Manis_pentadactyla	Chinese Pangolin	PHOLIDOTA	NA	PHOLIDOTA	0.38333358	Pangolins
+113	Manis_javanica	Malayan Pangolin	PHOLIDOTA	NA	PHOLIDOTA	0.38551648	Pangolins
+114	Neomonachus_schauinslandi	Hawaiian Monk Seal	CARNIVORA	NA	CARNIVORA	0.37636663	Carnivores
+115	Leptonychotes_weddellii	Weddell Seal	CARNIVORA	NA	CARNIVORA	0.37661403	Carnivores
+116	Mirounga_angustirostris	Northern Elephant Seal	CARNIVORA	NA	CARNIVORA	0.37820937	Carnivores
+117	Odobenus_rosmarus	Pacific Walrus	CARNIVORA	NA	CARNIVORA	0.37863488	Carnivores
+118	Zalophus_californianus	California Sea Lion	CARNIVORA	NA	CARNIVORA	0.38067537	Carnivores
+119	Ailurus_fulgens	Lesser Panda	CARNIVORA	NA	CARNIVORA	0.40468527	Carnivores
+120	Mellivora_capensis	Honey Badger	CARNIVORA	NA	CARNIVORA	0.41480627	Carnivores
+121	Enhydra_lutris	Sea Otter	CARNIVORA	NA	CARNIVORA	0.41553428	Carnivores
+122	Pteronura_brasiliensis	Giant Otter	CARNIVORA	NA	CARNIVORA	0.41710498	Carnivores
+123	Mustela_putorius	Domestic Ferret	CARNIVORA	NA	CARNIVORA	0.42490918	Carnivores
+124	Spilogale_gracilis	Western Spotted Skunk	CARNIVORA	NA	CARNIVORA	0.42221867	Carnivores
+125	Ursus_maritimus	Polar Bear	CARNIVORA	NA	CARNIVORA	0.38665858	Carnivores
+126	Ailuropoda_melanoleuca	Giant Panda	CARNIVORA	NA	CARNIVORA	0.38799288	Carnivores
+127	Canis_lupus_familiaris	Domestic Dog	CARNIVORA	NA	CARNIVORA	0.404926635	Carnivores
+128	Canis_lupus	Domestic Dog	CARNIVORA	NA	CARNIVORA	0.405061858	Carnivores
+129	Lycaon_pictus	African Hunting Dog	CARNIVORA	NA	CARNIVORA	0.40487486	Carnivores
+130	Vulpes_lagopus	Arctic Fox	CARNIVORA	NA	CARNIVORA	0.40584898	Carnivores
+131	Panthera_tigris	Amur Tiger	CARNIVORA	NA	CARNIVORA	0.39149112	Carnivores
+132	Panthera_onca	Jaguar	CARNIVORA	NA	CARNIVORA	0.39179315	Carnivores
+133	Panthera_pardus	Leopard	CARNIVORA	NA	CARNIVORA	0.39201001	Carnivores
+134	Acinonyx_jubatus	Cheetah	CARNIVORA	NA	CARNIVORA	0.39228581	Carnivores
+135	Puma_concolor	Puma	CARNIVORA	NA	CARNIVORA	0.392484591	Carnivores
+136	Felis_nigripes	Black footed Cat	CARNIVORA	NA	CARNIVORA	0.394884881	Carnivores
+137	Felis_catus	Domestic Cat	CARNIVORA	NA	CARNIVORA	0.394983601	Carnivores
+138	Cryptoprocta_ferox	Fossa	CARNIVORA	NA	CARNIVORA	0.39491538	Carnivores
+139	Helogale_parvula	Dwarf Mongoose	CARNIVORA	NA	CARNIVORA	0.41721068	Carnivores
+140	Mungos_mungo	South African Banded Mongoose	CARNIVORA	NA	CARNIVORA	0.41861309	Carnivores
+141	Suricata_suricatta	Meerkat	CARNIVORA	NA	CARNIVORA	0.42313719	Carnivores
+142	Hyaena_hyaena	Striped Hyena	CARNIVORA	NA	CARNIVORA	0.40861568	Carnivores
+143	Paradoxurus_hermaphroditus	Asian Palm Civet	CARNIVORA	NA	CARNIVORA	0.40996668	Carnivores
+144	Eubalaena_japonica	North Pacific Right Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.3456718	Whales & Even-toed Ungulates
+145	Eschrichtius_robustus	Grey Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.34823894	Whales & Even-toed Ungulates
+146	Balaenoptera_bonaerensis	Antarctic Minke Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.34857422	Whales & Even-toed Ungulates
+147	Balaenoptera_acutorostrata	Minke Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.34895701	Whales & Even-toed Ungulates
+148	Monodon_monoceros	Narwhal	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.35500818	Whales & Even-toed Ungulates
+149	Delphinapterus_leucas	Beluga Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.3550948	Whales & Even-toed Ungulates
+150	Neophocaena_asiaeorientalis	Yangtze Finless Porpoise	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.35734206	Whales & Even-toed Ungulates
+151	Phocoena_phocoena	Harbor Porpoise	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.3575078	Whales & Even-toed Ungulates
+152	Orcinus_orca	Killer Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.35571923	Whales & Even-toed Ungulates
+153	Tursiops_truncatus	Bottlenose Dolphin	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.3562849	Whales & Even-toed Ungulates
+154	Lipotes_vexillifer	Yangtze River Dolphin	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.35628268	Whales & Even-toed Ungulates
+155	Inia_geoffrensis	Amazon River Dolphin	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.35925588	Whales & Even-toed Ungulates
+156	Ziphius_cavirostris	Cuviers Beaked Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.354077184	Whales & Even-toed Ungulates
+157	Mesoplodon_bidens	Sowerbys Beaked Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.355312374	Whales & Even-toed Ungulates
+158	Platanista_gangetica	Indus River Dolphin	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.358052694	Whales & Even-toed Ungulates
+159	Kogia_breviceps	Pygmy Sperm Whale	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.35964504	Whales & Even-toed Ungulates
+160	Hippopotamus_amphibius	Hippopotamus	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.36797443	Whales & Even-toed Ungulates
+161	Elaphurus_davidianus	Pere Davids Deer	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.41363356	Whales & Even-toed Ungulates
+162	Rangifer_tarandus	Siberian Reindeer	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.41705139	Whales & Even-toed Ungulates
+163	Odocoileus_virginianus	White tailed Deer	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.4179047	Whales & Even-toed Ungulates
+164	Giraffa_tippelskirchi	Giraffe	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.411588663	Whales & Even-toed Ungulates
+165	Okapia_johnstoni	Okapi	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.413213663	Whales & Even-toed Ungulates
+166	Bubalus_bubalis	Water Buffalo	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.416951373	Whales & Even-toed Ungulates
+167	Bison_bison	American Bison	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.418015753	Whales & Even-toed Ungulates
+168	Bos_mutus	Wild Yak	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.419033857	Whales & Even-toed Ungulates
+169	Bos_indicus	Zebu Cattle	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.419711577	Whales & Even-toed Ungulates
+170	Bos_taurus	Cattle	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.420457637	Whales & Even-toed Ungulates
+171	Pantholops_hodgsonii	Chiru	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.423083072	Whales & Even-toed Ungulates
+172	Saiga_tatarica	Russian Saiga	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.439491772	Whales & Even-toed Ungulates
+173	Beatragus_hunteri	Hirola	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.423849811	Whales & Even-toed Ungulates
+174	Ovis_canadensis	Peninsular Bighorn Sheep	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.424332761	Whales & Even-toed Ungulates
+175	Ovis_aries	Sheep	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.424674831	Whales & Even-toed Ungulates
+176	Hemitragus_hylocrius	Nilgiri Tahr	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.425009074	Whales & Even-toed Ungulates
+177	Capra_aegagrus	Wild Goat	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.426991684	Whales & Even-toed Ungulates
+178	Capra_hircus	Goat	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.426942014	Whales & Even-toed Ungulates
+179	Ammotragus_lervia	Aoudad	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.42607488	Whales & Even-toed Ungulates
+180	Moschus_moschiferus	Siberian Musk Deer	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.420768943	Whales & Even-toed Ungulates
+181	Antilocapra_americana	Pronghorn	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.424915431	Whales & Even-toed Ungulates
+182	Tragulus_javanicus	Java Lesser Chevrotain	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.44465686	Whales & Even-toed Ungulates
+183	Sus_scrofa	Pig	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.40989466	Whales & Even-toed Ungulates
+184	Catagonus_wagneri	Chacoan Peccary	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.41431516	Whales & Even-toed Ungulates
+185	Camelus_dromedarius	Arabian Camel	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.37828814	Whales & Even-toed Ungulates
+186	Camelus_ferus	Wild Bactrian Camel	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.378493158	Whales & Even-toed Ungulates
+187	Camelus_bactrianus	Bactrian Camel	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.378513968	Whales & Even-toed Ungulates
+188	Vicugna_pacos	Alpaca	CETARTIODACTYLA	NA	CETARTIODACTYLA	0.38172445	Whales & Even-toed Ungulates
+189	Tadarida_brasiliensis	Mexican Free tailed Bat	CHIROPTERA	NA	CHIROPTERA	0.37431227	Bats
+190	Miniopterus_schreibersii	Common Bent wing Bat	CHIROPTERA	NA	CHIROPTERA	0.37969803	Bats
+191	Miniopterus_natalensis	Bats	CHIROPTERA	NA	CHIROPTERA	0.38099646	Bats
+192	Myotis_brandtii	Brandts Bat	CHIROPTERA	NA	CHIROPTERA	0.390027615	Bats
+193	Myotis_lucifugus	Little Brown Bat	CHIROPTERA	NA	CHIROPTERA	0.390878415	Bats
+194	Myotis_myotis	Greater Mouse eared Bat	CHIROPTERA	NA	CHIROPTERA	0.393310075	Bats
+195	Myotis_davidii	Bats	CHIROPTERA	NA	CHIROPTERA	0.3966497	Bats
+196	Murina_feae	Ashy gray Tube nosed Bat	CHIROPTERA	NA	CHIROPTERA	0.4109285	Bats
+197	Eptesicus_fuscus	Big Brown Bat	CHIROPTERA	NA	CHIROPTERA	0.38985372	Bats
+198	Pipistrellus_pipistrellus	Common Pipistrelle	CHIROPTERA	NA	CHIROPTERA	0.41842692	Bats
+199	Lasiurus_borealis	Eastern Red Bat	CHIROPTERA	NA	CHIROPTERA	0.42418872	Bats
+200	Mormoops_blainvillei	Ghost faced Bat	CHIROPTERA	NA	CHIROPTERA	0.40022698	Bats
+201	Pteronotus_parnellii	Parnells Mustached Bat	CHIROPTERA	NA	CHIROPTERA	0.40075608	Bats
+202	Desmodus_rotundus	Common Vampire Bat	CHIROPTERA	NA	CHIROPTERA	0.40147915	Bats
+203	Tonatia_saurophila	Stripe headed Round eared Bat	CHIROPTERA	NA	CHIROPTERA	0.41384963	Bats
+204	Micronycteris_hirsuta	Hairy Big eared Bat	CHIROPTERA	NA	CHIROPTERA	0.42036383	Bats
+205	Anoura_caudifer	Tailed Tailless Bat	CHIROPTERA	NA	CHIROPTERA	0.40989071	Bats
+206	Carollia_perspicillata	Sebas Short tailed Bat	CHIROPTERA	NA	CHIROPTERA	0.41736269	Bats
+207	Artibeus_jamaicensis	Jamacian Fruit eating Bat	CHIROPTERA	NA	CHIROPTERA	0.42428819	Bats
+208	Noctilio_leporinus	Greater Bulldog Bat	CHIROPTERA	NA	CHIROPTERA	0.42153507	Bats
+209	Pteropus_alecto	Black Flying Fox	CHIROPTERA	NA	CHIROPTERA	0.37102313	Bats
+210	Pteropus_vampyrus	Large Flying Fox	CHIROPTERA	NA	CHIROPTERA	0.37109433	Bats
+211	Rousettus_aegyptiacus	Egyptian Fruit Bat	CHIROPTERA	NA	CHIROPTERA	0.38584891	Bats
+212	Eidolon_helvum	Straw colored Fruit Bat	CHIROPTERA	NA	CHIROPTERA	0.37546707	Bats
+213	Macroglossus_sobrinus	Long tongued Fruit Bat	CHIROPTERA	NA	CHIROPTERA	0.38558337	Bats
+214	Hipposideros_armiger	Great Roundleaf Bat	CHIROPTERA	NA	CHIROPTERA	0.36480427	Bats
+215	Hipposideros_galeritus	Cantors Leaf nosed Bat	CHIROPTERA	NA	CHIROPTERA	0.37515307	Bats
+216	Rhinolophus_sinicus	Chinese Rufous Horseshoe Bat	CHIROPTERA	NA	CHIROPTERA	0.36555757	Bats
+217	Megaderma_lyra	Greater False Vampire Bat	CHIROPTERA	NA	CHIROPTERA	0.40037987	Bats
+218	Craseonycteris_thonglongyai	Bumblebee Bat	CHIROPTERA	NA	CHIROPTERA	0.40318687	Bats
+219	Solenodon_paradoxus	Hispaniolan Solenodon	EULIPOTYPHLA	NA	EULIPOTYPHLA	0.43357711	Hedgehogs, Shrews & Moles
+220	Scalopus_aquaticus	Eastern Mole	EULIPOTYPHLA	NA	EULIPOTYPHLA	0.45785396	Hedgehogs, Shrews & Moles
+221	Condylura_cristata	Star nosed Mole	EULIPOTYPHLA	NA	EULIPOTYPHLA	0.49904406	Hedgehogs, Shrews & Moles
+222	Uropsilus_gracilis	Gracile Shrew like Mole	EULIPOTYPHLA	NA	EULIPOTYPHLA	0.49063026	Hedgehogs, Shrews & Moles
+223	Erinaceus_europaeus	Western European Hedgehog	EULIPOTYPHLA	NA	EULIPOTYPHLA	0.55730746	Hedgehogs, Shrews & Moles
+224	Sorex_araneus	European Shrew	EULIPOTYPHLA	NA	EULIPOTYPHLA	0.58767546	Hedgehogs, Shrews & Moles
+225	Crocidura_indochinensis	Indochinese Shrew	EULIPOTYPHLA	NA	EULIPOTYPHLA	0.59693146	Hedgehogs, Shrews & Moles
+226	Choloepus_didactylus	Linnaeuss Two Toed Sloth	PILOSA	NA	PILOSA	0.3923611	Sloths & Anteaters
+227	Choloepus_hoffmanni	Hoffmanns Two fingered Sloth	PILOSA	NA	PILOSA	0.39279981	Sloths & Anteaters
+228	Myrmecophaga_tridactyla	Giant Anteater	PILOSA	NA	PILOSA	0.42474351	Sloths & Anteaters
+229	Tamandua_tetradactyla	Southern Tamandua	PILOSA	NA	PILOSA	0.42836761	Sloths & Anteaters
+230	Tolypeutes_matacus	Southern Three banded Armadillo	CINGULATA	NA	CINGULATA	0.39377171	Armadillos
+231	Chaetophractus_vellerosus	Screaming Hairy Armadillo	CINGULATA	NA	CINGULATA	0.39727011	Armadillos
+232	Dasypus_novemcinctus	Nine banded Armadillo	CINGULATA	NA	CINGULATA	0.41464041	Armadillos
+233	Trichechus_manatus	Florida Manatee	SIRENIA	NA	SIRENIA	0.37168599	Manatees & Dugongs
+234	Procavia_capensis	South African Rock Hyrax	HYRACOIDEA	NA	HYRACOIDEA	0.47200912	Hyraxes
+235	Heterohyrax_brucei	African Yellow spotted Rock Hyrax	HYRACOIDEA	NA	HYRACOIDEA	0.47206251	Hyraxes
+236	Loxodonta_africana	African Savanna Elephant	PROBOSCIDEA	NA	PROBOSCIDEA	0.38331391	Elephants
+237	Chrysochloris_asiatica	Cape Golden Mole	AFROSORICIDA	NA	AFROSORICIDA	0.47726486	Tenrecs & Golden Moles
+238	Echinops_telfairi	Small Madagascar Hedgehog	AFROSORICIDA	NA	AFROSORICIDA	0.54704466	Tenrecs & Golden Moles
+239	Microgale_talazaci	Talazacs Shrew Tenrec	AFROSORICIDA	NA	AFROSORICIDA	0.59114186	Tenrecs & Golden Moles
+240	Elephantulus_edwardii	Cape Elephant Shrew	MACROSCELIDEA	NA	MACROSCELIDEA	0.55017266	Elephant Shrews
+241	Orycteropus_afer	Aardvark	TUBULIDENTATA	NA	TUBULIDENTATA	0.41371021	Aardvark
