@@ -118,8 +118,6 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
     skip: entity.assembly === "mm10",
   });
 
-  console.log(dataSeq?.ccreSequenceAlignmentQuery)
-
   const hasSequenceAlignmentData = Boolean(dataSeq?.ccreSequenceAlignmentQuery[0]?.sequence_alignment)
 
   const coordinates: GenomicRange = useMemo(() => {
@@ -181,8 +179,6 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
     return highlightedLists;
   }, [dataSeq, hasSequenceAlignmentData, unfilteredAlignmentPlotData]);
 
-  console.log(highlighted)
-
   const SeqAlignTooltip = useCallback(
     (tooltipData: TooltipData) => {
       return (
@@ -216,7 +212,12 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
     return <Alert severity="info">This feature is only available for Human cCREs</Alert>;
 
   if (loadingCcre || loadingSeq) return <CircularProgress />;
-  if (errorCcre || errorSeq || !hasSequenceAlignmentData) return <Alert severity="error">Error fetching sequence coverage</Alert>;
+  if (errorCcre || errorSeq) return <Alert severity="error">Error fetching sequence coverage</Alert>;
+
+  if (dataCcre?.chrom === "chrY")
+    return <Alert severity="info">Sequence conservation data is not available for cCREs on the Y chromosome</Alert>;
+
+  if (!hasSequenceAlignmentData) return <Alert severity="error">Error fetching sequence coverage</Alert>;
 
   return (
     <>
