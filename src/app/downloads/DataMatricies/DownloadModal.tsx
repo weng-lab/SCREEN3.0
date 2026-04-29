@@ -30,7 +30,7 @@ const downloadStyle = {
  * @param variant "signal" or "zScore"
  * @returns The corresponding download URL
  */
-const matrixDownloadURL = (selectedAssay: Selected, variant: "signal" | "zScore") => {
+const matrixDownloadURL = (selectedAssay: Selected, variant: "signal" | "zScore" | "zScoreCoreCollection") => {
   const matrices = {
     Human: {
       signal: {
@@ -45,6 +45,12 @@ const matrixDownloadURL = (selectedAssay: Selected, variant: "signal" | "zScore"
         H3K27ac: Config.Downloads.HumanEnhancerZScoreMatrix,
         CTCF: Config.Downloads.HumanCTCFZScoreMatrix,
       },
+      zScoreCoreCollection: {
+        DNase: Config.Downloads.HumanDNaseCoreCollectionZScoreMatrix,
+        H3K4me3: Config.Downloads.HumanPromoterCoreCollectionZScoreMatrix,
+        H3K27ac: Config.Downloads.HumanEnhancerCoreCollectionZScoreMatrix,
+        CTCF: Config.Downloads.HumanCTCFCoreCollectionZScoreMatrix,
+      },
     },
     Mouse: {
       signal: {
@@ -58,6 +64,12 @@ const matrixDownloadURL = (selectedAssay: Selected, variant: "signal" | "zScore"
         H3K4me3: Config.Downloads.MousePromoterZScoreMatrix,
         H3K27ac: Config.Downloads.MouseEnhancerZScoreMatrix,
         CTCF: Config.Downloads.MouseCTCFZScoreMatrix,
+      },
+       zScoreCoreCollection: {
+        DNase: Config.Downloads.MouseDNaseCoreCollectionZScoreMatrix,
+        H3K4me3: Config.Downloads.MousePromoterCoreCollectionZScoreMatrix,
+        H3K27ac: Config.Downloads.MouseEnhancerCoreCollectionZScoreMatrix,
+        CTCF: Config.Downloads.MouseCTCFCoreCollectionZScoreMatrix,
       },
     },
   };
@@ -125,6 +137,26 @@ const DownloadModal = (props: DownloadModalProps) => {
                 <Download />
               </IconButton>
               <Typography>Z-Score Matrix</Typography>
+            </Stack>
+          </Stack>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction="row" alignItems="center">
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  const url = matrixDownloadURL(selectedAssay, "zScoreCoreCollection");
+                  trackDownload(
+                    url,
+                    `${selectedAssay.assembly}-${selectedAssay.assay}-Core-Collection-Z-Score Matrix`,
+                    "data-matrices",
+                    selectedAssay.assembly
+                  );
+                  window.location.href = url;
+                }}
+              >
+                <Download />
+              </IconButton>
+              <Typography>Z-Score Core Collection Matrix</Typography>
             </Stack>
           </Stack>
         </Stack>

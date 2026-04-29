@@ -55,6 +55,11 @@
     "HumanEnhancerZScoreMatrix": "https://www.encodeproject.org/files/ENCFF560UZM/@@download/ENCFF560UZM.txt.gz",
     "HumanCTCFZScoreMatrix": "https://www.encodeproject.org/files/ENCFF392IXG/@@download/ENCFF392IXG.txt.gz",
 
+    "HumanDNaseCoreCollectionZScoreMatrix": "https://downloads.wenglab.org/human_dnase_core_collection_zscores.tar.gz",
+    "HumanPromoterCoreCollectionZScoreMatrix": "https://downloads.wenglab.org/human_h3k4me3_core_collection_zscores.tar.gz",
+    "HumanEnhancerCoreCollectionZScoreMatrix": "https://downloads.wenglab.org/human_h3k27ac_core_collection_zscores.tar.gz",
+    "HumanCTCFCoreCollectionZScoreMatrix": "https://downloads.wenglab.org/human_ctcf_core_collection_zscores.tar.gz",
+
     "MouseDNaseSignalMatrix": "https://www.encodeproject.org/files/ENCFF313KGL/@@download/ENCFF313KGL.txt.gz",
     "MousePromoterSignalMatrix": "https://www.encodeproject.org/files/ENCFF129EIW/@@download/ENCFF129EIW.txt.gz",
     "MouseEnhancerSignalMatrix": "https://www.encodeproject.org/files/ENCFF745TSW/@@download/ENCFF745TSW.txt.gz",
@@ -63,6 +68,13 @@
     "MouseDNaseZScoreMatrix": "https://www.encodeproject.org/files/ENCFF397LSK/@@download/ENCFF397LSK.txt.gz",
     "MousePromoterZScoreMatrix": "https://www.encodeproject.org/files/ENCFF754PUU/@@download/ENCFF754PUU.txt.gz",
     "MouseEnhancerZScoreMatrix": "https://www.encodeproject.org/files/ENCFF816ISW/@@download/ENCFF816ISW.txt.gz",
-    "MouseCTCFZScoreMatrix": "https://www.encodeproject.org/files/ENCFF101BYE/@@download/ENCFF101BYE.txt.gz"
+    "MouseCTCFZScoreMatrix": "https://www.encodeproject.org/files/ENCFF101BYE/@@download/ENCFF101BYE.txt.gz",
+
+    
+    "MouseDNaseCoreCollectionZScoreMatrix": "https://downloads.wenglab.org/mouse_dnase_core_collection_zscores.tar.gz",
+    "MousePromoterCoreCollectionZScoreMatrix": "https://downloads.wenglab.org/mouse_h3k4me3_core_collection_zscores.tar.gz",
+    "MouseEnhancerCoreCollectionZScoreMatrix": "https://downloads.wenglab.org/mouse_h3k27ac_core_collection_zscores.tar.gz",
+    "MouseCTCFCoreCollectionZScoreMatrix": "https://downloads.wenglab.org/mouse_ctcf_core_collection_zscores.tar.gz"
+
   }
 }
