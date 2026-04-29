@@ -118,6 +118,8 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
     skip: entity.assembly === "mm10",
   });
 
+  console.log(dataSeq?.ccreSequenceAlignmentQuery)
+
   const hasSequenceAlignmentData = Boolean(dataSeq?.ccreSequenceAlignmentQuery[0]?.sequence_alignment)
 
   const coordinates: GenomicRange = useMemo(() => {
@@ -178,6 +180,8 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
     return highlightedLists;
   }, [dataSeq, hasSequenceAlignmentData, unfilteredAlignmentPlotData]);
+
+  console.log(highlighted)
 
   const SeqAlignTooltip = useCallback(
     (tooltipData: TooltipData) => {
@@ -275,7 +279,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
                 getColor={getColor}
                 getLabel={getLabel}
                 tooltipContents={PhyloTreeTooltip}
-                highlighted={highlighted[coveragePercentage.toFixed(1)]}
+                highlighted={highlighted[coveragePercentage]}
                 hovered={hovered}
                 onLeafHoverChange={setHovered}
                 defaultScaling="unscaled"
@@ -294,7 +298,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
                 getOrder={getOrder}
                 getOrderColor={getColor}
                 tooltipContents={SeqAlignTooltip}
-                highlighted={highlighted[coveragePercentage.toFixed(1)]}
+                highlighted={highlighted[coveragePercentage]}
                 hovered={hovered}
                 onHoverChange={handleSeqPlotHoverChange}
               />
