@@ -10,7 +10,7 @@ type NewVersionBannerProps = {
 };
 
 const NewVersionBanner = ({
-  versionId = "v3.2026.1",
+  versionId = "",
   message = "New release now available.",
 }: NewVersionBannerProps) => {
   const [open, setOpen] = useState(true);
