@@ -74,7 +74,6 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
               slotProps={{
                 box: { gap: 1 },
                 button: {
-                  onClick: handleCloseDrawer,
                   sx: { color: "black" },
                   children: <Search />,
                 },
