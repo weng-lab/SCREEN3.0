@@ -1,7 +1,7 @@
 "use client";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
-import { GridColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import { useSnpData } from "common/hooks/useSnpData";
@@ -56,7 +56,7 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
     };
   });
 
-  const cols: GridColDef[] = [
+  const cols: TableColDef[] = [
     {
       field: "ccre",
       headerName: "Accession",
@@ -144,13 +144,17 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
           <DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />
         </Stack>
       }
-      divHeight={{ maxHeight: "600px" }}
-      toolbarSlot={<DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />}
-      labelTooltip={
-        <Typography component="span" variant="subtitle2">
-          (Within {distance}bp of {entity.entityID})
-        </Typography>
-      }
+      autoHeight
+      slotProps={{
+        toolbar: {
+          extra: <DistanceSlider distance={distance} handleDistanceChange={handleDistanceChange} />,
+          labelTooltip: (
+            <Typography component="span" variant="subtitle2">
+              (Within {distance}bp of {entity.entityID})
+            </Typography>
+          ),
+        },
+      }}
     />
   );
 };

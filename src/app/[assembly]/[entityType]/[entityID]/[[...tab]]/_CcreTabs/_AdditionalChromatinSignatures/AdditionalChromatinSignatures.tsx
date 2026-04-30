@@ -1,8 +1,8 @@
 "use client";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import React, { useState } from "react";
-import { GridColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { Box, Stack, Tab } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
 import { GenomicRange } from "common/types/globalTypes";
@@ -11,7 +11,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { CHROM_HMM_STATES, getChromHmmStateDisplayname, useChromHMMData } from "common/hooks/useChromHmmData";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
-import { chromHmmStateDetails } from "common/components/GenomeBrowser/constants";
+import { humanChromStates } from "common/components/GenomeBrowser/constants";
 
 const ENTEx_QUERY = gql(`
 query ENTEXQuery($accession: String!){
@@ -24,7 +24,7 @@ query ENTEXQuery($accession: String!){
     p_betabinom
     experiment_accession
     tissue
-    donor    
+    donor
     imbalance_significance
   }
 }
@@ -39,7 +39,7 @@ query entexActiveAnnotationsQuery( $coordinates: GenomicRangeInput! ) {
 
 }`);
 
-const chromHmmCols: GridColDef[] = [
+const chromHmmCols: TableColDef[] = [
   {
     headerName: "Organ/Tissue",
     field: "tissue",
@@ -69,7 +69,7 @@ const chromHmmCols: GridColDef[] = [
   },
 ];
 
-const entexCols: GridColDef[] = [
+const entexCols: TableColDef[] = [
   {
     headerName: "Tissue",
     field: "tissue",
@@ -126,7 +126,7 @@ const entexCols: GridColDef[] = [
   },
 ];
 
-const entexActiveCols: GridColDef[] = [
+const entexActiveCols: TableColDef[] = [
   {
     headerName: "Tissue",
     field: "tissue",
@@ -193,7 +193,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
         <ProportionsBar
           label="ChromHMM State Proportions, All Tissues:"
           data={getProportionsFromArray(processedTableData, "state", CHROM_HMM_STATES)}
-          getColor={(key) => chromHmmStateDetails[key].color}
+          getColor={(key) => humanChromStates[key].color}
           formatLabel={(key) => getChromHmmStateDisplayname(key)}
           loading={loading || !!error}
           tooltipTitle="ChromHMM State Proportions, All Tissues"

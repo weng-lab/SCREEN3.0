@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Grid, Grow, Box, Stack, Typography, Button, Tooltip } from "@mui/material";
 import Link from "next/link";

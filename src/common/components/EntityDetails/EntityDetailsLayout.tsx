@@ -29,7 +29,7 @@ const EntityHeader = ({
 }) => {
   switch (entityType) {
     case "region":
-      return <RegionSearchHeader region={parseGenomicRangeString(entityID)} />;
+      return <RegionSearchHeader assembly={assembly} region={parseGenomicRangeString(entityID)} />;
     case "gwas":
       return <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} />;
     case "bed":
@@ -65,7 +65,7 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
         >
           <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" />
         </Box>
-        <Stack id="main-content" spacing={2} m={2} gridColumn={{ xs: 1, md: 2 }} gridRow={{ xs: 2, md: 1 }}>
+        <Stack id="main-content" spacing={2} m={2} gridColumn={{ xs: 1, md: 2 }} gridRow={1}>
           <EntityHeader entityID={entityID} entityType={entityType} assembly={assembly} />
           <Box id="horizonatal-view-tabs-container" display={{ xs: "block", md: "none" }}>
             <EntityDetailsTabs

@@ -1,6 +1,6 @@
 import React from "react";
 import { BulkBedRect } from "@weng-lab/genomebrowser";
-import { chromHmmStateDetails } from "../constants";
+import { humanChromStates, mouseChromStates } from "../constants";
 
 interface ChromHmmTooltipProps {
   rect: BulkBedRect;
@@ -9,7 +9,7 @@ interface ChromHmmTooltipProps {
 }
 
 const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, displayName }) => {
-  const stateDetails = chromHmmStateDetails[rect.name];
+  const stateDetails = humanChromStates[rect.name] || mouseChromStates[rect.name];
 
   if (!stateDetails) {
     return (
@@ -22,18 +22,27 @@ const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, display
     );
   }
 
+  const truncate = (word: string) => {
+    if (word.length >= 35) {
+      return word.slice(0, 35) + "...";
+    }
+    return word;
+  };
+
   return (
     <svg width={240} height={92}>
       <rect width={240} height={70} fill="white" rx="4" ry="4" style={{ filter: `drop-shadow(0 0 2px #000000)` }} />
       <rect width={15} height={15} fill={stateDetails.color} x={10} y={10} />
-      <text x={35} y={22} fontSize={12} fontWeight="bold" fill="#000000">
-        {stateDetails.description} ({stateDetails.stateno})
-      </text>
+      {stateDetails.stateno && (
+        <text x={35} y={22} fontSize={12} fontWeight="bold" fill="#000000">
+          {stateDetails.description} ({stateDetails.stateno})
+        </text>
+      )}
       <text x={10} y={40} fontSize={12} fill="#000000">
         {rect.name}
       </text>
       <text x={10} y={58} fontSize={12} fill="#000000">
-        {tissue}
+        {truncate(tissue)}
       </text>
     </svg>
   );

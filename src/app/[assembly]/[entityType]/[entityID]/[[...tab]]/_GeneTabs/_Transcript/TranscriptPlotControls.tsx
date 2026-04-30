@@ -1,10 +1,24 @@
 import React from "react";
-import { Stack, FormControl, FormLabel, Select, MenuItem, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import {
+  Stack,
+  FormControl,
+  FormLabel,
+  Select,
+  MenuItem,
+  ToggleButtonGroup,
+  ToggleButton,
+  styled,
+  Tooltip,
+} from "@mui/material";
 
 interface Peak {
   peakID: string;
   peakType: string;
 }
+
+const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
+  ...theme.typography.body2,
+}));
 
 interface TranscriptPlotControlsProps {
   selectedPeak: string;
@@ -37,7 +51,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
 }) => (
   <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
     <FormControl>
-      <FormLabel>Peak</FormLabel>
+      <StyledFormLabel>Peak</StyledFormLabel>
       <Select
         value={selectedPeak}
         onChange={(e) => setPeak(e.target.value as string)}
@@ -52,7 +66,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
       </Select>
     </FormControl>
     <FormControl>
-      <FormLabel>Scale</FormLabel>
+      <StyledFormLabel>Scale</StyledFormLabel>
       <ToggleButtonGroup
         color="primary"
         value={scale}
@@ -75,7 +89,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
     </FormControl>
     {!violin && (
       <FormControl>
-        <FormLabel>View By</FormLabel>
+        <StyledFormLabel>View By</StyledFormLabel>
         <ToggleButtonGroup
           color="primary"
           value={viewBy}
@@ -91,9 +105,11 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
           <ToggleButton sx={{ textTransform: "none" }} value="value">
             Value
           </ToggleButton>
-          <ToggleButton sx={{ textTransform: "none" }} value="tissue">
-            Tissue
-          </ToggleButton>
+          <Tooltip title="Disables sorting in table">
+            <ToggleButton sx={{ textTransform: "none" }} value="tissue">
+              Tissue
+            </ToggleButton>
+          </Tooltip>
           <ToggleButton sx={{ textTransform: "none" }} value="tissueMax">
             Tissue Max
           </ToggleButton>
@@ -103,7 +119,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
     {violin && (
       <Stack direction="row" spacing={2} alignItems="center">
         <FormControl>
-          <FormLabel>Sort By</FormLabel>
+          <StyledFormLabel>Sort By</StyledFormLabel>
           <ToggleButtonGroup
             color="primary"
             value={sortBy}
@@ -128,7 +144,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
           </ToggleButtonGroup>
         </FormControl>
         <FormControl>
-          <FormLabel>Show Points</FormLabel>
+          <StyledFormLabel>Show Points</StyledFormLabel>
           <ToggleButtonGroup
             color="primary"
             value={showPoints}

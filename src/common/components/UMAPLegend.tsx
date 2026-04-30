@@ -6,31 +6,28 @@ import { defaultStyles, useTooltip, useTooltipInPortal } from "@visx/tooltip";
 import { TooltipInPortalProps } from "@visx/tooltip/lib/hooks/useTooltipInPortal";
 import { localPoint } from "@visx/event";
 import { tissueColors } from "common/colors";
-import { interpolateYlOrRd } from "d3-scale-chromatic";
-import { ScaleLinear } from "d3-scale";
-import { generateDomain } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpressionUMAP";
-import type { PointMetadata } from "../../app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
-import { BiosampleRow } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_cCRE/types";
 
-type Data = {
-  label: string;
-  color: string;
+type GradientConfig = {
+  label?: string;
+  minLabel: string;
+  maxLabel: string;
+  gradient: string;
 };
 
-type UMAPLegendProps<T extends BiosampleRow | PointMetadata> = {
+type UMAPLegendProps<T> = {
   colorScheme: "expression" | "score" | "organ/tissue" | "sampleType";
   scatterData: Point<T>[];
-  maxValue: number;
-  colorScale: ScaleLinear<number, number, never> | ScaleLinear<string, string, never>;
-  scoreColorMode?: "active" | "all";
+  gradientConfig?: GradientConfig;
+  getTissue?: (item: T) => string;
+  getSampleType?: (item: T) => string;
 };
 
-export default function UMAPLegend<T extends BiosampleRow | PointMetadata>({
+export default function UMAPLegend<T>({
   colorScheme,
   scatterData,
-  maxValue,
-  colorScale,
-  scoreColorMode,
+  gradientConfig,
+  getTissue,
+  getSampleType,
 }: UMAPLegendProps<T>) {
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
@@ -41,16 +38,19 @@ export default function UMAPLegend<T extends BiosampleRow | PointMetadata>({
   //Type error: 'TooltipInPortal' cannot be used as a JSX component.
   const TooltipComponent = TooltipInPortal as unknown as React.FC<TooltipInPortalProps>;
 
-  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } = useTooltip<Data>();
+  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } = useTooltip<Point<T>[]>();
 
-  const handleMouseOver = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, datum) => {
-    const coords = localPoint(event, event);
-    showTooltip({
-      tooltipLeft: coords.x,
-      tooltipTop: coords.y - 200,
-      tooltipData: datum,
-    });
-  };
+  const handleMouseMove = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      const coords = localPoint(event.currentTarget, event);
+      showTooltip({
+        tooltipLeft: coords?.x ?? 0,
+        tooltipTop: coords?.y ?? 0,
+        tooltipData: scatterData,
+      });
+    },
+    [showTooltip, scatterData]
+  );
 
   const legendEntries = useMemo(() => {
     if (!scatterData) return [];
@@ -58,87 +58,51 @@ export default function UMAPLegend<T extends BiosampleRow | PointMetadata>({
     if (colorScheme === "organ/tissue" || colorScheme === "sampleType") {
       const cellTypeCounts = new Map<string, number>();
 
+      const accessor = colorScheme === "organ/tissue" ? getTissue : getSampleType;
+
       scatterData.forEach((point) => {
-        const meta = point.metaData as any;
-
-        const cellType = meta.tissue ?? (colorScheme === "organ/tissue" ? meta.ontology : meta.sampleType) ?? "missing";
-
+        const cellType = accessor?.(point.metaData) ?? "missing";
         cellTypeCounts.set(cellType, (cellTypeCounts.get(cellType) || 0) + 1);
       });
 
       return Array.from(cellTypeCounts.entries())
         .map(([cellType, count]) => ({
           label: cellType,
-          color: tissueColors[cellType],
+          color: tissueColors[cellType] ?? tissueColors.missing,
           value: count,
         }))
         .sort((a, b) => b.value - a.value);
     }
 
     return [];
-  }, [scatterData, colorScheme]);
-
-  const generateGradient = (maxValue: number) => {
-    const stops = generateDomain(maxValue, 9).map((value) => {
-      const scaled = colorScale(value);
-      return typeof scaled === "number" ? interpolateYlOrRd(scaled) : scaled; // fallback if it’s already a color string
-    });
-
-    return `#808080, ${stops.join(", ")}`;
-  };
-
-  const assayLegendGradientValues: string[] = useMemo(() => {
-    switch (scoreColorMode) {
-      case "active":
-        return [colorScale(1.65), colorScale(4)].map(String);
-      case "all":
-        return [colorScale(-4), colorScale(0), colorScale(4)].map(String);
-      default:
-        return [];
-    }
-  }, [colorScale, scoreColorMode]);
+  }, [scatterData, colorScheme, getTissue, getSampleType]);
 
   const cols = 6;
 
   return (
     <>
-      {colorScheme === "expression" ? (
+      {gradientConfig && (colorScheme === "expression" || colorScheme === "score") ? (
         <Stack direction="row" spacing={0.5} alignItems="center" mr={1}>
-          <Typography>Log₁₀(TPM + 1)</Typography>
+          {gradientConfig.label && <Typography>{gradientConfig.label}</Typography>}
           <Box sx={{ display: "flex", alignItems: "center", width: "200px" }}>
-            <Typography sx={{ mr: 1 }}>0</Typography>
+            <Typography sx={{ mr: 1 }}>{gradientConfig.minLabel}</Typography>
             <Box
               sx={{
-                height: "16px",
+                height: "14px",
                 flexGrow: 1,
-                background: `linear-gradient(to right, ${generateGradient(maxValue)})`,
-                border: "1px solid #ccc",
+                background: `linear-gradient(to right, ${gradientConfig.gradient})`,
               }}
             />
-            <Typography sx={{ ml: 1 }}>{maxValue.toFixed(2)}</Typography>
+            <Typography sx={{ ml: 1 }}>{gradientConfig.maxLabel}</Typography>
           </Box>
         </Stack>
-      ) : colorScheme === "score" ? (
-        <Box sx={{ display: "flex", alignItems: "center", width: "200px" }}>
-          <Typography sx={{ mr: 1 }}>{scoreColorMode === "active" ? "1.65" : "-4"}</Typography>
-          <Box
-            sx={{
-              height: "12px",
-              flexGrow: 1,
-              background: `linear-gradient(to right, ${assayLegendGradientValues.join(", ")})`,
-              outline: "1px solid",
-              outlineColor: "divider",
-            }}
-          />
-          <Typography sx={{ ml: 1 }}>{4}</Typography>
-        </Box>
       ) : (
         <Stack
           direction="row"
           spacing={1}
           alignItems="center"
           mr={1}
-          onMouseMove={(e) => handleMouseOver(e, scatterData)}
+          onMouseMove={handleMouseMove}
           onMouseLeave={hideTooltip}
           ref={containerRef}
           sx={{

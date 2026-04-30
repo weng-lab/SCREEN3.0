@@ -3,6 +3,11 @@ import { defaultBigBed, defaultTranscript } from "./defaultConfigs";
 import CCRETooltip from "../Tooltips/CcreTooltip";
 import { JSX } from "react";
 
+export type CcreTooltipBiosample = {
+  name: string;
+  displayname: string;
+};
+
 // GWAS-specific tracks with -ignore suffix to prevent removal by TrackSelect
 export const gwasTracks: Track[] = [
   {
@@ -41,7 +46,7 @@ export interface TrackCallbacks {
   onCCREClick: (item: any) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onGeneClick: (item: any) => void;
-  ccreTooltip: (rect: Rect) => JSX.Element;
+  ccreTooltip: (rect: Rect, biosample?: CcreTooltipBiosample) => JSX.Element;
   chromHmmTooltip: (rect: BulkBedRect, tissue: string, displayName: string) => JSX.Element;
 }
 
@@ -70,7 +75,22 @@ export function injectCallbacks(track: Track, callbacks: TrackCallbacks): Track 
       onHover: callbacks.onHover,
       onLeave: callbacks.onLeave,
       onClick: callbacks.onCCREClick,
-      tooltip: callbacks.ccreTooltip,
+      tooltip: (rect: Rect) => {
+        const trackMetadata = track as Track & {
+          biosampleName?: string;
+          biosampleDisplayName?: string;
+        };
+
+        const biosample =
+          trackMetadata.biosampleName && trackMetadata.biosampleDisplayName
+            ? {
+                name: trackMetadata.biosampleName,
+                displayname: trackMetadata.biosampleDisplayName,
+              }
+            : undefined;
+
+        return callbacks.ccreTooltip(rect, biosample);
+      },
     };
   }
   return track;

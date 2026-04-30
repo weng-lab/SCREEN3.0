@@ -1,4 +1,5 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { useMemo } from "react";
 import { gql } from "common/types/generated/gql";
 import { TssRampageQuery } from "common/types/generated/graphql";
@@ -36,7 +37,7 @@ export type UseTranscriptExpressionReturn = {
   data: TssRampage[] | undefined;
   peaks: PeakInfo[];
   loading: boolean;
-  error: ApolloError;
+  error: ErrorLike;
 };
 
 export type PeakInfo = {
@@ -60,7 +61,6 @@ export const useTranscriptExpression = ({ gene }: ExpressionParams): UseTranscri
 
   const peaks: PeakInfo[] = useMemo(() => {
     if (!data?.tssrampageQuery) return [];
-
     return Array.from(
       new Map(
         data?.tssrampageQuery.map((x) => [
@@ -76,10 +76,15 @@ export const useTranscriptExpression = ({ gene }: ExpressionParams): UseTranscri
     );
   }, [data]);
 
-  return {
-    data: data?.tssrampageQuery ?? [],
-    peaks: peaks,
-    loading,
-    error,
-  };
+  const memoizedReturn = useMemo(
+    () => ({
+      data: data?.tssrampageQuery ?? [],
+      peaks: peaks,
+      loading,
+      error,
+    }),
+    [peaks, data, loading, error]
+  );
+
+  return memoizedReturn;
 };

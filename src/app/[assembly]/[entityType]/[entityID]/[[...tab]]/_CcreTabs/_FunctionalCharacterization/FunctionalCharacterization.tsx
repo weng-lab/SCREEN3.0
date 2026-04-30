@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Table } from "@weng-lab/ui-components";
 import { Stack } from "@mui/material";
 import { gql } from "common/types/generated/gql";
@@ -158,7 +158,10 @@ const crispr_experimentMap: Record<string, CRISPR_ExperimentInfo> = {
 };
 
 export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps) => {
-  const { data: dataCcre } = useCcreData({ assembly: entity.assembly, accession: entity.entityID });
+  const { data: dataCcre, loading: loadingCoords } = useCcreData({
+    assembly: entity.assembly,
+    accession: entity.entityID,
+  });
 
   const coordinates: GenomicRange = dataCcre && {
     chromosome: dataCcre?.chrom,
@@ -304,7 +307,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           },
         ]}
         rows={dataMouseTransgenic?.functionalCharacterizationQuery}
-        loading={loadingMouseTransgenic}
+        loading={loadingCoords || loadingMouseTransgenic}
         error={!!errorMouseTransgenic}
         initialState={{ sorting: { sortModel: [{ field: "element_id", sort: "desc" }] } }}
       />
@@ -375,11 +378,12 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
               },
             ]}
             rows={dataMPRA?.mpraFccQuery}
-            loading={loadingMPRA}
+            loading={loadingCoords || loadingMPRA}
             error={!!errorMPRA}
             initialState={{
               sorting: { sortModel: [{ field: "log2fc", sort: "desc" }] },
             }}
+            divHeight={{ maxHeight: "400px" }}
           />
           <Table
             label={`STARR-seq (CAPRA quantification) Solo Fragments`}
@@ -453,6 +457,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
             initialState={{
               sorting: { sortModel: [{ field: "log2fc", sort: "desc" }] },
             }}
+            divHeight={{ maxHeight: "400px" }}
           />
           <Table
             label={`STARR-seq (CAPRA quantification) Double Fragments`}
@@ -544,6 +549,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
             initialState={{
               sorting: { sortModel: [{ field: "log2fc", sort: "desc" }] },
             }}
+            divHeight={{ maxHeight: "400px" }}
           />
           <Table
             label={`CRISPR Perturbation Data`}
@@ -602,6 +608,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
             initialState={{
               sorting: { sortModel: [{ field: "log2fc", sort: "desc" }] },
             }}
+            divHeight={{ maxHeight: "400px" }}
           />
         </>
       )}

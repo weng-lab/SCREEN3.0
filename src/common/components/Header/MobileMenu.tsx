@@ -69,14 +69,14 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
               closeDrawer={handleCloseDrawer}
               assembly={assembly}
               slots={{
-                button: (
-                  <IconButton sx={{ color: "black" }}>
-                    <Search />
-                  </IconButton>
-                ),
+                button: IconButton,
               }}
               slotProps={{
                 box: { gap: 1 },
+                button: {
+                  sx: { color: "black" },
+                  children: <Search />,
+                },
                 input: {
                   size: "small",
                   label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
@@ -85,9 +85,6 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
                       backgroundColor: "#ffffff",
                     },
                   },
-                },
-                button: {
-                  onClick: handleCloseDrawer,
                 },
               }}
             />

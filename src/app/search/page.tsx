@@ -165,13 +165,8 @@ export default function Page({
     queries: ["Gene", "cCRE", "SNP", "Coordinate", "Study", "Legacy cCRE"],
     assembly,
     geneVersion,
-    limits: {
-      gene: limit,
-      snp: limit,
-      icre: limit,
-      ccre: limit,
-      study: limit,
-    },
+    graphqlUrl: "/api/graphql",
+    limit: limit,
   });
 
   const grouped = data?.reduce<Record<string, Result[]>>((acc, r) => {

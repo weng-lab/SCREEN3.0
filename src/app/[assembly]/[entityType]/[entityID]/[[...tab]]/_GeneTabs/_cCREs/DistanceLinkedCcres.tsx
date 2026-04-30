@@ -4,9 +4,9 @@ import useNearbycCREs from "common/hooks/useNearBycCREs";
 import { useCcreData } from "common/hooks/useCcreData";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import CalculateIcon from "@mui/icons-material/Calculate";
-import React, { useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { Assembly } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
@@ -33,6 +33,8 @@ export default function DistanceLinkedCcres({
 }) {
   const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
   const [distance, setDistance] = useState<number>(10000);
+  const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { data: dataNearby, loading: loadingNearby } = useNearbycCREs(
     geneData,
@@ -40,23 +42,6 @@ export default function DistanceLinkedCcres({
     assembly as Assembly,
     distance
   );
-
-  const [virtualAnchor, setVirtualAnchor] = React.useState<{
-    getBoundingClientRect: () => DOMRect;
-  } | null>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (virtualAnchor) {
-      // If already open, close it
-      setVirtualAnchor(null);
-    } else {
-      // Open it, store the current position
-      const rect = event.currentTarget.getBoundingClientRect();
-      setVirtualAnchor({
-        getBoundingClientRect: () => rect,
-      });
-    }
-  };
 
   const handleMethodChange = (method: "body" | "tss" | "3gene") => {
     setCalcMethod(method);
@@ -67,9 +52,7 @@ export default function DistanceLinkedCcres({
   };
 
   const handleClickAway = () => {
-    if (virtualAnchor) {
-      setVirtualAnchor(null);
-    }
+    setOpen(false);
   };
 
   const { data: dataCcreDetails, loading: loadingCcreDetails } = useCcreData({
@@ -109,7 +92,7 @@ export default function DistanceLinkedCcres({
     };
   });
 
-  const cols: GridColDef[] = [
+  const cols: TableColDef[] = [
     {
       field: "ccre",
       headerName: "Accession",
@@ -186,6 +169,74 @@ export default function DistanceLinkedCcres({
     },
   ];
 
+  const emptyTableFallback = useMemo(
+    () => (
+      <Stack
+        direction={"row"}
+        border={"1px solid #e0e0e0"}
+        borderRadius={1}
+        p={2}
+        alignItems={"center"}
+        justifyContent={"space-between"}
+      >
+        <Stack direction={"row"} spacing={1}>
+          <InfoOutlineRounded />
+          <Typography>No Nearby cCREs Found</Typography>
+        </Stack>
+        <Tooltip title="Calculate Nearby cCREs by">
+          <Button
+            ref={buttonRef}
+            onClick={() => setOpen(true)}
+            variant="outlined"
+            endIcon={<CalculateIcon />}
+          >
+            Change Method
+          </Button>
+        </Tooltip>
+      </Stack>
+    ),
+    []
+  );
+
+  const toolbarExtra = useMemo(
+    () => (
+      <Tooltip title="Calculate Nearby cCREs by">
+        <Button
+          ref={buttonRef}
+          onClick={() => setOpen(true)}
+          variant="outlined"
+          endIcon={<CalculateIcon />}
+        >
+          Change Method
+        </Button>
+      </Tooltip>
+    ),
+    []
+  );
+
+  const labelTooltip = useMemo(
+    () => (
+      <>
+        {calcMethod === "tss" && (
+          <Typography component="span" variant="subtitle2">
+            (Within {distance} bp of TSS of <i>{geneData.data?.name}</i>)
+          </Typography>
+        )}
+        {calcMethod === "3gene" && (
+          <Typography component="span" variant="subtitle2">
+            (<i>{geneData.data?.name}</i> is 1 of 3 closest genes to cCRE)
+          </Typography>
+        )}
+        {calcMethod === "body" && (
+          <Typography component="span" variant="subtitle2">
+            (Within <i>{geneData.data?.name}</i> gene body)
+          </Typography>
+        )}
+      </>
+    ),
+    [calcMethod, distance, geneData.data?.name]
+  );
+
   return (
     <Box width={"100%"}>
       <Table
@@ -198,57 +249,18 @@ export default function DistanceLinkedCcres({
             sortModel: [{ field: "distance", sort: "asc" }],
           },
         }}
-        emptyTableFallback={
-          <Stack
-            direction={"row"}
-            border={"1px solid #e0e0e0"}
-            borderRadius={1}
-            p={2}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Stack direction={"row"} spacing={1}>
-              <InfoOutlineRounded />
-              <Typography>No Nearby cCREs Found</Typography>
-            </Stack>
-            <Tooltip title="Calculate Nearby cCREs by">
-              <Button onClick={handleClick} variant="outlined" endIcon={<CalculateIcon />}>
-                Change Method
-              </Button>
-            </Tooltip>
-          </Stack>
-        }
-        divHeight={{ maxHeight: assembly === "GRCh38" ? "400px" : "600px" }}
-        toolbarSlot={
-          <Tooltip title="Calculate Nearby cCREs by">
-            <Button onClick={handleClick} variant="outlined" endIcon={<CalculateIcon />}>
-              Change Method
-            </Button>
-          </Tooltip>
-        }
-        labelTooltip={
-          <>
-            {calcMethod === "tss" && (
-              <Typography component="span" variant="subtitle2">
-                (Within {distance} bp of TSS of <i>{geneData.data?.name}</i>)
-              </Typography>
-            )}
-            {calcMethod === "3gene" && (
-              <Typography component="span" variant="subtitle2">
-                (<i>{geneData.data?.name}</i> is 1 of 3 closest genes to cCRE)
-              </Typography>
-            )}
-            {calcMethod === "body" && (
-              <Typography component="span" variant="subtitle2">
-                (Within <i>{geneData.data?.name}</i> gene body)
-              </Typography>
-            )}
-          </>
-        }
+        emptyTableFallback={emptyTableFallback}
+        divHeight={{ height: assembly === "GRCh38" ? "400px" : "600px" }}
+        slotProps={{
+          toolbar: {
+            extra: toolbarExtra,
+            labelTooltip: labelTooltip,
+          },
+        }}
       />
       <CalculateNearbyCCREsPopper
-        open={Boolean(virtualAnchor)}
-        anchorEl={virtualAnchor}
+        open={open}
+        anchorEl={buttonRef.current}
         handleClickAway={handleClickAway}
         distance={distance}
         geneName={geneData.data?.name}

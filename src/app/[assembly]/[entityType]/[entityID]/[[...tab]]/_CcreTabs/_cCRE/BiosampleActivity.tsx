@@ -1,9 +1,10 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { gql } from "common/types/generated";
-import { GRID_CHECKBOX_SELECTION_COL_DEF, GridColDef, GridRenderCellParams, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table } from "@weng-lab/ui-components";
+import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
 import { CLASS_COLORS } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -73,16 +74,17 @@ const z_score_download_format = (d: number) => (d === -11.0 ? "NA" : d.toFixed(2
  */
 const z_score_display_format = (d: string): string => (d === "NA" ? "--" : d);
 
-const zScoreFormatting: Partial<GridColDef> = {
+const zScoreFormatting: Partial<TableColDef> = {
   valueGetter: z_score_download_format,
   renderCell: (params: GridRenderCellParams) => {
     return z_score_display_format(params.value);
   },
   sortComparator: (v1, v2) => (v1 === "NA" ? -1 : v2 === "NA" ? 1 : v1 - v2),
   type: "number",
+  minWidth: 100,
 };
 
-const ctAgnosticCols: GridColDef[] = [
+const ctAgnosticCols: TableColDef[] = [
   {
     headerName: "DNase max-Z",
     field: "dnase",
@@ -115,7 +117,7 @@ const ctAgnosticCols: GridColDef[] = [
   },
 ];
 
-const silencersDataCols: GridColDef[] = [
+const silencersDataCols: TableColDef[] = [
   {
     headerName: "Study",
     field: "study",
@@ -137,20 +139,8 @@ const silencersDataCols: GridColDef[] = [
     valueGetter: (value, row) => row.method,
   },
 ];
-//This is used to prevent sorting from happening when clicking on the header checkbox
-const StopPropagationWrapper = (params) => (
-  <div id={"StopPropagationWrapper"} onClick={(e) => e.stopPropagation()}>
-    <GRID_CHECKBOX_SELECTION_COL_DEF.renderHeader {...params} />
-  </div>
-);
 
-const getCoreAndPartialCols = (): GridColDef[] => [
-  {
-    ...(GRID_CHECKBOX_SELECTION_COL_DEF as GridColDef), //Override checkbox column https://mui.com/x/react-data-grid/row-selection/#custom-checkbox-column
-    sortable: true,
-    hideable: false,
-    renderHeader: StopPropagationWrapper,
-  },
+const coreAndPartialCols: TableColDef[] = [
   {
     headerName: "Cell Type",
     field: "displayname",
@@ -226,7 +216,7 @@ const assayInfo = (row: BiosampleRow) => {
   };
 };
 
-const getAncillaryCols = () => getCoreAndPartialCols().filter((col) => col.field !== "dnase" && col.field !== "class");
+const ancillaryCols = coreAndPartialCols.filter((col) => col.field !== "dnase" && col.field !== "class");
 
 export const GET_CCRE_CT_TF = gql(`
   query cCRETF($accession: String!, $assembly: String!) {
@@ -498,7 +488,9 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     ? [{ ...data_Ct_Agnostic.cCREQuery[0], displayname: "Cell Type Agnostic" }]
     : undefined;
 
-  const disableCsvEscapeChar = { slotProps: { toolbar: { csvOptions: { escapeFormulas: false } } } };
+  const disableCsvEscapeChar = {
+    toolbar: { csvOptions: { escapeFormulas: false }, excelOptions: { escapeFormulas: false } },
+  };
 
   const partialCollectionChromAccess = useMemo(() => {
     if (!partialDataCollection) return;
@@ -553,12 +545,11 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             rows={ctAgnosticRow}
             columns={ctAgnosticCols}
             loading={loading_Ct_Agnostic}
-            //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
-            divHeight={!ctAgnosticRow ? { height: "182px" } : undefined}
             error={!!error_Ct_Agnostic}
-            {...disableCsvEscapeChar}
+            autoHeight
             hideFooter
             showToolbar={false}
+            slotProps={disableCsvEscapeChar}
           />
           <div>
             <ProportionsBar
@@ -572,14 +563,18 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             />
             <Table
               label="Core Collection"
-              labelTooltip={CORE_COLLECTION_TOOLTIP}
               rows={coreCollection}
-              columns={getCoreAndPartialCols()}
+              columns={coreAndPartialCols}
               loading={loadingCorePartialAncillary}
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
               initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-              {...disableCsvEscapeChar}
+              slotProps={{
+                toolbar: {
+                  labelTooltip: CORE_COLLECTION_TOOLTIP,
+                  ...disableCsvEscapeChar.toolbar,
+                },
+              }}
             />
           </div>
           <div>
@@ -598,26 +593,34 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             />
             <Table
               label="Partial Data Collection"
-              labelTooltip={PARTIAL_COLLECTION_TOOLTIP}
               rows={partialDataCollection}
-              columns={getCoreAndPartialCols()}
+              columns={coreAndPartialCols}
               loading={loadingCorePartialAncillary}
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
               initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-              {...disableCsvEscapeChar}
+              slotProps={{
+                toolbar: {
+                  labelTooltip: PARTIAL_COLLECTION_TOOLTIP,
+                  ...disableCsvEscapeChar.toolbar,
+                },
+              }}
             />
           </div>
           <Table
             label="Ancillary Collection"
-            labelTooltip={ANCILLARY_COLLECTION_TOOLTIP}
             rows={ancillaryCollection}
-            columns={getAncillaryCols()}
+            columns={ancillaryCols}
             loading={loadingCorePartialAncillary}
             error={errorCorePartialAncillary}
             divHeight={{ height: "400px" }}
             initialState={{ sorting: { sortModel: [{ field: "atac", sort: "desc" }] } }}
-            {...disableCsvEscapeChar}
+            slotProps={{
+              toolbar: {
+                labelTooltip: ANCILLARY_COLLECTION_TOOLTIP,
+                ...disableCsvEscapeChar.toolbar,
+              },
+            }}
           />
         </Stack>
       ) : tab === "add_classification" ? (
@@ -681,7 +684,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
           )}
         </Stack>
       ) : (
-        <AssayView rows={assaySpecificRows} columns={getCoreAndPartialCols()} assay={tab} entity={entity} />
+        <AssayView rows={assaySpecificRows} columns={coreAndPartialCols} assay={tab} entity={entity} />
       )}
     </>
   );

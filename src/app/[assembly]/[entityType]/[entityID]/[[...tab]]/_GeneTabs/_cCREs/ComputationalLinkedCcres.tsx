@@ -8,7 +8,8 @@ import LinkedElements, { TableDef } from "common/components/linkedElements";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { usePathname } from "next/navigation";
 import { Assembly } from "common/types/globalTypes";
-import { GridColDef, GridRenderCellParams } from "@weng-lab/ui-components";
+import { TableColDef } from "@weng-lab/ui-components";
+import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/useCcreData";
 import { useState } from "react";
@@ -17,7 +18,7 @@ import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
-export const accessionCol = (assembly: string): GridColDef => ({
+export const accessionCol = (assembly: string): TableColDef => ({
   field: "accession",
   headerName: "Accession",
   renderCell: (params: GridRenderCellParams) => (
@@ -38,36 +39,17 @@ export default function ComputationalLinkedCcres({
     method,
   });
 
-  //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
-  //setting the anchorEl to the button
-  const [virtualAnchor, setVirtualAnchor] = useState<{
-    getBoundingClientRect: () => DOMRect;
-  } | null>(null);
+  const [open, setOpen] = useState(false);
 
   const handleClickClose = () => {
-    if (virtualAnchor) {
-      setVirtualAnchor(null);
-    }
+    setOpen(false);
   };
 
   const handleMethodSelected = (method: string) => {
     setMethod(method);
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (virtualAnchor) {
-      // If already open, close it
-      setVirtualAnchor(null);
-    } else {
-      // Open it, store the current position
-      const rect = event.currentTarget.getBoundingClientRect();
-      setVirtualAnchor({
-        getBoundingClientRect: () => rect,
-      });
-    }
-  };
-
-  const CompuLinkedcCREs_columns: GridColDef<(typeof dataCompucCREs)[number]>[] = [
+  const CompuLinkedcCREs_columns: TableColDef<(typeof dataCompucCREs)[number]>[] = [
     sharedColumns.accession,
     {
       field: "fileaccession",
@@ -260,19 +242,23 @@ export default function ComputationalLinkedCcres({
             )}
           </Stack>
           <Tooltip title="Advanced Filters">
-            <Button variant="outlined" onClick={handleClick}>
+            <Button variant="outlined" onClick={() => setOpen(true)}>
               Change Method
             </Button>
           </Tooltip>
         </Stack>
       ),
-      toolbarSlot: (
-        <Tooltip title="Advanced Filters">
-          <Button variant="outlined" onClick={handleClick}>
-            Change Method
-          </Button>
-        </Tooltip>
-      ),
+      slotProps: {
+        toolbar: {
+          extra: (
+            <Tooltip title="Advanced Filters">
+              <Button variant="outlined" onClick={() => setOpen(true)}>
+                Change Method
+              </Button>
+            </Tooltip>
+          ),
+        },
+      },
     },
   ];
 
@@ -286,7 +272,7 @@ export default function ComputationalLinkedCcres({
       >
         <SelectCompuGenesMethod
           method={method}
-          open={Boolean(virtualAnchor)}
+          open={open}
           setOpen={handleClickClose}
           onMethodSelect={handleMethodSelected}
         />

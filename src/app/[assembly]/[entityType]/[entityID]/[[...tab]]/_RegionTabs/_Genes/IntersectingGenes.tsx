@@ -1,7 +1,7 @@
 "use client";
 import { useGeneData } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
-import { Table, GridColDef } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { decodeRegions, parseGenomicRangeString } from "common/utility";
 import { useMemo } from "react";
@@ -22,7 +22,7 @@ const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {
     error: errorGenes,
   } = useGeneData({ coordinates, assembly: entity.assembly });
 
-  const columns: GridColDef<(typeof dataGenes)[number]>[] = [
+  const columns: TableColDef<(typeof dataGenes)[number]>[] = [
     {
       field: "name",
       headerName: "Name",

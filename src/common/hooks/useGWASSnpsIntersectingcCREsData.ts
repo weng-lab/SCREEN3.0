@@ -1,4 +1,5 @@
-import { ApolloError, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import type { ErrorLike } from "@apollo/client";
 import { gql } from "common/types/generated/gql";
 
 const GWAS_CCRE_QUERY = gql(`
@@ -28,7 +29,7 @@ export type UseGWASSnpsIntersectingcCREsReturn = {
       }[]
     | undefined;
   loading: boolean;
-  error: ApolloError | undefined;
+  error: ErrorLike | undefined;
 };
 
 export const useGWASSnpsIntersectingcCREsData = ({

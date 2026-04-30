@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Typography, Button, Stack, IconButton, Tooltip } from "@mui/material";
 import { useCcreData } from "common/hooks/useCcreData";
-import { Table, GridColDef, EncodeBiosample } from "@weng-lab/ui-components";
+import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useMemo, useState } from "react";
 import { CancelRounded } from "@mui/icons-material";
@@ -37,29 +37,10 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     cellType: selectedBiosample ? selectedBiosample.name : undefined,
   });
 
-  //Not really sure how this works, but only way to anchor the popper since the extra toolbarSlot either gets unrendered or unmouted after
-  //setting the anchorEl to the button
-  const [virtualAnchor, setVirtualAnchor] = useState<{
-    getBoundingClientRect: () => DOMRect;
-  } | null>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (virtualAnchor) {
-      // If already open, close it
-      setVirtualAnchor(null);
-    } else {
-      // Open it, store the current position
-      const rect = event.currentTarget.getBoundingClientRect();
-      setVirtualAnchor({
-        getBoundingClientRect: () => rect,
-      });
-    }
-  };
+  const [open, setOpen] = useState(false);
 
   const handleClickClose = () => {
-    if (virtualAnchor) {
-      setVirtualAnchor(null);
-    }
+    setOpen(false);
   };
   const showAtac = !selectedBiosample || !!selectedBiosample.atac_experiment_accession;
   const showCTCF = !selectedBiosample || !!selectedBiosample.ctcf_experiment_accession;
@@ -71,7 +52,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     setSelectedBiosample(biosample);
   };
 
-  const columns: GridColDef<(typeof dataCcres)[number]>[] = [
+  const columns: TableColDef<(typeof dataCcres)[number]>[] = [
     {
       field: "info.accession",
       headerName: "Accession",
@@ -244,19 +225,23 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
         error={!!errorCcres}
         label={`Intersecting cCREs`}
         emptyTableFallback={"No intersecting cCREs found in this region"}
-        toolbarSlot={
-          <Tooltip title="Advanced Filters">
-            <Button variant="outlined" onClick={handleClick}>
-              Select Biosample
-            </Button>
-          </Tooltip>
-        }
+        slotProps={{
+          toolbar: {
+            extra: (
+              <Tooltip title="Advanced Filters">
+                <Button variant="outlined" onClick={() => setOpen(true)}>
+                  Select Biosample
+                </Button>
+              </Tooltip>
+            ),
+          },
+        }}
         initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
         divHeight={{ maxHeight: "600px" }}
       />
       <BiosampleSelectDialog
         assembly={entity.assembly}
-        open={Boolean(virtualAnchor)}
+        open={open}
         onClose={handleClickClose}
         onSelectionChange={handleBiosampleSelected}
         selected={selectedBiosample}

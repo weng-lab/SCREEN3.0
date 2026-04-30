@@ -5,7 +5,7 @@ import { tissueColors } from "common/colors";
 import { useMemo } from "react";
 import { Typography } from "@mui/material";
 import AssayPlotControls from "./AssayPlotControls";
-import type { SharedAssayViewPlotProps, BiosampleRow } from "./types";
+import type { AssayBarPlotProps, BiosampleRow } from "./types";
 
 const PlotTooltip = (bar: BarData<BiosampleRow>) => {
   return (
@@ -27,27 +27,28 @@ const PlotTooltip = (bar: BarData<BiosampleRow>) => {
 };
 
 const AssayBarPlot = ({
-  entity,
-  assay,
-  selected,
-  setSelected,
   sortedFilteredData,
+  selected,
+  toggleSelection,
+  getRowId,
+  assay,
+  entityID,
   viewBy,
-  ref,
   setViewBy,
   cutoffLowSignal,
   setCutoffLowSignal,
   show95Line,
   setShow95Line,
-}: SharedAssayViewPlotProps) => {
+  ref,
+}: AssayBarPlotProps) => {
   const plotData: BarData<BiosampleRow>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((row) => {
       const anySelected = selected.length > 0;
-      const isSelected = selected.some((x) => x.name === row.name);
+      const isSelected = selected.some((x) => getRowId(x) === getRowId(row));
       return {
         value: row[assay],
-        id: row.name,
+        id: getRowId(row),
         category: capitalizeFirstLetter(row.ontology),
         label: truncateString(capitalizeFirstLetter(row.displayname), 25),
         color:
@@ -57,22 +58,14 @@ const AssayBarPlot = ({
         metadata: row,
       };
     });
-  }, [assay, selected, sortedFilteredData]);
+  }, [assay, selected, sortedFilteredData, getRowId]);
 
   const handleBarClick = (bar: BarData<BiosampleRow>) => {
-    if (selected.some((x) => x.name === bar.metadata.name)) {
-      setSelected(selected.filter((x) => x.name !== bar.metadata.name));
-    } else setSelected([...selected, bar.metadata]);
+    toggleSelection(bar.metadata);
   };
 
   return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
-      padding={1}
-      sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, position: "relative" }}
-    >
+    <Box display="flex" flexDirection="column" height="100%">
       <AssayPlotControls
         viewBy={viewBy}
         setViewBy={setViewBy}
@@ -81,18 +74,20 @@ const AssayBarPlot = ({
         show95Line={show95Line}
         setShow95Line={setShow95Line}
       />
-      <BarPlot
-        data={plotData}
-        topAxisLabel={`${entity.entityID} ${formatAssay(assay)} z-scores`}
-        cutoffNegativeValues={cutoffLowSignal}
-        show95thPercentileLine={show95Line}
-        onBarClicked={handleBarClick}
-        TooltipContents={PlotTooltip}
-        ref={ref}
-        downloadFileName={`${assay}_bar_plot`}
-        animation="slideRight"
-        animationBuffer={0.01}
-      />
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
+        <BarPlot
+          data={plotData}
+          topAxisLabel={`${entityID} ${formatAssay(assay)} z-scores`}
+          cutoffNegativeValues={cutoffLowSignal}
+          show95thPercentileLine={show95Line}
+          onBarClicked={handleBarClick}
+          TooltipContents={PlotTooltip}
+          ref={ref}
+          downloadFileName={`${assay}_bar_plot`}
+          animation="slideRight"
+          animationBuffer={0.01}
+        />
+      </Box>
     </Box>
   );
 };
