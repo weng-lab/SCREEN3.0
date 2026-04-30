@@ -23,7 +23,6 @@ export type ReleaseNote = {
   sections: ReleaseNoteSection[];
 };
 
-
 export const releaseNotes: ReleaseNote[] = [
   {
     id: "r3.2026.1",
