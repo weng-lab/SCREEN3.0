@@ -25,8 +25,8 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
-    id: "v2026.1",
-    version: "v2026.1",
+    id: "r3.2026.1",
+    version: "r3.2026.1",
     date: "April 2026",
     title: "April Release",
     sections: [

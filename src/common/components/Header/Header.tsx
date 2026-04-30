@@ -326,7 +326,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
       </Toolbar>
       {hasHydrated && isHomePage && (
         <NewVersionBanner
-          versionId="v2026.1"
+          versionId="r3.2026.1"
           message="ChIP-seq peaks, PhastCons scores, CpG coverage, and promoter cCREs"
         />
       )}
