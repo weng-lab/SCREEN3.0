@@ -37,7 +37,7 @@ export const releaseNotes: ReleaseNote[] = [
           {
             description:
               "The transcription factor (TF) motifs tab for cCREs, accessible via the More icon in the sidebar, now includes a table of representative TF ChIP-seq peaks overlapping each cCRE. This feature enables users to identify TFs binding at a given cCRE, examine individual ChIP-seq peak locations, and view corresponding TF motif logos and motif coordinates when motif sites are present. In addition, a new genome browser track, accessible via the Genome Browser icon, displays representative ChIP-seq peaks, with motif sites within peaks highlighted as green boxes.",
-            link: "/GRCh38/gene/SOX4?open=BYegjCDKDyAaAsIAMQ",
+            link: "/GRCh38/ccre/EH38E3314260/tf?open=BYegDCCiASDMAclawIwBYBMA2CKCsQA",
             screenshot: "rpeakstable.png",
             imgWidth: 500,
           },
