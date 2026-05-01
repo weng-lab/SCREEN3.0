@@ -1,4 +1,4 @@
-import { Box, Tooltip, Typography } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import Image, { StaticImageData } from "next/image";
 import AllcCREs from "public/conservation/AllcCREs.png";
 import PromoterImg from "public/conservation/PLS.png";
@@ -240,16 +240,9 @@ const Legend = () => (
     border={(theme) => `1px solid ${theme.palette.divider}`}
     borderRadius={1}
     padding={2}
-    mb={2}
     width={"fit-content"}
     height={"min-content"}
   >
-    <Typography>Axes:</Typography>
-    <Typography variant="body2">
-      N1: Number of aligned species with ≥90% coverage of the cCRE’s nucleotide positions
-    </Typography>
-    <Typography variant="body2">N2: Number of species with ≤10% coverage</Typography>
-    <Typography mt={1}>Groups:</Typography>
     <Typography variant="body2">G1 (red): highly conserved elements (N1 ≥ 120 and N2 ≤ 25)</Typography>
     <Typography variant="body2">G2 (green): actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)</Typography>
     <Typography variant="body2">G3 (blue): primate-specific elements (N1 ≤ 50 and N2 ≥ 180)</Typography>
@@ -321,7 +314,7 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
   }
 
   return (
-    <Box>
+    <Stack spacing={2} alignItems={"flex-start"}>
       <Box ref={heatmapsRef} sx={{ display: "flex", gap: 2, flexDirection: "row", flexWrap: "wrap" }}>
         <HeatmapPlot
           src={imgSrc}
@@ -330,11 +323,11 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
           point={heatmapPoint}
         />
         <HeatmapPlot src={AllcCREs} alt="All cCRE classes" title="All cCRE classes" point={heatmapPoint} />
-        <Legend />
       </Box>
+        <Legend />
       <Button variant="outlined" color="primary" size="small" onClick={download}>
         Download Plots
       </Button>
-    </Box>
+    </Stack>
   );
 };
