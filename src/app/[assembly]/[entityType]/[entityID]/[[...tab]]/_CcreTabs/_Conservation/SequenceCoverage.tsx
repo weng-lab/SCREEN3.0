@@ -26,9 +26,7 @@ import { GenomicRange } from "common/types/globalTypes";
 import { useCcreData } from "common/hooks/useCcreData";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
 
-const sliderValues = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] as const;
-
-type SliderStep = (typeof sliderValues)[number];
+const DEFAULT_RANGE: [number, number] = [0.9, 1];
 
 const SEQ_ALIGNMENT_QUERY = gql(`
   query fetchccreSequenceAlignmentQuery(
@@ -93,7 +91,8 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
   const [selectedSpecies, setSelectedSpecies] = useState<Set<string>>(allSpecies);
   const [speciesSelectOpen, setSpeciesSelectOpen] = useState<boolean>(false);
   const [hovered, setHovered] = useState<string[]>([]);
-  const [coveragePercentage, setCoveragePercentage] = useState<number>(0.9);
+  const [displayRange, setDisplayRange] = useState<[number, number]>(DEFAULT_RANGE);
+  const [appliedRange, setAppliedRange] = useState<[number, number]>(DEFAULT_RANGE);
 
   const handleSeqPlotHoverChange = useCallback((newHovered: string | null) => {
     setHovered(newHovered ? [newHovered] : []);
@@ -163,22 +162,21 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
     });
   }, [dataSeq, hasSequenceAlignmentData, unfilteredAlignmentPlotData]);
 
-  const highlighted: Record<SliderStep, string[]> | null = useMemo(() => {
-    if (!hasSequenceAlignmentData || !unfilteredAlignmentPlotData) return null;
+  const highlightedSpecies = useMemo(
+    () =>
+      speciesCoverageData
+        .filter((s) => s.coverage >= appliedRange[0] && s.coverage <= appliedRange[1])
+        .map((s) => s.id),
+    [speciesCoverageData, appliedRange]
+  );
 
-    const length = dataSeq.ccreSequenceAlignmentQuery[0].sequence_alignment[0].length;
-
-    const highlightedLists: Record<SliderStep, string[]> = {} as Record<SliderStep, string[]>;
-
-    for (const percentage of sliderValues) {
-      highlightedLists[percentage] = SPECIES_ORDER_IN_API_RETURN.filter((species) => {
-        const gapFilteredLength = unfilteredAlignmentPlotData[species]?.filter((bp) => bp !== "-").length ?? 0;
-        return gapFilteredLength / length >= percentage;
-      });
-    }
-
-    return highlightedLists;
-  }, [dataSeq, hasSequenceAlignmentData, unfilteredAlignmentPlotData]);
+  const speciesInRangeCount = useMemo(
+    () =>
+      speciesCoverageData.filter(
+        (s) => s.coverage >= displayRange[0] && s.coverage <= displayRange[1]
+      ).length,
+    [speciesCoverageData, displayRange]
+  );
 
   const SeqAlignTooltip = useCallback(
     (tooltipData: TooltipData) => {
@@ -238,24 +236,27 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
         <div>
           <Box width={300} marginBottom={{ sm: -2 }}>
             <Typography variant="body2" display={"flex"} alignItems={"center"}>
-              Sequence Coverage Threshold: {coveragePercentage * 100}%{"\u00A0"}
+              Coverage Highlight: {displayRange[0] * 100}%{"\u00A0\u2013\u00A0"}{displayRange[1] * 100}%{"\u00A0"}
               <Tooltip
-                title="Highlights species whose aligned sequence covers x% of the cCRE region"
+                title="Highlights species whose aligned sequence covers a percentage of the cCRE region within the selected range"
                 placement="right-end"
               >
                 <InfoOutline fontSize="small" />
               </Tooltip>
             </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {speciesInRangeCount} of {SPECIES_ORDER_IN_API_RETURN.length} species in range
+            </Typography>
             <Slider
-              value={coveragePercentage}
-              onChange={(_, newValue: number) => {
-                setCoveragePercentage(newValue);
-              }}
-              min={sliderValues[0]}
-              max={sliderValues[sliderValues.length - 1]}
-              step={sliderValues[1] - sliderValues[0]}
+              value={displayRange}
+              onChange={(_, v) => setDisplayRange(v as [number, number])}
+              onChangeCommitted={(_, v) => setAppliedRange(v as [number, number])}
+              min={0}
+              max={1}
+              step={0.1}
               size="small"
               valueLabelDisplay="auto"
+              getAriaLabel={() => "Sequence coverage range"}
             />
           </Box>
         </div>
@@ -282,7 +283,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
                 getColor={getColor}
                 getLabel={getLabel}
                 tooltipContents={PhyloTreeTooltip}
-                highlighted={highlighted[coveragePercentage]}
+                highlighted={highlightedSpecies}
                 hovered={hovered}
                 onLeafHoverChange={setHovered}
                 defaultScaling="unscaled"
@@ -301,7 +302,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
                 getOrder={getOrder}
                 getOrderColor={getColor}
                 tooltipContents={SeqAlignTooltip}
-                highlighted={highlighted[coveragePercentage]}
+                highlighted={highlightedSpecies}
                 hovered={hovered}
                 onHoverChange={handleSeqPlotHoverChange}
               />
