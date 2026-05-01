@@ -32,6 +32,9 @@ const CONSERVATION_HEATMAP_QUERY = gql(`
   `);
 
 const PLOT_WIDTH = 300;
+const AXIS_SIZE = 25;
+const N1_LABEL_WIDTH = 20;
+const TICKS = [0, 120, 240];
 
 const HeatmapPlot = ({
   src,
@@ -50,19 +53,90 @@ const HeatmapPlot = ({
   return (
     <Box>
       <Typography mb={1}>{title}</Typography>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Typography
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "auto auto auto",
+          gridTemplateRows: "auto auto auto",
+          width: "fit-content",
+        }}
+      >
+        <Box
           sx={{
-            transform: "rotate(270deg)",
+            gridRow: 1,
+            gridColumn: 1,
+            position: "relative",
+            width: N1_LABEL_WIDTH,
+            height: plotHeight,
+            alignSelf: "center",
             mr: 0.5,
           }}
-          variant="body2"
         >
-          N1
-        </Typography>
-        <Box>
-          <Box sx={{ position: "relative", width: PLOT_WIDTH, height: plotHeight }}>
-            <Image src={src} alt={alt} fill unoptimized priority />
+          <Typography
+            variant="body2"
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              width: plotHeight,
+              transform: "translate(-50%, -50%) rotate(270deg)",
+              textAlign: "center",
+            }}
+          >
+            N1: no. species with ≥90% coverage
+          </Typography>
+        </Box>
+        <Box
+          component="svg"
+          width={AXIS_SIZE}
+          height={plotHeight}
+          sx={{ gridRow: 1, gridColumn: 2, display: "block", color: "text.secondary" }}
+        >
+          <line
+            x1={AXIS_SIZE}
+            y1={0}
+            x2={AXIS_SIZE}
+            y2={plotHeight}
+            stroke="currentColor"
+            strokeWidth={1}
+          />
+          {TICKS.map((v) => {
+            const y = (1 - v / 240) * plotHeight;
+            const baseline = v === 240 ? "hanging" : v === 0 ? "alphabetic" : "middle";
+            return (
+              <g key={v}>
+                <line
+                  x1={AXIS_SIZE - 5}
+                  y1={y}
+                  x2={AXIS_SIZE}
+                  y2={y}
+                  stroke="currentColor"
+                  strokeWidth={1}
+                />
+                <text
+                  x={AXIS_SIZE - 7}
+                  y={y}
+                  textAnchor="end"
+                  dominantBaseline={baseline}
+                  fontSize={10}
+                  fill="currentColor"
+                >
+                  {v}
+                </text>
+              </g>
+            );
+          })}
+        </Box>
+        <Box
+          sx={{
+            gridRow: 1,
+            gridColumn: 3,
+            position: "relative",
+            width: PLOT_WIDTH,
+            height: plotHeight,
+          }}
+        >
+          <Image src={src} alt={alt} fill unoptimized priority />
             <svg
               viewBox={`0 0 ${240 * xScale} 240`}
               width={PLOT_WIDTH}
@@ -128,12 +202,34 @@ const HeatmapPlot = ({
                   onMouseLeave={(e) => e.currentTarget.removeAttribute("transform")}
                 />
               </Tooltip>
-            </svg>
-          </Box>
-          <Typography variant="body2" sx={{ textAlign: "center" }}>
-            N2
-          </Typography>
+          </svg>
         </Box>
+        <Box
+          component="svg"
+          width={PLOT_WIDTH}
+          height={AXIS_SIZE}
+          sx={{ gridRow: 2, gridColumn: 3, display: "block", color: "text.secondary" }}
+        >
+          <line x1={0} y1={0} x2={PLOT_WIDTH} y2={0} stroke="currentColor" strokeWidth={1} />
+          {TICKS.map((v) => {
+            const x = (v / 240) * PLOT_WIDTH;
+            const anchor = v === 0 ? "start" : v === 240 ? "end" : "middle";
+            return (
+              <g key={v}>
+                <line x1={x} y1={0} x2={x} y2={5} stroke="currentColor" strokeWidth={1} />
+                <text x={x} y={17} textAnchor={anchor} fontSize={10} fill="currentColor">
+                  {v}
+                </text>
+              </g>
+            );
+          })}
+        </Box>
+        <Typography
+          variant="body2"
+          sx={{ gridRow: 3, gridColumn: 3, width: PLOT_WIDTH, textAlign: "center" }}
+        >
+          N2: no. species with ≤10% coverage
+        </Typography>
       </Box>
     </Box>
   );
