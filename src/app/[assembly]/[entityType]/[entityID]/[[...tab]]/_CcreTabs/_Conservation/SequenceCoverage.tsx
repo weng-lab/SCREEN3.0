@@ -12,10 +12,11 @@ import Button from "@mui/material/Button";
 import SpeciesSelect from "./SpeciesSelect";
 import {
   getColor,
+  getColorLabel,
   getLabel,
   getOrder,
+  getPrimateGroup,
   makeAlignmentPlotData,
-  sortSpeciesByTreeOrder,
   SPECIES_ORDER_IN_API_RETURN,
   SpeciesRow,
   phyloTreeRoot,
@@ -80,6 +81,7 @@ const PlotTooltip = ({ speciesId, coverage, position }: PlotTooltipProps) => (
     <div style={{ fontWeight: 600 }}>{getLabel(speciesId)}</div>
     <div>{speciesId.replaceAll("_", " ")}</div>
     <div>{capitalizeFirstLetter(getOrder(speciesId).toLowerCase())}</div>
+    {getPrimateGroup(speciesId) && <div>{getColorLabel(speciesId)}</div>}
     <div>{(coverage * 100).toFixed(1)}% coverage</div>
     {position && (
       <div>{`${position.chromosome}:${position.absolutePosition.toLocaleString()} (Pos ${position.relativePosition}) • ${position.nucleotide}`}</div>
@@ -129,8 +131,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
     if (!hasSequenceAlignmentData) return null;
     return makeAlignmentPlotData(
       dataSeq.ccreSequenceAlignmentQuery[0].sequence_alignment,
-      SPECIES_ORDER_IN_API_RETURN,
-      sortSpeciesByTreeOrder
+      SPECIES_ORDER_IN_API_RETURN
     );
   }, [dataSeq, hasSequenceAlignmentData]);
 
@@ -186,7 +187,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
           speciesId={tooltipData.id}
           coverage={speciesCoverageData.find((x) => x.id === tooltipData.id).coverage}
           position={
-            coordinates && tooltipData.position
+            coordinates && tooltipData.position !== undefined
               ? {
                   chromosome: coordinates.chromosome,
                   relativePosition: tooltipData.position,
@@ -277,6 +278,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
                 width={width}
                 height={height}
                 data={phyloTreeRoot}
+                leafOrder={SPECIES_ORDER_IN_API_RETURN}
                 getColor={getColor}
                 getLabel={getLabel}
                 tooltipContents={PhyloTreeTooltip}
