@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "env:pull": "vercel env pull",
     "build": "next build",
     "start": "next start",
     "export": "next export",
@@ -66,7 +67,8 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "graphql": "^16",
     "prettier": "^3.6.2",
-    "typescript": "^6"
+    "typescript": "^6",
+    "vercel": "^53.2.0"
   },
   "resolutions": {
     "@types/react": "19.2.14",
