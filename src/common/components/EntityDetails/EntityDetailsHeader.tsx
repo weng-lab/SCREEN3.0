@@ -1,4 +1,4 @@
-import { Box, Button, Skeleton, Stack, Typography } from "@mui/material";
+import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatGenomicRange, formatPortal } from "common/utility";
 import { CLASS_DESCRIPTIONS } from "common/consts";
@@ -91,13 +91,12 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
               ""
             )}
           </Typography>
-          <Box display="flex" flexDirection="row" gap={1}>
-            <Typography>{loading ? <Skeleton width={215} /> : subtitle}</Typography>
-            <Typography>{loading ? <Skeleton width={215} /> : "| " + coordinatesDisplay}</Typography>
-          </Box>
+          <Typography>
+            {loading ? <Skeleton width={215} /> : <>{subtitle}{coordinatesDisplay ? ` | ${coordinatesDisplay}` : ""}</>}
+          </Typography>
         </Stack>
       </Grid>
-      <Grid size={{ xs: 12, sm: 3 }} display={"flex"} height={{ xs: 60 }} justifyContent={"flex-end"} gap={1}>
+      <Grid size={{ xs: 12, sm: "auto" }} display={"flex"} justifyContent={{xs: "flex-start", sm: "flex-end"}} alignItems={"flex-start"} gap={1}>
         {entityType !== "ccre" && (
           <Button
             variant="outlined"
@@ -111,7 +110,10 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             target="_blank"
             rel="noopener noreferrer"
             sx={{
-              flex: 1,
+              width: 125,
+              height: 60,
+              minWidth: 0,
+              position: "relative",
               backgroundColor: "transparent",
               borderColor: "divider",
               "& img": { transition: "filter 0.2s ease" },
@@ -140,7 +142,10 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           target="_blank"
           rel="noopener noreferrer"
           sx={{
-            flex: 1,
+            width: 125,
+            height: 60,
+            minWidth: 0,
+            position: "relative",
             backgroundColor: "transparent",
             borderColor: "divider",
             "& img": { transition: "filter 0.2s ease" },

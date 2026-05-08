@@ -135,7 +135,7 @@ const GeneExpressionUMAP = ({
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
+      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems="center">
         <ColorBySelect colorScheme={colorScheme} handleColorSchemeChange={handleColorSchemeChange} />
         <UMAPLegend
           colorScheme={colorScheme}
