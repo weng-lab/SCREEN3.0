@@ -192,8 +192,8 @@ const AssayUMAP = ({
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Stack direction="row" spacing={1}>
+      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems="center">
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
           <FormControl>
             <InputLabel>Color By</InputLabel>
             <Select value={colorScheme} label="Color By" onChange={handleColorSchemeChange} size="small">
