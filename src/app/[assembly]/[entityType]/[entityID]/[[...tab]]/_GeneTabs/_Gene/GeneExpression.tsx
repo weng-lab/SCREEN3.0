@@ -165,11 +165,11 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
       const allSelected = replicateRows.every((r) => selected.some((s) => getRowId(s) === getRowId(r)));
       if (allSelected) {
         const replicateIds = new Set(replicateRows.map(getRowId));
-        setSelected(selected.filter((s) => !replicateIds.has(getRowId(s))));
+        setSelected((prev) => prev.filter((s) => !replicateIds.has(getRowId(s))));
       } else {
         const alreadySelected = new Set(selected.map(getRowId));
         const toAdd = replicateRows.filter((r) => !alreadySelected.has(getRowId(r)));
-        setSelected([...selected, ...toAdd]);
+        setSelected((prev) => [...prev, ...toAdd]);
       }
     },
     [rows, selected, setSelected, getRowId]
@@ -182,7 +182,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
       const replicateRows = rows.filter((r) => experimentAccessions.has(r.exp_accession));
       const alreadySelected = new Set(selected.map(getRowId));
       const toAdd = replicateRows.filter((r) => !alreadySelected.has(getRowId(r)));
-      setSelected([...selected, ...toAdd]);
+      setSelected((prev) => [...prev, ...toAdd]);
     },
     [rows, selected, setSelected, getRowId]
   );

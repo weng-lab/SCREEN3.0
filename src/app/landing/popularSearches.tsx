@@ -39,7 +39,7 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({ assembly }) => {
         <Grow
           in={popularSearchesVisible[index]}
           timeout={800 + index * 300}
-          key={`${assembly}-${entity.name}-${index}`}
+          key={`${assembly}-${entity.entity}-${entity.name}`}
         >
           <Grid
             ref={(el) => {

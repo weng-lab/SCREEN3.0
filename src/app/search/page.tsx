@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/nextjs-missing-metadata */
 import { Alert, CircularProgress, Divider, Paper, Stack, Tab, Tooltip, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Assembly, isValidAssembly } from "common/types/globalTypes";
@@ -61,9 +62,9 @@ const LegacyCcreReturnEl = ({ result, assembly }: { result: Result; assembly: As
             .split("\n")
             .join(", ")
             .split(/(EH38[A-Z0-9]+|EM10[A-Z0-9]+)/g)
-            .map((part, i) =>
+            .map((part) =>
               /^(EH38|EM10)[A-Z0-9]+$/.test(part) ? (
-                <LinkComponent key={i} href={`/${assembly}/ccre/${part}`}>
+                <LinkComponent key={part} href={`/${assembly}/ccre/${part}`}>
                   {part}
                 </LinkComponent>
               ) : (
@@ -121,7 +122,7 @@ export default function Page({
 }) {
   const [tabValue, setTabValue] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const changeResultTab = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(+newValue);
   };
 
@@ -203,19 +204,19 @@ export default function Page({
         </div>
       ) : (
         <TabContext value={tabValue}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
+          <TabList onChange={changeResultTab} aria-label="lab API tabs example">
             {resultTypes.map((x, i) => (
-              <Tab key={i} label={`${x} (${grouped[x].length})`} value={i} />
+              <Tab key={x} label={`${x} (${grouped[x].length})`} value={i} />
             ))}
           </TabList>
           {resultTypes.map((x, i) => (
-            <TabPanel key={i} value={i} sx={{ p: 0 }}>
+            <TabPanel key={x} value={i} sx={{ p: 0 }}>
               <Stack spacing={2}>
-                {grouped[x].map((result, idx) =>
+                {grouped[x].map((result) =>
                   result.type === "Legacy cCRE" ? (
-                    <LegacyCcreReturnEl result={result} assembly={assembly} key={`${x}-${idx}`} />
+                    <LegacyCcreReturnEl result={result} assembly={assembly} key={`${x}-${result.title}`} />
                   ) : (
-                    <ReturnEl result={result} assembly={assembly} key={`${x}-${idx}`} />
+                    <ReturnEl result={result} assembly={assembly} key={`${x}-${result.title}`} />
                   )
                 )}
               </Stack>
@@ -226,5 +227,3 @@ export default function Page({
     </Stack>
   );
 }
-
-

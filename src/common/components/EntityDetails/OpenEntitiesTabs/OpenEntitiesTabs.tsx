@@ -54,7 +54,7 @@ export const OpenTabs: React.FC<OpenTabsProps> = ({
         >
           {openEntities.map((entity, i) => (
             <DraggableTab
-              key={i}
+              key={`${entity.assembly}-${entity.entityType}-${entity.entityID}-${entity.tab}`}
               index={i}
               entity={entity}
               isSelected={currentEntityState && isSameEntity(entity, currentEntityState)}

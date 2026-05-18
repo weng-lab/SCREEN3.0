@@ -120,8 +120,8 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
             <Tooltip
               title={
                 <Box>
-                  {defaultResults.map((r, i) => (
-                    <Typography key={i} variant="body2">
+                  {defaultResults.map((r) => (
+                    <Typography key={`${r.type}-${r.title}`} variant="body2">
                       <strong>{r.type}: </strong>
                       {r.title}
                     </Typography>

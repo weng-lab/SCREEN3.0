@@ -175,7 +175,7 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
             const y = scoresStartY + i * compactLineHeight;
 
             return (
-              <g key={i}>
+              <g key={row.label}>
                 <text x={padding} y={y} fontSize={12} fontWeight="bold" fill="#000000">
                   {row.label}:
                 </text>

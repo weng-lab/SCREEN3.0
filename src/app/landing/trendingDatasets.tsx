@@ -36,7 +36,7 @@ const TrendingDatasets: React.FC = () => {
   return (
     <Grid container spacing={5} justifyContent="flex-start" marginTop={2}>
       {trendingDataSets.map((data, index) => (
-        <Grow in={trendingVisible[index]} timeout={800 + index * 300} key={`trending-${index}`}>
+        <Grow in={trendingVisible[index]} timeout={800 + index * 300} key={`trending-${data.name}`}>
           <Grid
             ref={(el) => {
               trendingRefs.current[index] = el;

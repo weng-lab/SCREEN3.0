@@ -26,12 +26,11 @@ const UmapLegend = ({ scatterData, colorBy, sampleTypeColors, ontologyColors }: 
 
     // Map the color counts to the same format as before: label, color, and value
     return Object.entries(colorCounts)
-      .map(([color, count]) => ({
-        label: Object.keys(colorMapping).find((key) => colorMapping[key] === color) || color,
-        color,
-        value: count,
-      }))
-      .filter((x) => x.label !== "#aaaaaa") // quick fix for removing greyed out points from legend. Should be setup differently than this (why do we need to do this)
+      .reduce<{ label: string; color: string; value: number }[]>((entries, [color, count]) => {
+        const label = Object.keys(colorMapping).find((key) => colorMapping[key] === color) || color;
+        if (label !== "#aaaaaa") entries.push({ label, color, value: count });
+        return entries;
+      }, []) // quick fix for removing greyed out points from legend. Should be setup differently than this (why do we need to do this)
       .sort((a, b) => b.value - a.value);
   }, [scatterData, colorBy, sampleTypeColors, ontologyColors]);
 
@@ -49,9 +48,9 @@ const UmapLegend = ({ scatterData, colorBy, sampleTypeColors, ontologyColors }: 
         }}
       >
         {Array.from({ length: Math.ceil(legendEntries.length / 6) }, (_, colIndex) => (
-          <Box key={colIndex} sx={{ marginRight: 2 }}>
+          <Box key={`legend-column-${colIndex * 6}`} sx={{ marginRight: 2 }}>
             {legendEntries.slice(colIndex * 6, colIndex * 6 + 6).map((element, index) => (
-              <Box key={index} sx={{ display: "flex", alignItems: "center", marginBottom: 1 }}>
+              <Box key={`${element.label}-${element.color}`} sx={{ display: "flex", alignItems: "center", marginBottom: 1 }}>
                 <Box
                   sx={{
                     width: "12px",

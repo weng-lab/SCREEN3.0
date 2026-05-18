@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/nextjs-no-use-search-params-without-suspense */
 
 import { Tabs, Tab, Menu, MenuItem, Tooltip, TabsOwnProps } from "@mui/material";
 import Link from "next/link";
@@ -196,7 +197,7 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
             </CloneProps>
           );
         })}
-        {moreTabs.length && (
+        {moreTabs.length > 0 && (
           <Tab
             value="more"
             label={"More"}
