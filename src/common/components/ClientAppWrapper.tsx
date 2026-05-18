@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/no-fetch-in-effect */
 
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";

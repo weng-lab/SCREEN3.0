@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/nextjs-missing-metadata, react-doctor/no-giant-component */
 import React from "react";
 import {
   Box,

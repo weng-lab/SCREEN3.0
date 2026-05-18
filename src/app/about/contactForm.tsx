@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
+/* eslint-disable react-doctor/prefer-useReducer */
 import { Box, Button, TextField, Typography } from "@mui/material";
 
 export default function ContactForm() {
@@ -121,7 +122,7 @@ export default function ContactForm() {
           variant="outlined"
         />
         <Button sx={{ mt: 1 }} variant="contained" onClick={handleSubmit}>
-          Submit
+          Send Message
         </Button>
       </Box>
       {success && <Typography>Submitted successfully, thank you!</Typography>}

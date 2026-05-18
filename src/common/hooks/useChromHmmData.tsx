@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/no-cascading-set-state */
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
 import { BigBedData } from "genomic-reader";

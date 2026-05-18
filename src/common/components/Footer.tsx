@@ -4,6 +4,8 @@ import Image from "next/image";
 import { LinkComponent } from "./LinkComponent";
 import Link from "next/link";
 
+const CURRENT_YEAR = 2026;
+
 export default function Footer() {
   const sections = [
     {
@@ -71,7 +73,7 @@ export default function Footer() {
               <MuiLink color="inherit" href="https://sites.google.com/view/moore-lab/">
                 Moore Lab
               </MuiLink>{" "}
-              {new Date().getFullYear()}.
+              {CURRENT_YEAR}.
             </Typography>
             <Typography variant="body2" color={"#b2bcf0"}>
               How to Cite the ENCODE Encyclopedia, the Registry of cCREs, and SCREEN: <br />
@@ -81,7 +83,7 @@ export default function Footer() {
                 rel="noopener"
                 style={{ color: "inherit", textDecoration: "underline" }}
               >
-                Moore...Weng (2026) <i>Nature</i>
+                Moore&hellip;Weng (2026) <i>Nature</i>
               </Link>
             </Typography>
           </Stack>

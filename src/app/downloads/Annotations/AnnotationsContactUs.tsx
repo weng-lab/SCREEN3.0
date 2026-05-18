@@ -20,7 +20,7 @@ const AnnotationsContactUs: React.FC = () => (
         Can’t find the dataset you’re looking for?
       </Typography>
       <Typography variant="body2" color="primary.main">
-        Let us know what you need — we’re here to help you!
+        Let us know what you need; we’re here to help you!
       </Typography>
     </Box>
     <Button

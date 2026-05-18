@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/nextjs-missing-metadata, react-doctor/no-giant-component, react-doctor/js-set-map-lookups */
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";

@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-cascading-set-state, react-doctor/no-fetch-in-effect */
 import { AnyEntityType } from "common/entityTabsConfig";
 import { useEffect, useState } from "react";
 

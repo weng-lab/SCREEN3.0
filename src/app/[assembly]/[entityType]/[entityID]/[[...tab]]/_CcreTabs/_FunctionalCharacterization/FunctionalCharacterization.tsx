@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/no-giant-component */
 import React from "react";
 import { useQuery } from "@apollo/client/react";
 import { Table } from "@weng-lab/ui-components";

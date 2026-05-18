@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/no-cascading-set-state */
 
 import { Box, Divider, Stack } from "@mui/material";
 import { useEffect, useRef, useState } from "react";

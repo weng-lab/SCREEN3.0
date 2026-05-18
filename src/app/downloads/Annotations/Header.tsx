@@ -160,7 +160,7 @@ const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
             rel="noopener"
             style={{ color: "inherit", textDecoration: "underline" }}
           >
-            Moore...Weng (2026) <i>Nature</i>
+            Moore&hellip;Weng (2026) <i>Nature</i>
           </Link>
         </b>
       </Typography>

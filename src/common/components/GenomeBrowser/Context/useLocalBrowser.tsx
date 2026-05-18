@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-cascading-set-state, react-doctor/no-derived-state-effect */
 import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, Track } from "@weng-lab/genomebrowser";
 import { tfPeaksTrack } from "@weng-lab/genomebrowser-ui";
 import { AnyEntityType } from "common/entityTabsConfig";

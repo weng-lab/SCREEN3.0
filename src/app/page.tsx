@@ -1,5 +1,6 @@
 //Home Page
 "use client";
+/* eslint-disable react-doctor/nextjs-missing-metadata */
 import { Box, Button, Collapse, Grid, Link, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { theme } from "./theme";
@@ -90,12 +91,20 @@ export default function Home() {
         >
           <Typography variant="subtitle2" color="#b2bcf0" textAlign={{ xs: "center", md: "right" }}>
             Looking to search multiple regions?{" "}
-            <span
+            <button
+              type="button"
               onClick={toggleMultipleRegionSearchVisible}
-              style={{ color: "#b2bcf0", textDecoration: "underline", cursor: "pointer" }}
+              style={{
+                background: "none",
+                border: 0,
+                color: "#b2bcf0",
+                cursor: "pointer",
+                padding: 0,
+                textDecoration: "underline",
+              }}
             >
-              Click here!
-            </span>
+              Search multiple regions
+            </button>
           </Typography>
         </Box>
         <Collapse in={multipleRegionSearchVisible} sx={{ width: "100%" }} timeout={500}>

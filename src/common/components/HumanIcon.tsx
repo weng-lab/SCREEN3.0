@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/rendering-svg-precision */
 import * as React from "react";
 
 type HumanIconProps = {

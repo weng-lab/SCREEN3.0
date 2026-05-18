@@ -43,7 +43,7 @@ const LegacyVersionsTable = () => {
                 rel="noopener"
                 style={{ color: "inherit", textDecoration: "underline" }}
               >
-                Moore...Weng (2026) <br /> <i>Nature</i>
+                Moore&hellip;Weng (2026) <br /> <i>Nature</i>
               </Link>
             </TableCell>
           </TableRow>
