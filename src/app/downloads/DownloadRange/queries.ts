@@ -156,7 +156,8 @@ function cCRE_QUERY_VARIABLES(
  * @param accessions a list of accessions to fetch information on. Set chromosome, start, end to "undefined" if using so they're set to null
  * @returns cCREs matching the search
  */
-export function mainQuery(
+// eslint-disable-next-line react-doctor/server-auth-actions
+export async function mainQuery(
   assembly: string = null,
   chromosome: string = null,
   start: number = null,
@@ -167,21 +168,24 @@ export function mainQuery(
   accessions: string[] = null,
   noLimit?: boolean
 ) {
-  return query({
-    query: cCRE_QUERY,
-    variables: cCRE_QUERY_VARIABLES(
-      assembly,
-      chromosome ? [{ chromosome, start, end }] : null,
-      biosample,
-      nearbygenesdistancethreshold,
-      nearbygeneslimit,
-      accessions,
-      noLimit
-    ),
-    //Telling it to not cache, next js caches also and for things that exceed the 2mb cache limit it slows down substantially for some reason
-    fetchPolicy: "no-cache",
-  }).catch((error) => {
+  try {
+    const data = await query({
+      query: cCRE_QUERY,
+      variables: cCRE_QUERY_VARIABLES(
+        assembly,
+        chromosome ? [{ chromosome, start, end }] : null,
+        biosample,
+        nearbygenesdistancethreshold,
+        nearbygeneslimit,
+        accessions,
+        noLimit
+      ),
+      //Telling it to not cache, next js caches also and for things that exceed the 2mb cache limit it slows down substantially for some reason
+      fetchPolicy: "no-cache",
+    });
+    return data;
+  } catch (error) {
     console.error(error);
     throw error;
-  });
+  }
 }
