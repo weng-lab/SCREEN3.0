@@ -11,7 +11,7 @@ export function sortDistributions<T>(distributions: Distribution<T>[], sortBy: V
     }
     if (sortBy === "median") {
       const median = (arr: number[]) => {
-        const sorted = [...arr].sort((x, y) => x - y);
+        const sorted = arr.toSorted((x, y) => x - y);
         const mid = Math.floor(sorted.length / 2);
         return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
       };

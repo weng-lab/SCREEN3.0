@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/no-cascading-set-state, react-doctor/no-fetch-in-effect */
 import { EntityType } from "common/entityTabsConfig";
 import { useEffect, useState } from "react";
 
@@ -61,20 +62,23 @@ export function useSnpFrequencies(
               const ref = allele[0];
               const alt = allele.slice(1).join(",");
 
-              const pop = [
+              const pop = new Set([
                 "1000GENOMES:phase_3:AMR",
                 "1000GENOMES:phase_3:EUR",
                 "1000GENOMES:phase_3:AFR",
                 "1000GENOMES:phase_3:SAS",
                 "1000GENOMES:phase_3:EAS",
-              ];
+              ]);
 
-              const frequencies = fetchedData["populations"]
-                .filter((p: any) => pop.includes(p["population"]) && p["allele"] === ref)
-                .map((f: any) => ({
-                  population: f.population.replace("1000GENOMES:phase_3:", ""),
-                  frequency: f.frequency,
-                }));
+              const frequencies = fetchedData["populations"].reduce((items: Frequency[], f: any) => {
+                if (pop.has(f["population"]) && f["allele"] === ref) {
+                  items.push({
+                    population: f.population.replace("1000GENOMES:phase_3:", ""),
+                    frequency: f.frequency,
+                  });
+                }
+                return items;
+              }, []);
 
               results[rsid] = { ref, alt, frequencies };
             } catch (err: any) {

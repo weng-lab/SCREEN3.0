@@ -124,34 +124,22 @@ export default function ComputationalLinkedCcres({
     throw new Error(JSON.stringify(error));
   }
 
-  const HiCLinked = data
-    .filter((x) => x.assay === "Intact-HiC")
-    .map((x, index: number) => ({
-      ...x,
-      id: index.toString(),
-      class: classByAccession[x.accession] ?? "Unclassifed",
-    }));
-  const ChIAPETLinked = data
-    .filter((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
-    .map((x, index: number) => ({
-      ...x,
-      id: index.toString(),
-      class: classByAccession[x.accession] ?? "Unclassifed",
-    }));
-  const crisprLinked = data
-    .filter((x) => x.method === "CRISPR")
-    .map((x, index: number) => ({
-      ...x,
-      id: index.toString(),
-      class: classByAccession[x.accession] ?? "Unclassifed",
-    }));
-  const eqtlLinked = data
-    .filter((x) => x.method === "eQTLs")
-    .map((x, index: number) => ({
-      ...x,
-      id: index.toString(),
-      class: classByAccession[x.accession] ?? "Unclassifed",
-    }));
+  const withClass = (predicate: (x: (typeof data)[number]) => boolean) =>
+    data.reduce<(typeof data)[number][]>((rows, x) => {
+      if (predicate(x)) {
+        rows.push({
+          ...x,
+          id: rows.length.toString(),
+          class: classByAccession[x.accession] ?? "Unclassifed",
+        });
+      }
+      return rows;
+    }, []);
+
+  const HiCLinked = withClass((x) => x.assay === "Intact-HiC");
+  const ChIAPETLinked = withClass((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET");
+  const crisprLinked = withClass((x) => x.method === "CRISPR");
+  const eqtlLinked = withClass((x) => x.method === "eQTLs");
 
   const tables: TableDef<useLinkedCcresReturn["data"][number]>[] = [
     {

@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/no-giant-component, react-doctor/js-early-exit */
 import React, { useMemo, useState } from "react";
 import { useQuery } from "@apollo/client/react";
 import { Stack, Tab, Tabs, Typography } from "@mui/material";
@@ -310,7 +311,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   // Assay values are used to index into row object, so need to modify assaySpecificRows if changing assays here
   const [tab, setTab] = useState<"tables" | "add_classification" | CcreAssay>("tables");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const changeActivityTab = (event: React.SyntheticEvent, newValue: string) => {
     setTab(newValue as "tables" | "add_classification" | "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf");
   };
 
@@ -387,16 +388,15 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     };
   });
 
-  const distanceToTSS = nearbyGenes?.sort((a, b) => a.distanceToTSS - b.distanceToTSS)[0].distanceToTSS;
+  const distanceToTSS = nearbyGenes?.length ? Math.min(...nearbyGenes.map((gene) => gene.distanceToTSS)) : undefined;
 
   const overlapsTSS = nearbyGenes?.some((x) => x.overlapsTSS);
 
   //need to extract the experiment from this
   const biosampleRows: BiosampleRow[] = useMemo(() => {
     if (!data_biosampleZs || !data_ccre_tf) return null;
-    return data_biosampleZs?.ccREBiosampleQuery.biosamples
-      .filter((sample) => sample.name !== "GM12866_ENCDO000ABQ") // This sample has only one H3K4me3 exp that was not processed
-      .map((sample) => {
+    return data_biosampleZs?.ccREBiosampleQuery.biosamples.reduce<BiosampleRow[]>((rows, sample) => {
+        if (sample.name === "GM12866_ENCDO000ABQ") return rows; // This sample has only one H3K4me3 exp that was not processed
         const dnase = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "dnase")?.score || -11;
         const dnaseAccession = sample.cCREZScores.find(
           (exp) => exp.assay.toLowerCase() === "dnase"
@@ -446,7 +446,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
         const collection: "core" | "partial" | "ancillary" =
           dnase === -11.0 ? "ancillary" : ctcf !== -11.0 && h3k27ac !== -11.0 && h3k4me3 !== -11.0 ? "core" : "partial";
 
-        return {
+        rows.push({
           name: sample.name,
           ontology: sample.ontology,
           sampleType: sample.sampleType,
@@ -455,8 +455,9 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
           class: classification,
           collection,
           ...scores,
-        };
-      });
+        });
+        return rows;
+      }, []);
   }, [data_ccre_tf, data_biosampleZs, distanceToTSS, overlapsTSS]);
 
   const coreCollection: BiosampleRow[] = useMemo(() => {
@@ -511,7 +512,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
         scrollButtons="auto"
         allowScrollButtonsMobile
         value={tab}
-        onChange={handleChange}
+        onChange={changeActivityTab}
         sx={{
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,

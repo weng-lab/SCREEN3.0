@@ -87,10 +87,7 @@ export default function TrackSelectModal({
 
   const storageKey = `${assembly}-selected-tracks`;
 
-  const initialSelection = useMemo(
-    () => (assembly === "GRCh38" ? defaultHumanSelections : defaultMouseSelections),
-    [assembly]
-  );
+  const initialSelection = assembly === "GRCh38" ? defaultHumanSelections : defaultMouseSelections;
 
   const handleSubmit = useCallback(
     (selectedByFolder: Map<string, Set<string>>) => {

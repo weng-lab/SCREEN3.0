@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-giant-component, react-doctor/prefer-useReducer, react-doctor/client-passive-event-listeners */
 import { useEffect, useMemo, useState, useRef } from "react";
 import { Button, Stack, InputLabel, Select, MenuItem, SelectChangeEvent, Box } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
@@ -95,9 +96,9 @@ export function DataMatrices() {
   const fData = useMemo(() => {
     return (
       umapData &&
-      umapData.ccREBiosampleQuery.biosamples
-        .filter((x) => x.umap_coordinates)
-        .filter((x) => lifeStage === "all" || lifeStage === x.lifeStage)
+      umapData.ccREBiosampleQuery.biosamples.filter(
+        (x) => x.umap_coordinates && (lifeStage === "all" || lifeStage === x.lifeStage)
+      )
     );
   }, [umapData, lifeStage]);
 
@@ -106,7 +107,10 @@ export function DataMatrices() {
       colorMap(
         (umapData &&
           umapData.ccREBiosampleQuery &&
-          umapData.ccREBiosampleQuery.biosamples.filter((x) => x.umap_coordinates).map((x) => x.sampleType)) ||
+          umapData.ccREBiosampleQuery.biosamples.reduce<string[]>((sampleTypes, x) => {
+            if (x.umap_coordinates) sampleTypes.push(x.sampleType);
+            return sampleTypes;
+          }, [])) ||
           []
       ),
     [umapData]
@@ -117,7 +121,10 @@ export function DataMatrices() {
         (umapData &&
           umapData.ccREBiosampleQuery &&
           //Check if umap coordinates exist, then map each entry to it's ontology (tissue type). This array of strings is passed to colorMap
-          umapData.ccREBiosampleQuery.biosamples.filter((x) => x.umap_coordinates).map((x) => x.ontology)) ||
+          umapData.ccREBiosampleQuery.biosamples.reduce<string[]>((ontologies, x) => {
+            if (x.umap_coordinates) ontologies.push(x.ontology);
+            return ontologies;
+          }, [])) ||
           []
       ),
     [umapData]
@@ -125,17 +132,20 @@ export function DataMatrices() {
 
   const handleSelectionChange = (selectedPoints: Point<PointMetaData>[]) => {
     const selected = selectedPoints.map((point) => point.x);
-    const selectedBiosamples = fData
-      .filter((biosample) => selected.includes(biosample.umap_coordinates[0]) && biosample.umap_coordinates)
-      .map((biosample) => ({
-        name: biosample.name,
-        displayname: biosample.displayname,
-        ontology: biosample.ontology,
-        sampleType: biosample.sampleType,
-        lifeStage: biosample.lifeStage,
-        umap_coordinates: biosample.umap_coordinates!,
-        experimentAccession: biosample.experimentAccession,
-      }));
+    const selectedBiosamples = fData.reduce<PointMetaData[]>((biosamples, biosample) => {
+      if (biosample.umap_coordinates && selected.includes(biosample.umap_coordinates[0])) {
+        biosamples.push({
+          name: biosample.name,
+          displayname: biosample.displayname,
+          ontology: biosample.ontology,
+          sampleType: biosample.sampleType,
+          lifeStage: biosample.lifeStage,
+          umap_coordinates: biosample.umap_coordinates,
+          experimentAccession: biosample.experimentAccession,
+        });
+      }
+      return biosamples;
+    }, []);
     setSelectedBiosamples(selectedBiosamples.map((x) => x.name));
   };
 

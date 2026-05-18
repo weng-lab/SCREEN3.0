@@ -16,7 +16,7 @@ const openEntityDelimiter = "/";
 export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): AnyOpenEntity[] {
   return decompressFromEncodedURIComponent(urlOpenEntities)
     .split(openEntityListDelimiter)
-    .map((entry) => {
+    .reduce<AnyOpenEntity[]>((entities, entry) => {
       const [encodedAssembly, encodedEntityType, entityID, encodedTab = ""] = entry.split(openEntityDelimiter);
       const decodedEntity: CandidateOpenEntity = {
         assembly: assemblyDecoding[encodedAssembly],
@@ -24,11 +24,9 @@ export function decompressOpenEntitiesFromURL(urlOpenEntities: string | null): A
         entityID,
         tab: decodeTabRoute(encodedTab),
       };
-      if (isValidOpenEntity(decodedEntity)) {
-        return decodedEntity;
-      } else return null;
-    })
-    .filter((x) => x !== null && x.entityID); // filter out any invalid
+      if (decodedEntity.entityID && isValidOpenEntity(decodedEntity)) entities.push(decodedEntity);
+      return entities;
+    }, []); // filter out any invalid
 }
 
 /**
