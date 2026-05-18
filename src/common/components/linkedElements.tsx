@@ -28,7 +28,7 @@ export default function LinkedElements<
     <Stack spacing={2}>
       {tables.map((table) => (
         <Table
-          key={`${table.sortColumn}-${table.sortDirection}`}
+          key={`${table.label}-${table.sortColumn}-${table.sortDirection}`}
           initialState={{
             sorting: {
               sortModel: [{ field: table.sortColumn, sort: table.sortDirection }],
