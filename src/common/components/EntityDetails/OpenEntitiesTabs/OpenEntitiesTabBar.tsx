@@ -1,4 +1,4 @@
-/* eslint-disable react-doctor/nextjs-no-use-search-params-without-suspense */
+/* eslint-disable react-doctor/nextjs-no-use-search-params-without-suspense, react-doctor/react-compiler-destructure-method */
 import { Add } from "@mui/icons-material";
 import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
 import { OpenEntitiesContext, isSameEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
@@ -22,7 +22,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   const { push, replace } = useRouter();
   const pathname = usePathname();
-  const { get, toString } = useSearchParams();
+  const searchParams = useSearchParams();
 
   const urlOpenEntity: CandidateOpenEntity = useMemo(() => {
     return {
@@ -45,7 +45,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   useEffect(() => {
     if (!isInitializedRef.current) {
-      const openParam = get("open");
+      const openParam = searchParams.get("open");
       if (openParam) {
         const openEntitiesFromUrl: AnyOpenEntity[] = decompressOpenEntitiesFromURL(openParam);
         if (openEntitiesFromUrl.length > 0) {
@@ -54,7 +54,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
       }
       isInitializedRef.current = true;
     }
-  }, [dispatch, get]);
+  }, [dispatch, searchParams]);
 
   // ------- Routing Related --------
 
@@ -132,9 +132,9 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   const handleTabClick = useCallback(
     (elToOpen: AnyOpenEntity) => {
-      navigateAndMark(constructEntityURL(elToOpen) + "?" + toString());
+      navigateAndMark(constructEntityURL(elToOpen) + "?" + searchParams.toString());
     },
-    [navigateAndMark, toString]
+    [navigateAndMark, searchParams]
   );
 
   const handleCloseTab = useCallback(
