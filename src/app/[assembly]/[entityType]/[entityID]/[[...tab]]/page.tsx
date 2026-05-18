@@ -4,6 +4,18 @@ import { use } from "react";
 import { CandidateOpenEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
 import { notFound } from "next/navigation";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ assembly: string; entityType: string; entityID: string; tab: string }>;
+}) {
+  const { assembly, entityType, entityID } = await params;
+  return {
+    title: `${entityID} | ${assembly} ${entityType} | SCREEN`,
+    description: `Explore ${entityID} ${entityType} details in ${assembly} on SCREEN.`,
+  };
+}
+
 export default function DetailsPage({
   params,
 }: {

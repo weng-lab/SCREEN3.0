@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
       Authorization: "Bearer " + process.env.SCREEN_API_KEY!,
     },
     body,
+    cache: "no-store",
   });
 
   const data = await response.text();

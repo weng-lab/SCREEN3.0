@@ -23,7 +23,7 @@ interface Props {
 }
 
 const SelectLdBlock = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }: Props) => {
-  const [selectedldblock, setSelectedLdBlock] = useState(JSON.stringify(ldblock));
+  const [selectedldblock, setSelectedLdBlock] = useState(() => JSON.stringify(ldblock));
 
   useEffect(() => {
     if (open && ldblock) {
@@ -64,7 +64,7 @@ const SelectLdBlock = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }:
       </DialogContent>
       <DialogActions>
         <Button sx={{ textTransform: "none" }} variant="contained" onClick={handleSubmit}>
-          Submit
+          Select LD Block
         </Button>
       </DialogActions>
     </Dialog>

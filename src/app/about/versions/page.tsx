@@ -2,6 +2,11 @@ import { Box, Stack, Typography } from "@mui/material";
 import LegacyVersionsModal from "./LegacyVersionsModal";
 import VersionsLayout from "./VersionsLayout";
 
+export const metadata = {
+  title: "Release Notes | SCREEN",
+  description: "Track SCREEN release notes, updates, and legacy versions.",
+};
+
 export default function VersionHistory() {
   return (
     <>

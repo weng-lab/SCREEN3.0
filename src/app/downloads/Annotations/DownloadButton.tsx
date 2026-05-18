@@ -15,7 +15,7 @@ export type DownloadButtonProps = {
 export const DownloadButton = (props: DownloadButtonProps) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  const handleClick = () => {
+  const trackAnnotationDownload = () => {
     trackDownload(props.href, props.label, "annotations", props.assembly || "unknown");
   };
 
@@ -37,7 +37,7 @@ export const DownloadButton = (props: DownloadButtonProps) => {
       fullWidth
       href={props.href}
       download
-      onClick={handleClick}
+      onClick={trackAnnotationDownload}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

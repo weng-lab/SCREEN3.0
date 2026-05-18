@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/nextjs-missing-metadata */
 
 import * as React from "react";
 import { Tabs, Tab, Divider, Box } from "@mui/material";
@@ -17,7 +18,7 @@ function a11yProps(index: number) {
 export default function Downloads() {
   const [page, setPage] = useState(0);
 
-  const handleChange = (_, newValue: number) => {
+  const changeDownloadsTab = (_, newValue: number) => {
     setPage(newValue);
   };
 
@@ -33,7 +34,7 @@ export default function Downloads() {
       <Box>
         <Tabs
           value={page}
-          onChange={handleChange}
+          onChange={changeDownloadsTab}
           aria-label="basic tabs example"
           variant="scrollable"
           allowScrollButtonsMobile

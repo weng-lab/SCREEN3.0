@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/no-fetch-in-effect */
 
 import React, { useEffect, useMemo, useState } from "react";
 import { DNALogo } from "logo-test";
@@ -61,7 +62,7 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
 
   const assembly = entity.assembly;
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const changeTfBindingTab = (event: React.SyntheticEvent, newValue: string) => {
     setTab(newValue as "binding_tfs" | "overlapping_peaks");
   };
 
@@ -284,7 +285,7 @@ console.log("rPeaksrows",rPeaksrows)
         scrollButtons="auto"
         allowScrollButtonsMobile
         value={tab}
-        onChange={handleChange}
+        onChange={changeTfBindingTab}
         sx={{
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: 0.3,

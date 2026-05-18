@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   method: string;
@@ -33,7 +33,7 @@ const methodDescriptions = {
 };
 
 const SelectCompuGenesMethod = ({ method, open, setOpen, onMethodSelect }: Props) => {
-  const [selectedmethod, setSelectedMethod] = useState<string>(method);
+  const [selectedmethod, setSelectedMethod] = useState<string>("");
   const methods = [
     "ABC_(DNase_only)",
     "ABC_(full)",
@@ -42,6 +42,10 @@ const SelectCompuGenesMethod = ({ method, open, setOpen, onMethodSelect }: Props
     "rE2G_(DNase_only)",
     "rE2G_(extended)",
   ];
+
+  useEffect(() => {
+    if (open) setSelectedMethod(method);
+  }, [method, open]);
 
   const handleSubmit = () => {
     onMethodSelect(selectedmethod); // send to parent
@@ -78,7 +82,7 @@ const SelectCompuGenesMethod = ({ method, open, setOpen, onMethodSelect }: Props
       </DialogContent>
       <DialogActions>
         <Button sx={{ textTransform: "none" }} variant="contained" onClick={handleSubmit}>
-          Submit
+          Select Method
         </Button>
       </DialogActions>
     </Dialog>

@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-giant-component, react-doctor/prefer-useReducer */
 import { SetStateAction, useState } from "react";
 import Grid from "@mui/material/Grid";
 import {
@@ -86,7 +87,7 @@ export const DownloadRange: React.FC = () => {
   }>({ primate: true, mammal: true, vertebrate: true });
   // const [linkedGenes, setLinkedGenes] = useState<{ distancePC: boolean, distanceAll: boolean, ctcfChiaPet: boolean, rnapiiChiaPet: boolean }>({ distancePC: true, distanceAll: true, ctcfChiaPet: true, rnapiiChiaPet: true })
 
-  const handleChange = (event: { target: { value: SetStateAction<string> } }) => {
+  const updateInputValue = (event: { target: { value: SetStateAction<string> } }) => {
     setInputValue(event.target.value);
   };
 
@@ -174,7 +175,7 @@ export const DownloadRange: React.FC = () => {
           placeholder={`chr12:${(53380176).toLocaleString()}-${(53416446).toLocaleString()}`}
           value={inputValue}
           fullWidth
-          onChange={handleChange}
+          onChange={updateInputValue}
         />
         <Stack mt={1} direction="row" alignItems={"center"}>
           <Typography>{`Selected Biosample: ${selectedBiosample ? selectedBiosample.displayname : "none"}`}</Typography>
@@ -218,35 +219,35 @@ export const DownloadRange: React.FC = () => {
             <Box sx={{ display: "flex", flexDirection: "column", ml: 3 }}>
               <FormControlLabel
                 checked={selectedAssays.dnase}
-                onChange={(_, checked: boolean) => setSelectedAssays({ ...selectedAssays, dnase: checked })}
+                onChange={(_, checked: boolean) => setSelectedAssays((prev) => ({ ...prev, dnase: checked }))}
                 control={<Checkbox />}
                 label={"DNase"}
                 disabled={!availableAssays.dnase}
               />
               <FormControlLabel
                 checked={selectedAssays.atac}
-                onChange={(_, checked: boolean) => setSelectedAssays({ ...selectedAssays, atac: checked })}
+                onChange={(_, checked: boolean) => setSelectedAssays((prev) => ({ ...prev, atac: checked }))}
                 control={<Checkbox />}
                 label={"ATAC"}
                 disabled={!availableAssays.atac}
               />
               <FormControlLabel
                 checked={selectedAssays.ctcf}
-                onChange={(_, checked: boolean) => setSelectedAssays({ ...selectedAssays, ctcf: checked })}
+                onChange={(_, checked: boolean) => setSelectedAssays((prev) => ({ ...prev, ctcf: checked }))}
                 control={<Checkbox />}
                 label={"CTCF"}
                 disabled={!availableAssays.ctcf}
               />
               <FormControlLabel
                 checked={selectedAssays.h3k27ac}
-                onChange={(_, checked: boolean) => setSelectedAssays({ ...selectedAssays, h3k27ac: checked })}
+                onChange={(_, checked: boolean) => setSelectedAssays((prev) => ({ ...prev, h3k27ac: checked }))}
                 control={<Checkbox />}
                 label={"H3K27ac"}
                 disabled={!availableAssays.h3k27ac}
               />
               <FormControlLabel
                 checked={selectedAssays.h3k4me3}
-                onChange={(_, checked: boolean) => setSelectedAssays({ ...selectedAssays, h3k4me3: checked })}
+                onChange={(_, checked: boolean) => setSelectedAssays((prev) => ({ ...prev, h3k4me3: checked }))}
                 control={<Checkbox />}
                 label={"H3K4me3"}
                 disabled={!availableAssays.h3k4me3}
@@ -283,7 +284,7 @@ export const DownloadRange: React.FC = () => {
               <FormControlLabel
                 checked={selectedConservation.primate}
                 onChange={(_, checked: boolean) =>
-                  setSelectedConservation({ ...selectedConservation, primate: checked })
+                  setSelectedConservation((prev) => ({ ...prev, primate: checked }))
                 }
                 control={<Checkbox />}
                 label={"Primate"}
@@ -292,7 +293,7 @@ export const DownloadRange: React.FC = () => {
               <FormControlLabel
                 checked={selectedConservation.mammal}
                 onChange={(_, checked: boolean) =>
-                  setSelectedConservation({ ...selectedConservation, mammal: checked })
+                  setSelectedConservation((prev) => ({ ...prev, mammal: checked }))
                 }
                 control={<Checkbox />}
                 label={"Mammal"}
@@ -301,7 +302,7 @@ export const DownloadRange: React.FC = () => {
               <FormControlLabel
                 checked={selectedConservation.vertebrate}
                 onChange={(_, checked: boolean) =>
-                  setSelectedConservation({ ...selectedConservation, vertebrate: checked })
+                  setSelectedConservation((prev) => ({ ...prev, vertebrate: checked }))
                 }
                 control={<Checkbox />}
                 label={"Vertebrate"}

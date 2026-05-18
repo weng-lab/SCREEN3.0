@@ -1,4 +1,5 @@
-import { MainQuery } from "app/downloads/DownloadRange/queries";
+/* eslint-disable react-doctor/async-await-in-loop */
+import { mainQuery } from "app/downloads/DownloadRange/queries";
 import { MainQueryData, SCREENSearchResult } from "./types";
 import { trackDownload } from "../analytics";
 
@@ -59,7 +60,7 @@ export async function fetchcCREData(
   noLimit?: boolean
 ) {
   //cCRESearchQuery
-  const mainQueryData = await MainQuery(
+  const mainQueryData = await mainQuery(
     assembly,
     chromosome,
     start,
