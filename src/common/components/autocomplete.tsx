@@ -119,14 +119,14 @@ export function makeResultLink(result: Result, assembly: Assembly){
  * @param props - The props for the GenomeSearch component
  */
 export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProps) {
-  const router = useRouter();
+  const { push } = useRouter();
 
   const handleSearchSubmit = (r: Result) => {
     //needed to trigger closing the mobile menu drawer
     if (closeDrawer) {
       closeDrawer();
     }
-    router.push(makeResultLink(r, props.assembly), { scroll: false });
+    push(makeResultLink(r, props.assembly), { scroll: false });
   };
 
   const defaultResults: Result[] = useMemo(() => {

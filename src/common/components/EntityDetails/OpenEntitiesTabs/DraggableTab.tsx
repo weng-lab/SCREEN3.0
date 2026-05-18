@@ -3,7 +3,7 @@ import { Close, Error } from "@mui/icons-material";
 import { CircularProgress, styled, SxProps, Tab, TabProps, Theme, Tooltip } from "@mui/material";
 import { AnyOpenEntity, OpenEntitiesContext } from "common/OpenEntitiesContext";
 import { truncateString } from "common/utility";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 import { theme } from "app/theme";
@@ -28,14 +28,14 @@ export const DraggableTab = ({
   ...props
 }: DraggableTabProps) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [openEntities] = useContext(OpenEntitiesContext);
+  const [openEntities] = use(OpenEntitiesContext);
 
   const multipleAssembliesOpen = useMemo(() => {
     const assemblies = openEntities.map((x) => x.assembly);
     return assemblies.includes("GRCh38") && assemblies.includes("mm10");
   }, [openEntities]);
 
-  const Icon = useCallback(() => {
+  const icon = (() => {
     if (isHovered && closable) return <CloseTabButton entity={entity} handleCloseTab={handleCloseTab} />;
     if (multipleAssembliesOpen) {
       if (entity.assembly === "GRCh38") {
@@ -51,7 +51,7 @@ export const DraggableTab = ({
           </IconWrapper>
         );
     }
-  }, [closable, entity, handleCloseTab, isHovered, isSelected, multipleAssembliesOpen]);
+  })();
 
   const dragID = entity.entityID + entity.assembly;
 
@@ -95,7 +95,7 @@ export const DraggableTab = ({
               label={labelEl}
               onClick={() => handleTabClick(entity)}
               iconPosition="end"
-              icon={<Icon />}
+              icon={icon}
               sx={{ minHeight: "48px", ...selectedStyles, ...draggingStyles }}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}

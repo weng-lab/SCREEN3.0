@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, use, useState, ReactNode } from "react";
 
 type MenuContextType = {
   isMenuOpen: boolean;
@@ -57,7 +57,7 @@ export const MenuControlProvider = ({ children }: { children: ReactNode }) => {
  * so that the search component can be focused
  */
 export const useMenuControl = () => {
-  const context = useContext(MenuContext);
+  const context = use(MenuContext);
   if (!context) {
     throw new Error("useMenu must be used within a MenuProvider");
   }

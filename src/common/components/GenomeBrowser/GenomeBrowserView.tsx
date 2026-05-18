@@ -95,13 +95,13 @@ export default function GenomeBrowserView({
     removeHighlight("hover-highlight");
   }, [removeHighlight]);
 
-  const router = useRouter();
+  const { push } = useRouter();
   const onCCREClick = useCallback(
     (item: Rect) => {
       const accession = item.name;
-      router.push(`/${entity.assembly}/ccre/${accession}`);
+      push(`/${entity.assembly}/ccre/${accession}`);
     },
-    [entity.assembly, router]
+    [entity.assembly, push]
   );
   const onGeneClick = useCallback(
     (gene: Transcript) => {
@@ -109,9 +109,9 @@ export default function GenomeBrowserView({
       if (name.includes("ENSG")) {
         return;
       }
-      router.push(`/${entity.assembly}/gene/${name}`);
+      push(`/${entity.assembly}/gene/${name}`);
     },
-    [entity.assembly, router]
+    [entity.assembly, push]
   );
 
   // Bundle callbacks for track injection

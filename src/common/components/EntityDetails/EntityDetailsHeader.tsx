@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-barrel-import */
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
 import { formatGenomicRange, formatPortal } from "common/utility";
@@ -128,6 +129,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
                   : "https://www.ncbi.nlm.nih.gov/core/assets/style-guide/img/NLM-square-logo.png"
               }
               fill
+              sizes="125px"
               alt="genecard-snpcard-button"
             />
           </Button>
@@ -156,6 +158,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             style={{ objectFit: "contain" }}
             src={"https://genome.ucsc.edu/images/ucscHelixLogo.png"}
             fill
+            sizes="125px"
             unoptimized
             alt="ucsc-gb-icon"
           />

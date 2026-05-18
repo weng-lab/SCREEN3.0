@@ -58,6 +58,7 @@ const RegionSearchHeader = ({ assembly, region }: RegionSearchHeaderProps) => {
             style={{ objectFit: "contain" }}
             src={"https://genome.ucsc.edu/images/ucscHelixLogo.png"}
             fill
+            sizes="130px"
             unoptimized
             alt="ucsc-gb-icon"
           />

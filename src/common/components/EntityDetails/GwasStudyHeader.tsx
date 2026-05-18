@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-barrel-import */
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 import { useEntityMetadata } from "common/hooks/useEntityMetadata";
@@ -125,6 +126,7 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
             style={{ objectFit: "contain" }}
             src={"https://genome.ucsc.edu/images/ucscHelixLogo.png"}
             fill
+            sizes="125px"
             unoptimized
             alt="ucsc-gb-icon"
           />

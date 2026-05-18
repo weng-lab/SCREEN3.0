@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-doctor/no-barrel-import, react-doctor/nextjs-no-use-search-params-without-suspense */
 import { Box, Divider, Stack } from "@mui/material";
 import EntityDetailsTabs from "./EntityDetailsTabs";
 import { EntityDetailsHeader } from "./EntityDetailsHeader";
@@ -11,6 +12,7 @@ import { GwasStudyHeader } from "./GwasStudyHeader";
 import BedUploadHeader from "./BedUploadHeader";
 import { useElementHeights } from "./useElementHeights";
 import useScrollReset from "common/hooks/useScrollReset";
+import { Suspense } from "react";
 
 export type EntityDetailsLayoutProps = {
   assembly: Assembly;
@@ -46,7 +48,8 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
 
   return (
     // Content is child of OpenElementTabs due to ARIA accessibility guidelines: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/. Children wrapped in <TabPanel>
-    <OpenEntityTabs>
+    <Suspense fallback={null}>
+      <OpenEntityTabs>
       <Box
         id="split-pane-container"
         display={"grid"}
@@ -63,22 +66,27 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
           maxHeight={"calc(100vh - var(--header-height, 64px) - var(--entity-tabs-height, 48px))"}
           display={{ xs: "none", md: "block" }}
         >
-          <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" />
+          <Suspense fallback={null}>
+            <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" />
+          </Suspense>
         </Box>
         <Stack id="main-content" spacing={2} m={2} gridColumn={{ xs: 1, md: 2 }} gridRow={1}>
           <EntityHeader entityID={entityID} entityType={entityType} assembly={assembly} />
           <Box id="horizonatal-view-tabs-container" display={{ xs: "block", md: "none" }}>
-            <EntityDetailsTabs
-              assembly={assembly}
-              entityType={entityType}
-              entityID={entityID}
-              orientation="horizontal"
-            />
+            <Suspense fallback={null}>
+              <EntityDetailsTabs
+                assembly={assembly}
+                entityType={entityType}
+                entityID={entityID}
+                orientation="horizontal"
+              />
+            </Suspense>
             <Divider />
           </Box>
           {children}
         </Stack>
       </Box>
-    </OpenEntityTabs>
+      </OpenEntityTabs>
+    </Suspense>
   );
 }

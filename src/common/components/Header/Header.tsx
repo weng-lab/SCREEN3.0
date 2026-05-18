@@ -175,6 +175,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               priority
               src="/on-dark@16x.png"
               fill
+              sizes="110px"
               alt="SCREEN logo"
               style={{ objectFit: "contain", objectPosition: "left center" }}
             />

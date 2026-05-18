@@ -1,10 +1,11 @@
+/* eslint-disable react-doctor/nextjs-no-use-search-params-without-suspense */
 import { Add } from "@mui/icons-material";
 import { Stack, Paper, Tooltip, IconButton, Box } from "@mui/material";
 import { OpenEntitiesContext, isSameEntity, isValidOpenEntity } from "common/OpenEntitiesContext";
 import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL } from "./helpers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useRef } from "react";
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
@@ -16,12 +17,12 @@ export const constructEntityURL = (entity: AnyOpenEntity) =>
   `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {
-  const [openEntities, dispatch] = useContext(OpenEntitiesContext);
+  const [openEntities, dispatch] = use(OpenEntitiesContext);
   const { menuCanBeOpened, isMenuMounted, openMenu } = useMenuControl();
 
-  const router = useRouter();
+  const { push, replace } = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { get, toString } = useSearchParams();
 
   const urlOpenEntity: CandidateOpenEntity = useMemo(() => {
     return {
@@ -44,7 +45,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   useEffect(() => {
     if (!isInitializedRef.current) {
-      const openParam = searchParams.get("open");
+      const openParam = get("open");
       if (openParam) {
         const openEntitiesFromUrl: AnyOpenEntity[] = decompressOpenEntitiesFromURL(openParam);
         if (openEntitiesFromUrl.length > 0) {
@@ -53,7 +54,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
       }
       isInitializedRef.current = true;
     }
-  }, [dispatch, searchParams]);
+  }, [dispatch, get]);
 
   // ------- Routing Related --------
 
@@ -66,9 +67,9 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   const navigateAndMark = useCallback(
     (url: string) => {
       isRoutingRef.current = true;
-      router.push(url);
+      push(url);
     },
-    [router]
+    [push]
   );
 
   /**
@@ -87,8 +88,8 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   useEffect(() => {
     if (!openEntities.length || isRoutingRef.current) return;
     const newUrl = pathname + "?open=" + compressOpenEntitiesToURL(openEntities);
-    router.replace(newUrl); //don't use navigateAndMark since it's only set to false when navigating between elements (would be stuck false)
-  }, [navigateAndMark, openEntities, pathname, router]);
+    replace(newUrl); //don't use navigateAndMark since it's only set to false when navigating between elements (would be stuck false)
+  }, [navigateAndMark, openEntities, pathname, replace]);
 
   /**
    *
@@ -131,9 +132,9 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   const handleTabClick = useCallback(
     (elToOpen: AnyOpenEntity) => {
-      navigateAndMark(constructEntityURL(elToOpen) + "?" + searchParams.toString());
+      navigateAndMark(constructEntityURL(elToOpen) + "?" + toString());
     },
-    [navigateAndMark, searchParams]
+    [navigateAndMark, toString]
   );
 
   const handleCloseTab = useCallback(
@@ -184,23 +185,23 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   //  ------- "New Search" Button Helpers -------
 
-  const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
+  const shouldFocusSearchRef = useRef(false);
 
   useEffect(() => {
-    if (isMenuMounted && shouldFocusSearch) {
+    if (isMenuMounted && shouldFocusSearchRef.current) {
       const el = document.getElementById("mobile-search-component");
       if (el) {
         el.focus();
-        setShouldFocusSearch(false); // reset the flag
+        shouldFocusSearchRef.current = false; // reset the flag
       }
     }
-  }, [isMenuMounted, shouldFocusSearch]);
+  }, [isMenuMounted]);
 
   const handleFocusSearch = useCallback(() => {
     if (menuCanBeOpened) {
       // aka isMobile
       openMenu();
-      setShouldFocusSearch(true); // defer focusing until menu is open
+      shouldFocusSearchRef.current = true; // defer focusing until menu is open
     } else {
       document.getElementById("desktop-search-component")?.focus();
     }
