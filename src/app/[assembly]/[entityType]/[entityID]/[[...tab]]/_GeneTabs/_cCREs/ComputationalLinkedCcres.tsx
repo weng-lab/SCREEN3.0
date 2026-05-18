@@ -125,7 +125,7 @@ export default function ComputationalLinkedCcres({
   }
 
   const withClass = (predicate: (x: (typeof data)[number]) => boolean) =>
-    data.reduce<(typeof data)[number][]>((rows, x) => {
+    data.reduce<((typeof data)[number] & { id: string; class: string })[]>((rows, x) => {
       if (predicate(x)) {
         rows.push({
           ...x,

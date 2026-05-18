@@ -132,21 +132,13 @@ export function DataMatrices() {
 
   const handleSelectionChange = (selectedPoints: Point<PointMetaData>[]) => {
     const selected = selectedPoints.map((point) => point.x);
-    const selectedBiosamples = fData.reduce<PointMetaData[]>((biosamples, biosample) => {
+    const selectedBiosamples = fData.reduce<string[]>((biosamples, biosample) => {
       if (biosample.umap_coordinates && selected.includes(biosample.umap_coordinates[0])) {
-        biosamples.push({
-          name: biosample.name,
-          displayname: biosample.displayname,
-          ontology: biosample.ontology,
-          sampleType: biosample.sampleType,
-          lifeStage: biosample.lifeStage,
-          umap_coordinates: biosample.umap_coordinates,
-          experimentAccession: biosample.experimentAccession,
-        });
+        biosamples.push(biosample.name);
       }
       return biosamples;
     }, []);
-    setSelectedBiosamples(selectedBiosamples.map((x) => x.name));
+    setSelectedBiosamples(selectedBiosamples);
   };
 
   const scatterData: Point<PointMetaData>[] = useMemo(() => {
