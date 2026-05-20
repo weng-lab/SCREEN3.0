@@ -324,12 +324,12 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
         </Box>
         <MobileMenu pageLinks={pageLinks} />
       </Toolbar>
-      {hasHydrated && isHomePage && (
+      {/* {hasHydrated && isHomePage && (
         <NewVersionBanner
           versionId="r3.2026.1"
           message="ChIP-seq peaks, PhastCons scores, CpG coverage, and promoter cCREs"
         />
-      )}
+      )} */}
     </AppBar>
   );
 }
