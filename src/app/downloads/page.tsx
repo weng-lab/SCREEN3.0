@@ -27,11 +27,11 @@ export default function Downloads() {
       gridTemplateRows={"auto 1fr"}
       height={"100%"}
       boxSizing={"border-box"}
-      sx={{ marginX: "5%", paddingY: 2 }}
+      sx={{ p: 2 }}
       gap={2}
       id="downloads"
     >
-      <Box id="downloads-tabs">
+      <Box id="downloads-tabs" minWidth={0}>
         <Tabs
           value={page}
           onChange={handleChange}
