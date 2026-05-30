@@ -382,7 +382,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   const nearbyGenes = dataNearbyGenes?.nearbyGenes.map((gene) => {
     return {
       ...gene,
-      distanceToTSS: calcDistCcreToTSS(coordinates, gene.transcripts, gene.strand as "+" | "-", "middle").distance,
+      distanceToTSS: calcDistCcreToTSS(coordinates, gene.transcripts, gene.strand as "+" | "-").distance,
       overlapsTSS: ccreOverlapsTSS(coordinates, gene.transcripts, gene.strand as "+" | "-"),
     };
   });

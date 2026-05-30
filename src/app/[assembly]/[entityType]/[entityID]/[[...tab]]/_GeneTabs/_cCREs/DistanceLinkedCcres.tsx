@@ -1,17 +1,18 @@
 "use client";
 import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
-import useNearbycCREs from "common/hooks/useNearBycCREs";
-import { useCcreData } from "common/hooks/useCcreData";
+import { useCcreData, UseCcreDataParams } from "common/hooks/useCcreData";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import CalculateIcon from "@mui/icons-material/Calculate";
-import React, { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
-import { Assembly } from "common/types/globalTypes";
+import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { calcDistCcreToTSS } from "common/utility";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
+import { gql } from "common/types/generated";
+import { useQuery } from "@apollo/client/react";
 
 export type Transcript = {
   id: string;
@@ -24,6 +25,29 @@ export type Transcript = {
   };
 };
 
+export type DistanceLinkMethod = "body" | "tss" | "3gene"
+
+const CCRES_BY_CLOSEST_GENE_QUERY = gql(`
+  query getclosestGenetocCRE($geneid: [String]) {
+    closestGenetocCRE(geneid: $geneid) {
+      ccre
+    }
+  }
+`);
+
+function getTssWindows(transcripts: Transcript[], distance: number): GenomicRange[] {
+  if (!transcripts || transcripts.length === 0) return [];
+
+  return transcripts.map((t) => {
+    const tss = t.strand === "+" ? t.coordinates.start : t.coordinates.end;
+    return {
+      chromosome: t.coordinates.chromosome,
+      start: Math.max(0, tss - distance), // prevent negative start
+      end: tss + distance,
+    };
+  });
+}
+
 export default function DistanceLinkedCcres({
   geneData,
   assembly,
@@ -31,19 +55,13 @@ export default function DistanceLinkedCcres({
   geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
   assembly: Assembly;
 }) {
-  const [calcMethod, setCalcMethod] = useState<"body" | "tss" | "3gene">("tss");
+  const [calcMethod, setCalcMethod] = useState<DistanceLinkMethod>("tss");
   const [distance, setDistance] = useState<number>(10000);
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const { data: dataNearby, loading: loadingNearby } = useNearbycCREs(
-    geneData,
-    calcMethod,
-    assembly as Assembly,
-    distance
-  );
 
-  const handleMethodChange = (method: "body" | "tss" | "3gene") => {
+  const handleMethodChange = (method: DistanceLinkMethod) => {
     setCalcMethod(method);
   };
 
@@ -55,44 +73,71 @@ export default function DistanceLinkedCcres({
     setOpen(false);
   };
 
-  const { data: dataCcreDetails, loading: loadingCcreDetails } = useCcreData({
-    accession: dataNearby?.map((d) => d.ccre),
-    assembly: assembly as Assembly,
+  // This gets cCREs whose closest 3 genes includes the input gene. Skip unless calcMethod is 3gene
+  const {
+    data: dataCcresByClosestGenes,
+    loading: loadingCcresByClosestGenes,
+    error: errorCcresByClosestGenes,
+  } = useQuery(CCRES_BY_CLOSEST_GENE_QUERY, {
+    variables: { geneid: geneData.data?.id.split(".")[0] },
+    skip: !geneData.data || calcMethod !== "3gene",
   });
 
-  const nearbyccres = dataNearby?.map((d) => {
-    const f = dataCcreDetails?.find((c) => c.info.accession === d.ccre);
+  const useCcreDataParams = useMemo(() => {
+    switch (calcMethod) {
+      case "3gene": // query with accessions from dataCcresByClosestGenes
+        return {
+          accession: dataCcresByClosestGenes?.closestGenetocCRE.map((x) => x.ccre),
+          assembly,
+          skip: !dataCcresByClosestGenes,
+        };
+      case "body": // query with gene body
+        const { __typename, ...coordinates } = geneData.data.coordinates;
+        return {
+          coordinates,
+          assembly,
+          skip: !geneData.data,
+        };
+      case "tss": // query with regions made using TSS + distance padding
+        return {
+          coordinates: getTssWindows(geneData.data?.transcripts, distance),
+          assembly,
+          skip: !geneData.data?.transcripts,
+        };
+    }
+  }, [calcMethod, dataCcresByClosestGenes, geneData, distance]) satisfies UseCcreDataParams ;
 
-    if (!f) return d;
+  console.log(useCcreDataParams)
 
-    const is3Gene = calcMethod === "3gene";
+  const { data, loading, error } = useCcreData(useCcreDataParams);
 
-    const ccreRange = {
-      chromosome: f.chrom,
-      start: f.start,
-      end: f.start + f.len,
+  const distanceLinkedCcres = data?.map((ccre) => {
+
+    const ccreCoords = {
+      chromosome: ccre.chrom,
+      start: ccre.start,
+      end: ccre.start + ccre.len,
     };
 
     const nearestTranscript = calcDistCcreToTSS(
-      ccreRange,
+      ccreCoords,
       geneData.data.transcripts,
       geneData.data.strand as "+" | "-",
-      "closest"
     );
 
-    const distance = is3Gene ? Math.abs(f.start - d.start) : nearestTranscript.distance;
+    //We also need to be aware that the 3gene method is only valid in human
 
     return {
-      ...d,
-      ...ccreRange,
-      group: f.pct,
-      distance,
+      ccre: ccre.info.accession,
+      ...ccreCoords,
+      group: ccre.pct,
+      distance: nearestTranscript.distance,
       direction: nearestTranscript.direction,
       tss: nearestTranscript.transcriptId,
     };
   });
 
-  const cols: TableColDef[] = [
+  const cols: TableColDef<typeof distanceLinkedCcres[number]>[] = [
     {
       field: "ccre",
       headerName: "Accession",
@@ -157,8 +202,9 @@ export default function DistanceLinkedCcres({
         if (params.value == null) {
           return "";
         }
+
         const direction =
-          calcMethod !== "3gene" && params.value !== 0 ? (params.row.direction === "Upstream" ? "+" : "-") : "";
+          calcMethod !== "3gene" && params.value !== 0 ? (params.row.direction === "Upstream" ? "-" : "+") : "";
         return (
           <span>
             {direction}
@@ -240,10 +286,10 @@ export default function DistanceLinkedCcres({
   return (
     <Box width={"100%"}>
       <Table
-        rows={nearbyccres}
+        rows={distanceLinkedCcres}
         columns={cols}
         label={"Nearby cCREs"}
-        loading={geneData.loading || loadingNearby || loadingCcreDetails}
+        loading={geneData.loading || loading || loadingCcresByClosestGenes}
         initialState={{
           sorting: {
             sortModel: [{ field: "distance", sort: "asc" }],

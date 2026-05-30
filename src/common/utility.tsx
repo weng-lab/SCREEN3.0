@@ -137,23 +137,26 @@ export function toScientificNotationElement(num: number, sigFigs: number, typogr
  *
  * @param region {chrom, start, end}
  * @param transcripts
- * @returns distance to nearest TSS from the center of cCRE body, transcriptID and upstream/downstream of TSS
+ * @returns distance to nearest TSS from the middle of input cCRE, closest transcriptID, and upstream/downstream indicator.
+ * 
+ * Assumes that cCRE and TSS are on same chromosome
  */
 export function calcDistCcreToTSS(
   region: GenomicRange,
   transcripts: { id: string; coordinates: GenomicRange }[],
   strand: "+" | "-",
-  anchor: "middle" | "closest"
 ): { transcriptId: string; distance: number; direction: "Upstream" | "Downstream" } {
   const results = transcripts.map((transcript) => {
     const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end;
-    const distance = calcDistRegionToPosition(region.start, region.end, anchor, tss);
+    const distance = calcDistRegionToPosition(region.start, region.end, "middle", tss);
+
+    const middle = Math.floor(region.start + region.end) / 2
 
     let direction: "Upstream" | "Downstream";
     if (strand === "+") {
-      direction = region.end < tss ? "Upstream" : "Downstream";
+      direction = middle < tss ? "Upstream" : "Downstream";
     } else {
-      direction = region.start > tss ? "Upstream" : "Downstream";
+      direction = middle > tss ? "Upstream" : "Downstream";
     }
 
     return {
@@ -212,6 +215,10 @@ export function calcDistRegionToPosition(
       return Math.min(distToStart, distToEnd, distToMiddle);
   }
 }
+
+/**
+ * @todo why do we have two versions basically doing the same thing instead of one + a Math.abs()
+ */
 
 /**
  * Returns the signed distance from coord1 to coord2.

@@ -70,11 +70,11 @@ const CCRE_QUERY = gql(`
   }
 `);
 
-type UseCcreDataParams =
+export type UseCcreDataParams =
   | {
       assembly: Assembly;
-      accession?: string | string[];
-      coordinates?: never;
+      accession: string | string[];
+      coordinates?: undefined;
       entityType?: AnyEntityType;
       nearbygeneslimit?: number;
       cellType?: string;
@@ -83,7 +83,7 @@ type UseCcreDataParams =
   | {
       assembly: Assembly;
       coordinates: GenomicRange | GenomicRange[];
-      accession?: never;
+      accession?: undefined;
       entityType?: AnyEntityType;
       nearbygeneslimit?: number;
       cellType?: string;
