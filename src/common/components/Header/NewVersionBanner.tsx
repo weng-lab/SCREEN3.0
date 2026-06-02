@@ -1,7 +1,8 @@
 "use client";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, IconButton, Link, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import { useState } from "react";
+import { LinkComponent } from "common/components/LinkComponent";
 
 type NewVersionBannerProps = {
   versionId?: string;
@@ -39,9 +40,7 @@ const NewVersionBanner = ({
           justifyContent: "center",
           gap: 1,
           minWidth: 0,
-          whiteSpace: "nowrap",
           overflow: "hidden",
-          textOverflow: "ellipsis",
         }}
       >
         <Box
@@ -53,17 +52,22 @@ const NewVersionBanner = ({
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
+            flexShrink: 0,
           }}
         >
           <Typography variant="caption">NEW</Typography>
         </Box>
-        <Typography variant="body2" sx={{ color: "#FFFFFF", overflow: "hidden", textOverflow: "ellipsis" }}>
-          <b>{versionId}:</b> {message}{" "}
+        <Typography
+          variant="body2"
+          noWrap
+          sx={{ color: "#FFFFFF" }}
+        >
+          <b>{versionId}</b><Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>: {message}</Box>{" "}
         </Typography>
-        <Typography variant="body2">
-          <Link href={"/about/versions"} underline="hover" sx={{ color: "#FFFFFF", fontWeight: 600 }}>
+        <Typography variant="body2" sx={{ flexShrink: 0 }}>
+          <LinkComponent href={"/about/versions"} underline="hover" sx={{ color: "#FFFFFF", fontWeight: 600 }}>
             <u>Details →</u>
-          </Link>
+          </LinkComponent>
         </Typography>
       </Box>
       <IconButton
