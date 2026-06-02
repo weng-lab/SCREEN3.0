@@ -40,6 +40,7 @@ const NewVersionBanner = ({
           justifyContent: "center",
           gap: 1,
           minWidth: 0,
+          maxWidth: "100%",
           overflow: "hidden",
         }}
       >
