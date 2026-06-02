@@ -51,6 +51,9 @@ export const useEntityMetadata = <T extends AnyEntityType>({
    * it actually should be fetched. Need to call all hooks to follow rules of hooks:
    * See https://react.dev/reference/rules/rules-of-hooks#only-call-hooks-at-the-top-level
    */
+  /**
+   * @todo ^ I was being stupid change these to properly use skip and then remove entityType from hook params
+   */
   const geneMetadata = useGeneData({ name: entityID, entityType, assembly });
   const ccreMetadata = useCcreData({ accession: entityID, entityType, assembly });
   const snpMetadata = useSnpData({ rsID: entityID, entityType, assembly: "GRCh38" });
