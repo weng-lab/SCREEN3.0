@@ -30,17 +30,17 @@ const NewVersionBanner = ({
         bgcolor: "#3b407a",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        overflow: "hidden",
       }}
     >
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
+          display: "grid",
+          gridTemplateColumns: "auto minmax(0, auto) auto",
           justifyContent: "center",
+          alignItems: "center",
           gap: 1,
-          minWidth: 0,
-          maxWidth: "100%",
+          width: "100%",
           overflow: "hidden",
         }}
       >
@@ -53,7 +53,6 @@ const NewVersionBanner = ({
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            flexShrink: 0,
           }}
         >
           <Typography variant="caption">NEW</Typography>
@@ -63,9 +62,9 @@ const NewVersionBanner = ({
           noWrap
           sx={{ color: "#FFFFFF" }}
         >
-          <b>{versionId}</b><Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>: {message}</Box>{" "}
+          <b>{versionId}</b><Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>: {message}</Box>
         </Typography>
-        <Typography variant="body2" sx={{ flexShrink: 0 }}>
+        <Typography variant="body2">
           <LinkComponent href={"/about/versions"} underline="hover" sx={{ color: "#FFFFFF", fontWeight: 600 }}>
             <u>Details →</u>
           </LinkComponent>
