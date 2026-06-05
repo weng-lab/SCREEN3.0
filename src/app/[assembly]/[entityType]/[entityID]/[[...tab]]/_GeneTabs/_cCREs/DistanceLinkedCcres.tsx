@@ -1,6 +1,6 @@
 "use client";
 import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
-import { useCcreData, UseCcreDataParams } from "common/hooks/useCcreData";
+import { useCcreData, UseCcreDataParams } from "common/hooks/useCcreDataNew";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
@@ -87,16 +87,22 @@ export default function DistanceLinkedCcres({
     switch (calcMethod) {
       case "3gene": // query with accessions from dataCcresByClosestGenes
         return {
-          accession: dataCcresByClosestGenes?.closestGenetocCRE.map((x) => x.ccre),
+          accessions: dataCcresByClosestGenes?.closestGenetocCRE.map((x) => x.ccre) ?? [],
           assembly,
           skip: !dataCcresByClosestGenes,
         };
       case "body": // query with gene body
+        if (!geneData.data) {
+          return {
+            coordinates: [],
+            assembly,
+            skip: true,
+          };
+        }
         const { __typename, ...coordinates } = geneData.data.coordinates;
         return {
-          coordinates,
+          coordinates: [coordinates],
           assembly,
-          skip: !geneData.data,
         };
       case "tss": // query with regions made using TSS + distance padding
         return {
@@ -107,17 +113,10 @@ export default function DistanceLinkedCcres({
     }
   }, [calcMethod, dataCcresByClosestGenes, geneData, distance]) satisfies UseCcreDataParams ;
 
-  console.log(useCcreDataParams)
-
   const { data, loading, error } = useCcreData(useCcreDataParams);
 
   const distanceLinkedCcres = data?.map((ccre) => {
-
-    const ccreCoords = {
-      chromosome: ccre.chrom,
-      start: ccre.start,
-      end: ccre.start + ccre.len,
-    };
+    const ccreCoords = ccre.coordinates;
 
     const nearestTranscript = calcDistCcreToTSS(
       ccreCoords,
@@ -128,9 +127,9 @@ export default function DistanceLinkedCcres({
     //We also need to be aware that the 3gene method is only valid in human
 
     return {
-      ccre: ccre.info.accession,
+      ccre: ccre.accession,
       ...ccreCoords,
-      group: ccre.pct,
+      group: ccre.group,
       distance: nearestTranscript.distance,
       direction: nearestTranscript.direction,
       tss: nearestTranscript.transcriptId,
@@ -176,35 +175,26 @@ export default function DistanceLinkedCcres({
         return value.toLocaleString();
       },
     },
-    ...(calcMethod !== "3gene"
-      ? [
-          {
-            field: "tss",
-            headerName: "Nearest TSS",
-            renderHeader: () => (
-              <>
-                Nearest&nbsp;<i>{geneData?.data?.name} TSS</i>
-              </>
-            ),
-          },
-        ]
-      : []),
     {
-      field: "distance",
-      headerName: "Distance",
+      field: "tss",
+      headerName: "Nearest TSS",
       renderHeader: () => (
         <>
-          Distance from&nbsp;<i>{calcMethod !== "3gene" ? `TSS` : geneData.data.name}</i>
+          Nearest&nbsp;<i>{geneData?.data?.name}</i>&nbsp;TSS
         </>
       ),
+    },
+    {
+      field: "distance",
+      headerName: "Distance to TSS",
       type: "number",
       renderCell: (params) => {
         if (params.value == null) {
           return "";
         }
 
-        const direction =
-          calcMethod !== "3gene" && params.value !== 0 ? (params.row.direction === "Upstream" ? "-" : "+") : "";
+        const direction = params.row.distance === 0 ? "" : params.row.direction === "Upstream" ? "-" : "+"
+        
         return (
           <span>
             {direction}

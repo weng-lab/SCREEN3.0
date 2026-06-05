@@ -48,7 +48,7 @@ export const useCcreData = ({ assembly, accessions, coordinates, skip }: UseCcre
   });
 
   return {
-    data: data.cCREQuery,
+    data: data?.cCREQuery,
     loading,
     error,
   };

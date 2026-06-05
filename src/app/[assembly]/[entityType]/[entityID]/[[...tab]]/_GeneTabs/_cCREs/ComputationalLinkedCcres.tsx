@@ -11,7 +11,7 @@ import { Assembly } from "common/types/globalTypes";
 import { TableColDef } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreData } from "common/hooks/useCcreData";
+import { useCcreData } from "common/hooks/useCcreDataNew";
 import { useState } from "react";
 import { useCompuLinkedcCREs } from "common/hooks/useCompuLinkedcCREs";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
@@ -94,12 +94,12 @@ export default function ComputationalLinkedCcres({
     loading: loadingCcres,
     error: errorCcres,
   } = useCcreData({
-    accession: data?.map((acc) => acc.accession),
+    accessions: data?.map((acc) => acc.accession) ?? [],
     assembly: assembly as Assembly,
     skip: !data,
   });
 
-  const classByAccession = Object.fromEntries(dataCcres?.map((c) => [c.info.accession, c.pct]) ?? []);
+  const classByAccession = Object.fromEntries(dataCcres?.map((c) => [c.accession, c.group]) ?? []);
 
   if (geneData.loading || loading || loadingCcres) {
     return (

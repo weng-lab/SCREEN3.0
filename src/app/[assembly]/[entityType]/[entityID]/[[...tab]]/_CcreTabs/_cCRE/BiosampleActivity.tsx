@@ -8,7 +8,7 @@ import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
 import { CLASS_COLORS } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useCcreData } from "common/hooks/useCcreData";
+import { useCcre } from "common/hooks/useCcre";
 import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
 import AssayView from "./AssayView";
 import { AssayWheel } from "@weng-lab/ui-components";
@@ -314,7 +314,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     setTab(newValue as "tables" | "add_classification" | "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf");
   };
 
-  const { data: cCREdata, error: errorCcreData } = useCcreData({
+  const { data: cCREdata, error: errorCcreData } = useCcre({
     accession: entity.entityID,
     assembly: entity.assembly,
   });
@@ -332,9 +332,9 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   } = useDynamicEnhancersData({ accession: [entity.entityID], assembly: entity.assembly });
 
   const coordinates: GenomicRange = {
-    chromosome: cCREdata?.chrom,
-    start: cCREdata?.start,
-    end: cCREdata?.start + cCREdata?.len,
+    chromosome: cCREdata?.coordinates.chromosome,
+    start: cCREdata?.coordinates.start,
+    end: cCREdata?.coordinates.end,
   };
 
   const {

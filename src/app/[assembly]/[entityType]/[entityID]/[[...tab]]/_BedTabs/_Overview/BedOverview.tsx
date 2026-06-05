@@ -16,7 +16,7 @@ import { OpenInNew } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import OverviewCards from "./OverviewCards";
 // import AutoSortSwitch from "common/components/AutoSortSwitch";
-import { useCcreData } from "common/hooks/useCcreData";
+import { useCcreData } from "common/hooks/useCcreDataNew";
 import { useSnpData } from "common/hooks/useSnpData";
 import { useGeneData } from "common/hooks/useGeneData";
 
@@ -39,7 +39,6 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
   const { data: dataCcres, loading: loadingCcres } = useCcreData({
     coordinates: regions,
     assembly: entity.assembly,
-    nearbygeneslimit: 1,
     skip: regions === null,
   });
 
@@ -53,12 +52,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
 
   // convert all coordiantes to Genomic Range for each query
   const ccresRanges: GenomicRange[] = useMemo(
-    () =>
-      dataCcres?.map((c) => ({
-        chromosome: c.chrom,
-        start: c.start,
-        end: c.start + c.len,
-      })) ?? [],
+    () => dataCcres?.map((c) => c.coordinates) ?? [],
     [dataCcres]
   );
 

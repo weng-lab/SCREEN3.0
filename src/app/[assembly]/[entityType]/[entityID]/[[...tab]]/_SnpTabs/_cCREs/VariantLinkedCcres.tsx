@@ -3,7 +3,7 @@ import { InfoOutlineRounded } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreData } from "common/hooks/useCcreData";
+import { useCcreData } from "common/hooks/useCcreDataNew";
 import { useSnpData } from "common/hooks/useSnpData";
 import { useMemo, useState } from "react";
 import { DistanceSlider } from "./DistanceSlider";
@@ -40,19 +40,19 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
     loading: loadingCcres,
     error: errorCcres,
   } = useCcreData({
-    coordinates: searchCoordinates,
+    coordinates: searchCoordinates ? [searchCoordinates] : [],
     assembly: "GRCh38",
     skip: !searchCoordinates,
   });
 
   const nearbyccres = dataCcres?.map((d) => {
     return {
-      ccre: d?.info.accession,
-      chromosome: d?.chrom,
-      start: d?.start,
-      end: d?.start + d?.len,
-      group: d?.pct,
-      distance: calcSignedDistRegionToRegion(variantData.coordinates, { start: d?.start, end: d?.start + d?.len }),
+      ccre: d.accession,
+      chromosome: d.coordinates.chromosome,
+      start: d.coordinates.start,
+      end: d.coordinates.end,
+      group: d.group,
+      distance: calcSignedDistRegionToRegion(variantData.coordinates, d.coordinates),
     };
   });
 

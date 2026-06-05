@@ -14,7 +14,7 @@ export const useCcre = ({ assembly, accession, skip }: UseCcreParams) => {
   const { data, loading, error } = useCcreData({assembly, accessions: [accession], skip })
 
   return {
-    data: data[0],
+    data: data ? data[0] : undefined,
     loading,
     error,
   };
