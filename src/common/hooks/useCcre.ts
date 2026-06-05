@@ -1,5 +1,5 @@
 import { Assembly } from "common/types/globalTypes";
-import { useCcreData } from "./useCcreDataNew";
+import { useCcreData } from "./useCcreData";
 
 export type UseCcreParams = {
   assembly: Assembly;

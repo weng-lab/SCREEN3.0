@@ -1,6 +1,6 @@
 "use client";
 import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
-import { useCcreData, UseCcreDataParams } from "common/hooks/useCcreDataNew";
+import { useCcreData, UseCcreDataParams } from "common/hooks/useCcreData";
 import { UseGeneDataReturn } from "common/hooks/useGeneData";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";

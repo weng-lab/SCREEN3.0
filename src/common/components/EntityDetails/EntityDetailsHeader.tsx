@@ -22,13 +22,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
   const c =
     entityMetadata?.__typename !== "GwasStudiesMetadata" &&
     entityMetadata?.__typename !== "Bed" &&
-    (entityMetadata?.__typename === "SCREENSearchResult"
-      ? {
-        chromosome: entityMetadata?.chrom,
-        start: entityMetadata?.start,
-        end: entityMetadata?.start + entityMetadata?.len,
-      }
-      : entityMetadata?.coordinates);
+    entityMetadata?.coordinates;
   const coordinatesDisplay = c && formatGenomicRange(c);
   const coordinatesGenomeBrowser = c && formatGenomicRange(expandCoordinates(c, entityType))
   const description = useGeneDescription(entityID, entityType).description;
@@ -37,7 +31,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
   //All data used in the subtitle of the element header based on the element type
   const geneID = entityMetadata?.__typename === "Gene" ? entityMetadata?.id : "";
   const strand = entityMetadata?.__typename === "Gene" ? entityMetadata.strand : "";
-  const ccreClass = entityMetadata?.__typename === "SCREENSearchResult" ? entityMetadata?.pct : "";
+  const ccreClass = entityMetadata?.__typename === "CCRE" ? entityMetadata?.group : "";
   const ref =
     entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.ref : "";
   const alt =

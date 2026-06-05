@@ -3,7 +3,7 @@ import { InfoOutlineRounded } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreData } from "common/hooks/useCcreDataNew";
+import { useCcreData } from "common/hooks/useCcreData";
 import { useSnpData } from "common/hooks/useSnpData";
 import { useMemo, useState } from "react";
 import { DistanceSlider } from "./DistanceSlider";

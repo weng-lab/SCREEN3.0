@@ -13,9 +13,7 @@ const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { di
 
   const coordinates = useMemo(() => {
     if (!dataCoords || dataCoords.__typename === "GwasStudiesMetadata") return null;
-    if (dataCoords.__typename === "SCREENSearchResult") {
-      return { chromosome: dataCoords.chrom, start: dataCoords.start, end: dataCoords.start + dataCoords.len };
-    } else if (dataCoords.__typename === "Bed") {
+    if (dataCoords.__typename === "Bed") {
       if (typeof window === "undefined") return null;
       const encoded = sessionStorage.getItem(entity.entityID);
       return decodeRegions(encoded);

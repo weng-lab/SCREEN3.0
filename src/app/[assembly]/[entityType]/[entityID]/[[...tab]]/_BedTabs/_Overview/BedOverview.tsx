@@ -16,7 +16,7 @@ import { OpenInNew } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import OverviewCards from "./OverviewCards";
 // import AutoSortSwitch from "common/components/AutoSortSwitch";
-import { useCcreData } from "common/hooks/useCcreDataNew";
+import { useCcreData } from "common/hooks/useCcreData";
 import { useSnpData } from "common/hooks/useSnpData";
 import { useGeneData } from "common/hooks/useGeneData";
 

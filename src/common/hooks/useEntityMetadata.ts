@@ -3,7 +3,7 @@ import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { useGeneData, UseGeneDataReturn } from "./useGeneData";
 import { useSnpData, UseSnpDataReturn } from "./useSnpData";
 import { parseGenomicRangeString } from "common/utility";
-import { useCcreData, UseCcreDataReturn } from "./useCcreData";
+import { useCcre } from "./useCcre";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { useGWASStudyData, UseGWASStudyDataReturn } from "./useGWASStudyData";
 
@@ -32,7 +32,7 @@ type UseBedReturn = {
 export type useEntityMetadataReturn<T extends AnyEntityType> = T extends "gene"
   ? UseGeneDataReturn<{ name: string; assembly: Assembly }>
   : T extends "ccre"
-    ? UseCcreDataReturn<{ accession: string; assembly: Assembly }>
+    ? ReturnType<typeof useCcre>
     : T extends "variant"
       ? UseSnpDataReturn<{ rsID: string; assembly: Assembly }>
       : T extends "gwas"
@@ -55,7 +55,7 @@ export const useEntityMetadata = <T extends AnyEntityType>({
    * @todo ^ I was being stupid change these to properly use skip and then remove entityType from hook params
    */
   const geneMetadata = useGeneData({ name: entityID, entityType, assembly });
-  const ccreMetadata = useCcreData({ accession: entityID, entityType, assembly });
+  const ccreMetadata = useCcre({ accession: entityID, assembly, skip: entityType !== "ccre" });
   const snpMetadata = useSnpData({ rsID: entityID, entityType, assembly: "GRCh38" });
   const gwasStudyMetadata = useGWASStudyData({ studyid: [entityID], entityType });
   //example to use useSnpFrequencies, returns ref,alt alleles and population frequencies

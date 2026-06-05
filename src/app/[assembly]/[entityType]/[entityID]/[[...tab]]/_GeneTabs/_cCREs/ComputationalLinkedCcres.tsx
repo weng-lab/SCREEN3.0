@@ -11,7 +11,7 @@ import { Assembly } from "common/types/globalTypes";
 import { TableColDef } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreData } from "common/hooks/useCcreDataNew";
+import { useCcreData } from "common/hooks/useCcreData";
 import { useState } from "react";
 import { useCompuLinkedcCREs } from "common/hooks/useCompuLinkedcCREs";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";

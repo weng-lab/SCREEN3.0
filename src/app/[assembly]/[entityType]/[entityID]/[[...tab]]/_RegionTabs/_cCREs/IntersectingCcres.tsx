@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { Button, Stack, Tooltip, Skeleton } from "@mui/material";
-import { useCcreData } from "common/hooks/useCcreDataNew";
+import { useCcreData } from "common/hooks/useCcreData";
 import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useMemo, useState } from "react";
