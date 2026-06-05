@@ -22,5 +22,5 @@ export type CcreAssay = (typeof CCRE_ASSAYS)[number];
 export type CcreZScores = Partial<Record<CcreAssay, number>>;
 
 export type CcreZScoresAndGroup = CcreZScores & {
-  group?: CcreClass;
+  group: CcreClass;
 };

@@ -84,7 +84,7 @@ const extractBiosampleZScores = (zscoresArray: ZScoresEntry[]): CcreZScores => {
       case "H3K4me3": zScores.h3k4me3 = score; break;
       case "H3K27ac": zScores.h3k27ac = score; break;
       case "CTCF": zScores.ctcf = score; break;
-      case "ATAC": zScores.ctcf = score; break;
+      case "ATAC": zScores.atac = score; break;
     }
   })
   return zScores

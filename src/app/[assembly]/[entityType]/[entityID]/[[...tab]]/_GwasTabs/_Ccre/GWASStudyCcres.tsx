@@ -2,13 +2,15 @@
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
 import { Fragment, useMemo, useState } from "react";
 import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
-import { CancelRounded } from "@mui/icons-material";
+import { SelectedBiosampleCard } from "common/components/SelectedBiosampleCard";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreData } from "common/hooks/useCcreData";
-import { Typography, Button, Stack, IconButton, Tooltip } from "@mui/material";
+import { useCcreZScores } from "common/hooks/useCcreZScores";
+import { Typography, Button, Tooltip, Skeleton } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyData } from "common/hooks/useGWASStudyData";
 import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
+import { ClassificationFormatting } from "common/components/ClassificationFormatting";
+import { CcreAssay } from "common/types/globalTypes";
 
 const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const { data, loading, error } = useGWASStudyData({ studyid: [entity.entityID] });
@@ -26,38 +28,21 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
     error: errorGWASSNPscCREs,
   } = useGWASSnpsIntersectingcCREsData({ studyid: [entity.entityID] });
 
-  const {
-    data: dataCcreDetails,
-    loading: loadingCcreDetails,
-    error: errorCcreDetails,
-  } = useCcreData({
-    accession: dataGWASSNPscCREs ? dataGWASSNPscCREs?.map((d) => d.ccre) : [],
-    assembly: "GRCh38",
-    nearbygeneslimit: 1,
-    cellType: selectedBiosample ? selectedBiosample.name : undefined,
-  });
-
   const handleBiosampleSelected = (biosample: EncodeBiosample) => {
     setSelectedBiosample(biosample);
   };
+  
+  const accessions = useMemo(() => [...new Set(dataGWASSNPscCREs?.map((d) => d.ccre) ?? [])], [dataGWASSNPscCREs]);
 
-  const mergedData = useMemo(() => {
-    if (!dataGWASSNPscCREs || !dataCcreDetails) return [];
+  const { data: dataZScores, loading: loadingZScores, error: errorZScores } = useCcreZScores({
+    accessions,
+    assembly: "GRCh38",
+    biosample: selectedBiosample ? selectedBiosample.name : undefined,
+    skip: accessions.length === 0,
+  });
+  const zScoresLoading = loadingZScores || (!dataZScores && !errorZScores);
 
-    // Build a lookup for details
-    const detailMap = new Map(dataCcreDetails.map((d) => [d.info.accession, d]));
-
-    return dataGWASSNPscCREs.map((gwas) => ({
-      ...gwas,
-      nearestgenes: detailMap.get(gwas.ccre).nearestgenes || null,
-      ctspecific: detailMap.get(gwas.ccre).ctspecific,
-      dnase_zscore: detailMap.get(gwas.ccre).dnase_zscore,
-      ctcf_zscore: detailMap.get(gwas.ccre).ctcf_zscore,
-      atac_zscore: detailMap.get(gwas.ccre).atac_zscore,
-      enhancer_zscore: detailMap.get(gwas.ccre).enhancer_zscore,
-      promoter_zscore: detailMap.get(gwas.ccre).promoter_zscore,
-    }));
-  }, [dataGWASSNPscCREs, dataCcreDetails]);
+  type CcreRow = NonNullable<typeof dataGWASSNPscCREs>[number];
 
   const showAtac = !selectedBiosample || !!selectedBiosample.atac_experiment_accession;
   const showCTCF = !selectedBiosample || !!selectedBiosample.ctcf_experiment_accession;
@@ -89,131 +74,103 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
     []
   );
 
-  const columns: TableColDef<(typeof mergedData)[number]>[] = useMemo(
-    () => [
-      {
-        field: "ccre",
-        headerName: "Accession",
-        renderCell: (params) => (
-          <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
-            <i>{params.value}</i>
-          </LinkComponent>
-        ),
-      },
-      {
-        field: "snpid",
-        headerName: "SNP",
-        renderCell: (params) => <LinkComponent href={`/GRCh38/variant/${params.value}`}>{params.value}</LinkComponent>,
-      },
-      {
-        field: "ldblocksnpid",
-        headerName: "LD Block Lead SNP ID(s)",
-        renderCell: (params) => {
-          if (params.value === "Lead") return "Lead";
-          const rsIDs = (params.value as string)?.split(",");
-          const links = rsIDs?.map((rsID: string, index: number) => (
-            <Fragment key={rsID}>
-              <LinkComponent href={`/GRCh38/variant/${rsID}`}>{rsID}</LinkComponent>
-              {index < rsIDs.length - 1 ? ", " : ""}
-            </Fragment>
-          ));
-          return <span>{links}</span>;
-        },
-      },
-      // ideally this would be type: "number" to allow <,>,<= filtering but with * and comma separated values keeping default
-      {
-        field: "rsquare",
-        renderHeader: () => (
-          <p>
-            <i>
-              R<sup>2&nbsp;</sup>
-            </i>
-          </p>
-        ),
-      },
-      {
-        field: "nearestgenes",
-        headerName: "Nearest Gene",
-        valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
-        renderCell: (params) => (
-          <span>
-            <LinkComponent href={`/GRCh38/gene/${params.row.nearestgenes[0].gene}`}>
-              <i>{params.row.nearestgenes[0].gene}</i>
-            </LinkComponent>
-            &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
-          </span>
-        ),
-      },
-      ...(showDNase
-        ? [
-            {
-              field: "dnase",
-              type: "number" as const,
-              headerName: selectedBiosample ? "DNase" : "DNase Max Z",
-              valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.dnase_experiment_accession
-                  ? row.ctspecific.dnase_zscore.toFixed(2)
-                  : row.dnase_zscore.toFixed(2),
-            },
-          ]
-        : []),
-      ...(showAtac
-        ? [
-            {
-              field: "atac",
-              type: "number" as const,
-              headerName: selectedBiosample ? "ATAC" : "ATAC Max Z",
-              valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.atac_experiment_accession
-                  ? row.ctspecific.atac_zscore.toFixed(2)
-                  : row.atac_zscore.toFixed(2),
-            },
-          ]
-        : []),
-      ...(showH3k4me3
-        ? [
-            {
-              field: "h3k4me3",
-              type: "number" as const,
-              headerName: selectedBiosample ? "H3K4me3" : "H3K4me3 Max Z",
-              valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.h3k4me3_experiment_accession
-                  ? row.ctspecific.h3k4me3_zscore.toFixed(2)
-                  : row.promoter_zscore.toFixed(2),
-            },
-          ]
-        : []),
-      ...(showH3k27ac
-        ? [
-            {
-              field: "h3k27ac",
-              type: "number" as const,
-              headerName: selectedBiosample ? "H3K27ac" : "H3K27ac Max Z",
-              valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.h3k27ac_experiment_accession
-                  ? row.ctspecific.h3k27ac_zscore.toFixed(2)
-                  : row.enhancer_zscore.toFixed(2),
-            },
-          ]
-        : []),
-      ...(showCTCF
-        ? [
-            {
-              field: "ctcf",
-              type: "number" as const,
-              headerName: selectedBiosample ? "CTCF" : "CTCF Max Z",
-              valueGetter: (_, row) =>
-                selectedBiosample && selectedBiosample.ctcf_experiment_accession
-                  ? row.ctspecific.ctcf_zscore.toFixed(2)
-                  : row.ctcf_zscore.toFixed(2),
-            },
-          ]
-        : []),
-    ],
-    [selectedBiosample, showAtac, showCTCF, showDNase, showH3k27ac, showH3k4me3]
-  );
+  // z-score columns read from the side-loaded `dataZScores` map (keyed by accession). The
+  // header swaps to "… Max Z" when no biosample is selected (global) vs the assay name when one
+  // is. `display: "flex"` makes the number-column right-alignment apply to the loading skeleton.
+  const zScoreCol = (field: CcreAssay, label: string): TableColDef<CcreRow> => ({
+    field,
+    headerName: selectedBiosample ? label : `${label} Max Z`,
+    type: "number",
+    display: "flex",
+    valueGetter: (_, row) => dataZScores?.[row.ccre]?.[field] ?? null,
+    renderCell: (params) =>
+      zScoresLoading ? (
+        <Skeleton variant="text" width={30} />
+      ) : params.value != null ? (
+        params.value.toFixed(2)
+      ) : (
+        "—"
+      ),
+  });
 
-  return errorGWASSNPscCREs || errorCcreDetails || error ? (
+  const columns: TableColDef<CcreRow>[] = [
+    {
+      field: "ccre",
+      headerName: "Accession",
+      renderCell: (params) => (
+        <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
+          <i>{params.value}</i>
+        </LinkComponent>
+      ),
+    },
+    {
+      field: "group",
+      headerName: "Classification",
+      ...ClassificationFormatting,
+      // Global classification when no biosample is selected, celltype-specific when one is.
+      // Both come from useCcreZScores (its max-Z branch returns the global group).
+      valueGetter: (_, row) => dataZScores?.[row.ccre]?.group ?? null,
+      renderCell: (params) =>
+        zScoresLoading ? (
+          <Skeleton variant="text" width={80} />
+        ) : (
+          ClassificationFormatting.renderCell?.(params)
+        ),
+    },
+    {
+      field: "snpid",
+      headerName: "SNP",
+      renderCell: (params) => <LinkComponent href={`/GRCh38/variant/${params.value}`}>{params.value}</LinkComponent>,
+    },
+    {
+      field: "ldblocksnpid",
+      headerName: "LD Block Lead SNP ID(s)",
+      renderCell: (params) => {
+        if (params.value === "Lead") return "Lead";
+        const rsIDs = (params.value as string)?.split(",");
+        const links = rsIDs?.map((rsID: string, index: number) => (
+          <Fragment key={rsID}>
+            <LinkComponent href={`/GRCh38/variant/${rsID}`}>{rsID}</LinkComponent>
+            {index < rsIDs.length - 1 ? ", " : ""}
+          </Fragment>
+        ));
+        return <span>{links}</span>;
+      },
+    },
+    // ideally this would be type: "number" to allow <,>,<= filtering but with * and comma separated values keeping default
+    {
+      field: "rsquare",
+      renderHeader: () => (
+        <p>
+          <i>
+            R<sup>2&nbsp;</sup>
+          </i>
+        </p>
+      ),
+    },
+    // TODO: Nearest Gene column commented out pending a tightly-scoped closest-gene query from
+    // the backend (the old `nearestgenes` field is not part of the new cCRE hooks).
+    // {
+    //   field: "nearestgenes",
+    //   headerName: "Nearest Gene",
+    //   valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
+    //   renderCell: (params) => (
+    //     <span>
+    //       <LinkComponent href={`/GRCh38/gene/${params.row.nearestgenes[0].gene}`}>
+    //         <i>{params.row.nearestgenes[0].gene}</i>
+    //       </LinkComponent>
+    //       &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
+    //     </span>
+    //   ),
+    // },
+    ...(showDNase ? [zScoreCol("dnase", "DNase")] : []),
+    ...(showAtac ? [zScoreCol("atac", "ATAC")] : []),
+    ...(showH3k4me3 ? [zScoreCol("h3k4me3", "H3K4me3")] : []),
+    ...(showH3k27ac ? [zScoreCol("h3k27ac", "H3K27ac")] : []),
+    ...(showCTCF ? [zScoreCol("ctcf", "CTCF")] : []),
+  ];
+
+  return errorGWASSNPscCREs || error ? (
     <Typography>Error Fetching Intersecting cCREs against SNPs identified by a GWAS study</Typography>
   ) : (
     <>
@@ -235,31 +192,12 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
         hideFooter
       />
       {selectedBiosample && (
-        <Stack
-          borderRadius={1}
-          direction={"row"}
-          justifyContent={"space-between"}
-          sx={{ backgroundColor: (theme) => theme.palette.secondary.light }}
-          alignItems={"center"}
-          width={"fit-content"}
-        >
-          <Typography sx={{ color: "#2C5BA0", pl: 1 }}>
-            <b>Selected Biosample: </b>
-            {" " +
-              selectedBiosample.ontology.charAt(0).toUpperCase() +
-              selectedBiosample.ontology.slice(1) +
-              " - " +
-              selectedBiosample.displayname}
-          </Typography>
-          <IconButton onClick={() => handleBiosampleSelected(null)}>
-            <CancelRounded />
-          </IconButton>
-        </Stack>
+        <SelectedBiosampleCard biosample={selectedBiosample} onClear={() => handleBiosampleSelected(null)} />
       )}
       <Table
-        rows={mergedData}
+        rows={dataGWASSNPscCREs}
         columns={columns}
-        loading={loadingGWASSNPscCREs || loadingCcreDetails}
+        loading={loadingGWASSNPscCREs}
         label={`Intersecting cCREs`}
         emptyTableFallback={"No Intersecting cCREs found against SNPs identified by GWAS study"}
         initialState={{

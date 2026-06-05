@@ -66,7 +66,7 @@ const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { di
       label={`Intersecting SNPs`}
       emptyTableFallback={"No intersecting SNPs found in this region"}
       initialState={{ sorting: { sortModel: [{ field: "coordinates.start", sort: "asc" }] } }}
-      divHeight={{ maxHeight: "600px", ...divHeight }}
+      divHeight={{ height: "600px", ...divHeight }}
     />
   );
 };

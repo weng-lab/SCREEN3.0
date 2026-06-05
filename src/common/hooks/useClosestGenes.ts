@@ -47,6 +47,7 @@ query geneDataQuery($assembly: String!,$name: [String], $version: Int) {
 `);
 
 export default function useClosestGenes(accession: string, assembly: string) {
+  // @TODO replace with whatever query ends up having the middle anchored distance to TSS
   const {
     data: closestGeneData,
     loading: closestGeneLoading,
