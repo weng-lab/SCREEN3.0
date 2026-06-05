@@ -12,19 +12,17 @@ export type ClosestGenes = {
 };
 
 export const CLOSEST_GENE_QUERY = gql(`
-   query ccreSearchQuery_2(
-    $assembly: String!    
-    $accessions: [String!]
+  query tempNearestGenes(
+    $assembly: String!
+    $accession: String!
   ) {
-    cCRESCREENSearch(
+    getmaxZScoresQuery(
       assembly: $assembly
-      accessions: $accessions      
-      nearbygeneslimit: 3
+      accession: [$accession]
     ) {
-      
       nearestgenes {
-        gene        
         distance
+        gene
       }
     }
   }
@@ -54,7 +52,7 @@ export default function useClosestGenes(accession: string, assembly: string) {
     error: closestGeneError,
   } = useQuery(CLOSEST_GENE_QUERY, {
     variables: {
-      accessions: [accession],
+      accession,
       assembly: assembly,
     },
   });
@@ -65,16 +63,17 @@ export default function useClosestGenes(accession: string, assembly: string) {
     error: geneError,
   } = useQuery(GENES_DATA_QUERY, {
     variables: {
-      name: closestGeneData && closestGeneData.cCRESCREENSearch[0].nearestgenes.map((item: any) => item.gene),
+      name: closestGeneData && closestGeneData.getmaxZScoresQuery[0]?.nearestgenes.map((item: any) => item.gene),
       version: assembly == "GRCh38" ? 40 : 25,
       assembly: assembly,
     },
-    skip: closestGeneLoading || !closestGeneData || (closestGeneData && closestGeneData.cCRESCREENSearch.length === 0),
+    skip: closestGeneLoading || !closestGeneData || (closestGeneData && closestGeneData.getmaxZScoresQuery.length === 0),
   });
 
   const closestGenes =
     closestGeneData &&
-    closestGeneData.cCRESCREENSearch[0].nearestgenes.map((item: any) => {
+    closestGeneData.getmaxZScoresQuery.length &&
+    closestGeneData.getmaxZScoresQuery[0].nearestgenes.map((item: any) => {
       let g;
       if (geneData && !geneError && !geneLoading) {
         g = geneData.gene.find((g) => g.name === item.gene);
