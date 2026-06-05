@@ -67,6 +67,30 @@ export const releaseNotes: ReleaseNote[] = [
     ],
   },
   {
+    id: "screen-2025",
+    version: "SCREEN 2025",
+    date: "2025",
+    title: "Visualization-focused release with entity dedicated pages",
+    sections: [
+      {
+        bulletedChildren: true,
+        children: [
+          {
+            description:
+              "The SCREEN 2025 release offered more dedicated entity pages, as well as new entity type Genome Wide Associated Study (GWAS). This release also incuded brand new visualization tools such as gene expression plots for genes and z-score plots for ccres. Genome broswser updated to be entity focused ",
+            
+          },
+          {
+            description:
+              "Brand new visualization tools such as gene expression plots for genes and z-score plots for ccres ",
+            screenshot: "SCREEN2025.png",
+            imgWidth: 500,
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "screen-2024",
     version: "SCREEN 2024",
     date: "2024",
