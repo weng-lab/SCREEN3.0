@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client/react";
 import type { ErrorLike } from "@apollo/client";
-import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { GetGwasStudyMetadataQuery } from "common/types/generated/graphql";
 
@@ -35,7 +34,7 @@ export type UseGWASStudyDataParams = {
   parent_terms?: string[];
   studyname_prefix?: string[];
   limit?: number;
-  entityType?: AnyEntityType;
+  skip?: boolean;
 };
 
 export type UseGWASStudyDataReturn = {
@@ -47,13 +46,13 @@ export type UseGWASStudyDataReturn = {
 export const useGWASStudyData = ({
   studyid,
   parent_terms,
-  entityType,
+  skip,
 }: UseGWASStudyDataParams): UseGWASStudyDataReturn => {
   const { data, loading, error } = useQuery(GWAS_STUDY_METADATA_Query, {
     variables: {
       studyid: studyid
     },
-    skip: entityType !== undefined && entityType !== "gwas",
+    skip,
   });
 
   return {

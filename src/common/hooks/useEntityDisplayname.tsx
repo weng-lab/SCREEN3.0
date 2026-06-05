@@ -8,7 +8,7 @@ type useEntityDisplaynameProps = {
 };
 
 const useEntityDisplayname = ({ entityID, entityType }: useEntityDisplaynameProps) => {
-  const { data, loading, error } = useGWASStudyData({ entityType, studyid: [entityID] });
+  const { data, loading, error } = useGWASStudyData({ studyid: [entityID], skip: entityType !== "gwas" });
 
   let label: React.ReactNode;
 

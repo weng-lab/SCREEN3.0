@@ -47,19 +47,14 @@ export const useEntityMetadata = <T extends AnyEntityType>({
   entityID,
 }: useEntityMetadataParams<T>): useEntityMetadataReturn<T> => {
   /**
-   * elementType is being passed to these hooks to prevent data from being fetched unless
-   * it actually should be fetched. Need to call all hooks to follow rules of hooks:
+   * Every metadata hook is called to follow the rules of hooks, but each is skipped unless its
+   * entityType matches so only the relevant query actually fires.
    * See https://react.dev/reference/rules/rules-of-hooks#only-call-hooks-at-the-top-level
    */
-  /**
-   * @todo ^ I was being stupid change these to properly use skip and then remove entityType from hook params
-   */
-  const geneMetadata = useGeneData({ name: entityID, entityType, assembly });
+  const geneMetadata = useGeneData({ name: entityID, assembly, skip: entityType !== "gene" });
   const ccreMetadata = useCcre({ accession: entityID, assembly, skip: entityType !== "ccre" });
-  const snpMetadata = useSnpData({ rsID: entityID, entityType, assembly: "GRCh38" });
-  const gwasStudyMetadata = useGWASStudyData({ studyid: [entityID], entityType });
-  //example to use useSnpFrequencies, returns ref,alt alleles and population frequencies
-  //const SnpFrequencies= useSnpFrequencies(elementID);
+  const snpMetadata = useSnpData({ rsID: entityID, assembly: "GRCh38", skip: entityType !== "variant" });
+  const gwasStudyMetadata = useGWASStudyData({ studyid: [entityID], skip: entityType !== "gwas" });
 
   switch (entityType) {
     case "gene":
