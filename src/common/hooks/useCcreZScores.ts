@@ -72,9 +72,9 @@ const GET_CCRE_BIOSAMPLE_Z = gql(`
  * ]
  */
 
-type ZScoresEntry = [string, string, string, string, null, null, null, null, number]
+export type ZScoresEntry = [string, string, string, string, null, null, null, null, number]
 
-const extractBiosampleZScores = (zscoresArray: ZScoresEntry[]): CcreZScores => {
+export const extractBiosampleZScores = (zscoresArray: ZScoresEntry[]): CcreZScores => {
   const zScores: CcreZScores = {};
   zscoresArray.forEach(experiment => {
     const assay = experiment[2]
