@@ -3,6 +3,12 @@ import { defaultBigBed, defaultTranscript } from "./defaultConfigs";
 import CCRETooltip from "../Tooltips/CcreTooltip";
 import { JSX } from "react";
 
+type TrackSelectRow = {
+  id?: string;
+  assay?: string;
+  displayName?: string;
+};
+
 export type CcreTooltipBiosample = {
   name: string;
   displayname: string;
@@ -51,7 +57,7 @@ export interface TrackCallbacks {
 }
 
 // Helper to inject callbacks based on track type
-export function injectCallbacks(track: Track, callbacks: TrackCallbacks): Track {
+export function injectCallbacks(track: Track, callbacks: TrackCallbacks, row?: TrackSelectRow): Track {
   if (track.trackType === TrackType.Transcript) {
     return {
       ...track,
@@ -61,8 +67,11 @@ export function injectCallbacks(track: Track, callbacks: TrackCallbacks): Track 
     };
   }
   if (track.trackType === TrackType.BigBed) {
-    if (track.id.toLowerCase().includes("chromhmm")) {
-      const displayName = track.title?.replace(/, chromhmm$/i, "") || "";
+    const assay = row?.assay?.toLowerCase();
+    const isChromHmm = assay === "chromhmm" || track.id.toLowerCase().includes("chromhmm");
+
+    if (isChromHmm) {
+      const displayName = row?.displayName || track.title?.replace(/, chromhmm$/i, "") || "";
       return {
         ...track,
         onHover: callbacks.onHover,
