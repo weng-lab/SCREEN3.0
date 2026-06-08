@@ -1,0 +1,3572 @@
+[
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100001",
+    "kit_id": "CCH_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100001_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100001_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100001_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100001",
+    "kit_id": "CCH_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100001_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100002",
+    "kit_id": "CCH_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100002_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100002_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100002_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100002",
+    "kit_id": "CCH_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100002_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100003",
+    "kit_id": "CCH_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100003_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100003_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100003_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CCH",
+    "sample_id": "MOHD_EA100003",
+    "kit_id": "CCH_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100003_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100004",
+    "kit_id": "CKD_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100004_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100004_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100004_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100004",
+    "kit_id": "CKD_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100004_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100005",
+    "kit_id": "CKD_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100005_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100005",
+    "kit_id": "CKD_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100005_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100005",
+    "kit_id": "CKD_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100005_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100005",
+    "kit_id": "CKD_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100005_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100006",
+    "kit_id": "CKD_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100006_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100006",
+    "kit_id": "CKD_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100006_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100006",
+    "kit_id": "CKD_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100006_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100006",
+    "kit_id": "CKD_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100006_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100007",
+    "kit_id": "CKD_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100007_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100007",
+    "kit_id": "CKD_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100007_signal-FC_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100007",
+    "kit_id": "CKD_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100007_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100007",
+    "kit_id": "CKD_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100007_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100008",
+    "kit_id": "CKD_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100008_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100008",
+    "kit_id": "CKD_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100008_signal-FC_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100008",
+    "kit_id": "CKD_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100008_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100008",
+    "kit_id": "CKD_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100008_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100009",
+    "kit_id": "CKD_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100009_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100009",
+    "kit_id": "CKD_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100009_signal-FC_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100009",
+    "kit_id": "CKD_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100009_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100009",
+    "kit_id": "CKD_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100009_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100010",
+    "kit_id": "CKD_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100010_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100010",
+    "kit_id": "CKD_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100010_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100010",
+    "kit_id": "CKD_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100010_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100010",
+    "kit_id": "CKD_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100010_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100011",
+    "kit_id": "CKD_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100011_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100011",
+    "kit_id": "CKD_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100011_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100011",
+    "kit_id": "CKD_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100011_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100011",
+    "kit_id": "CKD_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100011_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100012",
+    "kit_id": "CKD_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100012_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100012",
+    "kit_id": "CKD_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100012_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100012",
+    "kit_id": "CKD_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100012_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "CKD",
+    "sample_id": "MOHD_EA100012",
+    "kit_id": "CKD_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100012_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100013",
+    "kit_id": "EXP_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100013_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100013",
+    "kit_id": "EXP_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100013_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100013",
+    "kit_id": "EXP_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100013_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100013",
+    "kit_id": "EXP_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100013_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100014",
+    "kit_id": "EXP_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100014_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100014",
+    "kit_id": "EXP_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100014_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100014",
+    "kit_id": "EXP_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100014_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100014",
+    "kit_id": "EXP_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100014_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100016",
+    "kit_id": "EXP_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100016_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100016",
+    "kit_id": "EXP_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100016_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100016",
+    "kit_id": "EXP_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100016_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100016",
+    "kit_id": "EXP_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100016_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100017",
+    "kit_id_id": "EXP_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100017_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100017",
+    "kit_id": "EXP_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100017_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100017",
+    "kit_id": "EXP_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100017_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100017",
+    "kit_id": "EXP_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100017_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100018",
+    "kit_id": "EXP_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100018_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100018",
+    "kit_id": "EXP_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100018_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100018",
+    "kit_id": "EXP_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100018_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100018",
+    "kit_id": "EXP_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100018_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100019",
+    "kit_id": "EXP_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100019_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100019",
+    "kit_id": "EXP_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100019_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100019",
+    "kit_id": "EXP_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100019_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "EXP",
+    "sample_id": "MOHD_EA100019",
+    "kit_id": "EXP_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100019_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100020",
+    "kit_id": "MOM_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100020_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100020",
+    "kit_id": "MOM_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100020_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100020",
+    "kit_id": "MOM_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100020_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100020",
+    "kit_id": "MOM_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100020_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100021",
+    "kit_id": "MOM_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100021_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100021",
+    "kit_id": "MOM_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100021_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100021",
+    "kit_id": "MOM_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100021_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100021",
+    "kit_id": "MOM_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100021_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100022",
+    "kit_id": "MOM_0001",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100022_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100022",
+    "kit_id": "MOM_0001",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100022_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100022",
+    "kit_id": "MOM_0001",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100022_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100022",
+    "kit_id": "MOM_0001",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100022_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100023",
+    "kit_id": "MOM_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100023_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100023",
+    "kit_id": "MOM_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100023_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100023",
+    "kit_id": "MOM_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100023_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100023",
+    "kit_id": "MOM_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100023_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100024",
+    "kit_id": "MOM_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100024_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100024",
+    "kit_id": "MOM_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100024_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100024",
+    "kit_id": "MOM_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100024_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100024",
+    "kit_id": "MOM_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100024_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100025",
+    "kit_id": "MOM_0002",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100025_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100025",
+    "kit_id": "MOM_0002",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100025_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100025",
+    "kit_id": "MOM_0002",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100025_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100025",
+    "kit_id": "MOM_0002",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100025_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100026",
+    "kit_id": "MOM_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100026_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100026",
+    "kit_id": "MOM_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100026_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100026",
+    "kit_id": "MOM_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100026_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100026",
+    "kit_id": "MOM_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100026_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100027",
+    "kit_id": "MOM_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100027_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100027",
+    "kit_id": "MOM_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100027_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100027",
+    "kit_id": "MOM_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100027_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100027",
+    "kit_id": "MOM_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100027_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100028",
+    "kit_id": "MOM_0003",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100028_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100028",
+    "kit_id": "MOM_0003",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100028_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100028",
+    "kit_id": "MOM_0003",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100028_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "MOM",
+    "sample_id": "MOHD_EA100028",
+    "kit_id": "MOM_0003",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100028_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100029",
+    "kit_id": "UIC_0004",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100029_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100029",
+    "kit_id": "UIC_0004",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100029_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100029",
+    "kit_id": "UIC_0004",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100029_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100029",
+    "kit_id": "UIC_0004",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100029_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100030",
+    "kit_id": "UIC_0004",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100030_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100030",
+    "kit_id": "UIC_0004",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100030_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100030",
+    "kit_id": "UIC_0004",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100030_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100030",
+    "kit_id": "UIC_0004",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100030_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100031",
+    "kit_id": "UIC_0005",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100031_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100031",
+    "kit_id": "UIC_0005",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100031_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100031",
+    "kit_id": "UIC_0005",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100031_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100031",
+    "kit_id": "UIC_0005",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100031_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100032",
+    "kit_id": "UIC_0005",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100032_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100032",
+    "kit_id": "UIC_0005",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100032_signal-FC_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100032",
+    "kit_id": "UIC_0005",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100032_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100032",
+    "kit_id": "UIC_0005",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100032_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100033",
+    "kit_id": "UIC_0006",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100033_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100033",
+    "kit_id": "UIC_0006",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100033_signal-FC_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100033",
+    "kit_id": "UIC_0006",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100033_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100033",
+    "kit_id": "UIC_0006",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100033_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100034",
+    "kit_id": "UIC_0006",
+    "file_type": "FDR 0.05 peaks",
+    "filename": "MOHD_EA100034_peaks-FDR5_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100034",
+    "kit_id": "UIC_0006",
+    "file_type": "Fold change signal",
+    "filename": "MOHD_EA100034_signal-FC_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100034",
+    "kit_id": "UIC_0006",
+    "file_type": "Pseudorep peaks",
+    "filename": "MOHD_EA100034_peaks-pseudorep_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "atac",
+    "site": "UIC",
+    "sample_id": "MOHD_EA100034",
+    "kit_id": "UIC_0006",
+    "file_type": "p-value signal",
+    "filename": "MOHD_EA100034_signal-pvalue_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100001",
+    "kit_id": "CCH_0001",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100001_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100001",
+    "kit_id": "CCH_0001",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100001_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100001_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100001_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100001_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100001_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100002",
+    "kit_id": "CCH_0002",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100002_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100002",
+    "kit_id": "CCH_0002",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100002_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100002_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100002_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100002_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100002_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100003",
+    "kit_id": "CCH_0003",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100003_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100003",
+    "kit_id": "CCH_0003",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100003_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100003_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100003_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100003_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CCH",
+    "sample_id": "MOHD_ER100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100003_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100004",
+    "kit_id": "CKD_0001",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100004_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100004",
+    "kit_id": "CKD_0001",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100004_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100004_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100004_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100004_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100004_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100005",
+    "kit_id": "CKD_0002",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100005_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100005",
+    "kit_id": "CKD_0002",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100005_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100005_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100005_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100005_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100005_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100006",
+    "kit_id": "CKD_0003",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100006_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100006",
+    "kit_id": "CKD_0003",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100006_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100006_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100006_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100006_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "CKD",
+    "sample_id": "MOHD_ER100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100006_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100007",
+    "kit_id": "EXP_0001",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100007_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100007",
+    "kit_id": "EXP_0001",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100007_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100007_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100007_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100007_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100007_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100008",
+    "kit_id": "EXP_0002",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100008_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100008",
+    "kit_id": "EXP_0002",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100008_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100008_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100008_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100008_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100008_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100009",
+    "kit_id": "EXP_0003",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100009_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100009",
+    "kit_id": "EXP_0003",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100009_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100009_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100009_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100009_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "EXP",
+    "sample_id": "MOHD_ER100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100009_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100010",
+    "kit_id": "MOM_0001",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100010_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100010",
+    "kit_id": "MOM_0001",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100010_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100010_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100010_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100010_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100010_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100011",
+    "kit_id": "MOM_0002",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100011_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100011",
+    "kit_id": "MOM_0002",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100011_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100011_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100011_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100011_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100011_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100012",
+    "kit_id": "MOM_0003",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100012_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100012",
+    "kit_id": "MOM_0003",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100012_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100012_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100012_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100012_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "MOM",
+    "sample_id": "MOHD_ER100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100012_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100013",
+    "kit_id": "UIC_0004",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100013_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100013",
+    "kit_id": "UIC_0004",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100013_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100013_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100013_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100013_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100013_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100014",
+    "kit_id": "UIC_0005",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100014_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100014",
+    "kit_id": "UIC_0005",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100014_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100014_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100014_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100014_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100014_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100015",
+    "kit_id": "UIC_0006",
+    "file_type": "All Signal Minus",
+    "filename": "MOHD_ER100015_signal-minus-all_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100015",
+    "kit_id": "UIC_0006",
+    "file_type": "All Signal Plus",
+    "filename": "MOHD_ER100015_signal-plus-all_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Gene quantifications",
+    "filename": "MOHD_ER100015_quant-gene_GENCODE49_v0.tsv.gz",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Isoform quantifications",
+    "filename": "MOHD_ER100015_quant-isoform_GENCODE49_v0.tsv.gz",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Unique Signal Minus",
+    "filename": "MOHD_ER100015_signal-minus-unique_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "rna",
+    "site": "UIC",
+    "sample_id": "MOHD_ER100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Unique Signal Plus",
+    "filename": "MOHD_ER100015_signal-plus-unique_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100001_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100001_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100001_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100001_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100001_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100001_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100001_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100001_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100001",
+    "kit_id": "CCH_0001",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100001_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100002_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100002_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100002_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100002_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100002_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100002_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100002_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100002_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100002",
+    "kit_id": "CCH_0002",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100002_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100003_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100003_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100003_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100003_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100003_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100003_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100003_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100003_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CCH",
+    "sample_id": "MOHD_EB100003",
+    "kit_id": "CCH_0003",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100003_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100004_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100004_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100004_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100004_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100004_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100004_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100004_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100004_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100004",
+    "kit_id": "CKD_0001",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100004_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100005_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100005_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100005_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100005_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100005_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100005_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100005_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100005_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100005",
+    "kit_id": "CKD_0002",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100005_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100006_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100006_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100006_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100006_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100006_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100006_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100006_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100006_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "CKD",
+    "sample_id": "MOHD_EB100006",
+    "kit_id": "CKD_0003",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100006_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100007_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100007_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100007_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100007_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100007_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100007_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100007_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100007_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100007",
+    "kit_id": "EXP_0001",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100007_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100008_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100008_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100008_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100008_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100008_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100008_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100008_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100008_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100008",
+    "kit_id": "EXP_0002",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100008_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "control"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100009_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100009_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100009_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100009_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100009_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100009_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100009_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100009_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "EXP",
+    "sample_id": "MOHD_EB100009",
+    "kit_id": "EXP_0003",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100009_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100010_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100010_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100010_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100010_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100010_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100010_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100010_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100010_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100010",
+    "kit_id": "MOM_0001",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100010_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100011_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100011_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100011_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100011_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100011_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100011_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100011_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100011_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100011",
+    "kit_id": "MOM_0002",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100011_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100012_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100012_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100012_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100012_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100012_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100012_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100012_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100012_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "MOM",
+    "sample_id": "MOHD_EB100012",
+    "kit_id": "MOM_0003",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100012_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "unknown"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100013_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100013_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100013_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100013_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100013_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100013_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100013_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100013_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100013",
+    "kit_id": "UIC_0004",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100013_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100014_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100014_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100014_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100014_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100014_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100014_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100014_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100014_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100014",
+    "kit_id": "UIC_0005",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100014_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "female",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Cytosine-level DNA methylation measurements",
+    "filename": "MOHD_EB100015_DNAme-cytosines_GRCh38_v0.bigBed",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Methylation Estimation Signal Minus CHG Context",
+    "filename": "MOHD_EB100015_DNAme-CHG-minus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Methylation Estimation Signal Minus CHH Context",
+    "filename": "MOHD_EB100015_DNAme-CHH-minus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Methylation Estimation Signal Minus CpG Context",
+    "filename": "MOHD_EB100015_DNAme-CpG-minus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Methylation Estimation Signal Plus CHG Context",
+    "filename": "MOHD_EB100015_DNAme-CHG-plus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Methylation Estimation Signal Plus CHH Context",
+    "filename": "MOHD_EB100015_DNAme-CHH-plus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Methylation Estimation Signal Plus CpG Context",
+    "filename": "MOHD_EB100015_DNAme-CpG-plus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Pileup Signal Minus",
+    "filename": "MOHD_EB100015_coverage-minus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  },
+  {
+    "ome": "wgbs",
+    "site": "UIC",
+    "sample_id": "MOHD_EB100015",
+    "kit_id": "UIC_0006",
+    "file_type": "Pileup Signal Plus",
+    "filename": "MOHD_EB100015_coverage-plus_GRCh38_v0.bigWig",
+    "sex": "male",
+    "status": "case"
+  }
+]

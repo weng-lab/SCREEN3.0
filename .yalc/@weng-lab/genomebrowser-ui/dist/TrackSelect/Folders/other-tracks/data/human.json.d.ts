@@ -1,0 +1,10 @@
+declare const _default: [
+  {
+    "id": "tf-peaks",
+    "name": "TF ChIP-seq Peaks",
+    "description": "Shows TF Motifs in green, overlayed on ChIP-seq peaks in gray"
+  }
+]
+;
+
+export default _default;
