@@ -7,9 +7,13 @@ import { useEffect, useMemo, useState } from "react";
 import SelectLdBlock from "./SelectLdBlock";
 import { expandCoordinates } from "common/components/GenomeBrowser/utils";
 import { createDataStoreMemo, useCustomData } from "@weng-lab/genomebrowser";
+import type { GenomicRange } from "common/types/globalTypes";
 
 export default function GwasBrowser({ entity }: EntityViewComponentProps) {
   const { data: data, loading: loading, error: error } = useGWASSnpsData({ studyid: [entity.entityID] });
+  const [resolvedCoordinates, setResolvedCoordinates] = useState<{ key: string; coordinates: GenomicRange } | null>(
+    null
+  );
 
   const ldblockStats = useMemo(() => {
     if (!data) return [];
@@ -43,6 +47,11 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ldblockStats]);
 
+  useEffect(() => {
+    setselectedLdBlock(null);
+    setResolvedCoordinates(null);
+  }, [entity.entityID]);
+
   const [ldblockOpen, setLdBlockOpen] = useState(false);
   const onLdBlockSelected = (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => {
     setselectedLdBlock(ldblock);
@@ -56,7 +65,7 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
     onLdBlockSelected(ldblock);
   };
 
-  const coordinates = useMemo(() => {
+  const coordinates = useMemo<GenomicRange | null>(() => {
     if (selectedLdBlock) {
       return expandCoordinates(
         {
@@ -67,14 +76,28 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
         "gwas"
       );
     }
-    if (!ldblockStats || ldblockStats === null || ldblockStats.length === 0)
+    if (!ldblockStats || ldblockStats === null || ldblockStats.length === 0) {
+      if (loading) return null;
       return {
         chromosome: "chr1",
         start: 1000000,
         end: 1500000,
       };
+    }
     return { chromosome: ldblockStats[0].chromosome, start: ldblockStats[0].start, end: ldblockStats[0].end };
-  }, [selectedLdBlock, ldblockStats]);
+  }, [selectedLdBlock, ldblockStats, loading]);
+
+  useEffect(() => {
+    if (!coordinates) return;
+    setResolvedCoordinates((current) =>
+      current?.key === entity.entityID &&
+      current.coordinates.chromosome === coordinates.chromosome &&
+      current.coordinates.start === coordinates.start &&
+      current.coordinates.end === coordinates.end
+        ? current
+        : { key: entity.entityID, coordinates }
+    );
+  }, [coordinates, entity.entityID]);
 
   const dataStore = createDataStoreMemo();
 
@@ -88,13 +111,17 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
     dataStore
   );
 
-  if (loading || coordinates === null) return <CircularProgress />;
-  if (error)
+  const currentCoordinates = resolvedCoordinates?.key === entity.entityID ? resolvedCoordinates.coordinates : null;
+
+  if (!currentCoordinates && loading) return <CircularProgress />;
+  if (error && !currentCoordinates)
     return (
       <Alert severity="error" variant="outlined">
         Error Fetching Genome Browser
       </Alert>
     );
+
+  if (!currentCoordinates) return <CircularProgress />;
 
   return (
     <>
@@ -109,7 +136,7 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
       </Box>
       <GenomeBrowserView
         entity={entity}
-        coordinates={coordinates}
+        coordinates={currentCoordinates}
         dataStore={dataStore}
         handleSelectLDBlock={handleSelectLDblockClick}
       />
