@@ -1,7 +1,10 @@
 "use client";
 
 import { Domain, Highlight, Track } from "@weng-lab/genomebrowser";
+import genomeBrowserUiPackage from "@weng-lab/genomebrowser-ui/package.json";
 import { isValidAssembly } from "common/types/globalTypes";
+
+const TRACK_STORAGE_VERSION = genomeBrowserUiPackage.version;
 
 // Simplified browser state
 type LocalBrowserState = {
@@ -33,12 +36,12 @@ export function getLocalTracks(assembly: string): Track[] | null {
   if (typeof window === "undefined" || !window.sessionStorage) return null;
   if (!isValidAssembly(assembly)) return null;
 
-  const localTracks = sessionStorage.getItem(assembly + "-" + "tracks");
+  const localTracks = sessionStorage.getItem(`${assembly}-tracks-${TRACK_STORAGE_VERSION}`);
   if (!localTracks) return null;
   const localTracksJson = JSON.parse(localTracks) as Track[];
   return localTracksJson;
 }
 
 export function setLocalTracks(tracks: Track[], assembly: string) {
-  sessionStorage.setItem(assembly + "-tracks", JSON.stringify(tracks));
+  sessionStorage.setItem(`${assembly}-tracks-${TRACK_STORAGE_VERSION}`, JSON.stringify(tracks));
 }

@@ -1,19 +1,12 @@
 "use client";
 
-import { Tabs, Tab, Menu, MenuItem, Tooltip, TabsOwnProps } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useMemo } from "react";
+import { TabsOwnProps } from "@mui/material";
 import { Assembly } from "common/types/globalTypes";
-import Image from "next/image";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { AnyEntityType, getTabsForEntity, TabConfig } from "common/entityTabsConfig";
-
-// outside the component
-function CloneProps(props) {
-  const { children, ...other } = props;
-  return children(other);
-}
+import { DetailsTabs } from "@weng-lab/ui-components";
 
 export type ElementDetailsTabsProps = {
   assembly: Assembly;
@@ -25,35 +18,13 @@ export type ElementDetailsTabsProps = {
 const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: ElementDetailsTabsProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  // If the route ends with just /entityID (like ccre would), set tab value to empty string, else to end slug of URL
   const currentTab =
     pathname.substring(pathname.lastIndexOf("/") + 1) === entityID
       ? ""
       : pathname.substring(pathname.lastIndexOf("/") + 1);
 
   const [value, setValue] = React.useState(currentTab);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    if (newValue === "more") return; // prevent more tab from being selected on initial click
-    setValue(newValue);
-  };
-
-  const handleMoreSelection = (newValue: string) => {
-    setValue(newValue);
-    handleClose();
-  };
-
-  // Sync value to route on initial mount
-  // Could we move this to a location where it has access to the route through layout params?
   useEffect(() => {
     if (currentTab !== value) {
       setValue(currentTab);
@@ -63,9 +34,6 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
   const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 
   const verticalTabs = orientation === "vertical";
-
-  const iconTabs = useMemo(() => tabs.filter((x) => x.iconPath), [tabs]);
-  const moreTabs = useMemo(() => tabs.filter((x) => !x.iconPath), [tabs]);
 
   const [tabsDisabledInfo, setTabsDisabledInfo] = useState<{ route: string; isDisabled: boolean }[]>(null);
 
@@ -82,157 +50,36 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
     if (tabsDisabledInfo === null) fetchTabInfo(tabs);
   }, [entityID, tabsDisabledInfo, tabs]);
 
-  // Show the "more" tab as selected when an iconless tab is selected
-  const tabVal = useMemo(() => (iconTabs.some((x) => x.route === value) ? value : "more"), [iconTabs, value]);
+  const tabItems = useMemo(
+    () =>
+      tabs.map((tab) => ({
+        value: tab.route,
+        label: tab.label,
+        icon: tab.iconPath ?? undefined,
+        href: `/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`,
+        disabled: tabsDisabledInfo?.find((x) => x.route === tab.route)?.isDisabled,
+        disabledMessage: tab.disabledMessage,
+      })),
+    [tabs, assembly, entityType, entityID, searchParams, tabsDisabledInfo]
+  );
 
   return (
-    <>
-      <Tabs
-        value={tabVal}
-        onChange={handleTabChange}
-        aria-label="Tabs"
-        orientation={orientation}
-        allowScrollButtonsMobile
-        slotProps={{
-          startScrollButtonIcon: { className: "start-scroll-icon" },
-          endScrollButtonIcon: { className: "end-scroll-icon" },
-        }}
-        variant="scrollable"
-        sx={{
-          "& .MuiTab-root.Mui-selected": {
-            backgroundColor: verticalTabs ? "rgba(73, 77, 107, .15)" : "initial",
-          },
-          "& .MuiTabs-scrollButtons.Mui-disabled": {
-            opacity: 0.3,
-          },
-          "&.MuiTabs-root:has(.MuiTabScrollButton-root:not(.Mui-disabled) .start-scroll-icon)  .MuiTabs-scroller": {
-            // Start edge blur (left/top)
-            "&::before": {
-              content: '""',
-              position: "fixed",
-              zIndex: 1,
-              pointerEvents: "none",
-              ...(orientation === "horizontal"
-                ? {
-                    top: 0,
-                    bottom: 0,
-                    left: 40,
-                    width: 15,
-                    background: "linear-gradient(to right, #fff 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
-                  }
-                : {
-                    left: 0,
-                    right: 0,
-                    top: 40,
-                    height: 15,
-                    background: "linear-gradient(to bottom, #F2F2F2 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
-                  }),
-            },
-          },
-          "&.MuiTabs-root:has(.MuiTabScrollButton-root:not(.Mui-disabled) .end-scroll-icon)  .MuiTabs-scroller": {
-            // End edge blur (right/bottom)
-            "&::after": {
-              content: '""',
-              position: "fixed",
-              zIndex: 1,
-              pointerEvents: "none",
-              ...(orientation === "horizontal"
-                ? {
-                    top: 0,
-                    bottom: 0,
-                    right: 40,
-                    width: 15,
-                    background: "linear-gradient(to left, #fff 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
-                  }
-                : {
-                    left: 0,
-                    right: 0,
-                    bottom: 40,
-                    height: 15,
-                    background: "linear-gradient(to top, #F2F2F2 0%, rgba(255,255,255,0.8) 25%, transparent 100%)",
-                  }),
-            },
-          },
-          contain: "layout",
-          position: "sticky",
-          top: "calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))",
-          width: verticalTabs ? 100 : "100%",
-          maxHeight: "100%",
-        }}
-      >
-        {iconTabs.map((tab) => {
-          const tabIsDisabled = tabsDisabledInfo?.find((x) => x.route === tab.route).isDisabled;
-          const tooltipTitle = tabIsDisabled ? (tab.disabledMessage ?? "Not Available") : "";
-          return (
-            <CloneProps key={tab.route} value={tab.route}>
-              {(tabProps) => (
-                <Tooltip title={tooltipTitle} arrow>
-                  <span>
-                    <Tab
-                      {...tabProps}
-                      label={tab.label}
-                      value={tab.route}
-                      disabled={tabIsDisabled}
-                      LinkComponent={Link}
-                      href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
-                      key={tab.route}
-                      icon={
-                        <Image
-                          width={verticalTabs ? 50 : 40}
-                          height={verticalTabs ? 50 : 40}
-                          src={tab.iconPath}
-                          alt={tab.label + " icon"}
-                          style={{
-                            filter: tabIsDisabled ? "grayscale(100%) blur(1px)" : "none",
-                          }}
-                          unoptimized
-                        />
-                      }
-                      sx={{ fontSize: "12px", width: "100%" }}
-                    />
-                  </span>
-                </Tooltip>
-              )}
-            </CloneProps>
-          );
-        })}
-        {moreTabs.length && (
-          <Tab
-            value="more"
-            label={"More"}
-            icon={<MoreHorizIcon />}
-            onClick={handleMoreClick}
-            sx={{ fontSize: "12px" }}
-          />
-        )}
-      </Tabs>
-      {/* </BlurTabsContainer> */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: verticalTabs ? "top" : "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-      >
-        {moreTabs.map((tab) => (
-          <MenuItem
-            key={tab.label}
-            component={Link}
-            href={`/${assembly}/${entityType}/${entityID}/${tab.route}?${searchParams.toString()}`}
-            onClick={() => handleMoreSelection(tab.route)}
-            disabled={tabsDisabledInfo?.find((x) => x.route === tab.route).isDisabled}
-          >
-            {tab.label}
-          </MenuItem>
-        ))}
-      </Menu>
-    </>
+    <DetailsTabs
+      tabs={tabItems}
+      value={value}
+      onChange={setValue}
+      orientation={orientation}
+      LinkComponent={Link}
+      selectedBackgroundColor={"rgba(73, 77, 107, .15)"}
+      iconWidth={verticalTabs ? 50 : 40}
+      iconHeight={verticalTabs ? 50 : 40}
+      sx={{
+        position: "sticky",
+        top: "calc(var(--header-height, 64px) + var(--entity-tabs-height, 48px))",
+        width: verticalTabs ? 100 : "100%",
+        maxHeight: "100%",
+      }}
+    />
   );
 };
 

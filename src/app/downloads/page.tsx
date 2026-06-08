@@ -24,19 +24,25 @@ export default function Downloads() {
   return (
     <Box
       display={"grid"}
-      height={"stretch"}
       gridTemplateRows={"auto 1fr"}
-      boxSizing={"content-box"}
-      sx={{ marginX: "5%", marginY: 2 }}
+      height={"100%"}
+      boxSizing={"border-box"}
+      sx={{ p: 2 }}
       gap={2}
+      id="downloads"
     >
-      <Box>
+      <Box id="downloads-tabs" minWidth={0}>
         <Tabs
           value={page}
           onChange={handleChange}
           aria-label="basic tabs example"
           variant="scrollable"
           allowScrollButtonsMobile
+          sx={{
+            "& .MuiTabs-scrollButtons.Mui-disabled": {
+              opacity: 0.3,
+            },
+          }}
         >
           <Tab label="Annotations" {...a11yProps(0)} />
           <Tab label="Data Matrices" {...a11yProps(1)} />
@@ -44,7 +50,7 @@ export default function Downloads() {
         </Tabs>
         <Divider />
       </Box>
-      <Box minWidth={0} minHeight={0}>
+      <Box minWidth={0} minHeight={0} id="downloads-content">
         {page === 0 && <Annotations />}
         {page === 1 && <DataMatrices />}
         {page === 2 && <DownloadRange />}
