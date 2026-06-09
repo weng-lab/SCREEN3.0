@@ -18,6 +18,11 @@ const nextConfig = {
         destination: "/:assembly/gwas/:study/biosample_enrichment",
         permanent: false,
       },
+      {
+        source: "/index/about",
+        destination: "/about",
+        permanent: true
+      }
     ];
   },
   images: {
