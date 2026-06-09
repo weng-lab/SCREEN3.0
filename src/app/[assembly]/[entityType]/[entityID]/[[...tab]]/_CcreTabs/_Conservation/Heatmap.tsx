@@ -235,6 +235,12 @@ const HeatmapPlot = ({
   );
 };
 
+const LEGEND_ITEMS = [
+  { color: "red", label: "G1: highly conserved elements (N1 ≥ 120 and N2 ≤ 25)" },
+  { color: "green", label: "G2: actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)" },
+  { color: "blue", label: "G3: primate-specific elements (N1 ≤ 50 and N2 ≥ 180)" },
+];
+
 const Legend = () => (
   <Box
     border={(theme) => `1px solid ${theme.palette.divider}`}
@@ -243,9 +249,12 @@ const Legend = () => (
     width={"fit-content"}
     height={"min-content"}
   >
-    <Typography variant="body2">G1 (red): highly conserved elements (N1 ≥ 120 and N2 ≤ 25)</Typography>
-    <Typography variant="body2">G2 (green): actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)</Typography>
-    <Typography variant="body2">G3 (blue): primate-specific elements (N1 ≤ 50 and N2 ≥ 180)</Typography>
+    {LEGEND_ITEMS.map(({ color, label }) => (
+      <Stack key={label} direction="row" alignItems="center" spacing={1}>
+        <Box sx={{ width: 12, height: 12, backgroundColor: color, flexShrink: 0, borderRadius: 0.5 }} />
+        <Typography variant="body2">{label}</Typography>
+      </Stack>
+    ))}
   </Box>
 );
 

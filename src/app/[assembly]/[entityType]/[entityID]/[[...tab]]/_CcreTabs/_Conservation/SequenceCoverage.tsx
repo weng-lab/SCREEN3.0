@@ -5,7 +5,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { Alert, CircularProgress, IconButton, Slider, styled, Tooltip, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { ParentSize } from "@visx/responsive";
-import { Nucleotide, PhyloTree, SequenceAlignmentPlot, TooltipData } from "@weng-lab/visualization";
+import { AlignmentChar, PhyloTree, SequenceAlignmentPlot, TooltipData } from "@weng-lab/visualization";
 import { capitalizeFirstLetter } from "common/utility";
 import { InfoOutline, SettingsBackupRestore, Tune } from "@mui/icons-material";
 import Button from "@mui/material/Button";
@@ -66,7 +66,7 @@ type PlotTooltipProps = {
     chromosome: string;
     relativePosition: number;
     absolutePosition: number;
-    nucleotide: Nucleotide;
+    charLabel: string;
   };
 };
 
@@ -82,7 +82,7 @@ const PlotTooltip = ({ speciesId, coverage, position }: PlotTooltipProps) => (
     {getPrimateGroup(speciesId) && <div>{getColorLabel(speciesId)}</div>}
     <div>{(coverage * 100).toFixed(1)}% coverage</div>
     {position && (
-      <div>{`${position.chromosome}:${position.absolutePosition.toLocaleString()} (Pos ${position.relativePosition}) • ${position.nucleotide}`}</div>
+      <div>{`${position.chromosome}:${position.absolutePosition.toLocaleString()} (Pos ${position.relativePosition}) • ${position.charLabel}`}</div>
     )}
   </div>
 );
@@ -150,7 +150,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
     return SPECIES_ORDER_IN_API_RETURN.map((speciesId) => {
       const alignmentSequence = unfilteredAlignmentPlotData[speciesId] || [];
-      const gapFilteredLength = alignmentSequence.filter((bp: string) => bp !== "-").length;
+      const gapFilteredLength = alignmentSequence.filter((bp: AlignmentChar) => bp !== "*").length;
       const coverage = totalLength > 0 ? gapFilteredLength / totalLength : 0;
 
       return {
@@ -173,7 +173,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
   const speciesInRangeCount = useMemo(
     () =>
       speciesCoverageData.filter(
-        (s) => s.coverage >= displayRange[0] && s.coverage <= displayRange[1]
+        (s) => s.id !== "Homo_sapiens" && s.coverage >= displayRange[0] && s.coverage <= displayRange[1]
       ).length,
     [speciesCoverageData, displayRange]
   );
@@ -190,7 +190,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
                   chromosome: coordinates.chromosome,
                   relativePosition: tooltipData.position,
                   absolutePosition: coordinates.start + tooltipData.position,
-                  nucleotide: tooltipData.basePair,
+                  charLabel: tooltipData.charLabel,
                 }
               : undefined
           }
@@ -245,7 +245,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
               </Tooltip>
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {speciesInRangeCount} of {SPECIES_ORDER_IN_API_RETURN.length} species in range
+              {speciesInRangeCount} of {SPECIES_ORDER_IN_API_RETURN.length - 1} non-human species in range
             </Typography>
             <Slider
               value={displayRange}

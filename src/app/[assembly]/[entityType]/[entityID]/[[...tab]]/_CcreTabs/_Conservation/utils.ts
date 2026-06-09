@@ -1,4 +1,4 @@
-import { Nucleotide, TreeItem } from "@weng-lab/visualization";
+import { AlignmentChar, TreeItem } from "@weng-lab/visualization";
 import data241 from "./241_mammals_treedata.json";
 import speciesData from "./species_metadata.json";
 
@@ -130,12 +130,15 @@ export const formatNode = (node: TestDataNode): TreeItem => {
   return newNode;
 };
 
-const numberToNucleotide = new Map<number, Nucleotide>([
-  [0, "-"],
+const numberToNucleotide = new Map<number, AlignmentChar>([
+  [0, "*"],
   [1, "A"],
   [2, "C"],
   [3, "G"],
   [4, "T"],
+  [5, "N"],
+  [6, "M"],
+  [7, "-"]
 ]);
 
 /**
@@ -148,12 +151,12 @@ export const makeAlignmentPlotData = (
    * order of species in `sequences`
    */
   speciesOrder: string[]
-): { [species: string]: Nucleotide[] } => {
+): { [species: string]: AlignmentChar[] } => {
   if (sequences.length !== speciesOrder.length) {
     throw new Error("Number of sequences doesn't match number of species");
   }
 
-  const mappedSequence: { [species: string]: Nucleotide[] } = {};
+  const mappedSequence: { [species: string]: AlignmentChar[] } = {};
   sequences.forEach((sequence, i) => {
     const species = speciesOrder[i];
     mappedSequence[species] = sequence.map((num) => numberToNucleotide.get(num) ?? "-");
