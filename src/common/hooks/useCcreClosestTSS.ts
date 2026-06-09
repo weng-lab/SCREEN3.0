@@ -1,0 +1,56 @@
+import { useQuery } from "@apollo/client/react";
+import { gql } from "common/types/generated";
+import { Assembly } from "common/types/globalTypes";
+import { useMemo } from "react";
+
+const GET_NEAREST_GENE = gql(`
+  query getNearestGenes(
+    $assembly: String!
+    $accessions: [String!]
+  ) {
+    getmaxZScoresQuery(
+      assembly: $assembly
+      accession: $accessions
+      nearbygeneslimit: 1
+    ) {
+      accession
+      midccre_nearestgenes {
+        distance
+        gene
+      }
+    }
+  }
+`)
+
+// To include or not include
+// Need only closest TSS distance for classification
+// Need closest gene and distance for table
+// Need 3 closest gene and distance for ClosestGenes
+// Need 3 closest genes for distance-linked cCRE table
+
+//Maybe two hooks - one that scales a bit better and only returns closest, and one that return closest 3
+//Can have one that takes in nearbygeneslimit
+
+/**
+ * Distance uses middle of cCRE as anchor, or 0 if overlap
+ */
+export const useCcreClosestTSS = ({accessions, assembly, skip}: {accessions: string[], assembly: Assembly, skip?: boolean}) => {
+  const { data, loading, error } = useQuery(GET_NEAREST_GENE, { variables: { accessions, assembly }, skip });
+
+  const returnData = useMemo(() => {
+    if (!data?.getmaxZScoresQuery) return undefined
+
+    return Object.fromEntries(
+      data.getmaxZScoresQuery.map((item) => [
+        item.accession,
+        {gene: item.midccre_nearestgenes[0].gene, distance:  item.midccre_nearestgenes[0].distance,}
+      ])
+    );
+  }, [data])
+
+  return {
+    data: returnData,
+    loading,
+    error
+  }
+}

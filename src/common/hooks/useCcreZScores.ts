@@ -3,6 +3,8 @@ import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
 import type { Assembly, CcreClass, CcreZScores, CcreZScoresAndGroup } from "common/types/globalTypes";
 import { useMemo } from "react";
+import { useCcreClosestTSS } from "./useCcreClosestTSS";
+import { classifyCcre } from "common/utility";
 
 type UseCcreZScoresParams = {
   accessions: string[];
@@ -16,8 +18,6 @@ type UseCcreZScoresReturn = {
   loading: boolean;
   error: ErrorLike | undefined;
 };
-
-//This handles returning both group and MaxZ since consumers displaying Max Z also display Classification
 
 const GET_CCRE_MAX_Z = gql(`
   query maxZ(
@@ -69,26 +69,37 @@ const GET_CCRE_BIOSAMPLE_Z = gql(`
  *   sample_type - null since include_biosample_details: false
  *   lifestage  - null since include_biosample_details: false
  *   score
+ *   tf
  * ]
  */
 
-export type ZScoresEntry = [string, string, string, string, null, null, null, null, number]
+export type ZScoresEntry = [string, string, string, string, null, null, null, null, number, "yes" | "no" | "na"]
 
-export const extractBiosampleZScores = (zscoresArray: ZScoresEntry[]): CcreZScores => {
-  const zScores: CcreZScores = {};
-  zscoresArray.forEach(experiment => {
-    const assay = experiment[2]
-    const score = experiment[8]
+export const parseZScoresArray = (zScoresArray: ZScoresEntry[]) => {
+  const zScoresAndTf: CcreZScores & { tf: boolean } = { tf: zScoresArray[0][9] === "yes" };
+  zScoresArray.forEach((experiment) => {
+    const assay = experiment[2];
+    const score = experiment[8];
     switch (assay) {
-      case "DNase": zScores.dnase = score; break;
-      case "H3K4me3": zScores.h3k4me3 = score; break;
-      case "H3K27ac": zScores.h3k27ac = score; break;
-      case "CTCF": zScores.ctcf = score; break;
-      case "ATAC": zScores.atac = score; break;
+      case "DNase":
+        zScoresAndTf.dnase = score;
+        break;
+      case "H3K4me3":
+        zScoresAndTf.h3k4me3 = score;
+        break;
+      case "H3K27ac":
+        zScoresAndTf.h3k27ac = score;
+        break;
+      case "CTCF":
+        zScoresAndTf.ctcf = score;
+        break;
+      case "ATAC":
+        zScoresAndTf.atac = score;
+        break;
     }
-  })
-  return zScores
-}
+  });
+  return zScoresAndTf;
+};
 
 export const useCcreZScores = ({
   accessions,
@@ -96,30 +107,51 @@ export const useCcreZScores = ({
   biosample,
   skip,
 }: UseCcreZScoresParams): UseCcreZScoresReturn => {
-
-  //So need to fetch z scores, tf info, and distance to TSS here
-
-  const { data: dataMaxZ, loading: loadingMaxZ, error: errorMaxZ } = useQuery(GET_CCRE_MAX_Z, {
+  
+  // used if no biosample is passed
+  const {
+    data: dataMaxZ,
+    loading: loadingMaxZ,
+    error: errorMaxZ,
+  } = useQuery(GET_CCRE_MAX_Z, {
     variables: { accessions, assembly },
     skip: skip || biosample !== undefined,
   });
 
-    const { data: dataBiosampleZ, loading: loadingBiosampleZ, error: errorBiosampleZ } = useQuery(GET_CCRE_BIOSAMPLE_Z, {
+  // used if biosample is passed
+  const {
+    data: dataBiosampleZ,
+    loading: loadingBiosampleZ,
+    error: errorBiosampleZ,
+  } = useQuery(GET_CCRE_BIOSAMPLE_Z, {
     variables: { accessions, assembly, biosample },
-    skip: skip || biosample == undefined,
+    skip: skip || biosample === undefined,
   });
+
+  // used if biosample is passed
+  const {
+    data: dataDistanceToTSS,
+    loading: loadingDistanceToTSS,
+    error: errorDistanceToTSS,
+  } = useCcreClosestTSS({ accessions, assembly, skip: skip || biosample === undefined });
 
   const ccreMap: UseCcreZScoresReturn["data"] = useMemo(() => {
     if (biosample) {
-      if (!dataBiosampleZ) return undefined;
+      if (!dataBiosampleZ || !dataDistanceToTSS) return undefined;
       return Object.fromEntries(
-        dataBiosampleZ.getcCREZScoresQuery.map((entry) => [
-          entry.accession,
-          {
-            ...extractBiosampleZScores(entry.zscores as ZScoresEntry[]),
-            group: "noclass", // @TODO replace with actual classification once have tf and TSS staticly
-          },
-        ])
+        dataBiosampleZ.getcCREZScoresQuery.map((entry) => {
+          const {tf, ...zScores} = parseZScoresArray(entry.zscores as ZScoresEntry[])
+          const { distance } = dataDistanceToTSS[entry.accession]
+          const group = classifyCcre(zScores, tf, distance)
+
+          return [
+            entry.accession,
+            {
+              ...zScores,
+              group,
+            },
+          ];
+        })
       );
     } else {
       if (!dataMaxZ) return undefined;
@@ -137,11 +169,11 @@ export const useCcreZScores = ({
         ])
       );
     }
-  }, [dataMaxZ, dataBiosampleZ]);
+  }, [dataMaxZ, dataBiosampleZ, dataDistanceToTSS]);
 
   return {
     data: ccreMap,
-    loading: loadingMaxZ || loadingBiosampleZ,
-    error: errorMaxZ || errorBiosampleZ,
+    loading: loadingMaxZ || loadingBiosampleZ || loadingDistanceToTSS,
+    error: errorMaxZ || errorBiosampleZ || errorDistanceToTSS,
   };
 };

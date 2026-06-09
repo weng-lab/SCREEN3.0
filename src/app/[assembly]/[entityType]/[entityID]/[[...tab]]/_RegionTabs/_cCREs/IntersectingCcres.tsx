@@ -128,8 +128,6 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     ...(showH3k4me3 ? [zScoreCol("h3k4me3", "H3K4me3")] : []),
     ...(showH3k27ac ? [zScoreCol("h3k27ac", "H3K27ac")] : []),
     ...(showCTCF ? [zScoreCol("ctcf", "CTCF")] : []),
-    // TODO: Nearest Gene column is commented out pending a tightly-scoped closest-gene query
-    // from the backend (the old `nearestgenes` field is not part of useCcreDataNew).
     // {
     //   field: "nearestgene",
     //   headerName: "Nearest Gene",
@@ -187,7 +185,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
         loading={selectedBiosample ? zScoresLoading : loadingIntersectingCcres}
         getColor={(key) => CLASS_COLORS[key]}
         formatLabel={(key) => CLASS_DESCRIPTIONS[key]}
-        tooltipTitle="Classification Proportions, Core Collection"
+        tooltipTitle="Classification Proportions"
         sortDescending
       />
       <Table

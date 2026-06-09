@@ -27,6 +27,7 @@ export type Transcript = {
 
 export type DistanceLinkMethod = "body" | "tss" | "3gene"
 
+
 const CCRES_BY_CLOSEST_GENE_QUERY = gql(`
   query getclosestGenetocCRE($geneid: [String]) {
     closestGenetocCRE(geneid: $geneid) {

@@ -332,13 +332,13 @@ export default function About() {
               Send us a message and we&apos;ll be in touch!
             </Typography>
             <Typography mb={1} variant="body1">
-              As this is a beta site, we would greatly appreciate any feedback you may have. Knowing how our users are
+              We greatly appreciate any feedback you may have. Knowing how our users are
               using the site and documenting issues they may have are important to make this resource better and easier
               to use.
             </Typography>
             <Box mb={1}>
               <Typography display={"inline"} variant="body1">
-                If you&apos;re experiencing an error/bug, feel free to&nbsp;
+                If you&apos;re experiencing an error/bug, feel free to
               </Typography>
               <Link
                 display={"inline"}
