@@ -23,8 +23,7 @@ export const useCcresWithGeneInClosest3 = ({gene, assembly, skip}: {gene: string
 /**
  * @todo
  * So we most of the data fetching hooks setup now
- * - Fix closest gene column on Intersecting cCREs
+ * - Implement useCcreZScoresAcrossBiosamples and have it own classification logic, then simplify BiosampleActivity
  * - Use new hooks on DistanceLinkedCcres - replace CCRES_BY_CLOSEST_GENE_QUERY. 
  * ^ This allows us to add the entire table to mouse I think
- * - Implement useCcreZScoresAcrossBiosamples and have it own classification logic, then simplify BiosampleActivity
  */

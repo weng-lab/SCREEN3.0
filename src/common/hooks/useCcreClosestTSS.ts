@@ -18,6 +18,10 @@ const GET_NEAREST_GENE = gql(`
         distance
         gene
       }
+      nearestgenes {
+        distance
+        gene
+      }
     }
   }
 `)
@@ -43,7 +47,10 @@ export const useCcreClosestTSS = ({accessions, assembly, skip}: {accessions: str
     return Object.fromEntries(
       data.getmaxZScoresQuery.map((item) => [
         item.accession,
-        {gene: item.midccre_nearestgenes[0].gene, distance:  item.midccre_nearestgenes[0].distance,}
+        {
+          middleAnchor: { gene: item.midccre_nearestgenes[0].gene, distance: item.midccre_nearestgenes[0].distance },
+          edgeAnchor: { gene: item.nearestgenes[0].gene, distance: item.nearestgenes[0].distance },
+        },
       ])
     );
   }, [data])

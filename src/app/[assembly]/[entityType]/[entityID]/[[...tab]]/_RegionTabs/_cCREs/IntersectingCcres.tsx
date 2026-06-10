@@ -15,6 +15,7 @@ import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { CLASS_COLORS } from "common/colors";
 import { useCcreZScores } from "common/hooks/useCcreZScores";
 import { useCcreIsIcre } from "common/hooks/useCcreIsIcre";
+import { useNearestTSSColumn } from "common/hooks/useNearestTSSColumn";
 import { CcreAssay } from "common/types/globalTypes";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
@@ -60,6 +61,12 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const zScoresLoading = loadingZScores || (!dataZScores && !errorZScores);
 
   type CcreRow = NonNullable<typeof dataIntersectingCcres>[number];
+
+  const nearestTSSColumn = useNearestTSSColumn<CcreRow>({
+    accessions,
+    assembly: entity.assembly,
+    getAccession: (row) => row.accession,
+  });
 
   const showAtac = !selectedBiosample || !!selectedBiosample.atac_experiment_accession;
   const showCTCF = !selectedBiosample || !!selectedBiosample.ctcf_experiment_accession;
@@ -128,19 +135,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     ...(showH3k4me3 ? [zScoreCol("h3k4me3", "H3K4me3")] : []),
     ...(showH3k27ac ? [zScoreCol("h3k27ac", "H3K27ac")] : []),
     ...(showCTCF ? [zScoreCol("ctcf", "CTCF")] : []),
-    // {
-    //   field: "nearestgene",
-    //   headerName: "Nearest Gene",
-    //   valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
-    //   renderCell: (params) => (
-    //     <span>
-    //       <LinkComponent href={`/${entity.assembly}/gene/${params.row.nearestgenes[0].gene}`}>
-    //         <i>{params.row.nearestgenes[0].gene}</i>
-    //       </LinkComponent>
-    //       &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
-    //     </span>
-    //   ),
-    // },
+    nearestTSSColumn,
     {
       field: "isicre",
       headerName: "iCRE",

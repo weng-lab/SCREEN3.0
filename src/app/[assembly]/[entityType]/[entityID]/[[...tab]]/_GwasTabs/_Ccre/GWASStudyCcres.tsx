@@ -5,6 +5,7 @@ import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { SelectedBiosampleCard } from "common/components/SelectedBiosampleCard";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreZScores } from "common/hooks/useCcreZScores";
+import { useNearestTSSColumn } from "common/hooks/useNearestTSSColumn";
 import { Typography, Button, Tooltip, Skeleton } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyData } from "common/hooks/useGWASStudyData";
@@ -43,6 +44,12 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const zScoresLoading = loadingZScores || (!dataZScores && !errorZScores);
 
   type CcreRow = NonNullable<typeof dataGWASSNPscCREs>[number];
+
+  const nearestTSSColumn = useNearestTSSColumn<CcreRow>({
+    accessions,
+    assembly: "GRCh38",
+    getAccession: (row) => row.ccre,
+  });
 
   const showAtac = !selectedBiosample || !!selectedBiosample.atac_experiment_accession;
   const showCTCF = !selectedBiosample || !!selectedBiosample.ctcf_experiment_accession;
@@ -148,21 +155,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
         </p>
       ),
     },
-    // TODO: Nearest Gene column commented out pending a tightly-scoped closest-gene query from
-    // the backend (the old `nearestgenes` field is not part of the new cCRE hooks).
-    // {
-    //   field: "nearestgenes",
-    //   headerName: "Nearest Gene",
-    //   valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
-    //   renderCell: (params) => (
-    //     <span>
-    //       <LinkComponent href={`/GRCh38/gene/${params.row.nearestgenes[0].gene}`}>
-    //         <i>{params.row.nearestgenes[0].gene}</i>
-    //       </LinkComponent>
-    //       &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
-    //     </span>
-    //   ),
-    // },
+    nearestTSSColumn,
     ...(showDNase ? [zScoreCol("dnase", "DNase")] : []),
     ...(showAtac ? [zScoreCol("atac", "ATAC")] : []),
     ...(showH3k4me3 ? [zScoreCol("h3k4me3", "H3K4me3")] : []),

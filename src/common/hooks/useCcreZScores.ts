@@ -141,7 +141,7 @@ export const useCcreZScores = ({
       return Object.fromEntries(
         dataBiosampleZ.getcCREZScoresQuery.map((entry) => {
           const {tf, ...zScores} = parseZScoresArray(entry.zscores as ZScoresEntry[])
-          const { distance } = dataDistanceToTSS[entry.accession]
+          const distance = dataDistanceToTSS[entry.accession]?.middleAnchor.distance
           const group = classifyCcre(zScores, tf, distance)
 
           return [
