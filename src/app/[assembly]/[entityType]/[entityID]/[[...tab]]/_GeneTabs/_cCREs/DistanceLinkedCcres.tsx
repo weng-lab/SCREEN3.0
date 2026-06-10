@@ -13,6 +13,7 @@ import { calcDistCcreToTSS } from "common/utility";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 import { gql } from "common/types/generated";
 import { useQuery } from "@apollo/client/react";
+import { useCcresWithGeneInClosest3 } from "common/hooks/useCcresWithGeneInClosest3";
 
 export type Transcript = {
   id: string;
@@ -26,15 +27,6 @@ export type Transcript = {
 };
 
 export type DistanceLinkMethod = "body" | "tss" | "3gene"
-
-
-const CCRES_BY_CLOSEST_GENE_QUERY = gql(`
-  query getclosestGenetocCRE($geneid: [String]) {
-    closestGenetocCRE(geneid: $geneid) {
-      ccre
-    }
-  }
-`);
 
 function getTssWindows(transcripts: Transcript[], distance: number): GenomicRange[] {
   if (!transcripts || transcripts.length === 0) return [];
@@ -79,16 +71,17 @@ export default function DistanceLinkedCcres({
     data: dataCcresByClosestGenes,
     loading: loadingCcresByClosestGenes,
     error: errorCcresByClosestGenes,
-  } = useQuery(CCRES_BY_CLOSEST_GENE_QUERY, {
-    variables: { geneid: geneData.data?.id.split(".")[0] },
-    skip: !geneData.data || calcMethod !== "3gene",
+  } = useCcresWithGeneInClosest3({
+    gene: geneData.data?.name,
+    assembly,
+    skip: calcMethod !== "3gene" || !geneData.data?.name,
   });
 
   const useCcreDataParams = useMemo(() => {
     switch (calcMethod) {
       case "3gene": // query with accessions from dataCcresByClosestGenes
         return {
-          accessions: dataCcresByClosestGenes?.closestGenetocCRE.map((x) => x.ccre) ?? [],
+          accessions: dataCcresByClosestGenes,
           assembly,
           skip: !dataCcresByClosestGenes,
         };
@@ -124,8 +117,6 @@ export default function DistanceLinkedCcres({
       geneData.data.transcripts,
       geneData.data.strand as "+" | "-",
     );
-
-    //We also need to be aware that the 3gene method is only valid in human
 
     return {
       ccre: ccre.accession,
@@ -304,7 +295,6 @@ export default function DistanceLinkedCcres({
         calcMethod={calcMethod}
         handleDistanceChange={handleDistanceChange}
         handleMethodChange={handleMethodChange}
-        assembly={assembly}
       />
     </Box>
   );

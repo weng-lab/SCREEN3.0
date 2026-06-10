@@ -43,8 +43,8 @@ export const useNearestTSSColumn = <T,>({
       return closest ? `${closest.gene} - ${closest.distance.toLocaleString()} bp` : null;
     },
     sortComparator: (_v1, _v2, cellParams1, cellParams2) => {
-      const rowA = cellParams1.api.getRow(cellParams1.id) as T | null;
-      const rowB = cellParams2.api.getRow(cellParams2.id) as T | null;
+      const rowA = cellParams1.api.getRow(cellParams1.id);
+      const rowB = cellParams2.api.getRow(cellParams2.id);
       const distA = (rowA ? dataClosestTSS?.[getAccession(rowA)]?.[tssAnchor].distance : undefined) ?? Infinity;
       const distB = (rowB ? dataClosestTSS?.[getAccession(rowB)]?.[tssAnchor].distance : undefined) ?? Infinity;
       return distA - distB;

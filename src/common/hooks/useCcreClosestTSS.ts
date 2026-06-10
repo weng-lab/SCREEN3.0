@@ -26,15 +26,6 @@ const GET_NEAREST_GENE = gql(`
   }
 `)
 
-// To include or not include
-// Need only closest TSS distance for classification
-// Need closest gene and distance for table
-// Need 3 closest gene and distance for ClosestGenes
-// Need 3 closest genes for distance-linked cCRE table
-
-//Maybe two hooks - one that scales a bit better and only returns closest, and one that return closest 3
-//Can have one that takes in nearbygeneslimit
-
 /**
  * Distance uses middle of cCRE as anchor, or 0 if overlap
  */

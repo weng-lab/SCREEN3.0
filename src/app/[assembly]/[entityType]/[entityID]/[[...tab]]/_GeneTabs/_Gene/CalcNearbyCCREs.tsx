@@ -12,8 +12,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Assembly } from "common/types/globalTypes";
-
 interface CalculateNearbyCCREsPopperProps {
   open: boolean;
   anchorEl: HTMLButtonElement | null;
@@ -23,7 +21,6 @@ interface CalculateNearbyCCREsPopperProps {
   handleMethodChange: (method: "body" | "tss" | "3gene") => void;
   distance: number;
   handleDistanceChange: (distance: number) => void;
-  assembly: Assembly;
 }
 
 const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
@@ -35,7 +32,6 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
   handleMethodChange,
   distance,
   handleDistanceChange,
-  assembly,
 }) => {
   return (
     <Popper open={open} anchorEl={anchorEl} placement="bottom-start" disablePortal sx={{ zIndex: 10 }}>
@@ -68,9 +64,8 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
                       </>
                     }
                   />
-                  {assembly === "GRCh38" && (
-                    <FormControlLabel value="3gene" control={<Radio />} label="Closest 3 Genes" />
-                  )}
+                  <FormControlLabel value="3gene" control={<Radio />} label="Closest 3 Genes" />
+
                 </RadioGroup>
               </FormControl>
             </Stack>
