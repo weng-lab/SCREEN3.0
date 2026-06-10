@@ -145,10 +145,11 @@ export function calcDistCcreToTSS(
   region: GenomicRange,
   transcripts: { id: string; coordinates: GenomicRange }[],
   strand: "+" | "-",
+  anchor: "middle" | "closest"
 ): { transcriptId: string; distance: number; direction: "Upstream" | "Downstream" } {
   const results = transcripts.map((transcript) => {
     const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end;
-    const distance = calcDistRegionToPosition(region.start, region.end, "middle", tss);
+    const distance = calcDistRegionToPosition(region.start, region.end, anchor, tss);
 
     const middle = Math.floor(region.start + region.end) / 2
 

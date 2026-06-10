@@ -14,6 +14,7 @@ import { ClassificationFormatting } from "common/components/ClassificationFormat
 import { gql } from "common/types/generated";
 import { useQuery } from "@apollo/client/react";
 import { useCcresWithGeneInClosest3 } from "common/hooks/useCcresWithGeneInClosest3";
+import { useDistanceAnchor } from "common/hooks/useDistanceAnchor";
 
 export type Transcript = {
   id: string;
@@ -52,6 +53,8 @@ export default function DistanceLinkedCcres({
   const [distance, setDistance] = useState<number>(10000);
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const { anchor, tooltip: distanceTooltip } = useDistanceAnchor();
 
 
   const handleMethodChange = (method: DistanceLinkMethod) => {
@@ -109,24 +112,32 @@ export default function DistanceLinkedCcres({
 
   const { data, loading, error } = useCcreData(useCcreDataParams);
 
-  const distanceLinkedCcres = data?.map((ccre) => {
-    const ccreCoords = ccre.coordinates;
+  // useDistanceAnchor speaks middleAnchor/edgeAnchor; calcDistCcreToTSS speaks middle/closest
+  const tssAnchor = anchor === "middleAnchor" ? "middle" : "closest";
 
-    const nearestTranscript = calcDistCcreToTSS(
-      ccreCoords,
-      geneData.data.transcripts,
-      geneData.data.strand as "+" | "-",
-    );
+  // Recomputed when the anchor toggles: distance, direction, and which TSS is closest can all change
+  const distanceLinkedCcres = useMemo(() => {
+    if (!data) return undefined;
+    return data.map((ccre) => {
+      const ccreCoords = ccre.coordinates;
 
-    return {
-      ccre: ccre.accession,
-      ...ccreCoords,
-      group: ccre.group,
-      distance: nearestTranscript.distance,
-      direction: nearestTranscript.direction,
-      tss: nearestTranscript.transcriptId,
-    };
-  });
+      const nearestTranscript = calcDistCcreToTSS(
+        ccreCoords,
+        geneData.data.transcripts,
+        geneData.data.strand as "+" | "-",
+        tssAnchor
+      );
+
+      return {
+        ccre: ccre.accession,
+        ...ccreCoords,
+        group: ccre.group,
+        distance: nearestTranscript.distance,
+        direction: nearestTranscript.direction,
+        tss: nearestTranscript.transcriptId,
+      };
+    });
+  }, [data, geneData.data, tssAnchor]);
 
   const cols: TableColDef<typeof distanceLinkedCcres[number]>[] = [
     {
@@ -180,20 +191,21 @@ export default function DistanceLinkedCcres({
       field: "distance",
       headerName: "Distance to TSS",
       type: "number",
-      renderCell: (params) => {
-        if (params.value == null) {
+      tooltip: distanceTooltip,
+      valueFormatter: (value?: number) => {
+        if (value == null) {
           return "";
         }
-
-        const direction = params.row.distance === 0 ? "" : params.row.direction === "Upstream" ? "-" : "+"
-        
-        return (
-          <span>
-            {direction}
-            {params.value.toLocaleString()}
-          </span>
-        );
+        return value.toLocaleString();
       },
+    },
+    {
+      field: "direction",
+      headerName: "Direction",
+      type: "singleSelect",
+      valueOptions: ["Upstream", "Downstream", "Overlapping"],
+      // distance 0 means the cCRE overlaps the TSS, so neither side applies
+      valueGetter: (_, row) => (row.distance === 0 ? "Overlapping" : row.direction),
     },
   ];
 
@@ -269,6 +281,7 @@ export default function DistanceLinkedCcres({
     <Box width={"100%"}>
       <Table
         rows={distanceLinkedCcres}
+        getRowId={(row) => row.ccre}
         columns={cols}
         label={"Nearby cCREs"}
         loading={geneData.loading || loading || loadingCcresByClosestGenes}
