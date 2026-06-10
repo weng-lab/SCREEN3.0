@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { Box, Button, Skeleton, Typography } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import { TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreClosestTSS } from "common/hooks/useCcreClosestTSS";
+import { useDistanceAnchor } from "common/hooks/useDistanceAnchor";
 import { Assembly } from "common/types/globalTypes";
-
-type TSSAnchor = "middleAnchor" | "edgeAnchor";
 
 /**
  * Builds the "Nearest TSS" cCRE table column, backed by {@link useCcreClosestTSS}. The column's
@@ -25,8 +23,7 @@ export const useNearestTSSColumn = <T,>({
   assembly: Assembly;
   getAccession: (row: T) => string;
 }): TableColDef<T> => {
-  // Whether the nearest-TSS distance is measured from the middle of the cCRE body or its nearest edge
-  const [tssAnchor, setTssAnchor] = useState<TSSAnchor>("middleAnchor");
+  const { anchor: tssAnchor, tooltip } = useDistanceAnchor();
 
   const { data: dataClosestTSS, loading: loadingClosestTSS } = useCcreClosestTSS({
     accessions,
@@ -62,28 +59,6 @@ export const useNearestTSSColumn = <T,>({
         </span>
       );
     },
-    tooltip: (
-      <Box sx={{ p: 0.5 }}>
-        <Typography variant="body2" gutterBottom>
-          Distance to nearest TSS measured from the{" "}
-          {tssAnchor === "middleAnchor" ? "middle of the cCRE" : "nearest edge of the cCRE"}.
-        </Typography>
-        <Button
-          variant="outlined"
-          size="small"
-          sx={{
-            color: "common.white",
-            borderColor: "common.white",
-            "&:hover": {
-              borderColor: "common.white",
-              backgroundColor: "rgba(255, 255, 255, 0.08)",
-            },
-          }}
-          onClick={() => setTssAnchor((prev) => (prev === "middleAnchor" ? "edgeAnchor" : "middleAnchor"))}
-        >
-          Measure from {tssAnchor === "middleAnchor" ? "nearest edge" : "middle"} instead
-        </Button>
-      </Box>
-    ),
+    tooltip,
   };
 };
