@@ -1,15 +1,12 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { useQuery } from "@apollo/client/react";
 import { Stack, Tab, Tabs, Typography } from "@mui/material";
-import { gql } from "common/types/generated";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
-import type { CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
+import type { CcreAssay } from "common/types/globalTypes";
 import { CLASS_COLORS } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useCcre } from "common/hooks/useCcre";
-import { calcDistCcreToTSS, capitalizeFirstLetter, ccreOverlapsTSS } from "common/utility";
+import { capitalizeFirstLetter } from "common/utility";
 import AssayView from "./AssayView";
 import { AssayWheel } from "@weng-lab/ui-components";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
@@ -20,68 +17,50 @@ import { useDynamicEnhancersData } from "common/hooks/useDynamicEnhacersData";
 import { Silencer_Studies } from "./consts";
 import { LinkComponent } from "common/components/LinkComponent";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
+import { useBiosampleActivity } from "common/hooks/useBiosampleActivity";
 
-const classifyCcre = (
-  scores: { dnase: number; atac: number; h3k4me3: number; h3k27ac: number; ctcf: number; tf: string },
-  distanceToTSS: number,
-  overlapsTSS: boolean
-): CcreClass => {
-  let ccreClass: CcreClass;
-  if (scores.dnase != -11.0) {
-    if (scores.dnase > 1.64) {
-      if (scores.h3k4me3 > 1.64) {
-        if (distanceToTSS <= 200 || overlapsTSS) {
-          ccreClass = "PLS"; //Promoter-like signatures (promoter) must fall within 200 bp of a TSS and have high chromatin accessibility and H3K4me3 signals.
-        } else if (scores.h3k27ac <= 1.64 && distanceToTSS > 200) {
-          ccreClass = "CA-H3K4me3"; //Chromatin accessibility + H3K4me3 (CA-H3K4me3) have high chromatin accessibility and H3K4me3 signals but low H3K27ac signals and do not fall within 200 bp of a TSS.
-        } else if (distanceToTSS <= 2000 && scores.h3k27ac > 1.64) {
-          ccreClass = "pELS"; //Enhancer-like signatures (enhancer) have high chromatin accessibility and H3K27ac signals. Enhancers are further divided into TSS-proximal or distal with a 2 kb distance cutoff.
-        } else if (distanceToTSS > 2000 && scores.h3k27ac > 1.64) {
-          ccreClass = "dELS"; //Enhancer-like signatures (enhancer) have high chromatin accessibility and H3K27ac signals. Enhancers are further divided into TSS-proximal or distal with a 2 kb distance cutoff.
-        }
-      } else if (scores.h3k27ac > 1.64) {
-        if (distanceToTSS <= 2000) {
-          ccreClass = "pELS"; //Enhancer-like signatures (enhancer) have high chromatin accessibility and H3K27ac signals. Enhancers are further divided into TSS-proximal or distal with a 2 kb distance cutoff.
-        } else if (distanceToTSS > 2000) {
-          ccreClass = "dELS"; //Enhancer-like signatures (enhancer) have high chromatin accessibility and H3K27ac signals. Enhancers are further divided into TSS-proximal or distal with a 2 kb distance cutoff.
-        }
-      } else if (scores.ctcf > 1.64) {
-        ccreClass = "CA-CTCF"; //Chromatin accessibility + CTCF (CA-CTCF) have high chromatin accessibility and CTCF signals but low H3K4me3 and H3K27ac signals.
-      } else if (scores.tf === "1") {
-        ccreClass = "CA-TF"; //Chromatin accessibility + transcription factor (CA-TF) have high chromatin accessibility, low H3K4me3, H3K27ac, and CTCF signals and are bound by a transcription factor.
-      } else {
-        ccreClass = "CA"; //Chromatin accessibility (CA) have high chromatin accessibility, and low H3K4me3, H3K27ac, and CTCF signals.
-      }
-    } else {
-      if (scores.tf === "1") {
-        ccreClass = "TF"; //Transcription factor (TF) have low chromatin accessibility, low H3K4me3, H3K27ac, and CTCF signals and are bound by a transcription factor.
-      } else {
-        ccreClass = "InActive"; //low chromatin accessibility, low H3K4me3, H3K27ac, and CTCF signals and are NOT bound by a transcription factor.
-      }
-    }
-  } else {
-    ccreClass = "noclass"; //If not active in DNase, No class assigned
-  }
-  return ccreClass;
-};
+/** Row shape returned by useBiosampleActivity (new field names / undefined-for-missing) */
+type RawBiosampleRow = NonNullable<ReturnType<typeof useBiosampleActivity>["biosampleRows"]>[number];
 
 /**
- * used for internal setting of the z-score to "NA" or .toFixed(2) for file download
+ * Adapts a hook row to the existing `BiosampleRow` shape the table columns + Assay plot subsystem
+ * expect: new `*Z` fields → bare assay names with the legacy `-11` missing-sentinel, `*ExpAccession`
+ * → `*Accession`, and `group` → `class`. `tf` stays "yes"/"no"/"na" (handled in the TF column).
  */
-const z_score_download_format = (d: number) => (d === -11.0 ? "NA" : d.toFixed(2));
-/**
- * used for rendering the value in the table cell as "--" instead of "NA"
- */
-const z_score_display_format = (d: string): string => (d === "NA" ? "--" : d);
+const toBiosampleRow = (row: RawBiosampleRow): BiosampleRow => ({
+  name: row.name,
+  displayname: row.displayname,
+  sampleType: row.sampleType,
+  lifeStage: row.lifeStage,
+  ontology: row.ontology,
+  class: row.group ?? "noclass",
+  collection: row.collection ?? "ancillary",
+  tf: row.tf,
+  dnase: row.dnaseZ ?? -11,
+  dnaseAccession: row.dnaseExpAccession,
+  atac: row.atacZ ?? -11,
+  atacAccession: row.atacExpAccession,
+  h3k4me3: row.h3k4me3Z ?? -11,
+  h3k4me3Accession: row.h3k4me3ExpAccession,
+  h3k27ac: row.h3k27acZ ?? -11,
+  h3k27acAccession: row.h3k27acExpAccession,
+  ctcf: row.ctcfZ ?? -11,
+  ctcfAccession: row.ctcfExpAccession,
+});
 
+/** -11 is the sentinel z-score for "this assay was not measured in the biosample" */
+const isMissingZ = (z: number) => z == null || z === -11.0;
+
+/**
+ * The cell value stays the raw z-score so the grid sorts/filters on full precision — this keeps the
+ * plots (which are synced to table row order) from reordering bars that only tie after rounding.
+ * Only the rendered cell is truncated to 2 decimals; CSV/Excel export keeps the raw value ("NA" for missing).
+ */
 const zScoreFormatting: Partial<TableColDef> = {
-  valueGetter: z_score_download_format,
-  renderCell: (params: GridRenderCellParams) => {
-    return z_score_display_format(params.value);
-  },
-  sortComparator: (v1, v2) => (v1 === "NA" ? -1 : v2 === "NA" ? 1 : v1 - v2),
   type: "number",
   minWidth: 100,
+  renderCell: (params: GridRenderCellParams) => (isMissingZ(params.value) ? "--" : params.value.toFixed(2)),
+  valueFormatter: (value: number) => (isMissingZ(value) ? "NA" : value),
 };
 
 const ctAgnosticCols: TableColDef[] = [
@@ -190,7 +169,7 @@ const coreAndPartialCols: TableColDef[] = [
     headerName: "TF",
     field: "tf",
     //Need to transform the internal value
-    valueGetter: (value) => (value === undefined ? "--" : value === "1" ? "Yes" : "No"),
+    valueGetter: (value) => (value === "yes" ? "Yes" : value === "no" ? "No" : "--"),
   },
   {
     headerName: "Classification",
@@ -218,85 +197,6 @@ const assayInfo = (row: BiosampleRow) => {
 
 const ancillaryCols = coreAndPartialCols.filter((col) => col.field !== "dnase" && col.field !== "class");
 
-export const GET_CCRE_CT_TF = gql(`
-  query cCRETF($accession: String!, $assembly: String!) {
-    getcCRETFQuery(accession: $accession, assembly: $assembly) {
-      celltype
-      tf
-    }
-  }
-`);
-
-export const BIOSAMPLE_Zs = gql(`
-  query biosampleZScores($accession: [String!], $assembly: String!) {
-    ccREBiosampleQuery(assembly: $assembly) {
-      biosamples {
-        sampleType
-        displayname
-        lifeStage
-        cCREZScores(accession: $accession) {
-          score
-          assay
-          experiment_accession
-        }
-        name
-        ontology
-      }
-    }
-  }
-`);
-
-export const CT_AGNOSTIC = gql(`
-  query CtAgnostic($accession: [String!], $assembly: String!) {
-    cCREQuery(assembly: $assembly, accession: $accession) {
-      id: accession  # Add a unique identifier for the cCRE
-      accession
-      group
-      dnase: maxZ(assay: "DNase")
-      h3k4me3: maxZ(assay: "H3K4me3")
-      h3k27ac: maxZ(assay: "H3K27ac")
-      ctcf: maxZ(assay: "CTCF")
-      atac: maxZ(assay: "ATAC")
-    }
-  }
-`);
-
-export const NEARBY_GENES = gql(`
-  query nearbyGenes(
-    $assembly: String!
-    $geneSearchStart: Int!
-    $geneSearchEnd: Int!
-    $geneSearchChrom: String!
-    $geneVersion: Int!
-  ) {
-    nearbyGenes: gene(
-      chromosome: $geneSearchChrom
-      start: $geneSearchStart
-      end: $geneSearchEnd
-      assembly: $assembly
-      version: $geneVersion
-    ) {
-      name
-      id
-      gene_type
-      strand
-      coordinates {
-        chromosome
-        start
-        end
-      }
-      transcripts {
-        id
-        coordinates {
-          chromosome
-          start
-          end
-        }
-      }
-    }
-  }
-`);
-
 const CORE_COLLECTION_TOOLTIP =
   "Thanks to the extensive coordination efforts by the ENCODE4 Biosample Working Group, 170 biosamples have DNase, H3K4me3, H3K27ac, and CTCF data. We refer to these samples as the biosample-specific Core Collection of cCREs. These samples cover a variety of tissues and organs and primarily comprise primary tissues and cells. We suggest that users prioritize these samples for their analysis as they contain all the relevant marks for the most complete annotation of cCREs.";
 
@@ -314,10 +214,12 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     setTab(newValue as "tables" | "add_classification" | "dnase" | "atac" | "h3k4me3" | "h3k27ac" | "ctcf");
   };
 
-  const { data: cCREdata, error: errorCcreData } = useCcre({
-    accession: entity.entityID,
-    assembly: entity.assembly,
-  });
+  const {
+    biosampleRows: rawBiosampleRows,
+    celltypeAgnosticRow,
+    loading,
+    error,
+  } = useBiosampleActivity({ accession: entity.entityID, assembly: entity.assembly });
 
   const {
     data: silencersData,
@@ -331,133 +233,9 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     error: errorDynamicEnhancersData,
   } = useDynamicEnhancersData({ accession: [entity.entityID], assembly: entity.assembly });
 
-  const coordinates: GenomicRange = {
-    chromosome: cCREdata?.coordinates.chromosome,
-    start: cCREdata?.coordinates.start,
-    end: cCREdata?.coordinates.end,
-  };
-
-  const {
-    data: data_Ct_Agnostic,
-    loading: loading_Ct_Agnostic,
-    error: error_Ct_Agnostic,
-  } = useQuery(CT_AGNOSTIC, {
-    variables: {
-      assembly: entity.assembly.toLowerCase(),
-      accession: entity.entityID,
-    },
-  });
-
-  const { data: data_biosampleZs, error: error_biosampleZs } = useQuery(BIOSAMPLE_Zs, {
-    variables: {
-      assembly: entity.assembly.toLowerCase(),
-      accession: entity.entityID,
-    },
-  });
-
-  /**
-   * Fetch mapping between biosample and if cCRE is TF in that sample, displayed in table and used for classification
-   */
-  const { data: data_ccre_tf, error: error_ccre_tf } = useQuery(GET_CCRE_CT_TF, {
-    variables: {
-      assembly: entity.assembly.toLowerCase() === "mm10" ? "mm10" : "GRCh38",
-      accession: entity.entityID,
-    },
-  });
-
-  /**
-   * fetch genes within 2M bp region to find distance to nearest TSS, used for classification.
-   */
-  const { data: dataNearbyGenes, error: errorNearbyGenes } = useQuery(NEARBY_GENES, {
-    variables: {
-      assembly: entity.assembly.toLowerCase(),
-      geneSearchChrom: coordinates.chromosome,
-      geneSearchStart: coordinates.start - 1000000,
-      geneSearchEnd: coordinates.end + 1000000,
-      geneVersion: entity.assembly === "GRCh38" ? 40 : 25,
-    },
-    skip: !cCREdata,
-  });
-
-  const nearbyGenes = dataNearbyGenes?.nearbyGenes.map((gene) => {
-    return {
-      ...gene,
-      distanceToTSS: calcDistCcreToTSS(coordinates, gene.transcripts, gene.strand as "+" | "-", "middle").distance,
-      overlapsTSS: ccreOverlapsTSS(coordinates, gene.transcripts, gene.strand as "+" | "-"),
-    };
-  });
-
-  const distanceToTSS = nearbyGenes?.sort((a, b) => a.distanceToTSS - b.distanceToTSS)[0].distanceToTSS;
-
-  const overlapsTSS = nearbyGenes?.some((x) => x.overlapsTSS);
-
-  //need to extract the experiment from this
-  const biosampleRows: BiosampleRow[] = useMemo(() => {
-    if (!data_biosampleZs || !data_ccre_tf) return null;
-    return data_biosampleZs?.ccREBiosampleQuery.biosamples
-      .filter((sample) => sample.name !== "GM12866_ENCDO000ABQ") // This sample has only one H3K4me3 exp that was not processed
-      .map((sample) => {
-        const dnase = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "dnase")?.score || -11;
-        const dnaseAccession = sample.cCREZScores.find(
-          (exp) => exp.assay.toLowerCase() === "dnase"
-        )?.experiment_accession;
-        const atac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "atac")?.score || -11;
-        const atacAccession = sample.cCREZScores.find(
-          (exp) => exp.assay.toLowerCase() === "atac"
-        )?.experiment_accession;
-
-        let h3k4me3 = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k4me3")?.score || -11;
-        let h3k4me3Accession = sample.cCREZScores.find(
-          (exp) => exp.assay.toLowerCase() === "h3k4me3"
-        )?.experiment_accession;
-
-        // Similar to GM12866 this H3K4me3 experiment was not run through ENCODE pipeline
-        if (sample.name === "neural_crest_cell_ENCDO222AAA") {
-          h3k4me3 = -11;
-          h3k4me3Accession = undefined;
-        }
-
-        const h3k27ac = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "h3k27ac")?.score || -11;
-        const h3k27acAccession = sample.cCREZScores.find(
-          (exp) => exp.assay.toLowerCase() === "h3k27ac"
-        )?.experiment_accession;
-        const ctcf = sample.cCREZScores.find((exp) => exp.assay.toLowerCase() === "ctcf")?.score || -11;
-        const ctcfAccession = sample.cCREZScores.find(
-          (exp) => exp.assay.toLowerCase() === "ctcf"
-        )?.experiment_accession;
-        const tf = data_ccre_tf.getcCRETFQuery.find((x) => sample.name === x.celltype)?.tf.toString();
-
-        const scores = {
-          dnase,
-          dnaseAccession,
-          atac,
-          atacAccession,
-          h3k4me3,
-          h3k4me3Accession,
-          h3k27ac,
-          h3k27acAccession,
-          ctcf,
-          ctcfAccession,
-          tf,
-        };
-
-        const classification = classifyCcre(scores, distanceToTSS, overlapsTSS);
-
-        const collection: "core" | "partial" | "ancillary" =
-          dnase === -11.0 ? "ancillary" : ctcf !== -11.0 && h3k27ac !== -11.0 && h3k4me3 !== -11.0 ? "core" : "partial";
-
-        return {
-          name: sample.name,
-          ontology: sample.ontology,
-          sampleType: sample.sampleType,
-          displayname: sample.displayname,
-          lifeStage: sample.lifeStage,
-          class: classification,
-          collection,
-          ...scores,
-        };
-      });
-  }, [data_ccre_tf, data_biosampleZs, distanceToTSS, overlapsTSS]);
+  // Adapt the hook's rows (new field names, undefined-for-missing) to the BiosampleRow shape the
+  // columns + Assay plot subsystem expect (bare assay names with the -11 missing-sentinel).
+  const biosampleRows: BiosampleRow[] = useMemo(() => rawBiosampleRows?.map(toBiosampleRow), [rawBiosampleRows]);
 
   const coreCollection: BiosampleRow[] = useMemo(() => {
     return biosampleRows?.filter((row) => row.collection === "core");
@@ -477,15 +255,11 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   }, [biosampleRows, tab]);
 
   const loadingCorePartialAncillary =
-    distanceToTSS === undefined ||
-    overlapsTSS === undefined ||
-    !coreCollection ||
-    !partialDataCollection ||
-    !ancillaryCollection;
-  const errorCorePartialAncillary = !!(errorCcreData || error_biosampleZs || error_ccre_tf || errorNearbyGenes);
+    loading || !coreCollection || !partialDataCollection || !ancillaryCollection;
+  const errorCorePartialAncillary = !!error;
 
-  const ctAgnosticRow = data_Ct_Agnostic
-    ? [{ ...data_Ct_Agnostic.cCREQuery[0], displayname: "Cell Type Agnostic" }]
+  const ctAgnosticRow = celltypeAgnosticRow
+    ? [{ ...celltypeAgnosticRow, displayname: "Cell Type Agnostic" }]
     : undefined;
 
   const disableCsvEscapeChar = {
@@ -544,8 +318,8 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
           <Table
             rows={ctAgnosticRow}
             columns={ctAgnosticCols}
-            loading={loading_Ct_Agnostic}
-            error={!!error_Ct_Agnostic}
+            loading={loading}
+            error={!!error}
             autoHeight
             hideFooter
             showToolbar={false}

@@ -47,12 +47,6 @@ type UseBiosampleActivityParams = {
   skip?: boolean;
 };
 
-// type UseBiosampleActivityReturn = {
-//   data: CcreBiosampleActivityRow[] | undefined;
-//   loading: boolean;
-//   error: ErrorLike | undefined;
-// };
-
 const GET_CCRE_BIOSAMPLE_INFO = gql(`
   query GetcCREZScoresQuery($assembly: String!, $accession: String!) {
     getcCREZScoresQuery(assembly: $assembly, accession: [$accession], nearbygeneslimit: 1, include_biosample_details: true) {
@@ -93,8 +87,13 @@ const parseBiosampleRows = (
   distanceToTSS: number
 ): CcreBiosampleActivityRow[] => {
 
+  // Experiments not run through the ENCODE pipeline come back with fileAccession "NA" and a junk
+  // fallback score (-10). Treat them as nonexistent. Filtering before grouping means a biosample
+  // whose only experiment is invalid drops out entirely, while one with other valid assays just
+  // loses that assay.
   const byBiosample = new Map<string, DetailedZScoresEntry[]>();
   for (const entry of zscores) {
+    if (entry[1] === "NA") continue;
     const name = entry[3];
     const group = byBiosample.get(name);
     if (group) group.push(entry);
