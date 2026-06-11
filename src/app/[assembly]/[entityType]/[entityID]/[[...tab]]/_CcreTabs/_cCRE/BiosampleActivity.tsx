@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from "react";
 import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
-import { GridRenderCellParams } from "@mui/x-data-grid-premium";
+import { GridRenderCellParams, GridComparatorFn, gridNumberComparator } from "@mui/x-data-grid-premium";
 import type { CcreAssay } from "common/types/globalTypes";
 import { CLASS_COLORS } from "common/colors";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -23,9 +23,11 @@ import { useBiosampleActivity } from "common/hooks/useBiosampleActivity";
 type RawBiosampleRow = NonNullable<ReturnType<typeof useBiosampleActivity>["biosampleRows"]>[number];
 
 /**
- * Adapts a hook row to the existing `BiosampleRow` shape the table columns + Assay plot subsystem
- * expect: new `*Z` fields → bare assay names with the legacy `-11` missing-sentinel, `*ExpAccession`
- * → `*Accession`, and `group` → `class`. `tf` stays "yes"/"no"/"na" (handled in the TF column).
+ * Adapts a hook row to the `BiosampleRow` shape the table columns + Assay plot subsystem expect:
+ * the `*Z` score fields → bare assay names (still indexed by the `CcreAssay` type). `*ExpAccession`,
+ * `group`, and `collection` carry through unchanged. Missing scores stay `undefined` — there is no
+ * longer a -11 sentinel; `classifyCcre` owns the undefined→-11 substitution internally.
+ * `tf` stays "yes"/"no"/"na" (handled in the TF column).
  */
 const toBiosampleRow = (row: RawBiosampleRow): BiosampleRow => ({
   name: row.name,
@@ -33,34 +35,49 @@ const toBiosampleRow = (row: RawBiosampleRow): BiosampleRow => ({
   sampleType: row.sampleType,
   lifeStage: row.lifeStage,
   ontology: row.ontology,
-  class: row.group ?? "noclass",
-  collection: row.collection ?? "ancillary",
+  group: row.group,
+  collection: row.collection,
   tf: row.tf,
-  dnase: row.dnaseZ ?? -11,
-  dnaseAccession: row.dnaseExpAccession,
-  atac: row.atacZ ?? -11,
-  atacAccession: row.atacExpAccession,
-  h3k4me3: row.h3k4me3Z ?? -11,
-  h3k4me3Accession: row.h3k4me3ExpAccession,
-  h3k27ac: row.h3k27acZ ?? -11,
-  h3k27acAccession: row.h3k27acExpAccession,
-  ctcf: row.ctcfZ ?? -11,
-  ctcfAccession: row.ctcfExpAccession,
+  dnase: row.dnaseZ,
+  dnaseExpAccession: row.dnaseExpAccession,
+  atac: row.atacZ,
+  atacExpAccession: row.atacExpAccession,
+  h3k4me3: row.h3k4me3Z,
+  h3k4me3ExpAccession: row.h3k4me3ExpAccession,
+  h3k27ac: row.h3k27acZ,
+  h3k27acExpAccession: row.h3k27acExpAccession,
+  ctcf: row.ctcfZ,
+  ctcfExpAccession: row.ctcfExpAccession,
 });
-
-/** -11 is the sentinel z-score for "this assay was not measured in the biosample" */
-const isMissingZ = (z: number) => z == null || z === -11.0;
 
 /**
  * The cell value stays the raw z-score so the grid sorts/filters on full precision — this keeps the
  * plots (which are synced to table row order) from reordering bars that only tie after rounding.
- * Only the rendered cell is truncated to 2 decimals; CSV/Excel export keeps the raw value ("NA" for missing).
+ * Only the rendered cell is truncated to 2 decimals; CSV/Excel export keeps the raw value ("NA" for
+ * missing). A missing z-score is `undefined` (the assay was not measured in the biosample).
+ *
+ * Missing scores are pinned to the bottom for both sort directions via `getSortComparator`, so
+ * ascending surfaces the lowest *real* z-scores first instead of the unmeasured biosamples. MUI's
+ * default number comparator treats `undefined` as the smallest value and then negates the whole
+ * result for descending, which would otherwise float missing rows to the top when sorting ascending.
+ * Defining `getSortComparator` opts out of that negation and gives us the direction directly, so we
+ * apply the sign only to real numeric comparisons and keep `undefined` last regardless.
  */
 const zScoreFormatting: Partial<TableColDef> = {
   type: "number",
   minWidth: 100,
-  renderCell: (params: GridRenderCellParams) => (isMissingZ(params.value) ? "--" : params.value.toFixed(2)),
-  valueFormatter: (value: number) => (isMissingZ(value) ? "NA" : value),
+  renderCell: (params: GridRenderCellParams) => (params.value == null ? "--" : params.value.toFixed(2)),
+  valueFormatter: (value: number) => (value == null ? "NA" : value),
+  getSortComparator: (direction) => {
+    const sign = direction === "desc" ? -1 : 1;
+    const comparator: GridComparatorFn = (v1, v2, p1, p2) => {
+      if (v1 == null && v2 == null) return 0;
+      if (v1 == null) return 1; // missing always sorts after a real score
+      if (v2 == null) return -1;
+      return sign * gridNumberComparator(v1, v2, p1, p2);
+    };
+    return comparator;
+  },
 };
 
 const ctAgnosticCols: TableColDef[] = [
@@ -173,7 +190,7 @@ const coreAndPartialCols: TableColDef[] = [
   },
   {
     headerName: "Classification",
-    field: "class",
+    field: "group",
     ...ClassificationFormatting,
   },
   {
@@ -187,15 +204,15 @@ const coreAndPartialCols: TableColDef[] = [
 
 const assayInfo = (row: BiosampleRow) => {
   return {
-    dnase: row.dnaseAccession,
-    atac: row.atacAccession,
-    h3k4me3: row.h3k4me3Accession,
-    h3k27ac: row.h3k27acAccession,
-    ctcf: row.ctcfAccession,
+    dnase: row.dnaseExpAccession,
+    atac: row.atacExpAccession,
+    h3k4me3: row.h3k4me3ExpAccession,
+    h3k27ac: row.h3k27acExpAccession,
+    ctcf: row.ctcfExpAccession,
   };
 };
 
-const ancillaryCols = coreAndPartialCols.filter((col) => col.field !== "dnase" && col.field !== "class");
+const ancillaryCols = coreAndPartialCols.filter((col) => col.field !== "dnase" && col.field !== "group");
 
 const CORE_COLLECTION_TOOLTIP =
   "Thanks to the extensive coordination efforts by the ENCODE4 Biosample Working Group, 170 biosamples have DNase, H3K4me3, H3K27ac, and CTCF data. We refer to these samples as the biosample-specific Core Collection of cCREs. These samples cover a variety of tissues and organs and primarily comprise primary tissues and cells. We suggest that users prioritize these samples for their analysis as they contain all the relevant marks for the most complete annotation of cCREs.";
@@ -234,7 +251,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   } = useDynamicEnhancersData({ accession: [entity.entityID], assembly: entity.assembly });
 
   // Adapt the hook's rows (new field names, undefined-for-missing) to the BiosampleRow shape the
-  // columns + Assay plot subsystem expect (bare assay names with the -11 missing-sentinel).
+  // columns + Assay plot subsystem expect (bare assay-score field names, undefined for missing).
   const biosampleRows: BiosampleRow[] = useMemo(() => rawBiosampleRows?.map(toBiosampleRow), [rawBiosampleRows]);
 
   const coreCollection: BiosampleRow[] = useMemo(() => {
@@ -251,7 +268,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
 
   const assaySpecificRows: BiosampleRow[] = useMemo(() => {
     if (tab === "tables") return undefined;
-    return biosampleRows?.filter((row) => row[tab] !== -11);
+    return biosampleRows?.filter((row) => row[tab] != null);
   }, [biosampleRows, tab]);
 
   const loadingCorePartialAncillary =
@@ -327,7 +344,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
           />
           <div>
             <ProportionsBar
-              data={getProportionsFromArray(coreCollection, "class", CCRE_CLASSES)}
+              data={getProportionsFromArray(coreCollection, "group", CCRE_CLASSES)}
               label="Classification Proportions, Core Collection:"
               loading={loadingCorePartialAncillary || errorCorePartialAncillary}
               getColor={(key) => CLASS_COLORS[key]}

@@ -37,8 +37,8 @@ type CcreBiosampleActivityRow = {
   ctcfZ?: number
 
   // derived from assays + tf + distance to TSS
-  collection?: "core" | "partial" | "ancillary";
-  group?: CcreClass
+  collection: "core" | "partial" | "ancillary";
+  group: CcreClass
 };
 
 type UseBiosampleActivityParams = {

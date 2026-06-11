@@ -10,18 +10,18 @@ export type BiosampleRow = {
   sampleType?: string;
   lifeStage?: string;
   ontology: string;
-  class: CcreClass;
+  group: CcreClass;
   collection: "core" | "partial" | "ancillary";
   dnase?: number;
-  dnaseAccession?: string;
+  dnaseExpAccession?: string;
   atac?: number;
-  atacAccession?: string;
+  atacExpAccession?: string;
   h3k4me3?: number;
-  h3k4me3Accession?: string;
+  h3k4me3ExpAccession?: string;
   h3k27ac?: number;
-  h3k27acAccession?: string;
+  h3k27acExpAccession?: string;
   ctcf?: number;
-  ctcfAccession?: string;
+  ctcfExpAccession?: string;
   tf?: string;
 };
 

@@ -17,7 +17,7 @@ const PlotTooltip = (bar: BarData<BiosampleRow>) => {
         <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.ontology)}
       </Typography>
       <Typography variant="body2">
-        <b>Classification:</b> {capitalizeFirstLetter(bar.metadata.class)}
+        <b>Classification:</b> {capitalizeFirstLetter(bar.metadata.group)}
       </Typography>
       <Typography variant="body2">
         <b>Z-Score</b> {bar.value.toFixed(2)}
