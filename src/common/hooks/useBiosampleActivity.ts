@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { gql } from "common/types/generated";
 import { classifyCcre } from "common/utility";
 import type { Assembly, CcreClass, CcreZScoresAndGroup } from "common/types/globalTypes";
+import type { ZScoresEntry } from "common/hooks/useCcreZScores";
 
 type CcreBiosampleActivityRow = {
   // sample metadata
@@ -64,26 +65,13 @@ const GET_CCRE_BIOSAMPLE_INFO = gql(`
   }
 `)
 
-type DetailedZScoresEntry = [
-  string, // 0 experiment_accession
-  string, // 1 file_accession
-  string, // 2 assay
-  string, // 3 biosample name (internal, used as the grouping key)
-  string, // 4 biosample displayname
-  string, // 5 ontology
-  string, // 6 sample_type
-  string, // 7 lifestage
-  number, // 8 score
-  "yes" | "no" | "na" // 9 tf
-];
-
 /**
  * Groups the cross-biosample `zscores` array (one entry per biosample+assay) into one row per
  * biosample, collapsing each assay's score/accessions, then classifies and assigns the collection
  * with the same logic as useCcreZScores / BiosampleActivity.
  */
 const parseBiosampleRows = (
-  zscores: DetailedZScoresEntry[],
+  zscores: ZScoresEntry<string>[],
   distanceToTSS: number
 ): CcreBiosampleActivityRow[] => {
 
@@ -91,7 +79,7 @@ const parseBiosampleRows = (
   // fallback score (-10). Treat them as nonexistent. Filtering before grouping means a biosample
   // whose only experiment is invalid drops out entirely, while one with other valid assays just
   // loses that assay.
-  const byBiosample = new Map<string, DetailedZScoresEntry[]>();
+  const byBiosample = new Map<string, ZScoresEntry<string>[]>();
   for (const entry of zscores) {
     if (entry[1] === "NA") continue;
     const name = entry[3];
@@ -138,8 +126,6 @@ const parseBiosampleRows = (
       distanceToTSS
     );
 
-    // Mirrors BiosampleActivity: no DNase → ancillary; DNase + all three marks → core; otherwise partial.
-    // Absence of an assay is `undefined` here rather than the old -11 sentinel.
     row.collection =
       row.dnaseZ === undefined
         ? "ancillary"
@@ -178,7 +164,7 @@ export const useBiosampleActivity = ({
     const entry = data?.getcCREZScoresQuery?.[0];
     if (!entry) return undefined;
     const distance = entry.midccre_nearestgenes[0].distance;
-    return parseBiosampleRows(entry.zscores as DetailedZScoresEntry[], distance);
+    return parseBiosampleRows(entry.zscores as ZScoresEntry<string>[], distance);
   }, [data]);
 
   return {

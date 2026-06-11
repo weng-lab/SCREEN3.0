@@ -3,7 +3,6 @@ import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
 import type { Assembly, CcreClass, CcreZScores, CcreZScoresAndGroup } from "common/types/globalTypes";
 import { useMemo } from "react";
-import { useCcreClosestTSS } from "./useCcreClosestTSS";
 import { classifyCcre } from "common/utility";
 
 type UseCcreZScoresParams = {
@@ -19,9 +18,6 @@ type UseCcreZScoresReturn = {
   error: ErrorLike | undefined;
 };
 
-/**
- * @todo lol duh this can return the distance to TSS and avoid
- */
 const GET_CCRE_MAX_Z = gql(`
   query maxZ(
     $assembly: String!
@@ -65,25 +61,20 @@ const GET_CCRE_BIOSAMPLE_Z = gql(`
   }
 `)
 
-/**
- * Format of `zscores` is:
- * [
- *   experiment_accession
- *   file_accession
- *   assay
- *   biosample_name
- *   biosample_displayname  - null since include_biosample_details: false
- *   ontology  - null since include_biosample_details: false
- *   sample_type - null since include_biosample_details: false
- *   lifestage  - null since include_biosample_details: false
- *   score
- *   tf
- * ]
- */
+export type ZScoresEntry<Details extends string | null = string | null> = [
+  string,              // 0 experiment_accession
+  string,              // 1 file_accession
+  string,              // 2 assay
+  string,              // 3 biosample name (internal, used as the grouping key)
+  Details,             // 4 biosample displayname
+  Details,             // 5 ontology
+  Details,             // 6 sample_type
+  Details,             // 7 lifestage
+  number,              // 8 score
+  "yes" | "no" | "na", // 9 tf
+];
 
-export type ZScoresEntry = [string, string, string, string, null, null, null, null, number, "yes" | "no" | "na"]
-
-export const parseZScoresArray = (zScoresArray: ZScoresEntry[]) => {
+const parseZScoresArray = (zScoresArray: ZScoresEntry<null>[]) => {
   const zScoresAndTf: CcreZScores & { tf: boolean } = { tf: zScoresArray[0][9] === "yes" };
   zScoresArray.forEach((experiment) => {
     const assay = experiment[2];
@@ -141,7 +132,7 @@ export const useCcreZScores = ({
       if (!dataBiosampleZ?.getcCREZScoresQuery.length) return undefined;
       return Object.fromEntries(
         dataBiosampleZ.getcCREZScoresQuery.map((entry) => {
-          const {tf, ...zScores} = parseZScoresArray(entry.zscores as ZScoresEntry[])
+          const {tf, ...zScores} = parseZScoresArray(entry.zscores as ZScoresEntry<null>[])
           const distance = entry.midccre_nearestgenes[0].distance
           const group = classifyCcre(zScores, tf, distance)
 

@@ -22,13 +22,6 @@ import { useBiosampleActivity } from "common/hooks/useBiosampleActivity";
 /** Row shape returned by useBiosampleActivity (new field names / undefined-for-missing) */
 type RawBiosampleRow = NonNullable<ReturnType<typeof useBiosampleActivity>["biosampleRows"]>[number];
 
-/**
- * Adapts a hook row to the `BiosampleRow` shape the table columns + Assay plot subsystem expect:
- * the `*Z` score fields → bare assay names (still indexed by the `CcreAssay` type). `*ExpAccession`,
- * `group`, and `collection` carry through unchanged. Missing scores stay `undefined` — there is no
- * longer a -11 sentinel; `classifyCcre` owns the undefined→-11 substitution internally.
- * `tf` stays "yes"/"no"/"na" (handled in the TF column).
- */
 const toBiosampleRow = (row: RawBiosampleRow): BiosampleRow => ({
   name: row.name,
   displayname: row.displayname,
@@ -50,19 +43,6 @@ const toBiosampleRow = (row: RawBiosampleRow): BiosampleRow => ({
   ctcfExpAccession: row.ctcfExpAccession,
 });
 
-/**
- * The cell value stays the raw z-score so the grid sorts/filters on full precision — this keeps the
- * plots (which are synced to table row order) from reordering bars that only tie after rounding.
- * Only the rendered cell is truncated to 2 decimals; CSV/Excel export keeps the raw value ("NA" for
- * missing). A missing z-score is `undefined` (the assay was not measured in the biosample).
- *
- * Missing scores are pinned to the bottom for both sort directions via `getSortComparator`, so
- * ascending surfaces the lowest *real* z-scores first instead of the unmeasured biosamples. MUI's
- * default number comparator treats `undefined` as the smallest value and then negates the whole
- * result for descending, which would otherwise float missing rows to the top when sorting ascending.
- * Defining `getSortComparator` opts out of that negation and gives us the direction directly, so we
- * apply the sign only to real numeric comparisons and keep `undefined` last regardless.
- */
 const zScoreFormatting: Partial<TableColDef> = {
   type: "number",
   minWidth: 100,
@@ -452,8 +432,6 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
               }
               columns={silencersDataCols}
               loading={loadingSilencersData}
-              //temp fix to get visual loading state without specifying height once loaded. See https://github.com/weng-lab/web-components/issues/22
-              divHeight={!silencersData ? { height: "182px" } : undefined}
               error={!!errorSilencersData}
               {...disableCsvEscapeChar}
               hideFooter
