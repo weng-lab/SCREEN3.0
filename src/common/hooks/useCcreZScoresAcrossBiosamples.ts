@@ -1,14 +1,21 @@
-import type { ErrorLike } from "@apollo/client";
-import type { Assembly, CcreClass } from "common/types/globalTypes";
+import { useQuery } from "@apollo/client/react";
+import { useMemo } from "react";
+import { gql } from "common/types/generated";
+import { classifyCcre } from "common/utility";
+import type { Assembly, CcreClass, CcreZScoresAndGroup } from "common/types/globalTypes";
 
 type CcreBiosampleActivityRow = {
-  name?: string;
+  // sample metadata
+  name: string;
   displayname: string;
-  sampleType?: string;
-  lifeStage?: string;
+  sampleType: string;
+  lifeStage: string;
   ontology: string;
+
+  // tf into
   tf?: string;
 
+  // assays
   dnaseExpAccession?: string;
   dnaseFileAccession?: string;
   dnaseZ?: number;
@@ -29,8 +36,9 @@ type CcreBiosampleActivityRow = {
   ctcfFileAccession?: string;
   ctcfZ?: number
 
-  collection: "core" | "partial" | "ancillary";
-  group: CcreClass
+  // derived from assays + tf + distance to TSS
+  collection?: "core" | "partial" | "ancillary";
+  group?: CcreClass
 };
 
 type UseBiosampleActivityParams = {
@@ -39,10 +47,109 @@ type UseBiosampleActivityParams = {
   skip?: boolean;
 };
 
-type UseBiosampleActivityReturn = {
-  data: CcreBiosampleActivityRow[] | undefined;
-  loading: boolean;
-  error: ErrorLike | undefined;
+// type UseBiosampleActivityReturn = {
+//   data: CcreBiosampleActivityRow[] | undefined;
+//   loading: boolean;
+//   error: ErrorLike | undefined;
+// };
+
+const GET_CCRE_BIOSAMPLE_INFO = gql(`
+  query GetcCREZScoresQuery($assembly: String!, $accession: String!) {
+    getcCREZScoresQuery(assembly: $assembly, accession: [$accession], nearbygeneslimit: 1, include_biosample_details: true) {
+      dnase_max_zscore
+      h3k4me3_max_zscore
+      h3k27ac_max_zscore
+      ctcf_max_zscore
+      atac_max_zscore
+      ccre_group
+      midccre_nearestgenes {
+        distance
+      }
+      zscores
+    }
+  }
+`)
+
+type DetailedZScoresEntry = [
+  string, // 0 experiment_accession
+  string, // 1 file_accession
+  string, // 2 assay
+  string, // 3 biosample name (internal, used as the grouping key)
+  string, // 4 biosample displayname
+  string, // 5 ontology
+  string, // 6 sample_type
+  string, // 7 lifestage
+  number, // 8 score
+  "yes" | "no" | "na" // 9 tf
+];
+
+/**
+ * Groups the cross-biosample `zscores` array (one entry per biosample+assay) into one row per
+ * biosample, collapsing each assay's score/accessions, then classifies and assigns the collection
+ * with the same logic as useCcreZScores / BiosampleActivity.
+ */
+const parseBiosampleRows = (
+  zscores: DetailedZScoresEntry[],
+  distanceToTSS: number
+): CcreBiosampleActivityRow[] => {
+
+  const byBiosample = new Map<string, DetailedZScoresEntry[]>();
+  for (const entry of zscores) {
+    const name = entry[3];
+    const group = byBiosample.get(name);
+    if (group) group.push(entry);
+    else byBiosample.set(name, [entry]);
+  }
+
+  return Array.from(byBiosample.values()).map((entries) => {
+    const [first] = entries;
+
+    const row: CcreBiosampleActivityRow = {
+      name: first[3],
+      displayname: first[4],
+      ontology: first[5],
+      sampleType: first[6],
+      lifeStage: first[7],
+      tf: first[9],
+      collection: "ancillary", // set properly below
+      group: "noclass", // set properly below
+    };
+
+    for (const exp of entries) {
+      const expAccession = exp[0];
+      const fileAccession = exp[1];
+      const score = exp[8];
+      switch (exp[2]) {
+        case "DNase":
+          row.dnaseZ = score; row.dnaseExpAccession = expAccession; row.dnaseFileAccession = fileAccession; break;
+        case "ATAC":
+          row.atacZ = score; row.atacExpAccession = expAccession; row.atacFileAccession = fileAccession; break;
+        case "H3K4me3":
+          row.h3k4me3Z = score; row.h3k4me3ExpAccession = expAccession; row.h3k4me3FileAccession = fileAccession; break;
+        case "H3K27ac":
+          row.h3k27acZ = score; row.h3k27acExpAccession = expAccession; row.h3k27acFileAccession = fileAccession; break;
+        case "CTCF":
+          row.ctcfZ = score; row.ctcfExpAccession = expAccession; row.ctcfFileAccession = fileAccession; break;
+      }
+    }
+
+    row.group = classifyCcre(
+      { dnase: row.dnaseZ, atac: row.atacZ, h3k4me3: row.h3k4me3Z, h3k27ac: row.h3k27acZ, ctcf: row.ctcfZ },
+      first[9] === "yes",
+      distanceToTSS
+    );
+
+    // Mirrors BiosampleActivity: no DNase → ancillary; DNase + all three marks → core; otherwise partial.
+    // Absence of an assay is `undefined` here rather than the old -11 sentinel.
+    row.collection =
+      row.dnaseZ === undefined
+        ? "ancillary"
+        : row.ctcfZ !== undefined && row.h3k27acZ !== undefined && row.h3k4me3Z !== undefined
+          ? "core"
+          : "partial";
+
+    return row;
+  });
 };
 
 /**
@@ -52,22 +159,33 @@ export const useBiosampleActivity = ({
   accession,
   assembly,
   skip,
-}: UseBiosampleActivityParams): UseBiosampleActivityReturn => {
-  void accession;
-  void assembly;
-  void skip;
+}: UseBiosampleActivityParams) => {
+  const { data, loading, error } = useQuery(GET_CCRE_BIOSAMPLE_INFO, { variables: { accession, assembly }, skip });
 
-  // @todo fetch all biosample info with getcCREZScoresQuery. Reuse ZScoresEntry and create something like extractBiosampleZScores but for all metadata
-  // @todo fetch tf info using getcCRETFQuery
-  // @todo fetch distance from cCRE to TSS using either dumb region search or with any newly available return data from Nishi
-  // @todo move collection assignment here
-  // @todo move cCRE classification in biosample here
+  const d = data?.getcCREZScoresQuery.length ? data?.getcCREZScoresQuery[0] : undefined
 
-  // TODO: wire to getcCREZScoresQuery and move BiosampleActivity row shaping here.
-  // This hook should own sample collection and cCRE classification logic for that page.
+  const celltypeAgnosticRow: CcreZScoresAndGroup = d
+    ? {
+        dnase: d.dnase_max_zscore,
+        h3k4me3: d.h3k4me3_max_zscore,
+        h3k27ac: d.h3k27ac_max_zscore,
+        ctcf: d.ctcf_max_zscore,
+        atac: d.atac_max_zscore,
+        group: d.ccre_group as CcreClass,
+      }
+    : undefined;
+
+  const biosampleRows = useMemo(() => {
+    const entry = data?.getcCREZScoresQuery?.[0];
+    if (!entry) return undefined;
+    const distance = entry.midccre_nearestgenes[0].distance;
+    return parseBiosampleRows(entry.zscores as DetailedZScoresEntry[], distance);
+  }, [data]);
+
   return {
-    data: undefined,
-    loading: false,
-    error: undefined,
+    biosampleRows,
+    celltypeAgnosticRow,
+    loading,
+    error,
   };
 };

@@ -19,6 +19,9 @@ type UseCcreZScoresReturn = {
   error: ErrorLike | undefined;
 };
 
+/**
+ * @todo lol duh this can return the distance to TSS and avoid
+ */
 const GET_CCRE_MAX_Z = gql(`
   query maxZ(
     $assembly: String!
@@ -27,6 +30,7 @@ const GET_CCRE_MAX_Z = gql(`
     getmaxZScoresQuery(
       assembly: $assembly
       accession: $accessions
+      nearbygeneslimit: 1
     ) {
       accession
       ccre_group
@@ -50,8 +54,12 @@ const GET_CCRE_BIOSAMPLE_Z = gql(`
       biosample_value: $biosample
       accession: $accessions
       include_biosample_details: false
+      nearbygeneslimit: 1
     ) {
       accession
+      midccre_nearestgenes {
+        distance
+      }
       zscores
     }
   }
@@ -60,11 +68,11 @@ const GET_CCRE_BIOSAMPLE_Z = gql(`
 /**
  * Format of `zscores` is:
  * [
- *   exp_accession
+ *   experiment_accession
  *   file_accession
  *   assay
- *   biosample_value
- *   biosample_name  - null since include_biosample_details: false
+ *   biosample_name
+ *   biosample_displayname  - null since include_biosample_details: false
  *   ontology  - null since include_biosample_details: false
  *   sample_type - null since include_biosample_details: false
  *   lifestage  - null since include_biosample_details: false
@@ -128,20 +136,13 @@ export const useCcreZScores = ({
     skip: skip || biosample === undefined,
   });
 
-  // used if biosample is passed
-  const {
-    data: dataDistanceToTSS,
-    loading: loadingDistanceToTSS,
-    error: errorDistanceToTSS,
-  } = useCcreClosestTSS({ accessions, assembly, skip: skip || biosample === undefined });
-
   const ccreMap: UseCcreZScoresReturn["data"] = useMemo(() => {
     if (biosample) {
-      if (!dataBiosampleZ || !dataDistanceToTSS) return undefined;
+      if (!dataBiosampleZ?.getcCREZScoresQuery.length) return undefined;
       return Object.fromEntries(
         dataBiosampleZ.getcCREZScoresQuery.map((entry) => {
           const {tf, ...zScores} = parseZScoresArray(entry.zscores as ZScoresEntry[])
-          const distance = dataDistanceToTSS[entry.accession]?.middleAnchor.distance
+          const distance = entry.midccre_nearestgenes[0].distance
           const group = classifyCcre(zScores, tf, distance)
 
           return [
@@ -154,7 +155,7 @@ export const useCcreZScores = ({
         })
       );
     } else {
-      if (!dataMaxZ) return undefined;
+      if (!dataMaxZ?.getmaxZScoresQuery.length) return undefined;
       return Object.fromEntries(
         dataMaxZ.getmaxZScoresQuery.map((entry) => [
           entry.accession,
@@ -169,11 +170,11 @@ export const useCcreZScores = ({
         ])
       );
     }
-  }, [dataMaxZ, dataBiosampleZ, dataDistanceToTSS]);
+  }, [dataMaxZ, dataBiosampleZ]);
 
   return {
     data: ccreMap,
-    loading: loadingMaxZ || loadingBiosampleZ || loadingDistanceToTSS,
-    error: errorMaxZ || errorBiosampleZ || errorDistanceToTSS,
+    loading: loadingMaxZ || loadingBiosampleZ,
+    error: errorMaxZ || errorBiosampleZ,
   };
 };
