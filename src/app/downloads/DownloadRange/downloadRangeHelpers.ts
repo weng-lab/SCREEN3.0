@@ -38,7 +38,6 @@ export function parseGenomicRegion(input: string): { chromosome: string; start: 
 }
 
 /**
- * @todo download linked genes data in bed file
  * @param rows download-ready cCRE rows from {@link fetchCcreDownloadData}
  * @param assays which assay z-score columns to include (user selection)
  * @param conservation which conservation columns to include (user selection)
