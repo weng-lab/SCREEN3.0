@@ -343,3 +343,27 @@ export function classifyCcre(
   }
   return ccreClass;
 };
+
+/**
+ * The set of biosample-specific classes a cCRE can be assigned given which assays are available,
+ * derived directly from {@link classifyCcre}'s logic. Missing assays are treated as -11, which
+ * eliminates the classes that depend on them. Notably DNase gates everything (no DNase -> the only
+ * possible class is `noclass`), and ATAC never participates in classification. Keep in sync with
+ * `classifyCcre` if its rules change.
+ *
+ * Only meaningful for the biosample-specific case; the global classification can be any class.
+ */
+export function reachableCcreClasses(assays: {
+  dnase: boolean;
+  h3k4me3: boolean;
+  h3k27ac: boolean;
+  ctcf: boolean;
+}): CcreClass[] {
+  if (!assays.dnase) return ["noclass"];
+  // Reachable with DNase alone (CA-TF/TF only need the tf flag, which rides along in the data)
+  const classes: CcreClass[] = ["CA", "CA-TF", "TF", "InActive"];
+  if (assays.h3k4me3) classes.push("PLS", "CA-H3K4me3");
+  if (assays.h3k27ac) classes.push("pELS", "dELS");
+  if (assays.ctcf) classes.push("CA-CTCF");
+  return classes;
+}

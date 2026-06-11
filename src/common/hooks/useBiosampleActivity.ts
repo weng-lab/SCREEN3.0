@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { gql } from "common/types/generated";
 import { classifyCcre } from "common/utility";
 import type { Assembly, CcreClass, CcreZScoresAndGroup } from "common/types/globalTypes";
-import type { ZScoresEntry } from "common/hooks/useCcreZScores";
+import type { ZScoresEntry } from "common/utils/parseCcreZScores";
 
 type CcreBiosampleActivityRow = {
   // sample metadata

@@ -1,9 +1,10 @@
 import type { ErrorLike } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
-import type { Assembly, CcreClass, CcreZScores, CcreZScoresAndGroup } from "common/types/globalTypes";
+import type { Assembly, CcreClass, CcreZScoresAndGroup } from "common/types/globalTypes";
 import { useMemo } from "react";
 import { classifyCcre } from "common/utility";
+import { parseZScoresArray, ZScoresEntry } from "common/utils/parseCcreZScores";
 
 type UseCcreZScoresParams = {
   accessions: string[];
@@ -60,45 +61,6 @@ const GET_CCRE_BIOSAMPLE_Z = gql(`
     }
   }
 `)
-
-export type ZScoresEntry<Details extends string | null = string | null> = [
-  string,              // 0 experiment_accession
-  string,              // 1 file_accession
-  string,              // 2 assay
-  string,              // 3 biosample name (internal, used as the grouping key)
-  Details,             // 4 biosample displayname
-  Details,             // 5 ontology
-  Details,             // 6 sample_type
-  Details,             // 7 lifestage
-  number,              // 8 score
-  "yes" | "no" | "na", // 9 tf
-];
-
-const parseZScoresArray = (zScoresArray: ZScoresEntry<null>[]) => {
-  const zScoresAndTf: CcreZScores & { tf: boolean } = { tf: zScoresArray[0][9] === "yes" };
-  zScoresArray.forEach((experiment) => {
-    const assay = experiment[2];
-    const score = experiment[8];
-    switch (assay) {
-      case "DNase":
-        zScoresAndTf.dnase = score;
-        break;
-      case "H3K4me3":
-        zScoresAndTf.h3k4me3 = score;
-        break;
-      case "H3K27ac":
-        zScoresAndTf.h3k27ac = score;
-        break;
-      case "CTCF":
-        zScoresAndTf.ctcf = score;
-        break;
-      case "ATAC":
-        zScoresAndTf.atac = score;
-        break;
-    }
-  });
-  return zScoresAndTf;
-};
 
 export const useCcreZScores = ({
   accessions,
