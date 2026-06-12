@@ -97,19 +97,6 @@ export type FetchCcreDownloadDataParams = {
   classes?: CcreClass[];
 };
 
-/**
- * Client-side replacement for the deprecated `cCRESCREENSearch` fetch (the old `MainQuery`
- * server action). Returns flat, download-ready rows for every cCRE intersecting `coordinates`.
- *
- * - No biosample: one `getmaxZScoresQuery` request supplies everything; `group` is the
- *   cell-agnostic backend classification.
- * - Biosample: `getcCREZScoresQuery` runs in parallel; its scores overlay the skeleton's
- *   z-score columns and `group` is recomputed from them via `classifyCcre`. Coordinates,
- *   conservation, and nearest gene always come from the skeleton.
- *
- * Pass the browser Apollo client from `useApolloClient()`. Uses `no-cache` to keep the
- * InMemoryCache from bloating on large regions (the old server action did the same).
- */
 export async function fetchCcreDownloadData(
   client: ApolloClient,
   { assembly, coordinates, biosample, classes }: FetchCcreDownloadDataParams
