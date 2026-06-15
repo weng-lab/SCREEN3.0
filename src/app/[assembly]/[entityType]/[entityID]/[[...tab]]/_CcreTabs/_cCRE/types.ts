@@ -5,6 +5,13 @@ import type { Assembly, CcreAssay, CcreClass } from "common/types/globalTypes";
 import type { Dispatch, SetStateAction } from "react";
 
 export type BiosampleRow = {
+  /**
+   * Z-score for the assay this row was built for. Populated in
+   * `assaySpecificRows` so plots can read the value directly off the row
+   * instead of indexing by `assay`, which can lag behind the row data
+   * (see `sortedFilteredData` in useTablePlotSync) during an assay switch.
+   */
+  value?: number;
   name?: string;
   displayname: string;
   sampleType?: string;

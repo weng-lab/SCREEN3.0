@@ -248,7 +248,10 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
 
   const assaySpecificRows: BiosampleRow[] = useMemo(() => {
     if (tab === "tables") return undefined;
-    return biosampleRows?.filter((row) => row[tab] != null);
+    // Bake the active assay's score into `value` so plots can read it off the
+    // row directly. This decouples plot data from the `assay` prop, which can
+    // momentarily be ahead of the grid-derived rows during an assay switch.
+    return biosampleRows?.filter((row) => row[tab] != null).map((row) => ({ ...row, value: row[tab] }));
   }, [biosampleRows, tab]);
 
   const loadingCorePartialAncillary =
