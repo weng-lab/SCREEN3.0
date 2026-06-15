@@ -22,7 +22,7 @@ export type ZScoresEntry<Details extends string | null = string | null> = [
  * Collapses the positional `zscores` tuples for a single cCRE into a keyed {@link CcreZScores}
  * object plus a `tf` flag (whether the cCRE is bound by a transcription factor). Shared by
  * {@link useCcreZScores} and the DownloadRange fetcher so the tuple layout is decoded in exactly
- * one place. Assumes a non-empty array (the API omits cCREs with no biosample data).
+ * one place. Assumes a non-empty array.
  */
 export const parseZScoresArray = (zScoresArray: ZScoresEntry<null>[]): CcreZScores & { tf: boolean } => {
   const zScoresAndTf: CcreZScores & { tf: boolean } = { tf: zScoresArray[0][9] === "yes" };

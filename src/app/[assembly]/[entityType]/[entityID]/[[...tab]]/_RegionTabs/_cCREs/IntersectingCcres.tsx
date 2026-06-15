@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import { Button, Stack, Tooltip, Skeleton } from "@mui/material";
-import { useCcreData } from "common/hooks/useCcreData";
 import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useMemo, useState } from "react";
@@ -13,10 +12,10 @@ import { ClassificationFormatting } from "common/components/ClassificationFormat
 import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
 import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { CLASS_COLORS } from "common/colors";
-import { useCcreZScores } from "common/hooks/useCcreZScores";
 import { useCcreIsIcre } from "common/hooks/useCcreIsIcre";
 import { useNearestTSSColumn } from "common/hooks/useNearestTSSColumn";
 import { CcreAssay } from "common/types/globalTypes";
+import { useIntersectingCcreZScores } from "common/hooks/useIntersectingCcreZScores";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);
@@ -39,26 +38,23 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     } else if (entity.entityType === "region") return [parseGenomicRangeString(entity.entityID)];
   }, [entity.entityID, entity.entityType]);
 
-  const { data: dataIntersectingCcres, loading: loadingIntersectingCcres, error: errorIntersectingCcres } = useCcreData({
-    coordinates,
+  const {
+    data: dataIntersectingCcres,
+    rowsLoading,
+    scoresLoading,
+    error: errorIntersectingCcres,
+  } = useIntersectingCcreZScores({
     assembly: entity.assembly,
+    biosample: selectedBiosample ? selectedBiosample.name : undefined,
+    coordinates,
   });
 
   const accessions = useMemo(() => dataIntersectingCcres?.map((x) => x.accession) ?? [], [dataIntersectingCcres]);
-
-  const { data: dataZScores, loading: loadingZScores, error: errorZScores } = useCcreZScores({
-    accessions,
-    assembly: entity.assembly,
-    biosample: selectedBiosample ? selectedBiosample.name : undefined,
-    skip: accessions.length === 0,
-  });
 
   const { data: dataIsIcre, loading: loadingIsIcre } = useCcreIsIcre({
     accessions,
     assembly: entity.assembly,
   });
-
-  const zScoresLoading = loadingZScores || (!dataZScores && !errorZScores);
 
   type CcreRow = NonNullable<typeof dataIntersectingCcres>[number];
 
@@ -79,9 +75,9 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     headerName,
     type: "number",
     display: "flex", //allows text-align: right from type: number to apply to block Skeleton
-    valueGetter: (_, row) => dataZScores?.[row.accession]?.[field] ?? null,
+    valueGetter: (_, row) => row[field] ?? null,
     renderCell: (params) =>
-      zScoresLoading ? (
+      scoresLoading ? (
         <Skeleton variant="text" width={30} />
       ) : params.value != null ? (
         params.value.toFixed(2)
@@ -105,9 +101,9 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       field: "group",
       headerName: "Classification",
       ...ClassificationFormatting,
-      valueGetter: (_, row) => (selectedBiosample ? dataZScores?.[row.accession]?.group ?? null : row.group),
+      valueGetter: (_, row) => row.group,
       renderCell: (params) =>
-        selectedBiosample && zScoresLoading ? (
+        scoresLoading ? (
           <Skeleton variant="text" width={80} />
         ) : (
           ClassificationFormatting.renderCell?.(params)
@@ -160,14 +156,9 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   ];
 
   const proportionsBarData = useMemo(() => {
-    if (selectedBiosample){
-      if (!dataZScores) return {}
-      return getProportionsFromArray(Object.values(dataZScores), "group", CCRE_CLASSES)
-    } else {
-      if (!dataIntersectingCcres) return {}
-      return getProportionsFromArray(dataIntersectingCcres, "group", CCRE_CLASSES)
-    }
-  }, [selectedBiosample, dataZScores, dataIntersectingCcres])
+    if (!dataIntersectingCcres) return {}
+    return getProportionsFromArray(dataIntersectingCcres, "group", CCRE_CLASSES)
+  }, [dataIntersectingCcres])
 
   return (
     <Stack spacing={1}>
@@ -177,7 +168,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       <ProportionsBar
         data={proportionsBarData}
         label="Classification Proportions"
-        loading={selectedBiosample ? zScoresLoading : loadingIntersectingCcres}
+        loading={rowsLoading || scoresLoading}
         getColor={(key) => CLASS_COLORS[key]}
         formatLabel={(key) => CLASS_DESCRIPTIONS[key]}
         tooltipTitle="Classification Proportions"
@@ -187,7 +178,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
         showToolbar
         rows={dataIntersectingCcres}
         columns={columns}
-        loading={loadingIntersectingCcres}
+        loading={rowsLoading}
         error={!!errorIntersectingCcres}
         label={`Intersecting cCREs`}
         emptyTableFallback={"No intersecting cCREs found in this region"}

@@ -2,7 +2,7 @@ import type { ErrorLike } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
 import type { Assembly, CcreClass, CcreZScoresAndGroup } from "common/types/globalTypes";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { classifyCcre } from "common/utility";
 import { parseZScoresArray, ZScoresEntry } from "common/utils/parseCcreZScores";
 
@@ -19,14 +19,17 @@ type UseCcreZScoresReturn = {
   error: ErrorLike | undefined;
 };
 
-const GET_CCRE_MAX_Z = gql(`
-  query maxZ(
+const GET_CCRE_Z_SCORES = gql(`
+  query ccreZScores(
     $assembly: String!
     $accessions: [String!]
+    $biosample: [String]
   ) {
-    getmaxZScoresQuery(
+    getcCREZScoresQuery(
       assembly: $assembly
       accession: $accessions
+      biosample_value: $biosample
+      include_biosample_details: false
       nearbygeneslimit: 1
     ) {
       accession
@@ -36,24 +39,6 @@ const GET_CCRE_MAX_Z = gql(`
       dnase_max_zscore
       ctcf_max_zscore
       atac_max_zscore
-    }
-  }
-`)
-
-const GET_CCRE_BIOSAMPLE_Z = gql(`
-  query BiosampleZ(
-    $assembly: String!
-    $accessions: [String!]
-    $biosample: [String]
-  ) {
-    getcCREZScoresQuery(
-      assembly: $assembly
-      biosample_value: $biosample
-      accession: $accessions
-      include_biosample_details: false
-      nearbygeneslimit: 1
-    ) {
-      accession
       midccre_nearestgenes {
         distance
       }
@@ -68,66 +53,59 @@ export const useCcreZScores = ({
   biosample,
   skip,
 }: UseCcreZScoresParams): UseCcreZScoresReturn => {
-  
-  // used if no biosample is passed
   const {
-    data: dataMaxZ,
-    loading: loadingMaxZ,
-    error: errorMaxZ,
-  } = useQuery(GET_CCRE_MAX_Z, {
-    variables: { accessions, assembly },
-    skip: skip || biosample !== undefined,
+    data,
+    previousData,
+    loading,
+    error,
+  } = useQuery(GET_CCRE_Z_SCORES, {
+    variables: { accessions, assembly, biosample: biosample ? [biosample] : ["cerebellum_tissue_male_adult_20_years_ENCDO377OGA"] },
+    skip: skip || accessions.length === 0,
+    notifyOnNetworkStatusChange: true,
   });
 
-  // used if biosample is passed
-  const {
-    data: dataBiosampleZ,
-    loading: loadingBiosampleZ,
-    error: errorBiosampleZ,
-  } = useQuery(GET_CCRE_BIOSAMPLE_Z, {
-    variables: { accessions, assembly, biosample },
-    skip: skip || biosample === undefined,
-  });
+  const queryKey = useMemo(() => JSON.stringify({ assembly, accessions }), [assembly, accessions]);
+  const lastDataQueryKey = useRef(queryKey);
+
+  useEffect(() => {
+    if (data) lastDataQueryKey.current = queryKey;
+  }, [data, queryKey]);
+
+  const canUsePreviousData = lastDataQueryKey.current === queryKey;
+  const displayData = data ?? (canUsePreviousData ? previousData : undefined);
 
   const ccreMap: UseCcreZScoresReturn["data"] = useMemo(() => {
-    if (biosample) {
-      if (!dataBiosampleZ?.getcCREZScoresQuery.length) return undefined;
-      return Object.fromEntries(
-        dataBiosampleZ.getcCREZScoresQuery.map((entry) => {
-          const {tf, ...zScores} = parseZScoresArray(entry.zscores as ZScoresEntry<null>[])
-          const distance = entry.midccre_nearestgenes[0].distance
-          const group = classifyCcre(zScores, tf, distance)
+    if (!displayData?.getcCREZScoresQuery?.length) return undefined;
 
-          return [
+    return Object.fromEntries(
+      displayData.getcCREZScoresQuery.flatMap((entry) => {
+        if (!entry?.accession) return [];
+
+        const distance = entry.midccre_nearestgenes?.[0]?.distance ?? Infinity;
+        const zScores = biosample && entry.zscores?.length
+          ? parseZScoresArray(entry.zscores as ZScoresEntry<null>[])
+          : undefined;
+
+        return [
+          [
             entry.accession,
             {
-              ...zScores,
-              group,
+              dnase: zScores?.dnase ?? entry.dnase_max_zscore,
+              atac: zScores?.atac ?? entry.atac_max_zscore,
+              h3k4me3: zScores?.h3k4me3 ?? entry.h3k4me3_max_zscore,
+              h3k27ac: zScores?.h3k27ac ?? entry.h3k27ac_max_zscore,
+              ctcf: zScores?.ctcf ?? entry.ctcf_max_zscore,
+              group: zScores ? classifyCcre(zScores, zScores.tf, distance) : (entry.ccre_group as CcreClass),
             },
-          ];
-        })
-      );
-    } else {
-      if (!dataMaxZ?.getmaxZScoresQuery.length) return undefined;
-      return Object.fromEntries(
-        dataMaxZ.getmaxZScoresQuery.map((entry) => [
-          entry.accession,
-          {
-            dnase: entry.dnase_max_zscore,
-            atac: entry.atac_max_zscore,
-            h3k4me3: entry.h3k4me3_max_zscore,
-            h3k27ac: entry.h3k27ac_max_zscore,
-            ctcf: entry.ctcf_max_zscore,
-            group: entry.ccre_group as CcreClass,
-          },
-        ])
-      );
-    }
-  }, [dataMaxZ, dataBiosampleZ]);
+          ],
+        ];
+      })
+    );
+  }, [biosample, displayData]);
 
   return {
     data: ccreMap,
-    loading: loadingMaxZ || loadingBiosampleZ,
-    error: errorMaxZ || errorBiosampleZ,
+    loading,
+    error,
   };
 };
