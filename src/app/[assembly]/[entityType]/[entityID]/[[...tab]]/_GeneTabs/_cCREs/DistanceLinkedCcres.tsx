@@ -11,8 +11,6 @@ import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { calcDistCcreToTSS } from "common/utility";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
-import { gql } from "common/types/generated";
-import { useQuery } from "@apollo/client/react";
 import { useCcresWithGeneInClosest3 } from "common/hooks/useCcresWithGeneInClosest3";
 import { useDistanceAnchor } from "common/hooks/useDistanceAnchor";
 
@@ -120,6 +118,8 @@ export default function DistanceLinkedCcres({
   }, [calcMethod, dataCcresByClosestGenes, geneData, range]) satisfies UseCcreDataParams ;
 
   const { data, loading, error } = useCcreData(useCcreDataParams);
+  const isCcreDataLoading = !useCcreDataParams.skip && loading;
+  const isClosestGenesLoading = calcMethod === "3gene" && loadingCcresByClosestGenes;
 
   // useDistanceAnchor speaks middleAnchor/edgeAnchor; calcDistCcreToTSS speaks middle/closest
   const tssAnchor = anchor === "middleAnchor" ? "middle" : "closest";
@@ -284,7 +284,7 @@ export default function DistanceLinkedCcres({
         getRowId={(row) => row.ccre}
         columns={cols}
         label={"Nearby cCREs"}
-        loading={geneData.loading || loading || loadingCcresByClosestGenes}
+        loading={geneData.loading || isCcreDataLoading || isClosestGenesLoading}
         initialState={{
           sorting: {
             sortModel: [{ field: "distance", sort: "asc" }],
