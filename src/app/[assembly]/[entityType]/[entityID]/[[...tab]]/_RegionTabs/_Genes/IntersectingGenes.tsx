@@ -69,7 +69,7 @@ const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {
       label={`Intersecting Genes`}
       emptyTableFallback={"No intersecting Genes found in this region"}
       initialState={{ sorting: { sortModel: [{ field: "coordinates.start", sort: "asc" }] } }}
-      divHeight={{ maxHeight: "600px" }}
+      divHeight={{ height: "600px" }}
     />
   );
 };

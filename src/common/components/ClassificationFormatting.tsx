@@ -8,6 +8,7 @@ import { CLASS_COLORS } from "common/colors";
 export const ClassificationFormatting: Partial<TableColDef> = {
   type: "singleSelect",
   valueOptions: CCRE_CLASSES.map((group) => ({ value: group, label: CLASS_DESCRIPTIONS[group] })),
+  minWidth: 150,
   renderCell: (params: GridRenderCellParams) => {
     const group = params.value;
     // Override the InActive color here since it's being used for coloring text and is too light

@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client/react";
 import type { ErrorLike } from "@apollo/client";
-import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { SnpQuery } from "common/types/generated/graphql";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
@@ -19,11 +18,10 @@ const SNP_Query = gql(`
 `);
 
 type UseSnpDataParams =
-  | { rsID: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly: Assembly; skip?: boolean }
+  | { rsID: string | string[]; coordinates?: never; assembly: Assembly; skip?: boolean }
   | {
       coordinates: GenomicRange | GenomicRange[];
       rsID?: never;
-      entityType?: AnyEntityType;
       assembly: Assembly;
       skip?: boolean;
     };
@@ -37,7 +35,6 @@ export type UseSnpDataReturn<T extends UseSnpDataParams> = T extends
 export const useSnpData = <T extends UseSnpDataParams>({
   rsID,
   coordinates,
-  entityType,
   assembly,
   skip,
 }: T): UseSnpDataReturn<T> => {
@@ -47,7 +44,7 @@ export const useSnpData = <T extends UseSnpDataParams>({
       snpids: rsID,
       assembly: assembly,
     },
-    skip: skip || (entityType !== undefined && entityType !== "variant") || assembly !== "GRCh38",
+    skip: skip || assembly !== "GRCh38",
   });
 
   return {

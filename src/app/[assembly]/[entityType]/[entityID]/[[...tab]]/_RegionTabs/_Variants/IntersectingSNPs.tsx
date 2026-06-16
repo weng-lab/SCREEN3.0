@@ -13,9 +13,7 @@ const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { di
 
   const coordinates = useMemo(() => {
     if (!dataCoords || dataCoords.__typename === "GwasStudiesMetadata") return null;
-    if (dataCoords.__typename === "SCREENSearchResult") {
-      return { chromosome: dataCoords.chrom, start: dataCoords.start, end: dataCoords.start + dataCoords.len };
-    } else if (dataCoords.__typename === "Bed") {
+    if (dataCoords.__typename === "Bed") {
       if (typeof window === "undefined") return null;
       const encoded = sessionStorage.getItem(entity.entityID);
       return decodeRegions(encoded);
@@ -66,7 +64,7 @@ const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { di
       label={`Intersecting SNPs`}
       emptyTableFallback={"No intersecting SNPs found in this region"}
       initialState={{ sorting: { sortModel: [{ field: "coordinates.start", sort: "asc" }] } }}
-      divHeight={{ maxHeight: "600px", ...divHeight }}
+      divHeight={{ height: "600px", ...divHeight }}
     />
   );
 };
