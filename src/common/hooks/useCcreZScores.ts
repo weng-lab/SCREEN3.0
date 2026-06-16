@@ -59,7 +59,7 @@ export const useCcreZScores = ({
     loading,
     error,
   } = useQuery(GET_CCRE_Z_SCORES, {
-    variables: { accessions, assembly, biosample: biosample ? [biosample] : ["cerebellum_tissue_male_adult_20_years_ENCDO377OGA"] },
+    variables: { accessions, assembly, biosample: biosample ? [biosample] : [] },
     skip: skip || accessions.length === 0,
     notifyOnNetworkStatusChange: true,
   });

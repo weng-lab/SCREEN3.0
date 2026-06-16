@@ -71,7 +71,7 @@ export const useIntersectingCcreZScores = ({
     loading,
     error,
   } = useQuery(GET_INTERSECTING_CCRE_Z_SCORES, {
-    variables: { assembly, coordinates, biosample: biosample ? [biosample] : ["cerebellum_tissue_male_adult_20_years_ENCDO377OGA"] },
+    variables: { assembly, coordinates, biosample: biosample ? [biosample] : [] },
     skip: shouldSkip,
     notifyOnNetworkStatusChange: true,
   });
