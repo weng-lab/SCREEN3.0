@@ -135,7 +135,7 @@ const AssayViolinPlot = ({
                 <strong>{formatAssay(assay)} z-score:</strong> {point.metadata[assay]}
               </div>
               <div>
-                <strong>Class in this sample:</strong> {point.metadata?.class}
+                <strong>Class in this sample:</strong> {point.metadata?.group}
               </div>
             </Box>
           )}

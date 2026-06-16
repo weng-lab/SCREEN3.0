@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client/react";
 import React, { useState } from "react";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { Box, Stack, Tab } from "@mui/material";
-import { useCcreData } from "common/hooks/useCcreData";
+import { useCcre } from "common/hooks/useCcre";
 import { GenomicRange } from "common/types/globalTypes";
 import { gql } from "common/types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
@@ -154,13 +154,9 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
     data: dataCcre,
     loading: loadingCcre,
     error: errorCcre,
-  } = useCcreData({ assembly: entity.assembly, accession: entity.entityID });
+  } = useCcre({ assembly: entity.assembly, accession: entity.entityID });
 
-  const coordinates: GenomicRange = dataCcre && {
-    chromosome: dataCcre?.chrom,
-    start: dataCcre?.start,
-    end: dataCcre?.start + dataCcre?.len,
-  };
+  const coordinates: GenomicRange = dataCcre?.coordinates;
 
   const {
     data: dataEntex,

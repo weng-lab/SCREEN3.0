@@ -1,11 +1,10 @@
 "use client";
 import Image from "next/image";
-import { Typography, Button, Stack, IconButton, Tooltip } from "@mui/material";
-import { useCcreData } from "common/hooks/useCcreData";
+import { Button, Stack, Tooltip, Skeleton } from "@mui/material";
 import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useMemo, useState } from "react";
-import { CancelRounded } from "@mui/icons-material";
+import { SelectedBiosampleCard } from "common/components/SelectedBiosampleCard";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { decodeRegions, parseGenomicRangeString } from "common/utility";
 import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
@@ -13,9 +12,22 @@ import { ClassificationFormatting } from "common/components/ClassificationFormat
 import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
 import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { CLASS_COLORS } from "common/colors";
+import { useCcreIsIcre } from "common/hooks/useCcreIsIcre";
+import { useNearestTSSColumn } from "common/hooks/useNearestTSSColumn";
+import { CcreAssay } from "common/types/globalTypes";
+import { useIntersectingCcreZScores } from "common/hooks/useIntersectingCcreZScores";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);
+  const [biosampleSelectOpen, setBiosampleSelectOpen] = useState(false);
+
+  const handleClickClose = () => {
+    setBiosampleSelectOpen(false);
+  };
+
+  const handleBiosampleSelected = (biosample: EncodeBiosample) => {
+    setSelectedBiosample(biosample);
+  };
 
   // if bed upload extract from sessionStorage else it's a region so parse from entityID
   const coordinates = useMemo(() => {
@@ -23,40 +35,62 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       if (typeof window === "undefined") return null;
       const encoded = sessionStorage.getItem(entity.entityID);
       return decodeRegions(encoded);
-    } else if (entity.entityType === "region") return parseGenomicRangeString(entity.entityID);
+    } else if (entity.entityType === "region") return [parseGenomicRangeString(entity.entityID)];
   }, [entity.entityID, entity.entityType]);
 
   const {
-    data: dataCcres,
-    loading: loadingCcres,
-    error: errorCcres,
-  } = useCcreData({
-    coordinates,
+    data: dataIntersectingCcres,
+    rowsLoading,
+    scoresLoading,
+    error: errorIntersectingCcres,
+  } = useIntersectingCcreZScores({
     assembly: entity.assembly,
-    nearbygeneslimit: 1,
-    cellType: selectedBiosample ? selectedBiosample.name : undefined,
+    biosample: selectedBiosample ? selectedBiosample.name : undefined,
+    coordinates,
   });
 
-  const [open, setOpen] = useState(false);
+  const accessions = useMemo(() => dataIntersectingCcres?.map((x) => x.accession) ?? [], [dataIntersectingCcres]);
 
-  const handleClickClose = () => {
-    setOpen(false);
-  };
+  const { data: dataIsIcre, loading: loadingIsIcre } = useCcreIsIcre({
+    accessions,
+    assembly: entity.assembly,
+  });
+
+  type CcreRow = NonNullable<typeof dataIntersectingCcres>[number];
+
+  const nearestTSSColumn = useNearestTSSColumn<CcreRow>({
+    accessions,
+    assembly: entity.assembly,
+    getAccession: (row) => row.accession,
+  });
+
   const showAtac = !selectedBiosample || !!selectedBiosample.atac_experiment_accession;
   const showCTCF = !selectedBiosample || !!selectedBiosample.ctcf_experiment_accession;
   const showDNase = !selectedBiosample || !!selectedBiosample.dnase_experiment_accession;
   const showH3k27ac = !selectedBiosample || !!selectedBiosample.h3k27ac_experiment_accession;
   const showH3k4me3 = !selectedBiosample || !!selectedBiosample.h3k4me3_experiment_accession;
 
-  const handleBiosampleSelected = (biosample: EncodeBiosample) => {
-    setSelectedBiosample(biosample);
-  };
+  const zScoreCol = (field: CcreAssay, headerName: string): TableColDef<CcreRow> => ({
+    field,
+    headerName,
+    type: "number",
+    display: "flex", //allows text-align: right from type: number to apply to block Skeleton
+    valueGetter: (_, row) => row[field] ?? null,
+    renderCell: (params) =>
+      scoresLoading ? (
+        <Skeleton variant="text" width={30} />
+      ) : params.value != null ? (
+        params.value.toFixed(2)
+      ) : (
+        "—"
+      ),
+  });
 
-  const columns: TableColDef<(typeof dataCcres)[number]>[] = [
+  const columns: TableColDef<CcreRow>[] = [
     {
-      field: "info.accession",
+      field: "accession",
       headerName: "Accession",
-      valueGetter: (_, row) => row.info.accession,
+      valueGetter: (_, row) => row.accession,
       renderCell: (params) => (
         <LinkComponent href={`/${entity.assembly}/ccre/${params.value}`}>
           <i>{params.value}</i>
@@ -64,111 +98,48 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       ),
     },
     {
-      field: "pct",
+      field: "group",
       headerName: "Classification",
       ...ClassificationFormatting,
+      valueGetter: (_, row) => row.group,
+      renderCell: (params) =>
+        scoresLoading ? (
+          <Skeleton variant="text" width={80} />
+        ) : (
+          ClassificationFormatting.renderCell?.(params)
+        ),
     },
     {
-      field: "chrom",
+      field: "chromosome",
       headerName: "Chromosome",
+      valueGetter: (_, row) => row.coordinates.chromosome,
     },
     {
       field: "start",
       headerName: "Start",
       type: "number",
+      valueGetter: (_, row) => row.coordinates.start,
     },
     {
       field: "end",
       headerName: "End",
       type: "number",
-      valueGetter: (_, row) => row.start + row.len,
+      valueGetter: (_, row) => row.coordinates.end,
     },
-    ...(showDNase
-      ? [
-          {
-            field: "dnase",
-            headerName: "DNase",
-            type: "number" as const,
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.dnase_experiment_accession
-                ? row.ctspecific.dnase_zscore.toFixed(2)
-                : row.dnase_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showAtac
-      ? [
-          {
-            field: "atac",
-            headerName: "ATAC",
-            type: "number" as const,
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.atac_experiment_accession
-                ? row.ctspecific.atac_zscore.toFixed(2)
-                : row.atac_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showH3k4me3
-      ? [
-          {
-            field: "h3k4me3",
-            headerName: "H3K4me3",
-            type: "number" as const,
-
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.h3k4me3_experiment_accession
-                ? row.ctspecific.h3k4me3_zscore.toFixed(2)
-                : row.promoter_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showH3k27ac
-      ? [
-          {
-            field: "h3k27ac",
-            headerName: "H3K27ac",
-            type: "number" as const,
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.h3k27ac_experiment_accession
-                ? row.ctspecific.h3k27ac_zscore.toFixed(2)
-                : row.enhancer_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    ...(showCTCF
-      ? [
-          {
-            field: "ctcf",
-            headerName: "CTCF",
-            type: "number" as const,
-            valueGetter: (_, row) =>
-              selectedBiosample && selectedBiosample.ctcf_experiment_accession
-                ? row.ctspecific.ctcf_zscore.toFixed(2)
-                : row.ctcf_zscore.toFixed(2),
-          },
-        ]
-      : []),
-    {
-      field: "nearestgene",
-      headerName: "Nearest Gene",
-      valueGetter: (_, row) => `${row.nearestgenes[0].gene} - ${row.nearestgenes[0].distance.toLocaleString()} bp`,
-      renderCell: (params) => (
-        <span>
-          <LinkComponent href={`/${entity.assembly}/gene/${params.row.nearestgenes[0].gene}`}>
-            <i>{params.row.nearestgenes[0].gene}</i>
-          </LinkComponent>
-          &nbsp;- {params.row.nearestgenes[0].distance.toLocaleString()} bp
-        </span>
-      ),
-    },
+    ...(showDNase ? [zScoreCol("dnase", "DNase")] : []),
+    ...(showAtac ? [zScoreCol("atac", "ATAC")] : []),
+    ...(showH3k4me3 ? [zScoreCol("h3k4me3", "H3K4me3")] : []),
+    ...(showH3k27ac ? [zScoreCol("h3k27ac", "H3K27ac")] : []),
+    ...(showCTCF ? [zScoreCol("ctcf", "CTCF")] : []),
+    nearestTSSColumn,
     {
       field: "isicre",
       headerName: "iCRE",
-      valueGetter: (_, row) => row.isicre,
+      valueGetter: (_, row) => dataIsIcre?.[row.accession] ?? false,
       renderCell: (params) => {
-        return params.row.isicre ? (
-          <LinkComponent href={`https://igscreen.vercel.app/icre/${params.row.info.accession}`} openInNewTab>
+        if (loadingIsIcre) return <Skeleton variant="text" width={20} />;
+        return params.value ? (
+          <LinkComponent href={`https://igscreen.vercel.app/icre/${params.row.accession}`} openInNewTab>
             <Image
               src="/igSCREEN_icon.png"
               alt="igSCREEN Helix"
@@ -184,64 +155,50 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     },
   ];
 
+  const proportionsBarData = useMemo(() => {
+    if (!dataIntersectingCcres) return {}
+    return getProportionsFromArray(dataIntersectingCcres, "group", CCRE_CLASSES)
+  }, [dataIntersectingCcres])
+
   return (
     <Stack spacing={1}>
       {selectedBiosample && (
-        <Stack
-          borderRadius={1}
-          direction={"row"}
-          justifyContent={"space-between"}
-          sx={{ backgroundColor: (theme) => theme.palette.secondary.light }}
-          alignItems={"center"}
-          width={"fit-content"}
-        >
-          <Typography sx={{ color: "#2C5BA0", pl: 1 }}>
-            <b>Selected Biosample: </b>
-            {" " +
-              selectedBiosample.ontology.charAt(0).toUpperCase() +
-              selectedBiosample.ontology.slice(1) +
-              " - " +
-              selectedBiosample.displayname}
-          </Typography>
-          <IconButton onClick={() => handleBiosampleSelected(null)}>
-            <CancelRounded />
-          </IconButton>
-        </Stack>
+        <SelectedBiosampleCard biosample={selectedBiosample} onClear={() => handleBiosampleSelected(null)} />
       )}
       <ProportionsBar
-        data={getProportionsFromArray(dataCcres, "pct", CCRE_CLASSES)}
+        data={proportionsBarData}
         label="Classification Proportions"
-        loading={loadingCcres || !!errorCcres}
+        loading={rowsLoading || scoresLoading}
         getColor={(key) => CLASS_COLORS[key]}
         formatLabel={(key) => CLASS_DESCRIPTIONS[key]}
-        tooltipTitle="Classification Proportions, Core Collection"
+        tooltipTitle="Classification Proportions"
         sortDescending
       />
       <Table
         showToolbar
-        rows={dataCcres}
+        rows={dataIntersectingCcres}
         columns={columns}
-        loading={loadingCcres}
-        error={!!errorCcres}
+        loading={rowsLoading}
+        error={!!errorIntersectingCcres}
         label={`Intersecting cCREs`}
         emptyTableFallback={"No intersecting cCREs found in this region"}
         slotProps={{
           toolbar: {
             extra: (
               <Tooltip title="Advanced Filters">
-                <Button variant="outlined" onClick={() => setOpen(true)}>
+                <Button variant="outlined" onClick={() => setBiosampleSelectOpen(true)}>
                   Select Biosample
                 </Button>
               </Tooltip>
             ),
           },
         }}
-        initialState={{ sorting: { sortModel: [{ field: "dnase", sort: "desc" }] } }}
-        divHeight={{ maxHeight: "600px" }}
+        initialState={{ sorting: { sortModel: [{ field: "start", sort: "asc" }] } }}
+        divHeight={{ height: "600px" }}
       />
       <BiosampleSelectDialog
         assembly={entity.assembly}
-        open={open}
+        open={biosampleSelectOpen}
         onClose={handleClickClose}
         onSelectionChange={handleBiosampleSelected}
         selected={selectedBiosample}

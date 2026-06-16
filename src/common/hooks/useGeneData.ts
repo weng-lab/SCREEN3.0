@@ -1,7 +1,6 @@
 "use client";
 import { useQuery } from "@apollo/client/react";
 import type { ErrorLike } from "@apollo/client";
-import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { useMemo } from "react";
 import { ChromRange, GeneQuery } from "common/types/generated/graphql";
@@ -36,11 +35,10 @@ const GENE_Query = gql(`
 `);
 
 export type UseGeneDataParams =
-  | { name: string | string[]; coordinates?: never; entityType?: AnyEntityType; assembly: Assembly; skip?: boolean }
+  | { name: string | string[]; coordinates?: never; assembly: Assembly; skip?: boolean }
   | {
       coordinates: GenomicRange | GenomicRange[];
       name?: never;
-      entityType?: AnyEntityType;
       assembly: Assembly;
       skip?: boolean;
     };
@@ -67,11 +65,10 @@ const convertCoordsToQueryFormat = (coordinates: GenomicRange | GenomicRange[]):
 export const useGeneData = <T extends UseGeneDataParams>({
   name,
   coordinates,
-  entityType,
   assembly,
   skip,
 }: T): UseGeneDataReturn<T> => {
-  const shouldQueryBothVersions = assembly === "GRCh38" && !skip && (entityType === undefined || entityType === "gene");
+  const shouldQueryBothVersions = assembly === "GRCh38" && !skip;
 
   const v29Query = useQuery(GENE_Query, {
     variables: {
@@ -100,8 +97,7 @@ export const useGeneData = <T extends UseGeneDataParams>({
       version: 25,
       name,
     },
-    skip:
-      Array.isArray(coordinates) || assembly !== "mm10" || skip || (entityType !== undefined && entityType !== "gene"),
+    skip: Array.isArray(coordinates) || assembly !== "mm10" || skip,
   });
 
   // Combine and deduplicate results for human, keeping v40 when duplicates exist

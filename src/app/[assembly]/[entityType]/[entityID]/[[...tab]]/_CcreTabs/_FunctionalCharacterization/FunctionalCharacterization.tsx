@@ -6,7 +6,7 @@ import { Stack } from "@mui/material";
 import { gql } from "common/types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useCcreData } from "common/hooks/useCcreData";
+import { useCcre } from "common/hooks/useCcre";
 import { GenomicRange } from "common/types/globalTypes";
 
 export const FUNCTIONAL_DATA_QUERY = gql(`
@@ -158,16 +158,12 @@ const crispr_experimentMap: Record<string, CRISPR_ExperimentInfo> = {
 };
 
 export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps) => {
-  const { data: dataCcre, loading: loadingCoords } = useCcreData({
+  const { data: dataCcre, loading: loadingCoords } = useCcre({
     assembly: entity.assembly,
     accession: entity.entityID,
   });
 
-  const coordinates: GenomicRange = dataCcre && {
-    chromosome: dataCcre?.chrom,
-    start: dataCcre?.start,
-    end: dataCcre?.start + dataCcre?.len,
-  };
+  const coordinates: GenomicRange = dataCcre?.coordinates;
 
   const isMouse = entity.assembly === "mm10";
 
