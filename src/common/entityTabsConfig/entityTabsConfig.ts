@@ -257,6 +257,8 @@ export const humanBedTabs = [
     label: "Genome Browser",
     iconPath: GbIconPath,
     component: GenomeBrowser,
+    getIsDisabled: () => Promise.resolve(true),
+    disabledMessage: "Coming Soon"
   },
 ] as const satisfies TabConfig[];
 
@@ -360,6 +362,8 @@ export const mouseBedTabs = [
     label: "Genome Browser",
     iconPath: GbIconPath,
     component: GenomeBrowser,
+    getIsDisabled: () => Promise.resolve(true),
+    disabledMessage: "Coming Soon"
   },
 ] as const satisfies TabConfig[];
 
