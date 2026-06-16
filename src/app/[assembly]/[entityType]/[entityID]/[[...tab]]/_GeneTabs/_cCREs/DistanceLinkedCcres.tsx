@@ -259,7 +259,8 @@ export default function DistanceLinkedCcres({
       <>
         {calcMethod === "tss" && (
           <Typography component="span" variant="subtitle2">
-            (From {formatTssOffset(range[0])} to {formatTssOffset(range[1])} of TSS of <i>{geneData.data?.name}</i>)
+            (From {formatTssOffset(range[0])} to {formatTssOffset(range[1])}
+            {range[1] !== 0 ? " of TSS" : ""} of <i>{geneData.data?.name}</i>)
           </Typography>
         )}
         {calcMethod === "3gene" && (
@@ -304,7 +305,6 @@ export default function DistanceLinkedCcres({
         anchorEl={buttonRef.current}
         handleClickAway={handleClickAway}
         range={range}
-        geneName={geneData.data?.name}
         calcMethod={calcMethod}
         handleRangeChange={handleRangeChange}
         handleMethodChange={handleMethodChange}

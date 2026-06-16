@@ -18,7 +18,6 @@ interface CalculateNearbyCCREsPopperProps {
   open: boolean;
   anchorEl: HTMLButtonElement | null;
   handleClickAway: () => void;
-  geneName: string;
   calcMethod: "body" | "tss" | "3gene";
   handleMethodChange: (method: "body" | "tss" | "3gene") => void;
   range: [number, number];
@@ -29,13 +28,20 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
   open,
   anchorEl,
   handleClickAway,
-  geneName,
   calcMethod,
   handleMethodChange,
   range,
   handleRangeChange,
 }) => {
   const isDistanceDisabled = calcMethod !== "tss";
+
+  // Track the slider value locally so the handle follows the mouse during drag.
+  const [localRange, setLocalRange] = React.useState(range);
+
+  React.useEffect(() => {
+    setLocalRange(range);
+  }, [range]);
+
   return (
     <Popper open={open} anchorEl={anchorEl} placement="bottom-start" disablePortal sx={{ zIndex: 10 }}>
       <ClickAwayListener onClickAway={handleClickAway}>
@@ -73,8 +79,9 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
                     min={-100000}
                     max={100000}
                     step={1000}
-                    value={range}
-                    onChange={(_, value) => handleRangeChange(value as [number, number])}
+                    value={localRange}
+                    onChange={(_, value) => setLocalRange(value as [number, number])}
+                    onChangeCommitted={(_, value) => handleRangeChange(value as [number, number])}
                     marks={tssMarks}
                     disabled={isDistanceDisabled}
                   />
