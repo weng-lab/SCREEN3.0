@@ -2,7 +2,12 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 import Config from "./src/common/config.json";
 
 const config: CodegenConfig = {
-  schema: [{ [Config.API.CcreAPI]: { headers: { Authorization: "Bearer " + process.env.SCREEN_API_KEY! } } }],
+  schema: [
+    {
+      [Config.API.CcreAPI]: { headers: { Authorization: "Bearer " + process.env.SCREEN_API_KEY! } },
+      [Config.API.MOHD_API]: { headers: { Authorization: "Bearer " + process.env.MOHD_API_KEY! } },
+    },
+  ],
   documents: ["src/**/*.{ts,tsx}"],
   generates: {
     "./src/common/types/generated/": {
