@@ -17,7 +17,7 @@ const PlotTooltip = (bar: BarData<BiosampleRow>) => {
         <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.ontology)}
       </Typography>
       <Typography variant="body2">
-        <b>Classification:</b> {capitalizeFirstLetter(bar.metadata.class)}
+        <b>Classification:</b> {capitalizeFirstLetter(bar.metadata.group)}
       </Typography>
       <Typography variant="body2">
         <b>Z-Score</b> {bar.value.toFixed(2)}
@@ -41,24 +41,30 @@ const AssayBarPlot = ({
   setShow95Line,
   ref,
 }: AssayBarPlotProps) => {
+  // Read the score off `row.value` (baked in at assaySpecificRows) rather than
+  // indexing by `assay`. `assay` updates synchronously on a tab switch, but
+  // `sortedFilteredData` lags a render behind (it's grid-event state), so
+  // `row[assay]` would be undefined for the previous assay's rows mid-transition.
   const plotData: BarData<BiosampleRow>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
-    return sortedFilteredData.map((row) => {
-      const anySelected = selected.length > 0;
-      const isSelected = selected.some((x) => getRowId(x) === getRowId(row));
-      return {
-        value: row[assay],
-        id: getRowId(row),
-        category: capitalizeFirstLetter(row.ontology),
-        label: truncateString(capitalizeFirstLetter(row.displayname), 25),
-        color:
-          (anySelected && isSelected) || !anySelected
-            ? (tissueColors[row.ontology] ?? tissueColors.missing)
-            : "#CCCCCC",
-        metadata: row,
-      };
-    });
-  }, [assay, selected, sortedFilteredData, getRowId]);
+    return sortedFilteredData
+      .filter((row) => row.value != null)
+      .map((row) => {
+        const anySelected = selected.length > 0;
+        const isSelected = selected.some((x) => getRowId(x) === getRowId(row));
+        return {
+          value: row.value as number,
+          id: getRowId(row),
+          category: capitalizeFirstLetter(row.ontology),
+          label: truncateString(capitalizeFirstLetter(row.displayname), 25),
+          color:
+            (anySelected && isSelected) || !anySelected
+              ? (tissueColors[row.ontology] ?? tissueColors.missing)
+              : "#CCCCCC",
+          metadata: row,
+        };
+      });
+  }, [selected, sortedFilteredData, getRowId]);
 
   const handleBarClick = (bar: BarData<BiosampleRow>) => {
     toggleSelection(bar.metadata);

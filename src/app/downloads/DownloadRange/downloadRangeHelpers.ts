@@ -1,6 +1,11 @@
-import { MainQuery } from "app/downloads/DownloadRange/queries";
-import { MainQueryData, SCREENSearchResult } from "./types";
+import { ApolloClient } from "@apollo/client";
+import { Dispatch, SetStateAction } from "react";
+import { Assembly, CcreClass } from "common/types/globalTypes";
+import { CcreDownloadRow, fetchCcreDownloadData } from "app/downloads/DownloadRange/fetchCcreDownloadData";
 import { trackDownload } from "../analytics";
+
+export type Assays = { atac: boolean; ctcf: boolean; dnase: boolean; h3k27ac: boolean; h3k4me3: boolean };
+export type Conservation = { primate: boolean; mammal: boolean; vertebrate: boolean };
 
 /**
  *
@@ -33,74 +38,15 @@ export function parseGenomicRegion(input: string): { chromosome: string; start: 
 }
 
 /**
- *
- * @param assembly "GRCh38" | "mm10"
- * @param chromosome string
- * @param start number
- * @param end number
- * @param biosample string
- * @param nearbygenesdistancethreshold number, 1,000,000 is default if undefined
- * @param nearbygeneslimit number, 3 is default if undefined
- * @param intersectedAccessions string[], optional, for intersected accessions from bed upload
- * @param noLimit boolean, set to true to eliminate 25K limit on results (defined in queries.ts). Only remove limit if region is ~ <20M bp to avoid crashing cCRE service
- * @returns Main cCRE search results (of type MainQueryData) (mostly) raw data. If biosample passed,
- * the ctspecific zscores in mainQueryData are used to replace normal zscores to avoid passing biosample
- * to specify where to select scores from later in generateFilteredRows
+ * @param rows download-ready cCRE rows from {@link fetchCcreDownloadData}
+ * @param assays which assay z-score columns to include (user selection)
+ * @param conservation which conservation columns to include (user selection)
+ * @returns BED file contents, sorted by start coordinate
  */
-export async function fetchcCREData(
-  assembly: "GRCh38" | "mm10",
-  chromosome: string,
-  start: number,
-  end: number,
-  biosample: string,
-  nearbygenesdistancethreshold: number,
-  nearbygeneslimit: number,
-  intersectedAccessions?: string[],
-  noLimit?: boolean
-) {
-  //cCRESearchQuery
-  const mainQueryData = await MainQuery(
-    assembly,
-    chromosome,
-    start,
-    end,
-    biosample,
-    nearbygenesdistancethreshold,
-    nearbygeneslimit,
-    intersectedAccessions,
-    noLimit
-  );
-  //If biosample-specific data returned, sync z-scores with ctspecific to avoid having to select ctspecific later
-  if (biosample) {
-    mainQueryData.data.cCRESCREENSearch = mainQueryData.data.cCRESCREENSearch.map((cCRE) => {
-      cCRE.dnase_zscore = cCRE.ctspecific.dnase_zscore;
-      cCRE.atac_zscore = cCRE.ctspecific.atac_zscore;
-      cCRE.enhancer_zscore = cCRE.ctspecific.h3k27ac_zscore;
-      cCRE.promoter_zscore = cCRE.ctspecific.h3k4me3_zscore;
-      cCRE.ctcf_zscore = cCRE.ctspecific.ctcf_zscore;
-      return cCRE;
-    });
-  }
-
-  return mainQueryData;
-}
-
-/**
- * @todo download linked genes data in bed file
- * @param mainQueryData
- * @param assays
- * @param conservation
- * @param linkedGenes
- * @returns BED file
- */
-const convertToBED = (
-  mainQueryData: MainQueryData,
-  assays: { atac: boolean; ctcf: boolean; dnase: boolean; h3k27ac: boolean; h3k4me3: boolean },
-  conservation: { primate: boolean; mammal: boolean; vertebrate: boolean }
-): string => {
+const convertToBED = (rows: CcreDownloadRow[], assays: Assays, conservation: Conservation): string => {
   //Create header comment for the file
   const header = [
-    "# chr\tstart\tend\tacccession\tclassification",
+    "# chr\tstart\tend\taccession\tclassification",
     `${assays.dnase ? "\tDNase_z-score" : ""}`,
     `${assays.atac ? "\tATAC_z-score" : ""}`,
     `${assays.ctcf ? "\tCTCF_z-score" : ""}`,
@@ -113,106 +59,90 @@ const convertToBED = (
     "\tnearest_gene_distance",
     "\n",
   ].join("");
-  const bedContent: string[] = [header];
 
-  mainQueryData.data.cCRESCREENSearch.forEach((item) => {
-    const chromosome = item.chrom;
-    const start = item.start;
-    const end = start + item.len;
-    const name = item.info.accession;
-    const classification = item.pct;
-    const dnase = item.ctspecific.ct ? item.ctspecific.dnase_zscore : item.dnase_zscore;
-    const atac = item.ctspecific.ct ? item.ctspecific.atac_zscore : item.atac_zscore;
-    const ctcf = item.ctspecific.ct ? item.ctspecific.ctcf_zscore : item.ctcf_zscore;
-    const h3k27ac = item.ctspecific.ct ? item.ctspecific.h3k27ac_zscore : item.enhancer_zscore;
-    const h3k4me3 = item.ctspecific.ct ? item.ctspecific.h3k4me3_zscore : item.promoter_zscore;
-    const primate = item.primates;
-    const mammal = item.mammals;
-    const vertebrate = item.vertebrates;
-    const nearestGene = item.nearestgenes[0].gene;
-    const nearestGeneDistance = item.nearestgenes[0].distance;
-
-    // Construct tab separated row, ends with newline
-    const bedRow = [
-      `${chromosome}`,
-      `\t${start}`,
-      `\t${end}`,
-      `\t${name}`,
-      `\t${classification}`,
-      `${assays.dnase ? "\t" + dnase : ""}`,
-      `${assays.atac ? "\t" + atac : ""}`,
-      `${assays.ctcf ? "\t" + ctcf : ""}`,
-      `${assays.h3k27ac ? "\t" + h3k27ac : ""}`,
-      `${assays.h3k4me3 ? "\t" + h3k4me3 : ""}`,
-      `${conservation.primate ? "\t" + primate : ""}`,
-      `${conservation.mammal ? "\t" + mammal : ""}`,
-      `${conservation.vertebrate ? "\t" + vertebrate : ""}`,
-      `\t${nearestGene}`,
-      `\t${nearestGeneDistance}`,
-      "\n",
-    ].join("");
-    // Append to the content string
-    bedContent.push(bedRow);
-  });
-
-  //sort contents
-  return bedContent
-    .sort((a, b) => {
-      const startA = parseInt(a.split("\t")[1]);
-      const startB = parseInt(b.split("\t")[1]);
-
-      // Compare the start values
-      return startA - startB;
-    })
+  const body = rows
+    .slice()
+    .sort((a, b) => a.start - b.start)
+    .map((row) =>
+      // Construct tab separated row, ends with newline
+      [
+        `${row.chromosome}`,
+        `\t${row.start}`,
+        `\t${row.end}`,
+        `\t${row.accession}`,
+        `\t${row.group}`,
+        `${assays.dnase ? "\t" + row.dnase : ""}`,
+        `${assays.atac ? "\t" + row.atac : ""}`,
+        `${assays.ctcf ? "\t" + row.ctcf : ""}`,
+        `${assays.h3k27ac ? "\t" + row.h3k27ac : ""}`,
+        `${assays.h3k4me3 ? "\t" + row.h3k4me3 : ""}`,
+        `${conservation.primate ? "\t" + row.primates : ""}`,
+        `${conservation.mammal ? "\t" + row.mammals : ""}`,
+        `${conservation.vertebrate ? "\t" + row.vertebrates : ""}`,
+        `\t${row.nearestGene}`,
+        `\t${row.nearestGeneDistance}`,
+        "\n",
+      ].join("")
+    )
     .join("");
+
+  return header + body;
 };
 
-export const downloadBED = async (
-  assembly: "GRCh38" | "mm10",
-  chromosome: string,
-  start: number,
-  end: number,
-  biosampleName: string | undefined,
-  bedIntersect: boolean = false,
-  TSSranges: { start: number; end: number }[] = null,
-  assays: { atac: boolean; ctcf: boolean; dnase: boolean; h3k27ac: boolean; h3k4me3: boolean },
-  conservation: { primate: boolean; mammal: boolean; vertebrate: boolean },
-  setBedLoadingPercent?: React.Dispatch<React.SetStateAction<number>>
-) => {
+export type DownloadBEDParams = {
+  client: ApolloClient;
+  assembly: Assembly;
+  chromosome: string;
+  start: number;
+  end: number;
+  biosampleName?: string;
+  assays: Assays;
+  conservation: Conservation;
+  classes: CcreClass[];
+  setBedLoadingPercent: Dispatch<SetStateAction<number>>;
+};
+
+export const downloadBED = async ({
+  client,
+  assembly,
+  chromosome,
+  start,
+  end,
+  biosampleName,
+  assays,
+  conservation,
+  classes,
+  setBedLoadingPercent,
+}: DownloadBEDParams) => {
   setBedLoadingPercent(0);
 
   const ranges: { start: number; end: number }[] = [];
   const maxRange = 10000000;
-  //Divide range into sub ranges no bigger than maxRange
+  //Divide range into sub ranges no bigger than maxRange to keep each request small
   for (let i = start; i <= end; i += maxRange) {
     const rangeEnd = Math.min(i + maxRange - 1, end);
     ranges.push({ start: i, end: rangeEnd });
   }
-  //For each range, send query and populate dataArray
-  const dataArray: MainQueryData[] = [];
 
+  //For each range, fetch and accumulate rows
+  const allRows: CcreDownloadRow[] = [];
   for (let i = 0; i < ranges.length; i++) {
     const range = ranges[i];
     try {
-      const data = (await fetchcCREData(
+      const rows = await fetchCcreDownloadData(client, {
         assembly,
-        chromosome,
-        range.start,
-        range.end,
-        biosampleName ?? undefined,
-        1000000,
-        null,
-        bedIntersect ? sessionStorage.getItem("bed intersect")?.split(" ") : undefined,
-        true
-      )) as MainQueryData;
-      dataArray.push(data);
-      setBedLoadingPercent((dataArray.length / ranges.length) * 100);
+        coordinates: [{ chromosome, start: range.start, end: range.end }],
+        biosample: biosampleName,
+        classes,
+      });
+      allRows.push(...rows);
+      setBedLoadingPercent(((i + 1) / ranges.length) * 100);
       //Wait one second before sending the next query to reduce load on service
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       window.alert(
         "There was an error fetching cCRE data, please try again soon. If this error persists, please report it via our 'Contact Us' form on the About page and include this info:\n\n" +
-          `Downloading:\n${assembly}\n${chromosome}\n${start}\n${end}\n${biosampleName ?? undefined}\n` +
+          `Downloading:\n${assembly}\n${chromosome}\n${start}\n${end}\n${biosampleName ?? "none"}\n` +
           error
       );
       setBedLoadingPercent(null);
@@ -220,33 +150,11 @@ export const downloadBED = async (
     }
   }
 
-  //Check every second to see if the queries have resolved
-  while (dataArray.length < ranges.length) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // setBedLoadingPercent(dataArray.length / ranges.length * 100)
-  }
-  //Combine and deduplicate results, as a cCRE might be included in two searches
-  let combinedResults: SCREENSearchResult[] = [];
-  dataArray.forEach((queryResult) => {
-    queryResult.data.cCRESCREENSearch.forEach((cCRE) => {
-      combinedResults.push(cCRE);
-    });
-  });
-  //If it is a near gene TSS search, make sure each cCRE is within one of the ranges
-  if (TSSranges) {
-    combinedResults = combinedResults.filter((cCRE) =>
-      TSSranges.find((TSSrange) => cCRE.start <= TSSrange.end && TSSrange.start <= cCRE.start + cCRE.len)
-    );
-  }
-
-  const deduplicatedResults: MainQueryData = {
-    data: {
-      cCRESCREENSearch: Array.from(new Set(combinedResults.map((x) => JSON.stringify(x))), (x) => JSON.parse(x)),
-    },
-  };
+  //A cCRE can appear in two adjacent chunks; dedupe by accession
+  const deduplicatedRows = Array.from(new Map(allRows.map((row) => [row.accession, row])).values());
 
   //generate BED string
-  const bedContents = convertToBED(deduplicatedResults, assays, conservation);
+  const bedContents = convertToBED(deduplicatedRows, assays, conservation);
 
   const blob = new Blob([bedContents], { type: "text/plain" });
 

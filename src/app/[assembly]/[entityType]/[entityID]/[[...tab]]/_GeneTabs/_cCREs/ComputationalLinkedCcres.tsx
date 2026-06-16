@@ -94,12 +94,12 @@ export default function ComputationalLinkedCcres({
     loading: loadingCcres,
     error: errorCcres,
   } = useCcreData({
-    accession: data?.map((acc) => acc.accession),
+    accessions: data?.map((acc) => acc.accession) ?? [],
     assembly: assembly as Assembly,
     skip: !data,
   });
 
-  const classByAccession = Object.fromEntries(dataCcres?.map((c) => [c.info.accession, c.pct]) ?? []);
+  const classByAccession = Object.fromEntries(dataCcres?.map((c) => [c.accession, c.group]) ?? []);
 
   if (geneData.loading || loading || loadingCcres) {
     return (

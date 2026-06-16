@@ -40,19 +40,19 @@ const VariantLinkedCcres = ({ entity }: EntityViewComponentProps) => {
     loading: loadingCcres,
     error: errorCcres,
   } = useCcreData({
-    coordinates: searchCoordinates,
+    coordinates: searchCoordinates ? [searchCoordinates] : [],
     assembly: "GRCh38",
     skip: !searchCoordinates,
   });
 
   const nearbyccres = dataCcres?.map((d) => {
     return {
-      ccre: d?.info.accession,
-      chromosome: d?.chrom,
-      start: d?.start,
-      end: d?.start + d?.len,
-      group: d?.pct,
-      distance: calcSignedDistRegionToRegion(variantData.coordinates, { start: d?.start, end: d?.start + d?.len }),
+      ccre: d.accession,
+      chromosome: d.coordinates.chromosome,
+      start: d.coordinates.start,
+      end: d.coordinates.end,
+      group: d.group,
+      distance: calcSignedDistRegionToRegion(variantData.coordinates, d.coordinates),
     };
   });
 

@@ -18,3 +18,9 @@ export type CcreClass = (typeof CCRE_CLASSES)[number];
 export const isValidAssembly = (value: string): value is Assembly => value === "GRCh38" || value === "mm10";
 
 export type CcreAssay = (typeof CCRE_ASSAYS)[number];
+
+export type CcreZScores = Partial<Record<CcreAssay, number>>;
+
+export type CcreZScoresAndGroup = CcreZScores & {
+  group: CcreClass;
+};
