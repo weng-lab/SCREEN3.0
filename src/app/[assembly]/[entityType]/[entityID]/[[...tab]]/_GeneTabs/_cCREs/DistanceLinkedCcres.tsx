@@ -210,7 +210,7 @@ export default function DistanceLinkedCcres({
     },
     {
       field: "direction",
-      headerName: "Direction",
+      headerName: "Position Relative to TSS",
       type: "singleSelect",
       valueOptions: ["Upstream", "Downstream", "Overlapping"],
       // distance 0 means the cCRE overlaps the TSS, so neither side applies
