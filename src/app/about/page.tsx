@@ -269,25 +269,8 @@ export default function About() {
                 updated. Users should be aware that data, annotations, and features in legacy releases may differ from
                 the current release.
               </Typography>
-              <Typography variant="body1" paragraph>
-                <b>Current Version:</b>
-              </Typography>
-              <List
-                component="ul"
-                sx={{
-                  listStyleType: "disc",
-                  paddingLeft: 4,
-                }}
-              >
-                <ListItem component="li" sx={{ display: "list-item", whiteSpace: "normal" }}>
-                  Registry of cCREs: Version 4
-                </ListItem>
-                <ListItem component="li" sx={{ display: "list-item", whiteSpace: "normal" }}>
-                  SCREEN UI: 2026
-                </ListItem>
-              </List>
-              <Typography variant="body1" paragraph>
-                Citation:{" "}
+              <Typography variant="h6">Citation</Typography>
+              <Typography variant="body2">
                 <u>
                   <Link
                     href="https://www.nature.com/articles/s41586-025-09909-9"
@@ -308,8 +291,54 @@ export default function About() {
               </Typography>
             </Grid>
             <Grid size={12} id="versions">
-              <Typography variant="body1" paragraph>
-                <b>Legacy releases:</b>
+              <Typography variant="h6">External Data</Typography>
+              <Typography>
+                To provide a more comprehensive and useful resource, SCREEN pulls in data from internal and external
+                collaborators. Please refer to the below papers for more information, and contact us with any questions
+                about data sourcing on SCREEN:
+              </Typography>
+              <Typography variant="body2" mt={1}>Transcription Factor Binding/ChIP-seq Peaks</Typography>
+              <Typography variant="body2">
+                See also:{" "}
+                <LinkComponent href={"https://www.factorbook.org/"} openInNewTab showExternalIcon>
+                  Factorbook.org
+                </LinkComponent>
+              </Typography>
+              <Typography variant="body2">
+                <u>
+                  <Link
+                    href=""
+                    target="_blank"
+                    rel="noopener"
+                    style={{ color: "inherit", textDecoration: "underline" }}
+                  >
+                    A Paper Title To Fill In
+                  </Link>
+                </u>
+                . First Author ... Last Author, (2026) <i>Journal Here</i>
+              </Typography>
+              <Typography variant="body2" mt={1}>Sequence Conservation and Coverage</Typography>
+              <Typography variant="body2">
+                <u>
+                  <Link
+                    href=""
+                    target="_blank"
+                    rel="noopener"
+                    style={{ color: "inherit", textDecoration: "underline" }}
+                  >
+                    A Paper Title To Fill In
+                  </Link>
+                </u>
+                . First Author ... Last Author, (2026) <i>Journal Here</i>
+              </Typography>
+            </Grid>
+            <Grid size={12}>
+              <Typography variant="h6">Current Site Version: r3.2026.1</Typography>
+              <LinkComponent href={"/about/versions"}>View release history</LinkComponent>
+            </Grid>
+            <Grid size={12} id="versions">
+              <Typography variant="h6" paragraph>
+                Legacy Releases
               </Typography>
               <LegacyVersionsTable />
             </Grid>
@@ -332,13 +361,12 @@ export default function About() {
               Send us a message and we&apos;ll be in touch!
             </Typography>
             <Typography mb={1} variant="body1">
-              We greatly appreciate any feedback you may have. Knowing how our users are
-              using the site and documenting issues they may have are important to make this resource better and easier
-              to use.
+              We greatly appreciate any feedback you may have. Knowing how our users are using the site and documenting
+              issues they may have are important to make this resource better and easier to use.
             </Typography>
             <Box mb={1}>
               <Typography display={"inline"} variant="body1">
-                If you&apos;re experiencing an error/bug, feel free to
+                If you&apos;re experiencing an error/bug, feel free to{" "}
               </Typography>
               <Link
                 display={"inline"}

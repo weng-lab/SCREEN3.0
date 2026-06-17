@@ -25,6 +25,7 @@ import {
 import { GenomicRange } from "common/types/globalTypes";
 import { useCcreData } from "common/hooks/useCcreData";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
+import { CitationInfoAlert } from "./CitationInfoAlert";
 
 const DEFAULT_RANGE: [number, number] = [0.9, 1];
 
@@ -220,12 +221,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
   return (
     <>
-      <Typography variant="caption">
-        For more information about this data, please visit{" "}
-        <LinkComponent href={"https://zoonomiaproject.org/"} openInNewTab showExternalIcon>
-          https://zoonomiaproject.org/
-        </LinkComponent>
-      </Typography>
+      <CitationInfoAlert />
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={"space-between"}

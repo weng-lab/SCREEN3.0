@@ -24,8 +24,8 @@ export const Conservation = ({ entity }: EntityViewComponentProps) => {
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <TabList onChange={handleChange} aria-label="lab API tabs example">
           <Tab label="Overview" value={0} />
-          {entity.assembly === "GRCh38" && <Tab label="Heatmap" value={1} />}
-          {entity.assembly === "GRCh38" && <Tab label="Coverage across 241 Mammals" value={2} />}
+          {entity.assembly === "GRCh38" && <Tab label="Conservation Simplex" value={1} />}
+          {entity.assembly === "GRCh38" && <Tab label="Coverage across 240 Mammals" value={2} />}
         </TabList>
       </Box>
       <StyledTabPanel value={0}>

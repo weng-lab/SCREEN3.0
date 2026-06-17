@@ -1,4 +1,4 @@
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, Stack, Tooltip, Typography } from "@mui/material";
 import Image, { StaticImageData } from "next/image";
 import AllcCREs from "public/conservation/AllcCREs.png";
 import PromoterImg from "public/conservation/PLS.png";
@@ -19,6 +19,8 @@ import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { CcreClass } from "common/types/globalTypes";
 import { CLASS_COLORS } from "common/colors";
 import { CLASS_DESCRIPTIONS } from "common/consts";
+import { LinkComponent } from "common/components/LinkComponent";
+import { CitationInfoAlert } from "./CitationInfoAlert";
 
 const CONSERVATION_HEATMAP_QUERY = gql(`
     query getconservationHeatmapCoords($accession: [String]!) {
@@ -324,6 +326,7 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
 
   return (
     <Stack spacing={2} alignItems={"flex-start"}>
+      <CitationInfoAlert />
       <Box ref={heatmapsRef} sx={{ display: "flex", gap: 2, flexDirection: "row", flexWrap: "wrap" }}>
         <HeatmapPlot
           src={imgSrc}
@@ -333,7 +336,7 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
         />
         <HeatmapPlot src={AllcCREs} alt="All cCRE classes" title="All cCRE classes" point={heatmapPoint} />
       </Box>
-        <Legend />
+      <Legend />
       <Button variant="outlined" color="primary" size="small" onClick={download}>
         Download Plots
       </Button>
