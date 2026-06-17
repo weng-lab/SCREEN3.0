@@ -1,7 +1,6 @@
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
-import { LinkComponent } from "common/components/LinkComponent";
 import { Alert, CircularProgress, IconButton, Slider, styled, Tooltip, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { ParentSize } from "@visx/responsive";
@@ -26,6 +25,7 @@ import { GenomicRange } from "common/types/globalTypes";
 import { useCcreData } from "common/hooks/useCcreData";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { CitationInfoAlert } from "./CitationInfoAlert";
+import { useCcre } from "common/hooks/useCcre";
 
 const DEFAULT_RANGE: [number, number] = [0.9, 1];
 
@@ -103,7 +103,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
     data: dataCcre,
     loading: loadingCcre,
     error: errorCcre,
-  } = useCcreData({
+  } = useCcre({
     assembly: entity.assembly,
     accession: entity.entityID,
   });
@@ -124,7 +124,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const coordinates: GenomicRange = useMemo(() => {
     if (!dataCcre) return null;
-    return { chromosome: dataCcre.chrom, start: dataCcre.start, end: dataCcre.start + dataCcre.len };
+    return dataCcre.coordinates;
   }, [dataCcre]);
 
   const unfilteredAlignmentPlotData = useMemo(() => {
@@ -214,7 +214,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
   if (loadingCcre || loadingSeq) return <CircularProgress />;
   if (errorCcre || errorSeq) return <Alert severity="error">Error fetching sequence coverage</Alert>;
 
-  if (dataCcre?.chrom === "chrY")
+  if (dataCcre?.coordinates.chromosome === "chrY")
     return <Alert severity="info">Sequence conservation data is not available for cCREs on the Y chromosome</Alert>;
 
   if (!hasSequenceAlignmentData) return <Alert severity="error">Error fetching sequence coverage</Alert>;
