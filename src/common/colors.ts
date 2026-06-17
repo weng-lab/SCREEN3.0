@@ -133,7 +133,7 @@ export const tissueColors = {
   spleen: "#778955",
   thyroid: "#186833",
   "small intestine": "#565624",
-  prostate: "#dddddd",
+  prostate: "#818181",
   "urinary bladder": "#a91d22",
   kidney: "#74cac1",
   blood: "#dd4297",

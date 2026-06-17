@@ -12,7 +12,7 @@ import {
   // useGridApiRef,
 } from "@weng-lab/ui-components";
 import { Grid, IconButton } from "@mui/material";
-import { OpenInNew } from "@mui/icons-material";
+import { ManageSearch } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import OverviewCards from "./OverviewCards";
 // import AutoSortSwitch from "common/components/AutoSortSwitch";
@@ -138,7 +138,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "link",
-      headerName: "Open in New Tab",
+      headerName: "Open in New SCREEN Tab",
       sortable: false,
       valueGetter: (_, row) => {
         return `${row.chromosome}:${row.start}-${row.end}`;
@@ -147,7 +147,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
         return (
           <LinkComponent href={`/${entity.assembly}/region/${params.value}`}>
             <IconButton size="small">
-              <OpenInNew fontSize="small" />
+              <ManageSearch fontSize="medium" />
             </IconButton>
           </LinkComponent>
         );

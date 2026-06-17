@@ -188,13 +188,15 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
   } = useQuery(BIG_QUERY, {
     variables: {
       bigRequests:
-        chromHmmTracksWithTissue?.map((track) => ({
-          chr1: coordinates.chromosome!,
-          start: coordinates.start,
-          end: coordinates.end,
-          preRenderedWidth: 1400,
-          url: track.url,
-        })) || [],
+        coordinates && chromHmmTracksWithTissue
+          ? chromHmmTracksWithTissue.map((track) => ({
+              chr1: coordinates.chromosome!,
+              start: coordinates.start,
+              end: coordinates.end,
+              preRenderedWidth: 1400,
+              url: track.url,
+            }))
+          : [],
     },
     skip: !coordinates || !chromHmmTracksWithTissue || assembly !== "GRCh38",
   });
