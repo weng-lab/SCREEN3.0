@@ -317,7 +317,7 @@ export default function About() {
                     Factorbook: an updated catalog of transcription factor motifs and candidate regulatory motif sites
                   </Link>
                 </u>
-                . Pratt ... Weng, (2021) <i>Nucleic Acids Research</i>
+                . Pratt ... Weng (2021) <i>Nucleic Acids Research</i>
               </Typography>
               <Typography variant="body2" mt={1}>
                 Sequence Conservation and Coverage
@@ -339,7 +339,7 @@ export default function About() {
                     Mammalian evolution of human cis-regulatory elements and transcription factor binding sites
                   </Link>
                 </u>
-                . Andrews ... Weng, (2026) <i>Science</i>
+                . Andrews ... Weng (2026) <i>Science</i>
               </Typography>
             </Grid>
             <Grid size={12}>
