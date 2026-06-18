@@ -3,7 +3,7 @@ import { Alert, CircularProgress } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/data/entity";
 import type { GenomicRange } from "common/types/globalTypes";
-import { decodeRegions } from "common/utility";
+import { decodeRegions } from "common/utils";
 import { useEffect, useMemo, useState } from "react";
 import GenomeBrowserView from "./GenomeBrowserView";
 

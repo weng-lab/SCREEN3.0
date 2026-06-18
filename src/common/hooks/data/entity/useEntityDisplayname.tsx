@@ -1,5 +1,5 @@
 import { useGWASStudyData } from "common/hooks/data/gwas/useGWASStudyData";
-import { parseGenomicRangeString } from "common/utility";
+import { parseGenomicRangeString } from "common/utils";
 import { AnyEntityType } from "common/entityTabsConfig";
 
 type useEntityDisplaynameProps = {

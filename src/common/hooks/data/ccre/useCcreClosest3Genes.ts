@@ -1,7 +1,7 @@
 import { gql } from "common/types/generated/gql";
 import { useQuery } from "@apollo/client/react";
 import { useMemo } from "react";
-import { capitalizeFirstLetter } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
 
 export type ClosestGenes = {
   distance: number;

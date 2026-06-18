@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
 import { tissueColors } from "common/colors";
-import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/violinUtils";
+import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/utils";
 import GenePlotControls from "./GenePlotControls";
 
 const GeneExpressionViolinPlot = ({

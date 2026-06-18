@@ -1,9 +1,10 @@
 import { Box } from "@mui/system";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
-import { capitalizeFirstLetter, formatAssay } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
+import { formatAssay } from "common/assays";
 import { tissueColors } from "common/colors";
 import { useMemo, useState } from "react";
-import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/violinUtils";
+import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/utils";
 import AssayPlotControls from "./AssayPlotControls";
 import type { AssayViolinPlotProps, BiosampleRow } from "./types";
 

@@ -1,7 +1,8 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useEntityMetadata } from "common/hooks/data/entity";
-import { formatGenomicRange, formatPortal } from "common/utility";
-import { CLASS_DESCRIPTIONS } from "common/consts";
+import { formatGenomicRange } from "common/utils";
+import { formatPortal } from "common/entityTabsConfig";
+import { CLASS_DESCRIPTIONS } from "common/ccre";
 import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";

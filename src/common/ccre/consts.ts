@@ -1,4 +1,4 @@
-import { CcreClass } from "./types/globalTypes";
+import { CcreClass } from "common/types/globalTypes";
 
 export const CCRE_CLASSES = [
   "PLS",
@@ -25,5 +25,3 @@ export const CLASS_DESCRIPTIONS: Record<CcreClass, string> = {
   noclass: "Unclassified",
   InActive: "Low CA",
 };
-
-export const CCRE_ASSAYS = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"] as const;

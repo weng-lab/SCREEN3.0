@@ -2,7 +2,7 @@
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
-import { toScientificNotationElement } from "common/utility";
+import { toScientificNotationElement } from "common/utils";
 import { useState } from "react";
 import SelectCompuGenesMethod from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/SelectCompuGenesMethod";
 

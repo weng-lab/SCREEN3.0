@@ -3,8 +3,8 @@ import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
 import type { Assembly, CcreClass, CcreZScoresAndGroup } from "common/types/globalTypes";
 import { useEffect, useMemo, useRef } from "react";
-import { classifyCcre } from "common/utility";
-import { parseZScoresArray, ZScoresEntry } from "common/utils/parseCcreZScores";
+import { classifyCcre } from "common/ccre";
+import { parseZScoresArray, ZScoresEntry } from "common/ccre";
 
 type UseCcreZScoresParams = {
   accessions: string[];

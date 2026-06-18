@@ -5,7 +5,7 @@ import { Table, TableColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/data/entity";
 import { CSSProperties, useMemo } from "react";
-import { decodeRegions } from "common/utility";
+import { decodeRegions } from "common/utils";
 
 const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { divHeight?: CSSProperties }) => {
   //fetch coordinates since this is used by cCRE entity for overlapping variants

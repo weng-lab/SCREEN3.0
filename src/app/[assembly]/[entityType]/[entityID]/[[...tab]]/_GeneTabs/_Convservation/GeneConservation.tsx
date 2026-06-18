@@ -4,7 +4,7 @@ import { TableColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGeneData } from "common/hooks/data/gene";
-import { formatGenomicRange } from "common/utility";
+import { formatGenomicRange } from "common/utils";
 import { useMemo } from "react";
 import { gql } from "common/types/generated";
 import { Assembly } from "common/types/globalTypes";

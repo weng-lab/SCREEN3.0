@@ -1,7 +1,7 @@
 "use client";
 import { Stack } from "@mui/system";
 import { EntityViewComponentProps } from "common/entityTabsConfig/types";
-import { decodeRegions } from "common/utility";
+import { decodeRegions } from "common/utils";
 import { useMemo } from "react";
 import { GenomicRange } from "common/types/generated/graphql";
 import {

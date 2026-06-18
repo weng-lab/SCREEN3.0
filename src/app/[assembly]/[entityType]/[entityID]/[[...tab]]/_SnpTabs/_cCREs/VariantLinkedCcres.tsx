@@ -7,7 +7,7 @@ import { useCcreData } from "common/hooks/data/ccre";
 import { useSnpData } from "common/hooks/data/variant";
 import { useMemo, useState } from "react";
 import { DistanceSlider } from "./DistanceSlider";
-import { calcSignedDistRegionToRegion } from "common/utility";
+import { calcSignedDistRegionToRegion } from "common/utils";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 

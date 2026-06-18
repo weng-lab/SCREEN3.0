@@ -1,7 +1,7 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 import { useEntityMetadata } from "common/hooks/data/entity";
-import { formatPortal } from "common/utility";
+import { formatPortal } from "common/entityTabsConfig";
 import { Assembly } from "common/types/globalTypes";
 import Grid from "@mui/material/Grid";
 import { LinkComponent } from "common/components/LinkComponent";

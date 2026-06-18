@@ -6,7 +6,7 @@ import { allColsHidden, BiosampleTable, EncodeBiosample } from "@weng-lab/ui-com
 import { GridColumnVisibilityModel } from "@mui/x-data-grid-premium";
 import { ScatterPlot, Point } from "@weng-lab/visualization";
 import { PointMetaData } from "../types";
-import { tissueColors } from "../../../common/colors";
+import { tissueColors } from "common/colors";
 import { UMAP_QUERY } from "../queries";
 import AssemblyControls, { Selected } from "./AssemblyControls";
 import UmapLegend from "./UmapLegend";

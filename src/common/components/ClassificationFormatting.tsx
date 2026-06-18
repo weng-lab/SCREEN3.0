@@ -1,9 +1,9 @@
 import { Tooltip } from "@mui/material";
 import { TableColDef } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
-import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/ccre";
 import { LinkComponent } from "./LinkComponent";
-import { CLASS_COLORS } from "common/colors";
+import { CLASS_COLORS } from "common/ccre";
 
 export const ClassificationFormatting: Partial<TableColDef> = {
   type: "singleSelect",

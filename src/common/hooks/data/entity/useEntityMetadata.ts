@@ -2,7 +2,7 @@ import type { ErrorLike } from "@apollo/client";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { useGeneData, UseGeneDataReturn } from "common/hooks/data/gene/useGeneData";
 import { useSnpData, UseSnpDataReturn } from "common/hooks/data/variant/useSnpData";
-import { parseGenomicRangeString } from "common/utility";
+import { parseGenomicRangeString } from "common/utils";
 import { useCcre } from "common/hooks/data/ccre/useCcre";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { useGWASStudyData, UseGWASStudyDataReturn } from "common/hooks/data/gwas/useGWASStudyData";

@@ -9,7 +9,7 @@ import { useMemo, useState, useRef } from "react";
 import CalculateNearbyCCREsPopper, { formatTssOffset } from "../_Gene/CalcNearbyCCREs";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
-import { calcDistCcreToTSS } from "common/utility";
+import { calcDistCcreToTSS } from "common/utils";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 import { useCcresWithGeneInClosest3 } from "common/hooks/data/ccre";
 import { useDistanceAnchor } from "common/hooks/ui";

@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@apollo/client/react";
 import { Stack } from "@mui/material";
-import { toScientificNotationElement } from "common/utility";
+import { toScientificNotationElement } from "common/utils";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "./LinkComponent";
 import { TableColDef, Table } from "@weng-lab/ui-components";

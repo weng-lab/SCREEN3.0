@@ -1,7 +1,7 @@
 import type { TranscriptMetadata, TranscriptExpressionBarPlotProps } from "./types";
 import { getScaledRPM } from "./types";
 import { useCallback, useMemo } from "react";
-import { capitalizeWords, capitalizeFirstLetter, truncateString } from "common/utility";
+import { capitalizeWords, capitalizeFirstLetter, truncateString } from "common/utils";
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
 import { BarPlot, BarData } from "@weng-lab/visualization";

@@ -3,7 +3,7 @@ import { Box, Divider, Stack } from "@mui/material";
 import EntityDetailsTabs from "./EntityDetailsTabs";
 import { EntityDetailsHeader } from "./EntityDetailsHeader";
 import RegionSearchHeader from "./RegionSearchHeader";
-import { parseGenomicRangeString } from "common/utility";
+import { parseGenomicRangeString } from "common/utils";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
