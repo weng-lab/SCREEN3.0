@@ -10,7 +10,7 @@ export * from "./useCcresWithGeneInClosest3";
 export * from "./useChromHmmData";
 export * from "./useCompuLinkedGenes";
 export * from "./useConservationData";
-export * from "./useDynamicEnhacersData";
+export * from "./useDynamicEnhancersData";
 export * from "./useIntersectingCcreZScores";
 export * from "./useLinkedGenes";
 export * from "./useNearestTSSColumn";
