@@ -5,7 +5,7 @@ import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { SelectedBiosampleCard } from "common/components/SelectedBiosampleCard";
 import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreZScores } from "common/hooks/data/ccre";
-import { useNearestTSSColumn } from "common/hooks/data/ccre";
+import { useNearestTSSColumn } from "common/components/columns";
 import { Typography, Button, Tooltip, Skeleton } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASStudyData } from "common/hooks/data/gwas";

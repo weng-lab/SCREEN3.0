@@ -13,7 +13,7 @@ import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization
 import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { CLASS_COLORS } from "common/colors";
 import { useCcreIsIcre } from "common/hooks/data/ccre";
-import { useNearestTSSColumn } from "common/hooks/data/ccre";
+import { useNearestTSSColumn } from "common/components/columns";
 import { CcreAssay } from "common/types/globalTypes";
 import { useIntersectingCcreZScores } from "common/hooks/data/ccre";
 

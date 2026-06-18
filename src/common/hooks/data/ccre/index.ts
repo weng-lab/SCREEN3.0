@@ -13,5 +13,4 @@ export * from "./useConservationData";
 export * from "./useDynamicEnhancersData";
 export * from "./useIntersectingCcreZScores";
 export * from "./useLinkedGenes";
-export * from "./useNearestTSSColumn";
 export * from "./useSilencersData";
