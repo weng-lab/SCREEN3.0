@@ -8,7 +8,7 @@ export const CitationInfoAlert = () => (
       Moore...Weng (2026) <i>Nature</i>
     </LinkComponent>
     . Multi sequence alignment data is from{" "}
-    <LinkComponent href="https://www.science.org/doi/10.1126/science.abn7930" openInNewTab showExternalIcon>
+    <LinkComponent href="https://doi.org/10.1126/science.abn7930" openInNewTab showExternalIcon>
       Andrews ... Weng <i>Science</i>
     </LinkComponent>
     , see {" "}

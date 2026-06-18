@@ -297,7 +297,9 @@ export default function About() {
                 collaborators. Please refer to the below papers for more information, and contact us with any questions
                 about data sourcing on SCREEN:
               </Typography>
-              <Typography variant="body2" mt={1}>Transcription Factor Binding/ChIP-seq Peaks</Typography>
+              <Typography variant="body2" mt={1}>
+                Transcription Factor Binding/ChIP-seq Peaks
+              </Typography>
               <Typography variant="body2">
                 See also:{" "}
                 <LinkComponent href={"https://www.factorbook.org/"} openInNewTab showExternalIcon>
@@ -307,29 +309,37 @@ export default function About() {
               <Typography variant="body2">
                 <u>
                   <Link
-                    href=""
+                    href="https://doi.org/10.1093/nar/gkab1039"
                     target="_blank"
                     rel="noopener"
                     style={{ color: "inherit", textDecoration: "underline" }}
                   >
-                    A Paper Title To Fill In
+                    Factorbook: an updated catalog of transcription factor motifs and candidate regulatory motif sites
                   </Link>
                 </u>
-                . First Author ... Last Author, (2026) <i>Journal Here</i>
+                . Pratt ... Weng, (2021) <i>Nucleic Acids Research</i>
               </Typography>
-              <Typography variant="body2" mt={1}>Sequence Conservation and Coverage</Typography>
+              <Typography variant="body2" mt={1}>
+                Sequence Conservation and Coverage
+              </Typography>
+              <Typography variant="body2">
+                See also:{" "}
+                <LinkComponent href={"https://zoonomiaproject.org/"} openInNewTab showExternalIcon>
+                  ZoonomiaProject.org/
+                </LinkComponent>
+              </Typography>
               <Typography variant="body2">
                 <u>
                   <Link
-                    href=""
+                    href="https://doi.org/10.1126/science.abn7930"
                     target="_blank"
                     rel="noopener"
                     style={{ color: "inherit", textDecoration: "underline" }}
                   >
-                    A Paper Title To Fill In
+                    Mammalian evolution of human cis-regulatory elements and transcription factor binding sites
                   </Link>
                 </u>
-                . First Author ... Last Author, (2026) <i>Journal Here</i>
+                . Andrews ... Weng, (2026) <i>Science</i>
               </Typography>
             </Grid>
             <Grid size={12}>
