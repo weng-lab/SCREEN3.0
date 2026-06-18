@@ -6,7 +6,7 @@ import { Stack } from "@mui/material";
 import { gql } from "common/types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useCcre } from "common/hooks/useCcre";
+import { useCcre } from "common/hooks/data/ccre";
 import { GenomicRange } from "common/types/globalTypes";
 
 export const FUNCTIONAL_DATA_QUERY = gql(`

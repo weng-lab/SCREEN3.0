@@ -12,12 +12,12 @@ import { AssayWheel } from "@weng-lab/ui-components";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
 import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { BiosampleRow } from "./types";
-import { useSilencersData } from "common/hooks/useSilencersData";
-import { useDynamicEnhancersData } from "common/hooks/useDynamicEnhacersData";
+import { useSilencersData } from "common/hooks/data/ccre";
+import { useDynamicEnhancersData } from "common/hooks/data/ccre";
 import { Silencer_Studies } from "./consts";
 import { LinkComponent } from "common/components/LinkComponent";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
-import { useBiosampleActivity } from "common/hooks/useBiosampleActivity";
+import { useBiosampleActivity } from "common/hooks/data/ccre";
 
 /** Row shape returned by useBiosampleActivity (new field names / undefined-for-missing) */
 type RawBiosampleRow = NonNullable<ReturnType<typeof useBiosampleActivity>["biosampleRows"]>[number];

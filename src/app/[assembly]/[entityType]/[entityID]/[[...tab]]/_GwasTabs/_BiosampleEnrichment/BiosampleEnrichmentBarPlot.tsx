@@ -1,4 +1,4 @@
-import { GWASEnrichment } from "common/hooks/useGWASEnrichmentData";
+import { GWASEnrichment } from "common/hooks/data/gwas";
 import { BarPlot, BarData, DownloadPlotHandle } from "@weng-lab/visualization";
 import { Box, Typography } from "@mui/material";
 import { capitalizeFirstLetter, truncateString } from "common/utility";

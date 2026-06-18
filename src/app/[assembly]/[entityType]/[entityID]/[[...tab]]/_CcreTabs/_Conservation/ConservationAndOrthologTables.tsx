@@ -4,7 +4,7 @@ import { TableColDef, Table } from "@weng-lab/ui-components";
 import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
-import { useConservationData } from "common/hooks/useConservationData";
+import { useConservationData } from "common/hooks/data/ccre";
 import { Stack } from "@mui/system";
 
 const ORTHOLOG_QUERY = gql(`

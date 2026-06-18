@@ -16,9 +16,9 @@ import { ManageSearch } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import OverviewCards from "./OverviewCards";
 // import AutoSortSwitch from "common/components/AutoSortSwitch";
-import { useCcreData } from "common/hooks/useCcreData";
-import { useSnpData } from "common/hooks/useSnpData";
-import { useGeneData } from "common/hooks/useGeneData";
+import { useCcreData } from "common/hooks/data/ccre";
+import { useSnpData } from "common/hooks/data/variant";
+import { useGeneData } from "common/hooks/data/gene";
 
 type RegionRow = GenomicRange & {
   numCcres: number;

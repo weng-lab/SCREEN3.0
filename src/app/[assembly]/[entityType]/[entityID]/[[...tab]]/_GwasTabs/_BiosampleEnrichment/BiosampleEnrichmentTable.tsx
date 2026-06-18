@@ -1,4 +1,4 @@
-import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
+import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/data/gwas";
 import { useMemo } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { IconButton, Tooltip } from "@mui/material";

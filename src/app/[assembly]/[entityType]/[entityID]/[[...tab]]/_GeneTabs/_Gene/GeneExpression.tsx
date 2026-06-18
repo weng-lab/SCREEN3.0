@@ -3,12 +3,12 @@ import { useCallback, useMemo, useState } from "react";
 import GeneExpressionTable from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
-import { useGeneExpression } from "common/hooks/useGeneExpression";
+import { useGeneExpression } from "common/hooks/data/gene";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import GeneExpressionViolinPlot from "./GeneExpressionViolinPlot";
 import VersionFallback from "./GeneVersionFallback";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useGeneData } from "common/hooks/useGeneData";
+import { useGeneData } from "common/hooks/data/gene";
 import type {
   PointMetadata,
   GeneExpressionViewBy,
@@ -19,7 +19,7 @@ import type {
 } from "./types";
 import { getTPM } from "./types";
 import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
-import usePlotDownload from "common/hooks/usePlotDownload";
+import { usePlotDownload } from "common/hooks/ui";
 /**
  * Flattens gene expression data into one row per sample.
  * Filters by RNAtype and handles replicate splitting/averaging. TPM values are always raw (unscaled).

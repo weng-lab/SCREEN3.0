@@ -1,8 +1,8 @@
 import { Skeleton } from "@mui/material";
 import { TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreClosestTSS } from "common/hooks/useCcreClosestTSS";
-import { useDistanceAnchor } from "common/hooks/useDistanceAnchor";
+import { useCcreClosestTSS } from "common/hooks/data/ccre/useCcreClosestTSS";
+import { useDistanceAnchor } from "common/hooks/ui/useDistanceAnchor";
 import { Assembly } from "common/types/globalTypes";
 
 /**

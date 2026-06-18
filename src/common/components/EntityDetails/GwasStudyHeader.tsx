@@ -1,13 +1,13 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import Image from "next/image";
-import { useEntityMetadata } from "common/hooks/useEntityMetadata";
+import { useEntityMetadata } from "common/hooks/data/entity";
 import { formatPortal } from "common/utility";
 import { Assembly } from "common/types/globalTypes";
 import Grid from "@mui/material/Grid";
 import { LinkComponent } from "common/components/LinkComponent";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { useMemo } from "react";
-import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
+import { useGWASSnpsData } from "common/hooks/data/gwas";
 import { expandCoordinates } from "../GenomeBrowser/utils";
 
 export type GwasStudyHeaderProps = {

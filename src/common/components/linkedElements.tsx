@@ -1,10 +1,10 @@
 "use client";
 import { Stack } from "@mui/material";
-import { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
-import { useLinkedCcresReturn } from "common/hooks/useLinkedCcres";
+import { LinkedGeneInfo } from "common/hooks/data/ccre";
+import { useLinkedCcresReturn } from "common/hooks/data/gene";
 import { Table, TableProps } from "@weng-lab/ui-components";
-import { useCompuLinkedcCREsReturn } from "common/hooks/useCompuLinkedcCREs";
-import { useCompuLinkedGenesReturn } from "common/hooks/useCompuLinkedGenes";
+import { useCompuLinkedcCREsReturn } from "common/hooks/data/gene";
+import { useCompuLinkedGenesReturn } from "common/hooks/data/ccre";
 
 export type TableDef<
   T extends

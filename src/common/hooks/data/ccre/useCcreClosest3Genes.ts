@@ -56,7 +56,7 @@ const formatGeneType = (type: string) => {
     .join(" ");
 };
 
-export default function useCcreClosest3Genes(accession: string, assembly: string) {
+export function useCcreClosest3Genes(accession: string, assembly: string) {
 
   const {
     data: dataClosest3,

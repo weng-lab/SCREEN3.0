@@ -1,13 +1,13 @@
 "use client";
 import { BarChart } from "@mui/icons-material";
 import BiosampleEnrichmentTable from "./BiosampleEnrichmentTable";
-import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/useGWASEnrichmentData";
+import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/data/gwas";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
+import { useGWASStudyMetaData } from "common/hooks/data/gwas";
 import { Table, TableColDef, TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import { Alert } from "@mui/material";
-import usePlotDownload from "common/hooks/usePlotDownload";
+import { usePlotDownload } from "common/hooks/ui";
 
 const emptyRows: GWASEnrichment[] = [];
 

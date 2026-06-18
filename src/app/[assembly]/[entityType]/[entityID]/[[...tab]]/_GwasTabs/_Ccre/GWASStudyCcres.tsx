@@ -1,14 +1,14 @@
 "use client";
-import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
+import { useGWASSnpsIntersectingcCREsData } from "common/hooks/data/gwas";
 import { Fragment, useMemo, useState } from "react";
 import { Table, TableColDef, EncodeBiosample } from "@weng-lab/ui-components";
 import { SelectedBiosampleCard } from "common/components/SelectedBiosampleCard";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreZScores } from "common/hooks/useCcreZScores";
-import { useNearestTSSColumn } from "common/hooks/useNearestTSSColumn";
+import { useCcreZScores } from "common/hooks/data/ccre";
+import { useNearestTSSColumn } from "common/hooks/data/ccre";
 import { Typography, Button, Tooltip, Skeleton } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useGWASStudyData } from "common/hooks/useGWASStudyData";
+import { useGWASStudyData } from "common/hooks/data/gwas";
 import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 import { CcreAssay } from "common/types/globalTypes";

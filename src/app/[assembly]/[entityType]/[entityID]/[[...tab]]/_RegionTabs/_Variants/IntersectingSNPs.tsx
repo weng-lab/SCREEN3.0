@@ -1,9 +1,9 @@
 "use client";
-import { useSnpData } from "common/hooks/useSnpData";
+import { useSnpData } from "common/hooks/data/variant";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useEntityMetadata } from "common/hooks/useEntityMetadata";
+import { useEntityMetadata } from "common/hooks/data/entity";
 import { CSSProperties, useMemo } from "react";
 import { decodeRegions } from "common/utility";
 

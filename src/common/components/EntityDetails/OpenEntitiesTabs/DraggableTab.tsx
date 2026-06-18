@@ -7,7 +7,7 @@ import { useCallback, useContext, useMemo, useState } from "react";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 import { theme } from "app/theme";
-import useEntityDisplayname from "common/hooks/useEntityDisplayname";
+import { useEntityDisplayname } from "common/hooks/data/entity";
 
 export type DraggableTabProps = TabProps & {
   entity: AnyOpenEntity;

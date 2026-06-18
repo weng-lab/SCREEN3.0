@@ -12,10 +12,10 @@ import { ClassificationFormatting } from "common/components/ClassificationFormat
 import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
 import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
 import { CLASS_COLORS } from "common/colors";
-import { useCcreIsIcre } from "common/hooks/useCcreIsIcre";
-import { useNearestTSSColumn } from "common/hooks/useNearestTSSColumn";
+import { useCcreIsIcre } from "common/hooks/data/ccre";
+import { useNearestTSSColumn } from "common/hooks/data/ccre";
 import { CcreAssay } from "common/types/globalTypes";
-import { useIntersectingCcreZScores } from "common/hooks/useIntersectingCcreZScores";
+import { useIntersectingCcreZScores } from "common/hooks/data/ccre";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);
