@@ -17,6 +17,48 @@ const geneLinkDownloads: DownloadButtonProps[] = [
     bordercolor: "gray",
   },
   {
+    href: Config.Downloads.HumanGeneLinks3DChromatin,
+    label: "cCRE-Gene Links (3D Chromatin) (.txt.gz)",
+    fileSize: "242.5 MB",
+    bordercolor: "gray",
+  },
+  {
+    href: Config.Downloads.HumanGeneLinksCRISPR,
+    label: "cCRE-Gene Links (CRISPR) (.txt.gz)",
+    fileSize: "65.2 KB",
+    bordercolor: "gray",
+  },
+  {
+    href: Config.Downloads.HumanGeneLinkseQTLs,
+    label: "cCRE-Gene Links (eQTLs) (.txt.gz)",
+    fileSize: "220.8 MB",
+    bordercolor: "gray",
+  },
+  {
+    href: Config.Downloads.HumanGeneLinksABC,
+    label: "cCRE-Gene Links (ABC) (.txt.gz)",
+    fileSize: "4.6 GB",
+    bordercolor: "gray",
+  },
+  {
+    href: Config.Downloads.HumanGeneLinksEPIraction,
+    label: "cCRE-Gene Links (EPIraction) (.txt.gz)",
+    fileSize: "225.9 MB",
+    bordercolor: "gray",
+  },
+  {
+    href: Config.Downloads.HumanGeneLinksGraphRegLR,
+    label: "cCRE-Gene Links (GraphRegLR) (.txt.gz)",
+    fileSize: "7.7 MB",
+    bordercolor: "gray",
+  },
+  {
+    href: Config.Downloads.HumanGeneLinksrE2G,
+    label: "cCRE-Gene Links (rE2G) (.txt.gz)",
+    fileSize: "4.7 GB",
+    bordercolor: "gray",
+  },
+  {
     href: Config.Downloads.HumanNearestPC,
     label: "Nearest Gene by cCRE (protein-coding only) (.tsv)",
     fileSize: "317.5 MB",

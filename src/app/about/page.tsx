@@ -358,9 +358,24 @@ export default function About() {
             <Typography variant="h5" fontWeight={600}>
               API Documentation
             </Typography>
-            <LinkComponent href={"https://weng-lab.github.io/SCREEN2.0/"} showExternalIcon openInNewTab>
-              SCREEN API Documentation
-            </LinkComponent>
+            <Typography>
+              All SCREEN data is publicly available for download{" "}
+              <LinkComponent href="https://screen.wenglab.org/downloads" openInNewTab>
+                here
+              </LinkComponent>{" "}
+              and can also be accessed through our API. We provide authorized access to
+              the API, which requires an API key for programmatic use. Please sign in to
+              the{" "}
+              <LinkComponent href="https://console.wenglab.org/" showExternalIcon openInNewTab>
+                API Console
+              </LinkComponent>{" "}
+              to generate your API key. API key generation and usage instructions are
+              available in the{" "}
+              <LinkComponent href="https://console.wenglab.org/docs/getting-started/auth" showExternalIcon openInNewTab>
+                documentation
+              </LinkComponent>
+              .
+            </Typography>
           </Grid>
           {/* Contact Us */}
           <Grid id="contact-us" size={12}>
