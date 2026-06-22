@@ -323,12 +323,6 @@ export default function About() {
                 Sequence Conservation and Coverage
               </Typography>
               <Typography variant="body2">
-                See also:{" "}
-                <LinkComponent href={"https://zoonomiaproject.org/"} openInNewTab showExternalIcon>
-                  ZoonomiaProject.org/
-                </LinkComponent>
-              </Typography>
-              <Typography variant="body2">
                 <u>
                   <Link
                     href="https://doi.org/10.1126/science.abn7930"
