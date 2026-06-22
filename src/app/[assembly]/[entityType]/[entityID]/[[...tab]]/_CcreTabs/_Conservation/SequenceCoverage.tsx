@@ -19,10 +19,10 @@ import {
   SPECIES_ORDER_IN_API_RETURN,
   SpeciesRow,
   phyloTreeRoot,
-  allSpecies,
+  selectableSpecies,
+  HUMAN_SPECIES_ID,
 } from "./utils";
 import { GenomicRange } from "common/types/globalTypes";
-import { useCcreData } from "common/hooks/useCcreData";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { CitationInfoAlert } from "./CitationInfoAlert";
 import { useCcre } from "common/hooks/useCcre";
@@ -89,7 +89,7 @@ const PlotTooltip = ({ speciesId, coverage, position }: PlotTooltipProps) => (
 );
 
 const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
-  const [selectedSpecies, setSelectedSpecies] = useState<Set<string>>(allSpecies);
+  const [selectedSpecies, setSelectedSpecies] = useState<Set<string>>(selectableSpecies);
   const [speciesSelectOpen, setSpeciesSelectOpen] = useState<boolean>(false);
   const [hovered, setHovered] = useState<string[]>([]);
   const [displayRange, setDisplayRange] = useState<[number, number]>(DEFAULT_RANGE);
@@ -136,10 +136,13 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
   }, [dataSeq, hasSequenceAlignmentData]);
 
   const filteredAlignmentPlotData = useMemo(() => {
-    if (selectedSpecies.size === SPECIES_ORDER_IN_API_RETURN.length) return unfilteredAlignmentPlotData;
+    if (selectedSpecies.size === selectableSpecies.size) return unfilteredAlignmentPlotData;
+    // Human is always shown and is never part of selectedSpecies, so force it back in.
     else
       return Object.fromEntries(
-        Object.entries(unfilteredAlignmentPlotData).filter(([species, _]) => selectedSpecies.has(species))
+        Object.entries(unfilteredAlignmentPlotData).filter(
+          ([species, _]) => species === HUMAN_SPECIES_ID || selectedSpecies.has(species)
+        )
       );
   }, [unfilteredAlignmentPlotData, selectedSpecies]);
 
@@ -174,9 +177,15 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
   const speciesInRangeCount = useMemo(
     () =>
       speciesCoverageData.filter(
-        (s) => s.id !== "Homo_sapiens" && s.coverage >= displayRange[0] && s.coverage <= displayRange[1]
+        (s) => s.id !== HUMAN_SPECIES_ID && s.coverage >= displayRange[0] && s.coverage <= displayRange[1]
       ).length,
     [speciesCoverageData, displayRange]
+  );
+
+  // Human is always shown and not filterable, so it is excluded from the species filter table.
+  const selectableSpeciesData = useMemo(
+    () => speciesCoverageData.filter((s) => s.id !== HUMAN_SPECIES_ID),
+    [speciesCoverageData]
   );
 
   const SeqAlignTooltip = useCallback(
@@ -221,7 +230,6 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
   return (
     <>
-      <CitationInfoAlert />
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={"space-between"}
@@ -241,7 +249,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
               </Tooltip>
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {speciesInRangeCount} of {SPECIES_ORDER_IN_API_RETURN.length - 1} non-human species in range
+              {speciesInRangeCount} of {selectableSpecies.size} non-human species in range
             </Typography>
             <Slider
               value={displayRange}
@@ -257,13 +265,13 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
           </Box>
         </div>
         <Box flexShrink={0} display={"flex"} flexBasis={{ xs: "row-reverse", sm: "row" }}>
-          {!(selectedSpecies.size === SPECIES_ORDER_IN_API_RETURN.length) && (
-            <IconButton onClick={() => setSelectedSpecies(allSpecies)} size="small">
+          {!(selectedSpecies.size === selectableSpecies.size) && (
+            <IconButton onClick={() => setSelectedSpecies(selectableSpecies)} size="small">
               <SettingsBackupRestore />
             </IconButton>
           )}
           <Button variant="outlined" onClick={() => setSpeciesSelectOpen(true)} startIcon={<Tune />}>
-            Filter Sequences ({selectedSpecies.size}/{SPECIES_ORDER_IN_API_RETURN.length})
+            Filter Sequences ({selectedSpecies.size}/{selectableSpecies.size})
           </Button>
         </Box>
       </Stack>
@@ -309,10 +317,11 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
       <SpeciesSelect
         open={speciesSelectOpen}
         onClose={() => setSpeciesSelectOpen(false)}
-        species={speciesCoverageData}
+        species={selectableSpeciesData}
         selectedSpecies={selectedSpecies}
         onSelectionChange={setSelectedSpecies}
       />
+      <CitationInfoAlert />
     </>
   );
 };

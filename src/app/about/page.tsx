@@ -339,7 +339,7 @@ export default function About() {
                     Mammalian evolution of human cis-regulatory elements and transcription factor binding sites
                   </Link>
                 </u>
-                . Andrews ... Weng (2026) <i>Science</i>
+                . Andrews ... Weng (2023) <i>Science</i>
               </Typography>
             </Grid>
             <Grid size={12}>

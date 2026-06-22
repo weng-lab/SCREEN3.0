@@ -326,7 +326,6 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
 
   return (
     <Stack spacing={2} alignItems={"flex-start"}>
-      <CitationInfoAlert />
       <Box ref={heatmapsRef} sx={{ display: "flex", gap: 2, flexDirection: "row", flexWrap: "wrap" }}>
         <HeatmapPlot
           src={imgSrc}
@@ -340,6 +339,7 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
       <Button variant="outlined" color="primary" size="small" onClick={download}>
         Download Plots
       </Button>
+      <CitationInfoAlert />
     </Stack>
   );
 };
