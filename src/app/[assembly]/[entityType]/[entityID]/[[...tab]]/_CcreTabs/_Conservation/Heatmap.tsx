@@ -272,9 +272,11 @@ const AxisLegend = () => (
   <Box
     border={(theme) => `1px solid ${theme.palette.divider}`}
     borderRadius={1}
-    padding={2}
-    width={"fit-content"}
-    height={"min-content"}
+    padding={2}    
+    sx={{
+      width: 350,
+      maxWidth: "100%"
+    }}
   >
     {AXIS_LEGEND_ITEMS.map(({ label }) => (
       <Stack key={label} direction="row" alignItems="center" spacing={1}>        
@@ -363,8 +365,8 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
         spacing={2}
         alignItems="flex-start"
       >
-        <AxisLegend />
         <Legend />
+        <AxisLegend />        
       </Stack>
       <Button variant="outlined" color="primary" size="small" onClick={download}>
         Download Plots
