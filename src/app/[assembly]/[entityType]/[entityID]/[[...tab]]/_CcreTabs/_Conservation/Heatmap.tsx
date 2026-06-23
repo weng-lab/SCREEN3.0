@@ -248,8 +248,10 @@ const Legend = () => (
     border={(theme) => `1px solid ${theme.palette.divider}`}
     borderRadius={1}
     padding={2}
-    width={"fit-content"}
-    height={"min-content"}
+    sx={{
+      width: PLOT_WIDTH + AXIS_SIZE + N1_LABEL_WIDTH,
+      maxWidth: "100%"
+    }}
   >
     {LEGEND_ITEMS.map(({ color, label }) => (
       <Stack key={label} direction="row" alignItems="center" spacing={1}>
@@ -274,7 +276,7 @@ const AxisLegend = () => (
     borderRadius={1}
     padding={2}    
     sx={{
-      width: 350,
+      width: PLOT_WIDTH + AXIS_SIZE + N1_LABEL_WIDTH,
       maxWidth: "100%"
     }}
   >
