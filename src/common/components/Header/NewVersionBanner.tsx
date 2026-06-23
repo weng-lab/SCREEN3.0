@@ -3,22 +3,20 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Box, IconButton, Typography } from "@mui/material";
 import { useState } from "react";
 import { LinkComponent } from "common/components/LinkComponent";
+import { RELEASE_NOTES } from "app/about/versions/releaseNotes";
 
-type NewVersionBannerProps = {
-  versionId?: string;
-  message?: string;
-  href?: string;
-};
-
-const NewVersionBanner = ({
-  versionId = "",
-  message = "New release now available.",
-}: NewVersionBannerProps) => {
+const NewVersionBanner = () => {
   const [open, setOpen] = useState(true);
 
-  if (!open) {
+  // The most recent release is the first entry in the config.
+  const latestRelease = RELEASE_NOTES[0];
+
+  if (!open || !latestRelease) {
     return null;
   }
+
+  const versionId = latestRelease.version;
+  const message = latestRelease.summary ?? "New release now available.";
 
   return (
     <Box
