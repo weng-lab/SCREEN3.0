@@ -1,9 +1,9 @@
 import { useQuery } from "@apollo/client/react";
 import { useMemo } from "react";
 import { gql } from "common/types/generated";
-import { classifyCcre } from "common/utility";
+import { classifyCcre } from "common/ccre";
 import type { Assembly, CcreClass, CcreZScoresAndGroup } from "common/types/globalTypes";
-import type { ZScoresEntry } from "common/utils/parseCcreZScores";
+import type { ZScoresEntry } from "common/ccre";
 
 type CcreBiosampleActivityRow = {
   // sample metadata

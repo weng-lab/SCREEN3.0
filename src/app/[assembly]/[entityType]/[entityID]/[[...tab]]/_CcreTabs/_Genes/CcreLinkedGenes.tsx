@@ -1,16 +1,16 @@
 "use client";
 import { Box, Button, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
-import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
+import { useLinkedGenes, LinkedGeneInfo } from "common/hooks/data/ccre";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import useClosestGenes from "common/hooks/useCcreClosest3Genes";
-import { useDistanceAnchor } from "common/hooks/useDistanceAnchor";
+import { useCcreClosest3Genes as useClosestGenes } from "common/hooks/data/ccre";
+import { useDistanceAnchor } from "common/hooks/ui";
 
 type ClosestGeneRow = NonNullable<ReturnType<typeof useClosestGenes>["data"]>["edgeAnchor"][number];
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useCompuLinkedGenes } from "common/hooks/useCompuLinkedGenes";
+import { useCompuLinkedGenes } from "common/hooks/data/ccre";
 import { useState } from "react";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
 import { InfoOutlineRounded } from "@mui/icons-material";

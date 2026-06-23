@@ -1,4 +1,4 @@
-import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/useGWASEnrichmentData";
+import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/data/gwas";
 import { useMemo } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { IconButton, Tooltip } from "@mui/material";
@@ -6,7 +6,7 @@ import { Table, TableColDef, useSyncedTable } from "@weng-lab/ui-components";
 import type { useTablePlotSync } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
 import { OpenInNew } from "@mui/icons-material";
-import { capitalizeFirstLetter } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
 
 export type BiosampleEnrichmentTableProps = {
   enrichmentdata: UseGWASEnrichmentReturn;

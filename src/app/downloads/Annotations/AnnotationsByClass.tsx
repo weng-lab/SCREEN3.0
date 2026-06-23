@@ -1,7 +1,7 @@
 import React from "react";
 import Config from "common/config.json";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
-import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS, pELS, CTCF_Bound, ELS } from "../../../common/colors";
+import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS, pELS, CTCF_Bound, ELS } from "common/ccre";
 import DownloadContentLayout from "./DownloadContentLayout";
 import type { Assembly } from "./Annotations";
 

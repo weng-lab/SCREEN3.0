@@ -23,3 +23,25 @@ export const getComponentForEntity = (openEntity: AnyOpenEntity) => {
         .component;
   }
 };
+
+/**
+ *
+ * @param subpath
+ * @returns A formatted portal name for the passed string. If no matching portal returns null
+ */
+export function formatPortal(subpath: string): string {
+  switch (subpath) {
+    case "variant":
+      return "Variant";
+    case "gene":
+      return "Gene";
+    case "ccre":
+      return "cCRE";
+    case "region":
+      return "Region";
+    case "gwas":
+      return "GWAS";
+    default:
+      return null;
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
-import { useCcreData, UseCcreDataParams } from "common/hooks/useCcreData";
-import { UseGeneDataReturn } from "common/hooks/useGeneData";
+import { useCcreData, UseCcreDataParams } from "common/hooks/data/ccre";
+import { UseGeneDataReturn } from "common/hooks/data/gene";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import CalculateIcon from "@mui/icons-material/Calculate";
@@ -9,10 +9,10 @@ import { useMemo, useState, useRef } from "react";
 import CalculateNearbyCCREsPopper, { formatTssOffset } from "../_Gene/CalcNearbyCCREs";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
-import { calcDistCcreToTSS } from "common/utility";
+import { calcDistCcreToTSS } from "common/utils";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
-import { useCcresWithGeneInClosest3 } from "common/hooks/useCcresWithGeneInClosest3";
-import { useDistanceAnchor } from "common/hooks/useDistanceAnchor";
+import { useCcresWithGeneInClosest3 } from "common/hooks/data/ccre";
+import { useDistanceAnchor } from "common/hooks/ui";
 
 export type Transcript = {
   id: string;

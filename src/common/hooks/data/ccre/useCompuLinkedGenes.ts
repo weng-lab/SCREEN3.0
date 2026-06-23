@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client/react";
 import type { ErrorLike } from "@apollo/client";
 import { gql } from "common/types/generated/gql";
 
-import { ComputationalGeneLinksQuery } from "../types/generated/graphql";
+import { ComputationalGeneLinksQuery } from "common/types/generated/graphql";
 
 export const ComputationalGeneLinks_Query = gql(`
   query ComputationalGeneLinks($accession: [String]!, $method: [String]){

@@ -18,7 +18,7 @@ import {
 import { LinearScaleConfig, scaleLinear } from "@visx/scale";
 import { interpolateRdYlBu } from "d3-scale-chromatic";
 import UMAPLegend from "common/components/UMAPLegend";
-import { formatAssay } from "common/utility";
+import { formatAssay } from "common/assays";
 import { CcreAssay } from "common/types/globalTypes";
 import type { BiosampleRow, AssayUMAPProps } from "./types";
 

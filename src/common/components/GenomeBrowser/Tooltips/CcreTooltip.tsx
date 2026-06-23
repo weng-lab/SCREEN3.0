@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
-import { CLASS_COLORS } from "common/colors";
-import { CLASS_DESCRIPTIONS } from "common/consts";
+import { CLASS_COLORS } from "common/ccre";
+import { CLASS_DESCRIPTIONS } from "common/ccre";
 import { CcreTooltipBiosample } from "../TrackSelect/defaultTracks";
 import { useMemo } from "react";
 

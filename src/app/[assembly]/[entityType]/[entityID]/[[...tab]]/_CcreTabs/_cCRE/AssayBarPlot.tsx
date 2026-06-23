@@ -1,6 +1,7 @@
 import { Box } from "@mui/system";
 import { BarData, BarPlot } from "@weng-lab/visualization";
-import { capitalizeFirstLetter, formatAssay, truncateString } from "common/utility";
+import { capitalizeFirstLetter, truncateString } from "common/utils";
+import { formatAssay } from "common/assays";
 import { tissueColors } from "common/colors";
 import { useMemo } from "react";
 import { Typography } from "@mui/material";

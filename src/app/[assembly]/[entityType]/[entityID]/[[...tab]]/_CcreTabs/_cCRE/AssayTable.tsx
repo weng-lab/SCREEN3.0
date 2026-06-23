@@ -2,8 +2,8 @@ import { useEffect, useMemo } from "react";
 import { Table, useSyncedTable } from "@weng-lab/ui-components";
 import { GridColumnVisibilityModel, GridSortModel } from "@mui/x-data-grid-premium";
 import { CcreAssay } from "common/types/globalTypes";
-import { CCRE_ASSAYS } from "common/consts";
-import { formatAssay } from "common/utility";
+import { CCRE_ASSAYS } from "common/assays";
+import { formatAssay } from "common/assays";
 import type { AssayTableProps } from "./types";
 
 const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel => {

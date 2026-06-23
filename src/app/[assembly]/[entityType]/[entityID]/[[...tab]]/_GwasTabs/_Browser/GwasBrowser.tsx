@@ -2,7 +2,7 @@
 import { CircularProgress, Alert, Box } from "@mui/material";
 import GenomeBrowserView from "common/components/GenomeBrowser/GenomeBrowserView";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
+import { useGWASSnpsData } from "common/hooks/data/gwas";
 import { useEffect, useMemo, useState } from "react";
 import SelectLdBlock from "./SelectLdBlock";
 import { expandCoordinates } from "common/components/GenomeBrowser/utils";

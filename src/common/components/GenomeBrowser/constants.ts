@@ -1,5 +1,5 @@
 import { BigWigConfig, DisplayMode, Track, TrackType, TranscriptConfig } from "@weng-lab/genomebrowser";
-import { ASSAY_COLORS } from "common/colors";
+import { ASSAY_COLORS } from "common/assays";
 import { defaultTranscript } from "./TrackSelect/defaultConfigs";
 
 export const CCRE_TRACK_COLOR = "#D05F45";
