@@ -161,7 +161,7 @@ const HeatmapPlot = ({
                     ],
                   },
                 }}
-                title="G1: highly conserved elements (N1 ≥ 120 and N2 ≤ 25)"
+                title="G1: highly conserved cCREs (N1 ≥ 120 and N2 ≤ 25)"
               >
                 <rect fill="transparent" x={0} y={0} width={25 * xScale} height={240 - 120} />
               </Tooltip>
@@ -180,11 +180,11 @@ const HeatmapPlot = ({
                     ],
                   },
                 }}
-                title="G2: actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)"
+                title="G2: actively evolving cCREs (20 ≤ N1 ≤ 50 and N2 ≤ 120)"
               >
                 <rect fill="transparent" x={0} y={240 - 50} width={120 * xScale} height={30} />
               </Tooltip>
-              <Tooltip arrow placement="bottom" title="G3: primate-specific elements (N1 ≤ 50 and N2 ≥ 180)">
+              <Tooltip arrow placement="bottom" title="G3: primate-specific cCREs (N1 ≤ 50 and N2 ≥ 180)">
                 <rect fill="transparent" x={180 * xScale} y={240 - 50} width={(240 - 180) * xScale} height={50} />
               </Tooltip>
               <Tooltip arrow title={`${point.accession} (${point.group}): N1 = ${point.y}, N2 = ${point.x}`}>
@@ -238,9 +238,9 @@ const HeatmapPlot = ({
 };
 
 const LEGEND_ITEMS = [
-  { color: "red", label: "G1: highly conserved elements (N1 ≥ 120 and N2 ≤ 25)" },
-  { color: "green", label: "G2: actively evolving elements (20 ≤ N1 ≤ 50 and N2 ≤ 120)" },
-  { color: "blue", label: "G3: primate-specific elements (N1 ≤ 50 and N2 ≥ 180)" },
+  { color: "red", label: "G1: highly conserved cCREs (N1 ≥ 120 and N2 ≤ 25)" },
+  { color: "green", label: "G2: actively evolving cCREs (20 ≤ N1 ≤ 50 and N2 ≤ 120)" },
+  { color: "blue", label: "G3: primate-specific cCREs (N1 ≤ 50 and N2 ≥ 180)" },
 ];
 
 const Legend = () => (
