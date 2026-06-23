@@ -1,4 +1,4 @@
-import { Alert, Box, Stack, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, Divider, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import Image, { StaticImageData } from "next/image";
 import AllcCREs from "public/conservation/AllcCREs.png";
 import PromoterImg from "public/conservation/PLS.png";
@@ -10,7 +10,7 @@ import CAImg from "public/conservation/CA.png";
 import DistalEnhancerImg from "public/conservation/dELS.png";
 import TFImg from "public/conservation/TF.png";
 import CircularProgress from "@mui/material/CircularProgress";
-import Button from "@mui/material/Button";
+import DownloadIcon from "@mui/icons-material/Download";
 import { useScreenshot } from "use-react-screenshot";
 import { gql } from "common/types/generated";
 import { useRef } from "react";
@@ -41,18 +41,41 @@ const HeatmapPlot = ({
   alt,
   title,
   point,
+  downloadName,
 }: {
   src: StaticImageData;
   alt: string;
   title: string;
   point: { x: number; y: number; accession: string; group: CcreClass; color: string };
+  downloadName: string;
 }) => {
   const plotHeight = PLOT_WIDTH * (src.height / src.width);
   const xScale = src.width / src.height;
 
+  const plotRef = useRef<HTMLDivElement>(null);
+  const [, takeScreenshot] = useScreenshot();
+
+  const download = () => {
+    if (!plotRef.current) return;
+
+    takeScreenshot(plotRef.current).then((img) => {
+      const a = document.createElement("a");
+      a.href = img;
+      a.download = `${downloadName}.png`;
+      a.click();
+    });
+  };
+
   return (
-    <Box>
-      <Typography mb={1}>{title}</Typography>
+    <Box ref={plotRef}>
+      <Stack direction="row" alignItems="center" spacing={0.5} mb={1}>
+        <Typography>{title}</Typography>
+        <Tooltip arrow title="Download plot">
+          <IconButton data-html2canvas-ignore="true" size="small" onClick={download}>
+            <DownloadIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Stack>
       <Box
         sx={{
           display: "grid",
@@ -83,7 +106,7 @@ const HeatmapPlot = ({
               textAlign: "center",
             }}
           >
-            N₁: no. species with ≥90% coverage
+            N₁
           </Typography>
         </Box>
         <Box
@@ -228,63 +251,49 @@ const HeatmapPlot = ({
           variant="body2"
           sx={{ gridRow: 3, gridColumn: 3, width: PLOT_WIDTH, textAlign: "center" }}
         >
-            N₂: no. species with ≤10% coverage
+            N₂
         </Typography>
       </Box>
     </Box>
   );
 };
 
-const LEGEND_ITEMS = [
+const AXIS_ITEMS = [
+  {
+    label:
+      "N₁: number of other mammalian genomes, out of 240 total, to which ≥90% of the human cCRE's positions could be aligned",
+  },
+  {
+    label:
+      "N₂: number of other mammalian genomes, out of 240 total, to which ≤10% of the human cCRE's positions could be aligned",
+  },
+];
+
+const GROUP_ITEMS = [
   { color: "red", label: "G1: highly conserved cCREs (N1 ≥ 120 and N2 ≤ 25)" },
   { color: "green", label: "G2: actively evolving cCREs (20 ≤ N1 ≤ 50 and N2 ≤ 120)" },
   { color: "blue", label: "G3: primate-specific cCREs (N1 ≤ 50 and N2 ≥ 180)" },
-];
+]
 
 const Legend = () => (
   <Box
     border={(theme) => `1px solid ${theme.palette.divider}`}
     borderRadius={1}
     padding={2}
-    sx={{
-      width: PLOT_WIDTH + AXIS_SIZE + N1_LABEL_WIDTH,
-      maxWidth: "100%"
-    }}
   >
-    {LEGEND_ITEMS.map(({ color, label }) => (
+    {AXIS_ITEMS.map(({ label }) => (
+      <Typography key={label} variant="body2">{label}</Typography>
+    ))}
+    <Divider sx={{mt: 1, mb: 0.5}} />
+    {GROUP_ITEMS.map(({ color, label }) => (
       <Stack key={label} direction="row" alignItems="center" spacing={1}>
-        <Box sx={{ width: 12, height: 12, backgroundColor: color, flexShrink: 0, borderRadius: 0.5 }} />
+        {color && <Box sx={{ width: 12, height: 12, backgroundColor: color, flexShrink: 0, borderRadius: 0.5 }} />}
         <Typography variant="body2">{label}</Typography>
       </Stack>
     ))}
   </Box>
 );
 
-const AXIS_LEGEND_ITEMS = [
-  {
-    label: "N₁: number of other mammalian genomes, out of 240 total, to which ≥90% of the human cCRE’s positions could be aligned",
-  },
-  {
-    label: "N₂: number of other mammalian genomes, out of 240 total, to which ≤10% of the human cCRE’s positions could be aligned",
-  },
-];
-const AxisLegend = () => (
-  <Box
-    border={(theme) => `1px solid ${theme.palette.divider}`}
-    borderRadius={1}
-    padding={2}    
-    sx={{
-      width: PLOT_WIDTH + AXIS_SIZE + N1_LABEL_WIDTH,
-      maxWidth: "100%"
-    }}
-  >
-    {AXIS_LEGEND_ITEMS.map(({ label }) => (
-      <Stack key={label} direction="row" alignItems="center" spacing={1}>        
-        <Typography variant="body2">{label}</Typography>
-      </Stack>
-    ))}
-  </Box>
-);
 const getImageSrc = (group: CcreClass): StaticImageData => {
   switch (group) {
     case "PLS":
@@ -309,20 +318,6 @@ const getImageSrc = (group: CcreClass): StaticImageData => {
 };
 
 export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
-  const heatmapsRef = useRef<HTMLDivElement>(null);
-  const [_, takeScreenshot] = useScreenshot();
-
-  const download = () => {
-    if (!heatmapsRef.current) return;
-
-    takeScreenshot(heatmapsRef.current).then((img) => {
-      const a = document.createElement("a");
-      a.href = img;
-      a.download = `${entity.entityID}.png`;
-      a.click();
-    });
-  };
-
   const {
     data: heatmapData,
     loading: heatmapLoading,
@@ -351,26 +346,23 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
 
   return (
     <Stack spacing={2} alignItems={"flex-start"}>
-      <Box ref={heatmapsRef} sx={{ display: "flex", gap: 2, flexDirection: "row", flexWrap: "wrap" }}>
+      <Box sx={{ display: "flex", gap: 2, flexDirection: "row", flexWrap: "wrap" }}>
         <HeatmapPlot
           src={imgSrc}
           alt={`${group} plot`}
           title={`Class: ${CLASS_DESCRIPTIONS[group]}`}
           point={heatmapPoint}
+          downloadName={`${entity.entityID}_${group}`}
         />
-        <HeatmapPlot src={AllcCREs} alt="All cCRE classes" title="All cCRE classes" point={heatmapPoint} />
+        <HeatmapPlot
+          src={AllcCREs}
+          alt="All cCRE classes"
+          title="All cCRE classes"
+          point={heatmapPoint}
+          downloadName={`${entity.entityID}_all-cCRE-classes`}
+        />
       </Box>
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        spacing={2}
-        alignItems="flex-start"
-      >
-        <Legend />
-        <AxisLegend />        
-      </Stack>
-      <Button variant="outlined" color="primary" size="small" onClick={download}>
-        Download Plots
-      </Button>
+      <Legend />
       <CitationInfoAlert />
     </Stack>
   );
