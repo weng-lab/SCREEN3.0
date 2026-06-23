@@ -9,8 +9,7 @@ import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { GwasStudyHeader } from "./GwasStudyHeader";
 import BedUploadHeader from "./BedUploadHeader";
-import { useElementHeights } from "./useElementHeights";
-import { useScrollReset } from "common/hooks/ui";
+import { useEntityTabsHeight, useScrollReset } from "common/hooks/ui";
 
 export type EntityDetailsLayoutProps = {
   assembly: Assembly;
@@ -41,7 +40,7 @@ const EntityHeader = ({
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
 
-  useElementHeights();
+  useEntityTabsHeight();
   useScrollReset();
 
   return (
