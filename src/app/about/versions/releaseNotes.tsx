@@ -53,16 +53,16 @@ export const RELEASE_NOTES: ReleaseNote[] = [
           <>
             All SCREEN data is publicly available for download at{" "}
             <LinkComponent href={"https://screen.wenglab.org/downloads"}>
-              https://screen.wenglab.org/downloads
+              screen.wenglab.org/downloads
             </LinkComponent>{" "}
             and can also be accessed through our API. We are providing authorized access to the API, which requires an
             API key for programmatic use. Please sign in to the API Console{" "}
             <LinkComponent href={"https://console.wenglab.org/"} openInNewTab showExternalIcon>
-              https://console.wenglab.org/
+              console.wenglab.org
             </LinkComponent>{" "}
             to generate your API key. API key generation and usage instructions are available in the documentation{" "}
             <LinkComponent href="https://console.wenglab.org/docs/getting-started/auth" openInNewTab showExternalIcon>
-              https://console.wenglab.org/docs/getting-started/auth
+              console.wenglab.org/docs/getting-started/auth
             </LinkComponent>
           </>
         ),
