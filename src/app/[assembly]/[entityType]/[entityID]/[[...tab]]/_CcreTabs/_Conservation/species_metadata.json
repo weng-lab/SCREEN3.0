@@ -1,0 +1,2412 @@
+[
+  {
+    "rank": 1,
+    "species": "Homo_sapiens",
+    "common_name": "Human",
+    "order": "PRIMATES",
+    "primate_group": "GREAT_APES",
+    "color_group": "GREAT_APES",
+    "dist_to_human": 0.0,
+    "color_label": "Great Apes"
+  },
+  {
+    "rank": 2,
+    "species": "Pan_paniscus",
+    "common_name": "Bonobo",
+    "order": "PRIMATES",
+    "primate_group": "GREAT_APES",
+    "color_group": "GREAT_APES",
+    "dist_to_human": 0.01215039,
+    "color_label": "Great Apes"
+  },
+  {
+    "rank": 3,
+    "species": "Pan_troglodytes",
+    "common_name": "Chimpanzee",
+    "order": "PRIMATES",
+    "primate_group": "GREAT_APES",
+    "color_group": "GREAT_APES",
+    "dist_to_human": 0.0120009,
+    "color_label": "Great Apes"
+  },
+  {
+    "rank": 4,
+    "species": "Gorilla_gorilla",
+    "common_name": "Western Lowland Gorilla",
+    "order": "PRIMATES",
+    "primate_group": "GREAT_APES",
+    "color_group": "GREAT_APES",
+    "dist_to_human": 0.0156446,
+    "color_label": "Great Apes"
+  },
+  {
+    "rank": 5,
+    "species": "Pongo_abelii",
+    "common_name": "Sumatran Orangutan",
+    "order": "PRIMATES",
+    "primate_group": "GREAT_APES",
+    "color_group": "GREAT_APES",
+    "dist_to_human": 0.03226714,
+    "color_label": "Great Apes"
+  },
+  {
+    "rank": 6,
+    "species": "Nomascus_leucogenys",
+    "common_name": "Northern White cheeked Gibbon",
+    "order": "PRIMATES",
+    "primate_group": "GIBBONS",
+    "color_group": "GIBBONS",
+    "dist_to_human": 0.03868789,
+    "color_label": "Gibbons"
+  },
+  {
+    "rank": 7,
+    "species": "Macaca_fascicularis",
+    "common_name": "Crab eating Macaque",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.064162194,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 8,
+    "species": "Macaca_mulatta",
+    "common_name": "Rhesus Macaque",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.065221024,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 9,
+    "species": "Macaca_nemestrina",
+    "common_name": "Pig tailed Macaque",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06553685,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 10,
+    "species": "Papio_anubis",
+    "common_name": "Olive Baboon",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06544282,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 11,
+    "species": "Mandrillus_leucophaeus",
+    "common_name": "Drill",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.0655577,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 12,
+    "species": "Cercocebus_atys",
+    "common_name": "Sooty Mangabey",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06670684,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 13,
+    "species": "Erythrocebus_patas",
+    "common_name": "Patas Monkey",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06572519,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 14,
+    "species": "Chlorocebus_sabaeus",
+    "common_name": "Green Monkey",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06591018,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 15,
+    "species": "Cercopithecus_neglectus",
+    "common_name": "De Brazzas Monkey",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.0657473,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 16,
+    "species": "Rhinopithecus_roxellana",
+    "common_name": "Golden Snub nosed Monkey",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.066078306,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 17,
+    "species": "Rhinopithecus_bieti",
+    "common_name": "Black Snub nosed Monkey",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.066223466,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 18,
+    "species": "Pygathrix_nemaeus",
+    "common_name": "Red shanked Douc",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.066268676,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 19,
+    "species": "Nasalis_larvatus",
+    "common_name": "Proboscis Monkey",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06560925,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 20,
+    "species": "Semnopithecus_entellus",
+    "common_name": "Northern Plains Gray Langur",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06598764,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 21,
+    "species": "Colobus_angolensis",
+    "common_name": "Angolan Colobus",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06662409,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 22,
+    "species": "Piliocolobus_tephrosceles",
+    "common_name": "Ugandan Red Colobus",
+    "order": "PRIMATES",
+    "primate_group": "OLD_WORLD_MONKEYS",
+    "color_group": "OLD_WORLD_MONKEYS",
+    "dist_to_human": 0.06669549,
+    "color_label": "Old World Monkeys"
+  },
+  {
+    "rank": 23,
+    "species": "Pithecia_pithecia",
+    "common_name": "White faced Saki",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.10670662,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 24,
+    "species": "Callicebus_donacophilus",
+    "common_name": "White eared Titi",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.11025662,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 25,
+    "species": "Ateles_geoffroyi",
+    "common_name": "Geoffroys Spider Monkey",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.10709547,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 26,
+    "species": "Alouatta_palliata",
+    "common_name": "Mexican Howler Monkey",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.11142887,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 27,
+    "species": "Cebus_capucinus",
+    "common_name": "White faced Sapajou",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.11401208,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 28,
+    "species": "Cebus_albifrons",
+    "common_name": "White fronted Capuchin",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.11394333,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 29,
+    "species": "Saimiri_boliviensis",
+    "common_name": "Bolivian Squirrel Monkey",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.11870027,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 30,
+    "species": "Aotus_nancymaae",
+    "common_name": "Mas Night Monkey",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.109025629,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 31,
+    "species": "Saguinus_imperator",
+    "common_name": "Emperor Tamarin",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.117581629,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 32,
+    "species": "Callithrix_jacchus",
+    "common_name": "White tufted ear Marmoset",
+    "order": "PRIMATES",
+    "primate_group": "NEW_WORLD_MONKEYS",
+    "color_group": "NEW_WORLD_MONKEYS",
+    "dist_to_human": 0.118927629,
+    "color_label": "New World Monkeys"
+  },
+  {
+    "rank": 33,
+    "species": "Daubentonia_madagascariensis",
+    "common_name": "Aye aye",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.21984955,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 34,
+    "species": "Lemur_catta",
+    "common_name": "Ring Tailed Lemur",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.24012235,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 35,
+    "species": "Eulemur_fulvus",
+    "common_name": "Common Brown Lemur",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.24035865,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 36,
+    "species": "Eulemur_flavifrons",
+    "common_name": "Sclaters Lemur",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.24071386,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 37,
+    "species": "Propithecus_coquereli",
+    "common_name": "Coquerels Sifaka",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.24101634,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 38,
+    "species": "Indri_indri",
+    "common_name": "Indri",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.24260374,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 39,
+    "species": "Cheirogaleus_medius",
+    "common_name": "Fat tailed Dwarf Lemur",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.24383814,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 40,
+    "species": "Mirza_coquereli",
+    "common_name": "Coquerels Giant Mouse Lemur",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.25567754,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 41,
+    "species": "Microcebus_murinus",
+    "common_name": "Gray Mouse Lemur",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.25746804,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 42,
+    "species": "Nycticebus_coucang",
+    "common_name": "Sunda Slow Loris",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.29988975,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 43,
+    "species": "Otolemur_garnettii",
+    "common_name": "Small eared Galago",
+    "order": "PRIMATES",
+    "primate_group": "STREPSIRRHINI",
+    "color_group": "STREPSIRRHINI",
+    "dist_to_human": 0.30317835,
+    "color_label": "Lemurs & Lorises"
+  },
+  {
+    "rank": 44,
+    "species": "Galeopterus_variegatus",
+    "common_name": "Sunda Flying Lemur",
+    "order": "DERMOPTERA",
+    "primate_group": null,
+    "color_group": "DERMOPTERA",
+    "dist_to_human": 0.25911486,
+    "color_label": "Flying Lemurs"
+  },
+  {
+    "rank": 45,
+    "species": "Tupaia_tana",
+    "common_name": "Large Treeshrew",
+    "order": "SCANDENTIA",
+    "primate_group": null,
+    "color_group": "SCANDENTIA",
+    "dist_to_human": 0.35935315,
+    "color_label": "Treeshrews"
+  },
+  {
+    "rank": 46,
+    "species": "Tupaia_chinensis",
+    "common_name": "Northern Tree Shrew",
+    "order": "SCANDENTIA",
+    "primate_group": null,
+    "color_group": "SCANDENTIA",
+    "dist_to_human": 0.36102645,
+    "color_label": "Treeshrews"
+  },
+  {
+    "rank": 47,
+    "species": "Hystrix_cristata",
+    "common_name": "Northern Crested Porcupine",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.42030831,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 48,
+    "species": "Cuniculus_paca",
+    "common_name": "Lowland Paca",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.44180501,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 49,
+    "species": "Dasyprocta_punctata",
+    "common_name": "Central American Agouti",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.44991277,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 50,
+    "species": "Dolichotis_patagonum",
+    "common_name": "Patagonian Mara",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.4723855,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 51,
+    "species": "Hydrochoerus_hydrochaeris",
+    "common_name": "Capybara",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.4737947,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 52,
+    "species": "Cavia_porcellus",
+    "common_name": "Domestic Guinea Pig",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.482952759,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 53,
+    "species": "Cavia_tschudii",
+    "common_name": "Montane Guinea Pig",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.48292944,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 54,
+    "species": "Cavia_aperea",
+    "common_name": "Brazilian Guinea Pig",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.48309037,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 55,
+    "species": "Chinchilla_lanigera",
+    "common_name": "Long tailed Chinchilla",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.44652381,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 56,
+    "species": "Dinomys_branickii",
+    "common_name": "Pacarana",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.46573311,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 57,
+    "species": "Octodon_degus",
+    "common_name": "Degu",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.50510711,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 58,
+    "species": "Ctenomys_sociabilis",
+    "common_name": "Social Tuco tuco",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.52090871,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 59,
+    "species": "Capromys_pilorides",
+    "common_name": "Desmarests Hutia",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.52229221,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 60,
+    "species": "Myocastor_coypus",
+    "common_name": "Coypu",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.53447311,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 61,
+    "species": "Heterocephalus_glaber",
+    "common_name": "Naked Mole rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.42124051,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 62,
+    "species": "Fukomys_damarensis",
+    "common_name": "Damara Mole rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.45460381,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 63,
+    "species": "Thryonomys_swinderianus",
+    "common_name": "Greater Cane Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.50422971,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 64,
+    "species": "Petromus_typicus",
+    "common_name": "Dassie Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.51120711,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 65,
+    "species": "Ctenodactylus_gundi",
+    "common_name": "Common Gundi",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.46275491,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 66,
+    "species": "Xerus_inauris",
+    "common_name": "Cape Ground Squirrel",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.38711189,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 67,
+    "species": "Spermophilus_dauricus",
+    "common_name": "Daurian Ground Squirrel",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.40121269,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 68,
+    "species": "Ictidomys_tridecemlineatus",
+    "common_name": "Thirteen lined Ground Squirrel",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.404747166,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 69,
+    "species": "Marmota_marmota",
+    "common_name": "Alpine Marmot",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.412859266,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 70,
+    "species": "Aplodontia_rufa",
+    "common_name": "Mountain Beaver",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.40863759,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 71,
+    "species": "Glis_glis",
+    "common_name": "Edible Dormouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.36166701,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 72,
+    "species": "Graphiurus_murinus",
+    "common_name": "Woodland Doormouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.38692621,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 73,
+    "species": "Muscardinus_avellanarius",
+    "common_name": "Hazel Dormouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.42136879,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 74,
+    "species": "Castor_canadensis",
+    "common_name": "North American Beaver",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.40137869,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 75,
+    "species": "Dipodomys_ordii",
+    "common_name": "Ords Kangaroo Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.49794049,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 76,
+    "species": "Dipodomys_stephensi",
+    "common_name": "Stephens Kangaroo Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.49824999,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 77,
+    "species": "Perognathus_longimembris",
+    "common_name": "Pacific Pocket Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.51148349,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 78,
+    "species": "Allactaga_bullata",
+    "common_name": "Gobi Jerboa",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.50790079,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 79,
+    "species": "Jaculus_jaculus",
+    "common_name": "Lesser Egyptian Jerboa",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.52021339,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 80,
+    "species": "Zapus_hudsonius",
+    "common_name": "Meadow Jumping Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.51448249,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 81,
+    "species": "Nannospalax_galili",
+    "common_name": "Upper Galilee Mountains Blind Mole Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.50380339,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 82,
+    "species": "Cricetomys_gambianus",
+    "common_name": "Gambian Pouched Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.54498989,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 83,
+    "species": "Peromyscus_maniculatus",
+    "common_name": "Prairie Deer Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.55124509,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 84,
+    "species": "Onychomys_torridus",
+    "common_name": "Scorpion Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.55697279,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 85,
+    "species": "Ellobius_talpinus",
+    "common_name": "Northern Mole Vole",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.57968815,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 86,
+    "species": "Ellobius_lutescens",
+    "common_name": "Transcaucasian Mole Vole",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.58553785,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 87,
+    "species": "Microtus_ochrogaster",
+    "common_name": "Prairie Vole",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.58986947,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 88,
+    "species": "Ondatra_zibethicus",
+    "common_name": "Muskrat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.59052487,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 89,
+    "species": "Cricetulus_griseus",
+    "common_name": "Chinese Hamster",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.56881715,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 90,
+    "species": "Mesocricetus_auratus",
+    "common_name": "Golden Hamster",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.58166595,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 91,
+    "species": "Sigmodon_hispidus",
+    "common_name": "Hispid Cotton Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.59147693,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 92,
+    "species": "Psammomys_obesus",
+    "common_name": "Fat Sand Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.58560059,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 93,
+    "species": "Meriones_unguiculatus",
+    "common_name": "Mongolian Jird",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.58711179,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 94,
+    "species": "Acomys_cahirinus",
+    "common_name": "Cairo Spiny Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.59089219,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 95,
+    "species": "Mus_musculus",
+    "common_name": "House Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.59868191,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 96,
+    "species": "Mus_spretus",
+    "common_name": "Western Wild Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.59958849,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 97,
+    "species": "Mus_caroli",
+    "common_name": "Ryukyu Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.59876679,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 98,
+    "species": "Mus_pahari",
+    "common_name": "Shrew Mouse",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.60043789,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 99,
+    "species": "Rattus_norvegicus",
+    "common_name": "Norway Rat",
+    "order": "RODENTIA",
+    "primate_group": null,
+    "color_group": "RODENTIA",
+    "dist_to_human": 0.60562069,
+    "color_label": "Rodents"
+  },
+  {
+    "rank": 100,
+    "species": "Oryctolagus_cuniculus",
+    "common_name": "Rabbit",
+    "order": "LAGOMORPHA",
+    "primate_group": null,
+    "color_group": "LAGOMORPHA",
+    "dist_to_human": 0.40971291,
+    "color_label": "Rabbits & Pikas"
+  },
+  {
+    "rank": 101,
+    "species": "Lepus_americanus",
+    "common_name": "Snowshoe Hare",
+    "order": "LAGOMORPHA",
+    "primate_group": null,
+    "color_group": "LAGOMORPHA",
+    "dist_to_human": 0.41270211,
+    "color_label": "Rabbits & Pikas"
+  },
+  {
+    "rank": 102,
+    "species": "Ochotona_princeps",
+    "common_name": "American Pika",
+    "order": "LAGOMORPHA",
+    "primate_group": null,
+    "color_group": "LAGOMORPHA",
+    "dist_to_human": 0.50225101,
+    "color_label": "Rabbits & Pikas"
+  },
+  {
+    "rank": 103,
+    "species": "Ceratotherium_simum_cottoni",
+    "common_name": "Northern White Rhino",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.321613705,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 104,
+    "species": "Ceratotherium_simum",
+    "common_name": "Southern White Rhinoceros",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.32179569,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 105,
+    "species": "Diceros_bicornis",
+    "common_name": "Black Rhinocerous",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.32216943,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 106,
+    "species": "Dicerorhinus_sumatrensis",
+    "common_name": "Sumatran Rhinoceros",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.32276556,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 107,
+    "species": "Tapirus_indicus",
+    "common_name": "Malayan Tapir",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.32431076,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 108,
+    "species": "Tapirus_terrestris",
+    "common_name": "South American Tapir",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.32474706,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 109,
+    "species": "Equus_asinus",
+    "common_name": "Ass",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.3401555,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 110,
+    "species": "Equus_przewalskii",
+    "common_name": "Przewalskis Horse",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.34056935,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 111,
+    "species": "Equus_caballus",
+    "common_name": "Horse",
+    "order": "PERISSODACTYLA",
+    "primate_group": null,
+    "color_group": "PERISSODACTYLA",
+    "dist_to_human": 0.3406724,
+    "color_label": "Odd-toed Ungulates"
+  },
+  {
+    "rank": 112,
+    "species": "Manis_pentadactyla",
+    "common_name": "Chinese Pangolin",
+    "order": "PHOLIDOTA",
+    "primate_group": null,
+    "color_group": "PHOLIDOTA",
+    "dist_to_human": 0.38333358,
+    "color_label": "Pangolins"
+  },
+  {
+    "rank": 113,
+    "species": "Manis_javanica",
+    "common_name": "Malayan Pangolin",
+    "order": "PHOLIDOTA",
+    "primate_group": null,
+    "color_group": "PHOLIDOTA",
+    "dist_to_human": 0.38551648,
+    "color_label": "Pangolins"
+  },
+  {
+    "rank": 114,
+    "species": "Neomonachus_schauinslandi",
+    "common_name": "Hawaiian Monk Seal",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.37636663,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 115,
+    "species": "Leptonychotes_weddellii",
+    "common_name": "Weddell Seal",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.37661403,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 116,
+    "species": "Mirounga_angustirostris",
+    "common_name": "Northern Elephant Seal",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.37820937,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 117,
+    "species": "Odobenus_rosmarus",
+    "common_name": "Pacific Walrus",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.37863488,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 118,
+    "species": "Zalophus_californianus",
+    "common_name": "California Sea Lion",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.38067537,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 119,
+    "species": "Ailurus_fulgens",
+    "common_name": "Lesser Panda",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.40468527,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 120,
+    "species": "Mellivora_capensis",
+    "common_name": "Honey Badger",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.41480627,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 121,
+    "species": "Enhydra_lutris",
+    "common_name": "Sea Otter",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.41553428,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 122,
+    "species": "Pteronura_brasiliensis",
+    "common_name": "Giant Otter",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.41710498,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 123,
+    "species": "Mustela_putorius",
+    "common_name": "Domestic Ferret",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.42490918,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 124,
+    "species": "Spilogale_gracilis",
+    "common_name": "Western Spotted Skunk",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.42221867,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 125,
+    "species": "Ursus_maritimus",
+    "common_name": "Polar Bear",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.38665858,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 126,
+    "species": "Ailuropoda_melanoleuca",
+    "common_name": "Giant Panda",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.38799288,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 127,
+    "species": "Canis_lupus_familiaris",
+    "common_name": "Domestic Dog",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.404926635,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 128,
+    "species": "Canis_lupus",
+    "common_name": "Domestic Dog",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.405061858,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 129,
+    "species": "Lycaon_pictus",
+    "common_name": "African Hunting Dog",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.40487486,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 130,
+    "species": "Vulpes_lagopus",
+    "common_name": "Arctic Fox",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.40584898,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 131,
+    "species": "Panthera_tigris",
+    "common_name": "Amur Tiger",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.39149112,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 132,
+    "species": "Panthera_onca",
+    "common_name": "Jaguar",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.39179315,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 133,
+    "species": "Panthera_pardus",
+    "common_name": "Leopard",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.39201001,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 134,
+    "species": "Acinonyx_jubatus",
+    "common_name": "Cheetah",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.39228581,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 135,
+    "species": "Puma_concolor",
+    "common_name": "Puma",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.392484591,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 136,
+    "species": "Felis_nigripes",
+    "common_name": "Black footed Cat",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.394884881,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 137,
+    "species": "Felis_catus",
+    "common_name": "Domestic Cat",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.394983601,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 138,
+    "species": "Cryptoprocta_ferox",
+    "common_name": "Fossa",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.39491538,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 139,
+    "species": "Helogale_parvula",
+    "common_name": "Dwarf Mongoose",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.41721068,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 140,
+    "species": "Mungos_mungo",
+    "common_name": "South African Banded Mongoose",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.41861309,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 141,
+    "species": "Suricata_suricatta",
+    "common_name": "Meerkat",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.42313719,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 142,
+    "species": "Hyaena_hyaena",
+    "common_name": "Striped Hyena",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.40861568,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 143,
+    "species": "Paradoxurus_hermaphroditus",
+    "common_name": "Asian Palm Civet",
+    "order": "CARNIVORA",
+    "primate_group": null,
+    "color_group": "CARNIVORA",
+    "dist_to_human": 0.40996668,
+    "color_label": "Carnivores"
+  },
+  {
+    "rank": 144,
+    "species": "Eubalaena_japonica",
+    "common_name": "North Pacific Right Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.3456718,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 145,
+    "species": "Eschrichtius_robustus",
+    "common_name": "Grey Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.34823894,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 146,
+    "species": "Balaenoptera_bonaerensis",
+    "common_name": "Antarctic Minke Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.34857422,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 147,
+    "species": "Balaenoptera_acutorostrata",
+    "common_name": "Minke Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.34895701,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 148,
+    "species": "Monodon_monoceros",
+    "common_name": "Narwhal",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.35500818,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 149,
+    "species": "Delphinapterus_leucas",
+    "common_name": "Beluga Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.3550948,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 150,
+    "species": "Neophocaena_asiaeorientalis",
+    "common_name": "Yangtze Finless Porpoise",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.35734206,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 151,
+    "species": "Phocoena_phocoena",
+    "common_name": "Harbor Porpoise",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.3575078,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 152,
+    "species": "Orcinus_orca",
+    "common_name": "Killer Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.35571923,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 153,
+    "species": "Tursiops_truncatus",
+    "common_name": "Bottlenose Dolphin",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.3562849,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 154,
+    "species": "Lipotes_vexillifer",
+    "common_name": "Yangtze River Dolphin",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.35628268,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 155,
+    "species": "Inia_geoffrensis",
+    "common_name": "Amazon River Dolphin",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.35925588,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 156,
+    "species": "Ziphius_cavirostris",
+    "common_name": "Cuviers Beaked Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.354077184,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 157,
+    "species": "Mesoplodon_bidens",
+    "common_name": "Sowerbys Beaked Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.355312374,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 158,
+    "species": "Platanista_gangetica",
+    "common_name": "Indus River Dolphin",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.358052694,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 159,
+    "species": "Kogia_breviceps",
+    "common_name": "Pygmy Sperm Whale",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.35964504,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 160,
+    "species": "Hippopotamus_amphibius",
+    "common_name": "Hippopotamus",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.36797443,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 161,
+    "species": "Elaphurus_davidianus",
+    "common_name": "Pere Davids Deer",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.41363356,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 162,
+    "species": "Rangifer_tarandus",
+    "common_name": "Siberian Reindeer",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.41705139,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 163,
+    "species": "Odocoileus_virginianus",
+    "common_name": "White tailed Deer",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.4179047,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 164,
+    "species": "Giraffa_tippelskirchi",
+    "common_name": "Giraffe",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.411588663,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 165,
+    "species": "Okapia_johnstoni",
+    "common_name": "Okapi",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.413213663,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 166,
+    "species": "Bubalus_bubalis",
+    "common_name": "Water Buffalo",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.416951373,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 167,
+    "species": "Bison_bison",
+    "common_name": "American Bison",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.418015753,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 168,
+    "species": "Bos_mutus",
+    "common_name": "Wild Yak",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.419033857,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 169,
+    "species": "Bos_indicus",
+    "common_name": "Zebu Cattle",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.419711577,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 170,
+    "species": "Bos_taurus",
+    "common_name": "Cattle",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.420457637,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 171,
+    "species": "Pantholops_hodgsonii",
+    "common_name": "Chiru",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.423083072,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 172,
+    "species": "Saiga_tatarica",
+    "common_name": "Russian Saiga",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.439491772,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 173,
+    "species": "Beatragus_hunteri",
+    "common_name": "Hirola",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.423849811,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 174,
+    "species": "Ovis_canadensis",
+    "common_name": "Peninsular Bighorn Sheep",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.424332761,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 175,
+    "species": "Ovis_aries",
+    "common_name": "Sheep",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.424674831,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 176,
+    "species": "Hemitragus_hylocrius",
+    "common_name": "Nilgiri Tahr",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.425009074,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 177,
+    "species": "Capra_aegagrus",
+    "common_name": "Wild Goat",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.426991684,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 178,
+    "species": "Capra_hircus",
+    "common_name": "Goat",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.426942014,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 179,
+    "species": "Ammotragus_lervia",
+    "common_name": "Aoudad",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.42607488,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 180,
+    "species": "Moschus_moschiferus",
+    "common_name": "Siberian Musk Deer",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.420768943,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 181,
+    "species": "Antilocapra_americana",
+    "common_name": "Pronghorn",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.424915431,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 182,
+    "species": "Tragulus_javanicus",
+    "common_name": "Java Lesser Chevrotain",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.44465686,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 183,
+    "species": "Sus_scrofa",
+    "common_name": "Pig",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.40989466,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 184,
+    "species": "Catagonus_wagneri",
+    "common_name": "Chacoan Peccary",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.41431516,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 185,
+    "species": "Camelus_dromedarius",
+    "common_name": "Arabian Camel",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.37828814,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 186,
+    "species": "Camelus_ferus",
+    "common_name": "Wild Bactrian Camel",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.378493158,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 187,
+    "species": "Camelus_bactrianus",
+    "common_name": "Bactrian Camel",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.378513968,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 188,
+    "species": "Vicugna_pacos",
+    "common_name": "Alpaca",
+    "order": "CETARTIODACTYLA",
+    "primate_group": null,
+    "color_group": "CETARTIODACTYLA",
+    "dist_to_human": 0.38172445,
+    "color_label": "Whales & Even-toed Ungulates"
+  },
+  {
+    "rank": 189,
+    "species": "Tadarida_brasiliensis",
+    "common_name": "Mexican Free tailed Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.37431227,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 190,
+    "species": "Miniopterus_schreibersii",
+    "common_name": "Common Bent wing Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.37969803,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 191,
+    "species": "Miniopterus_natalensis",
+    "common_name": "Bats",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.38099646,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 192,
+    "species": "Myotis_brandtii",
+    "common_name": "Brandts Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.390027615,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 193,
+    "species": "Myotis_lucifugus",
+    "common_name": "Little Brown Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.390878415,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 194,
+    "species": "Myotis_myotis",
+    "common_name": "Greater Mouse eared Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.393310075,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 195,
+    "species": "Myotis_davidii",
+    "common_name": "Bats",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.3966497,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 196,
+    "species": "Murina_feae",
+    "common_name": "Ashy gray Tube nosed Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.4109285,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 197,
+    "species": "Eptesicus_fuscus",
+    "common_name": "Big Brown Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.38985372,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 198,
+    "species": "Pipistrellus_pipistrellus",
+    "common_name": "Common Pipistrelle",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.41842692,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 199,
+    "species": "Lasiurus_borealis",
+    "common_name": "Eastern Red Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.42418872,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 200,
+    "species": "Mormoops_blainvillei",
+    "common_name": "Ghost faced Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.40022698,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 201,
+    "species": "Pteronotus_parnellii",
+    "common_name": "Parnells Mustached Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.40075608,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 202,
+    "species": "Desmodus_rotundus",
+    "common_name": "Common Vampire Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.40147915,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 203,
+    "species": "Tonatia_saurophila",
+    "common_name": "Stripe headed Round eared Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.41384963,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 204,
+    "species": "Micronycteris_hirsuta",
+    "common_name": "Hairy Big eared Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.42036383,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 205,
+    "species": "Anoura_caudifer",
+    "common_name": "Tailed Tailless Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.40989071,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 206,
+    "species": "Carollia_perspicillata",
+    "common_name": "Sebas Short tailed Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.41736269,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 207,
+    "species": "Artibeus_jamaicensis",
+    "common_name": "Jamacian Fruit eating Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.42428819,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 208,
+    "species": "Noctilio_leporinus",
+    "common_name": "Greater Bulldog Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.42153507,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 209,
+    "species": "Pteropus_alecto",
+    "common_name": "Black Flying Fox",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.37102313,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 210,
+    "species": "Pteropus_vampyrus",
+    "common_name": "Large Flying Fox",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.37109433,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 211,
+    "species": "Rousettus_aegyptiacus",
+    "common_name": "Egyptian Fruit Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.38584891,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 212,
+    "species": "Eidolon_helvum",
+    "common_name": "Straw colored Fruit Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.37546707,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 213,
+    "species": "Macroglossus_sobrinus",
+    "common_name": "Long tongued Fruit Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.38558337,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 214,
+    "species": "Hipposideros_armiger",
+    "common_name": "Great Roundleaf Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.36480427,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 215,
+    "species": "Hipposideros_galeritus",
+    "common_name": "Cantors Leaf nosed Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.37515307,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 216,
+    "species": "Rhinolophus_sinicus",
+    "common_name": "Chinese Rufous Horseshoe Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.36555757,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 217,
+    "species": "Megaderma_lyra",
+    "common_name": "Greater False Vampire Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.40037987,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 218,
+    "species": "Craseonycteris_thonglongyai",
+    "common_name": "Bumblebee Bat",
+    "order": "CHIROPTERA",
+    "primate_group": null,
+    "color_group": "CHIROPTERA",
+    "dist_to_human": 0.40318687,
+    "color_label": "Bats"
+  },
+  {
+    "rank": 219,
+    "species": "Solenodon_paradoxus",
+    "common_name": "Hispaniolan Solenodon",
+    "order": "EULIPOTYPHLA",
+    "primate_group": null,
+    "color_group": "EULIPOTYPHLA",
+    "dist_to_human": 0.43357711,
+    "color_label": "Hedgehogs, Shrews & Moles"
+  },
+  {
+    "rank": 220,
+    "species": "Scalopus_aquaticus",
+    "common_name": "Eastern Mole",
+    "order": "EULIPOTYPHLA",
+    "primate_group": null,
+    "color_group": "EULIPOTYPHLA",
+    "dist_to_human": 0.45785396,
+    "color_label": "Hedgehogs, Shrews & Moles"
+  },
+  {
+    "rank": 221,
+    "species": "Condylura_cristata",
+    "common_name": "Star nosed Mole",
+    "order": "EULIPOTYPHLA",
+    "primate_group": null,
+    "color_group": "EULIPOTYPHLA",
+    "dist_to_human": 0.49904406,
+    "color_label": "Hedgehogs, Shrews & Moles"
+  },
+  {
+    "rank": 222,
+    "species": "Uropsilus_gracilis",
+    "common_name": "Gracile Shrew like Mole",
+    "order": "EULIPOTYPHLA",
+    "primate_group": null,
+    "color_group": "EULIPOTYPHLA",
+    "dist_to_human": 0.49063026,
+    "color_label": "Hedgehogs, Shrews & Moles"
+  },
+  {
+    "rank": 223,
+    "species": "Erinaceus_europaeus",
+    "common_name": "Western European Hedgehog",
+    "order": "EULIPOTYPHLA",
+    "primate_group": null,
+    "color_group": "EULIPOTYPHLA",
+    "dist_to_human": 0.55730746,
+    "color_label": "Hedgehogs, Shrews & Moles"
+  },
+  {
+    "rank": 224,
+    "species": "Sorex_araneus",
+    "common_name": "European Shrew",
+    "order": "EULIPOTYPHLA",
+    "primate_group": null,
+    "color_group": "EULIPOTYPHLA",
+    "dist_to_human": 0.58767546,
+    "color_label": "Hedgehogs, Shrews & Moles"
+  },
+  {
+    "rank": 225,
+    "species": "Crocidura_indochinensis",
+    "common_name": "Indochinese Shrew",
+    "order": "EULIPOTYPHLA",
+    "primate_group": null,
+    "color_group": "EULIPOTYPHLA",
+    "dist_to_human": 0.59693146,
+    "color_label": "Hedgehogs, Shrews & Moles"
+  },
+  {
+    "rank": 226,
+    "species": "Choloepus_didactylus",
+    "common_name": "Linnaeuss Two Toed Sloth",
+    "order": "PILOSA",
+    "primate_group": null,
+    "color_group": "PILOSA",
+    "dist_to_human": 0.3923611,
+    "color_label": "Sloths & Anteaters"
+  },
+  {
+    "rank": 227,
+    "species": "Choloepus_hoffmanni",
+    "common_name": "Hoffmanns Two fingered Sloth",
+    "order": "PILOSA",
+    "primate_group": null,
+    "color_group": "PILOSA",
+    "dist_to_human": 0.39279981,
+    "color_label": "Sloths & Anteaters"
+  },
+  {
+    "rank": 228,
+    "species": "Myrmecophaga_tridactyla",
+    "common_name": "Giant Anteater",
+    "order": "PILOSA",
+    "primate_group": null,
+    "color_group": "PILOSA",
+    "dist_to_human": 0.42474351,
+    "color_label": "Sloths & Anteaters"
+  },
+  {
+    "rank": 229,
+    "species": "Tamandua_tetradactyla",
+    "common_name": "Southern Tamandua",
+    "order": "PILOSA",
+    "primate_group": null,
+    "color_group": "PILOSA",
+    "dist_to_human": 0.42836761,
+    "color_label": "Sloths & Anteaters"
+  },
+  {
+    "rank": 230,
+    "species": "Tolypeutes_matacus",
+    "common_name": "Southern Three banded Armadillo",
+    "order": "CINGULATA",
+    "primate_group": null,
+    "color_group": "CINGULATA",
+    "dist_to_human": 0.39377171,
+    "color_label": "Armadillos"
+  },
+  {
+    "rank": 231,
+    "species": "Chaetophractus_vellerosus",
+    "common_name": "Screaming Hairy Armadillo",
+    "order": "CINGULATA",
+    "primate_group": null,
+    "color_group": "CINGULATA",
+    "dist_to_human": 0.39727011,
+    "color_label": "Armadillos"
+  },
+  {
+    "rank": 232,
+    "species": "Dasypus_novemcinctus",
+    "common_name": "Nine banded Armadillo",
+    "order": "CINGULATA",
+    "primate_group": null,
+    "color_group": "CINGULATA",
+    "dist_to_human": 0.41464041,
+    "color_label": "Armadillos"
+  },
+  {
+    "rank": 233,
+    "species": "Trichechus_manatus",
+    "common_name": "Florida Manatee",
+    "order": "SIRENIA",
+    "primate_group": null,
+    "color_group": "SIRENIA",
+    "dist_to_human": 0.37168599,
+    "color_label": "Manatees & Dugongs"
+  },
+  {
+    "rank": 234,
+    "species": "Procavia_capensis",
+    "common_name": "South African Rock Hyrax",
+    "order": "HYRACOIDEA",
+    "primate_group": null,
+    "color_group": "HYRACOIDEA",
+    "dist_to_human": 0.47200912,
+    "color_label": "Hyraxes"
+  },
+  {
+    "rank": 235,
+    "species": "Heterohyrax_brucei",
+    "common_name": "African Yellow spotted Rock Hyrax",
+    "order": "HYRACOIDEA",
+    "primate_group": null,
+    "color_group": "HYRACOIDEA",
+    "dist_to_human": 0.47206251,
+    "color_label": "Hyraxes"
+  },
+  {
+    "rank": 236,
+    "species": "Loxodonta_africana",
+    "common_name": "African Savanna Elephant",
+    "order": "PROBOSCIDEA",
+    "primate_group": null,
+    "color_group": "PROBOSCIDEA",
+    "dist_to_human": 0.38331391,
+    "color_label": "Elephants"
+  },
+  {
+    "rank": 237,
+    "species": "Chrysochloris_asiatica",
+    "common_name": "Cape Golden Mole",
+    "order": "AFROSORICIDA",
+    "primate_group": null,
+    "color_group": "AFROSORICIDA",
+    "dist_to_human": 0.47726486,
+    "color_label": "Tenrecs & Golden Moles"
+  },
+  {
+    "rank": 238,
+    "species": "Echinops_telfairi",
+    "common_name": "Small Madagascar Hedgehog",
+    "order": "AFROSORICIDA",
+    "primate_group": null,
+    "color_group": "AFROSORICIDA",
+    "dist_to_human": 0.54704466,
+    "color_label": "Tenrecs & Golden Moles"
+  },
+  {
+    "rank": 239,
+    "species": "Microgale_talazaci",
+    "common_name": "Talazacs Shrew Tenrec",
+    "order": "AFROSORICIDA",
+    "primate_group": null,
+    "color_group": "AFROSORICIDA",
+    "dist_to_human": 0.59114186,
+    "color_label": "Tenrecs & Golden Moles"
+  },
+  {
+    "rank": 240,
+    "species": "Elephantulus_edwardii",
+    "common_name": "Cape Elephant Shrew",
+    "order": "MACROSCELIDEA",
+    "primate_group": null,
+    "color_group": "MACROSCELIDEA",
+    "dist_to_human": 0.55017266,
+    "color_label": "Elephant Shrews"
+  },
+  {
+    "rank": 241,
+    "species": "Orycteropus_afer",
+    "common_name": "Aardvark",
+    "order": "TUBULIDENTATA",
+    "primate_group": null,
+    "color_group": "TUBULIDENTATA",
+    "dist_to_human": 0.41371021,
+    "color_label": "Aardvark"
+  }
+]
