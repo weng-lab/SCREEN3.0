@@ -5,7 +5,7 @@ import { Alert, CircularProgress, IconButton, Slider, styled, Tooltip, Typograph
 import { Box, Stack } from "@mui/system";
 import { ParentSize } from "@visx/responsive";
 import { AlignmentChar, PhyloTree, SequenceAlignmentPlot, TooltipData } from "@weng-lab/visualization";
-import { capitalizeFirstLetter } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
 import { InfoOutline, SettingsBackupRestore, Tune } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import SpeciesSelect from "./SpeciesSelect";
@@ -25,7 +25,7 @@ import {
 import { GenomicRange } from "common/types/globalTypes";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { CitationInfoAlert } from "./CitationInfoAlert";
-import { useCcre } from "common/hooks/useCcre";
+import { useCcre } from "common/hooks/data/ccre";
 
 const DEFAULT_RANGE: [number, number] = [0.9, 1];
 

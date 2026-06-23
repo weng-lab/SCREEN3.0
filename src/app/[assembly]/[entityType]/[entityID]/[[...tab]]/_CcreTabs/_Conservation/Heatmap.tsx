@@ -17,10 +17,8 @@ import { useRef } from "react";
 import { useQuery } from "@apollo/client/react";
 import { AnyOpenEntity } from "common/OpenEntitiesContext";
 import { CcreClass } from "common/types/globalTypes";
-import { CLASS_COLORS } from "common/colors";
-import { CLASS_DESCRIPTIONS } from "common/consts";
-import { LinkComponent } from "common/components/LinkComponent";
 import { CitationInfoAlert } from "./CitationInfoAlert";
+import { CLASS_COLORS, CLASS_DESCRIPTIONS } from "common/ccre";
 
 const CONSERVATION_HEATMAP_QUERY = gql(`
     query getconservationHeatmapCoords($accession: [String]!) {

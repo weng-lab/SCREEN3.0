@@ -13,7 +13,7 @@ import {
   GridInitialState,
   useGridApiRef,
 } from "@mui/x-data-grid-premium";
-import { capitalizeFirstLetter } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
 import { SpeciesRow } from "./utils";
 
 interface SpeciesSelectProps {
