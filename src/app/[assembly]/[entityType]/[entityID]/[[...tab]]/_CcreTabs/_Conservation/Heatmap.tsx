@@ -37,9 +37,9 @@ const N1_LABEL_WIDTH = 20;
 const TICKS = [0, 120, 240];
 
 const GROUP_DESCRIPTIONS = {
-  G1: "G1: highly conserved cCREs (N1 ≥ 120 and N2 ≤ 25)",
-  G2: "G2: actively evolving cCREs (20 ≤ N1 ≤ 50 and N2 ≤ 120)",
-  G3: "G3: primate-specific cCREs (N1 ≤ 50 and N2 ≥ 180)",
+  G1: "G1: highly conserved cCREs (N₁ ≥ 120 and N₂ ≤ 25)",
+  G2: "G2: actively evolving cCREs (20 ≤ N₁ ≤ 50 and N₂ ≤ 120)",
+  G3: "G3: primate-specific cCREs (N₁ ≤ 50 and N₂ ≥ 180)",
 };
 
 const HeatmapPlot = ({
