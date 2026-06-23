@@ -122,10 +122,9 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const hasSequenceAlignmentData = Boolean(dataSeq?.ccreSequenceAlignmentQuery[0]?.sequence_alignment)
 
-  const coordinates: GenomicRange = useMemo(() => {
-    if (!dataCcre) return null;
-    return dataCcre.coordinates;
-  }, [dataCcre]);
+  const allSpeciesSelected = selectedSpecies.size === selectableSpecies.size;
+
+  const coordinates: GenomicRange = dataCcre?.coordinates ?? null;
 
   const unfilteredAlignmentPlotData = useMemo(() => {
     if (!hasSequenceAlignmentData) return null;
@@ -136,7 +135,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
   }, [dataSeq, hasSequenceAlignmentData]);
 
   const filteredAlignmentPlotData = useMemo(() => {
-    if (selectedSpecies.size === selectableSpecies.size) return unfilteredAlignmentPlotData;
+    if (allSpeciesSelected) return unfilteredAlignmentPlotData;
     // Human is always shown and is never part of selectedSpecies, so force it back in.
     else
       return Object.fromEntries(
@@ -144,7 +143,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
           ([species, _]) => species === HUMAN_SPECIES_ID || selectedSpecies.has(species)
         )
       );
-  }, [unfilteredAlignmentPlotData, selectedSpecies]);
+  }, [unfilteredAlignmentPlotData, selectedSpecies, allSpeciesSelected]);
 
   const speciesCoverageData: SpeciesRow[] = useMemo(() => {
     if (!hasSequenceAlignmentData || !unfilteredAlignmentPlotData) {
@@ -165,6 +164,11 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
       };
     });
   }, [dataSeq, hasSequenceAlignmentData, unfilteredAlignmentPlotData]);
+
+  const coverageById = useMemo(
+    () => new Map(speciesCoverageData.map((s) => [s.id, s.coverage])),
+    [speciesCoverageData]
+  );
 
   const highlightedSpecies = useMemo(
     () =>
@@ -193,7 +197,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
       return (
         <PlotTooltip
           speciesId={tooltipData.id}
-          coverage={speciesCoverageData.find((x) => x.id === tooltipData.id).coverage}
+          coverage={coverageById.get(tooltipData.id) ?? 0}
           position={
             coordinates && tooltipData.position !== undefined
               ? {
@@ -207,14 +211,14 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
         />
       );
     },
-    [coordinates, speciesCoverageData]
+    [coordinates, coverageById]
   );
 
   const PhyloTreeTooltip = useCallback(
     (id: string) => {
-      return <PlotTooltip speciesId={id} coverage={speciesCoverageData.find((x) => x.id === id).coverage} />;
+      return <PlotTooltip speciesId={id} coverage={coverageById.get(id) ?? 0} />;
     },
-    [speciesCoverageData]
+    [coverageById]
   );
 
   if (entity.assembly !== "GRCh38")
@@ -265,7 +269,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
           </Box>
         </div>
         <Box flexShrink={0} display={"flex"} flexBasis={{ xs: "row-reverse", sm: "row" }}>
-          {!(selectedSpecies.size === selectableSpecies.size) && (
+          {!allSpeciesSelected && (
             <IconButton onClick={() => setSelectedSpecies(selectableSpecies)} size="small">
               <SettingsBackupRestore />
             </IconButton>

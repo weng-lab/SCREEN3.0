@@ -36,6 +36,12 @@ const AXIS_SIZE = 25;
 const N1_LABEL_WIDTH = 20;
 const TICKS = [0, 120, 240];
 
+const GROUP_DESCRIPTIONS = {
+  G1: "G1: highly conserved cCREs (N1 ≥ 120 and N2 ≤ 25)",
+  G2: "G2: actively evolving cCREs (20 ≤ N1 ≤ 50 and N2 ≤ 120)",
+  G3: "G3: primate-specific cCREs (N1 ≤ 50 and N2 ≥ 180)",
+};
+
 const HeatmapPlot = ({
   src,
   alt,
@@ -182,7 +188,7 @@ const HeatmapPlot = ({
                     ],
                   },
                 }}
-                title="G1: highly conserved cCREs (N1 ≥ 120 and N2 ≤ 25)"
+                title={GROUP_DESCRIPTIONS.G1}
               >
                 <rect fill="transparent" x={0} y={0} width={25 * xScale} height={240 - 120} />
               </Tooltip>
@@ -201,11 +207,11 @@ const HeatmapPlot = ({
                     ],
                   },
                 }}
-                title="G2: actively evolving cCREs (20 ≤ N1 ≤ 50 and N2 ≤ 120)"
+                title={GROUP_DESCRIPTIONS.G2}
               >
                 <rect fill="transparent" x={0} y={240 - 50} width={120 * xScale} height={30} />
               </Tooltip>
-              <Tooltip arrow placement="bottom" title="G3: primate-specific cCREs (N1 ≤ 50 and N2 ≥ 180)">
+              <Tooltip arrow placement="bottom" title={GROUP_DESCRIPTIONS.G3}>
                 <rect fill="transparent" x={180 * xScale} y={240 - 50} width={(240 - 180) * xScale} height={50} />
               </Tooltip>
               <Tooltip arrow title={`${point.accession} (${point.group}): N1 = ${point.y}, N2 = ${point.x}`}>
@@ -270,9 +276,9 @@ const AXIS_ITEMS = [
 ];
 
 const GROUP_ITEMS = [
-  { color: "red", label: "G1: highly conserved cCREs (N1 ≥ 120 and N2 ≤ 25)" },
-  { color: "green", label: "G2: actively evolving cCREs (20 ≤ N1 ≤ 50 and N2 ≤ 120)" },
-  { color: "blue", label: "G3: primate-specific cCREs (N1 ≤ 50 and N2 ≥ 180)" },
+  { color: "red", label: GROUP_DESCRIPTIONS.G1 },
+  { color: "green", label: GROUP_DESCRIPTIONS.G2 },
+  { color: "blue", label: GROUP_DESCRIPTIONS.G3 },
 ]
 
 const Legend = () => (
@@ -326,23 +332,30 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
     variables: { accession: [entity.entityID] },
   });
 
-  const group = heatmapData ? (heatmapData.conservationHeatmapQuery[0].ccre_class as CcreClass) : null;
-
-  const imgSrc = getImageSrc(group);
-
-  const pointData = heatmapData?.conservationHeatmapQuery?.[0];
-
-  const heatmapPoint = {
-    x: pointData?.x_coord,
-    y: pointData?.y_coord,
-    accession: pointData?.accession,
-    group,
-    color: CLASS_COLORS[group],
-  };
-
   if (heatmapLoading) {
     return <CircularProgress />;
   }
+
+  if (heatmapError) {
+    return <Alert severity="error">Error fetching conservation heatmap data</Alert>;
+  }
+
+  const pointData = heatmapData?.conservationHeatmapQuery?.[0];
+
+  if (!pointData) {
+    return <Alert severity="info">No conservation heatmap data is available for this cCRE</Alert>;
+  }
+
+  const group = pointData.ccre_class as CcreClass;
+  const imgSrc = getImageSrc(group);
+
+  const heatmapPoint = {
+    x: pointData.x_coord,
+    y: pointData.y_coord,
+    accession: pointData.accession,
+    group,
+    color: CLASS_COLORS[group],
+  };
 
   return (
     <Stack spacing={2} alignItems={"flex-start"}>
