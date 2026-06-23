@@ -1,12 +1,12 @@
 "use client";
 import { Box } from "@mui/material";
-import { UseGeneDataReturn } from "common/hooks/useGeneData";
+import { UseGeneDataReturn } from "common/hooks/data/gene";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import React from "react";
 import { Assembly } from "common/types/globalTypes";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
-import { useGenePromotersData } from "common/hooks/useGenePromoters";
+import { useGenePromotersData } from "common/hooks/data/gene";
 
 export default function PromoterCcres({
   geneData,

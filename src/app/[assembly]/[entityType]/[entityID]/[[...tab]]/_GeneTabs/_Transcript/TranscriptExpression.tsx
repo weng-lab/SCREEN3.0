@@ -1,8 +1,8 @@
 "use client";
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
-import usePlotDownload from "common/hooks/usePlotDownload";
-import { useTranscriptExpression } from "common/hooks/useTranscriptExpression";
+import { usePlotDownload } from "common/hooks/ui";
+import { useTranscriptExpression } from "common/hooks/data/gene";
 import { useState, useMemo } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
 import TranscriptExpressionBarPlot from "./TranscriptExpressionBarPlot";

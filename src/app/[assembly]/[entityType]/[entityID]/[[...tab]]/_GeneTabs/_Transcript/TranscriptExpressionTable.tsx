@@ -3,7 +3,7 @@ import { TableColDef, Table, useSyncedTable } from "@weng-lab/ui-components";
 import { GridSortModel } from "@mui/x-data-grid-premium";
 import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
-import { capitalizeFirstLetter } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
 import { getScaledRPM } from "./types";
 import type { TranscriptMetadata, TranscriptExpressionTableProps } from "./types";
 

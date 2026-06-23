@@ -3,11 +3,11 @@ import { InfoOutlineRounded } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreData } from "common/hooks/useCcreData";
-import { useSnpData } from "common/hooks/useSnpData";
+import { useCcreData } from "common/hooks/data/ccre";
+import { useSnpData } from "common/hooks/data/variant";
 import { useMemo, useState } from "react";
 import { DistanceSlider } from "./DistanceSlider";
-import { calcSignedDistRegionToRegion } from "common/utility";
+import { calcSignedDistRegionToRegion } from "common/utils";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 

@@ -6,16 +6,16 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { useMemo, useState } from "react";
 import { SelectedBiosampleCard } from "common/components/SelectedBiosampleCard";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { decodeRegions, parseGenomicRangeString } from "common/utility";
+import { decodeRegions, parseGenomicRangeString } from "common/utils";
 import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 import { getProportionsFromArray, ProportionsBar } from "@weng-lab/visualization";
-import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
-import { CLASS_COLORS } from "common/colors";
-import { useCcreIsIcre } from "common/hooks/useCcreIsIcre";
-import { useNearestTSSColumn } from "common/hooks/useNearestTSSColumn";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/ccre";
+import { CLASS_COLORS } from "common/ccre";
+import { useCcreIsIcre } from "common/hooks/data/ccre";
+import { useNearestTSSColumn } from "common/components/columns";
 import { CcreAssay } from "common/types/globalTypes";
-import { useIntersectingCcreZScores } from "common/hooks/useIntersectingCcreZScores";
+import { useIntersectingCcreZScores } from "common/hooks/data/ccre";
 
 const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   const [selectedBiosample, setSelectedBiosample] = useState<EncodeBiosample>(null);

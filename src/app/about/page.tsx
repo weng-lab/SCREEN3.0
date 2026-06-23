@@ -19,7 +19,7 @@ import {
 import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import EncyclopediaAll from "../../../public/assets/about/images/EncyclopediaAll.png";
-import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS } from "../../common/colors";
+import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS } from "common/ccre";
 import ContactForm from "./contactForm";
 import { LinkComponent } from "common/components/LinkComponent";
 import classifications from "../../../public/assets/about/images/classifications.png";

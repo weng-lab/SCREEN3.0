@@ -1,4 +1,4 @@
-import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
+import { useSnpFrequencies } from "common/hooks/data/variant";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 
 export default function SnpFrequencies({ snpid }: { snpid: string }) {

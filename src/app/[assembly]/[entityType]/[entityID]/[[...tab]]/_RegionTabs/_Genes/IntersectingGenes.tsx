@@ -1,9 +1,9 @@
 "use client";
-import { useGeneData } from "common/hooks/useGeneData";
+import { useGeneData } from "common/hooks/data/gene";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { decodeRegions, parseGenomicRangeString } from "common/utility";
+import { decodeRegions, parseGenomicRangeString } from "common/utils";
 import { useMemo } from "react";
 
 const IntersectionGenes = ({ entity }: EntityViewComponentProps) => {

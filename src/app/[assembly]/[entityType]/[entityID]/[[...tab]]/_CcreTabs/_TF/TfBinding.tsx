@@ -15,7 +15,7 @@ import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { Tabs, Tab } from "@mui/material";
-import { useCcreRpeaks } from "common/hooks/useCcreRpeaks";
+import { useCcreRpeaks } from "common/hooks/data/ccre";
 
 const TF_EXPERIMENT_TOTALS = gql(`
   query tf_exp_totals(

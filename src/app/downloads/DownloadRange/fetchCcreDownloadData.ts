@@ -1,8 +1,8 @@
 import { ApolloClient } from "@apollo/client";
 import { gql } from "common/types/generated";
 import type { Assembly, CcreAssay, CcreClass, GenomicRange } from "common/types/globalTypes";
-import { classifyCcre } from "common/utility";
-import { parseZScoresArray, ZScoresEntry } from "common/utils/parseCcreZScores";
+import { classifyCcre } from "common/ccre";
+import { parseZScoresArray, ZScoresEntry } from "common/ccre";
 
 /**
  * Cell-agnostic skeleton for every cCRE intersecting the requested region: coordinates,

@@ -2,7 +2,8 @@
  * These are where the universal shared types should be kept
  */
 
-import { CCRE_ASSAYS, CCRE_CLASSES } from "common/consts";
+import { CCRE_ASSAYS } from "common/assays";
+import { CCRE_CLASSES } from "common/ccre";
 
 export interface GenomicRange {
   chromosome: string;

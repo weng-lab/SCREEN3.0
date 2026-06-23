@@ -4,20 +4,20 @@ import { Stack, Tab, Tabs, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { GridRenderCellParams, GridComparatorFn, gridNumberComparator } from "@mui/x-data-grid-premium";
 import type { CcreAssay } from "common/types/globalTypes";
-import { CLASS_COLORS } from "common/colors";
+import { CLASS_COLORS } from "common/ccre";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
-import { capitalizeFirstLetter } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
 import AssayView from "./AssayView";
 import { AssayWheel } from "@weng-lab/ui-components";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
-import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/ccre";
 import { BiosampleRow } from "./types";
-import { useSilencersData } from "common/hooks/useSilencersData";
-import { useDynamicEnhancersData } from "common/hooks/useDynamicEnhacersData";
+import { useSilencersData } from "common/hooks/data/ccre";
+import { useDynamicEnhancersData } from "common/hooks/data/ccre";
 import { Silencer_Studies } from "./consts";
 import { LinkComponent } from "common/components/LinkComponent";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
-import { useBiosampleActivity } from "common/hooks/useBiosampleActivity";
+import { useBiosampleActivity } from "common/hooks/data/ccre";
 
 /** Row shape returned by useBiosampleActivity (new field names / undefined-for-missing) */
 type RawBiosampleRow = NonNullable<ReturnType<typeof useBiosampleActivity>["biosampleRows"]>[number];

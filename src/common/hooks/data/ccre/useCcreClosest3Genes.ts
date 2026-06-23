@@ -1,7 +1,7 @@
 import { gql } from "common/types/generated/gql";
 import { useQuery } from "@apollo/client/react";
 import { useMemo } from "react";
-import { capitalizeFirstLetter } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
 
 export type ClosestGenes = {
   distance: number;
@@ -56,7 +56,7 @@ const formatGeneType = (type: string) => {
     .join(" ");
 };
 
-export default function useCcreClosest3Genes(accession: string, assembly: string) {
+export function useCcreClosest3Genes(accession: string, assembly: string) {
 
   const {
     data: dataClosest3,

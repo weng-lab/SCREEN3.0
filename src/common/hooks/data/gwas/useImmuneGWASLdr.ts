@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
 import { GetimmuneGwasLdrQuery } from "common/types/generated/graphql";
 
-function useImmuneGWASLdr(icres?: string[], snps?: string[]) {
+export function useImmuneGWASLdr(icres?: string[], snps?: string[]) {
   const { loading, error, data } = useQuery(GWAS_LDR_QUERY, {
     variables: {
       icres: icres,
@@ -12,8 +12,6 @@ function useImmuneGWASLdr(icres?: string[], snps?: string[]) {
 
   return { data: data?.immuneGWASLdrQuery as useGWASLdrReturn, loading, error };
 }
-
-export default useImmuneGWASLdr;
 
 export type useGWASLdrReturn = GetimmuneGwasLdrQuery["immuneGWASLdrQuery"];
 

@@ -2,8 +2,8 @@ import { Typography } from "@mui/material";
 import { TableColDef } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
-import { LinkedGeneInfo } from "common/hooks/useGWASSnpscCREsGenesData";
-import { toScientificNotationElement } from "common/utility";
+import { LinkedGeneInfo } from "common/hooks/data/gwas";
+import { toScientificNotationElement } from "common/utils";
 
 const geneNameCol: TableColDef = {
   field: "gene",

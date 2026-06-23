@@ -1,6 +1,6 @@
 import { GeneExpressionBarPlotProps, getScaleLabel, getScaledTPM, PointMetadata } from "./types";
 import { useCallback, useMemo } from "react";
-import { capitalizeFirstLetter } from "common/utility";
+import { capitalizeFirstLetter } from "common/utils";
 import { Box, Typography } from "@mui/material";
 import { tissueColors } from "common/colors";
 import { BarPlot, BarData } from "@weng-lab/visualization";

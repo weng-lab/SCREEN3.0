@@ -1,12 +1,13 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
-import { useEntityMetadata } from "common/hooks/useEntityMetadata";
-import { formatGenomicRange, formatPortal } from "common/utility";
-import { CLASS_DESCRIPTIONS } from "common/consts";
+import { useEntityMetadata } from "common/hooks/data/entity";
+import { formatGenomicRange } from "common/utils";
+import { formatPortal } from "common/entityTabsConfig";
+import { CLASS_DESCRIPTIONS } from "common/ccre";
 import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
-import { useGeneDescription } from "common/hooks/useGeneDescription";
-import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
+import { useGeneDescription } from "common/hooks/data/gene";
+import { useSnpFrequencies } from "common/hooks/data/variant";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { expandCoordinates } from "../GenomeBrowser/utils";
 export type EntityDetailsHeaderProps = {

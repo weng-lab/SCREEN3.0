@@ -17,7 +17,7 @@ import { Table, TableColDef } from "@weng-lab/ui-components";
 import { useTheme } from "@mui/material/styles";
 import GWASLandingHeader from "./GWASLandingHeader";
 import { Treemap } from "@weng-lab/visualization";
-import { useGWASStudyMetaData } from "common/hooks/useGWASStudyMetadata";
+import { useGWASStudyMetaData } from "common/hooks/data/gwas";
 import { GwasStudiesMetadata } from "common/types/generated/graphql";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { subdisease_treemap, tree } from "./gwas_tree_mappings";

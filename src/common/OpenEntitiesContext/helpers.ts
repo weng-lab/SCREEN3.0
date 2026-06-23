@@ -1,4 +1,4 @@
-import { parseGenomicRangeString } from "common/utility";
+import { parseGenomicRangeString } from "common/utils";
 import type { AnyOpenEntity } from "./types";
 
 /**
