@@ -85,7 +85,7 @@ const HeatmapPlot = ({
               textAlign: "center",
             }}
           >
-            N1: no. species with ≥90% coverage
+            N₁: no. species with ≥90% coverage
           </Typography>
         </Box>
         <Box
@@ -230,7 +230,7 @@ const HeatmapPlot = ({
           variant="body2"
           sx={{ gridRow: 3, gridColumn: 3, width: PLOT_WIDTH, textAlign: "center" }}
         >
-          N2: no. species with ≤10% coverage
+            N₂: no. species with ≤10% coverage
         </Typography>
       </Box>
     </Box>
@@ -260,6 +260,29 @@ const Legend = () => (
   </Box>
 );
 
+const AXIS_LEGEND_ITEMS = [
+  {
+    label: "N₁: number of other mammalian genomes, out of 240 total, to which ≥90% of the human cCRE’s positions could be aligned",
+  },
+  {
+    label: "N₂: number of other mammalian genomes, out of 240 total, to which ≤10% of the human cCRE’s positions could be aligned",
+  },
+];
+const AxisLegend = () => (
+  <Box
+    border={(theme) => `1px solid ${theme.palette.divider}`}
+    borderRadius={1}
+    padding={2}
+    width={"fit-content"}
+    height={"min-content"}
+  >
+    {AXIS_LEGEND_ITEMS.map(({ label }) => (
+      <Stack key={label} direction="row" alignItems="center" spacing={1}>        
+        <Typography variant="body2">{label}</Typography>
+      </Stack>
+    ))}
+  </Box>
+);
 const getImageSrc = (group: CcreClass): StaticImageData => {
   switch (group) {
     case "PLS":
@@ -335,7 +358,14 @@ export const Heatmap = ({ entity }: { entity: AnyOpenEntity }) => {
         />
         <HeatmapPlot src={AllcCREs} alt="All cCRE classes" title="All cCRE classes" point={heatmapPoint} />
       </Box>
-      <Legend />
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={2}
+        alignItems="flex-start"
+      >
+        <AxisLegend />
+        <Legend />
+      </Stack>
       <Button variant="outlined" color="primary" size="small" onClick={download}>
         Download Plots
       </Button>
