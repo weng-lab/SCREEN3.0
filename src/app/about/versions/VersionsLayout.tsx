@@ -3,11 +3,11 @@
 import { Box, Divider, Stack } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import ReleaseContent from "./ReleaseContent";
-import { releaseNotes } from "./releaseNotes";
+import { RELEASE_NOTES } from "./releaseNotes";
 import VersionHistoryBar from "./VersionHistoryBar";
 
 const VersionsLayout = () => {
-  const [selectedReleaseId, setSelectedReleaseId] = useState(releaseNotes[0]?.id ?? "");
+  const [selectedReleaseId, setSelectedReleaseId] = useState(RELEASE_NOTES[0]?.id ?? "");
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const isProgrammaticScrollRef = useRef(false);
   const programmaticScrollTimeoutRef = useRef<number | null>(null);
@@ -21,7 +21,7 @@ const VersionsLayout = () => {
         return;
       }
 
-      const lastRelease = releaseNotes[releaseNotes.length - 1];
+      const lastRelease = RELEASE_NOTES[RELEASE_NOTES.length - 1];
       const scrollBottom = window.scrollY + window.innerHeight;
       const pageBottom = document.documentElement.scrollHeight;
 
@@ -31,7 +31,7 @@ const VersionsLayout = () => {
         return;
       }
 
-      const fullyVisibleRelease = releaseNotes.find((release) => {
+      const fullyVisibleRelease = RELEASE_NOTES.find((release) => {
         const element = sectionRefs.current[release.id];
         if (!element) {
           return false;
@@ -48,10 +48,10 @@ const VersionsLayout = () => {
       }
 
       const viewportAnchor = window.innerHeight * 0.3;
-      let closestReleaseId = releaseNotes[0]?.id ?? "";
+      let closestReleaseId = RELEASE_NOTES[0]?.id ?? "";
       let closestDistance = Number.POSITIVE_INFINITY;
 
-      releaseNotes.forEach((release) => {
+      RELEASE_NOTES.forEach((release) => {
         const element = sectionRefs.current[release.id];
         if (!element) {
           return;
@@ -121,9 +121,9 @@ const VersionsLayout = () => {
         alignItems: "start",
       }}
     >
-      <VersionHistoryBar releases={releaseNotes} selectedReleaseId={selectedReleaseId} onSelect={handleSelectRelease} />
+      <VersionHistoryBar releases={RELEASE_NOTES} selectedReleaseId={selectedReleaseId} onSelect={handleSelectRelease} />
       <Stack spacing={3}>
-        {releaseNotes.map((release) => (
+        {RELEASE_NOTES.map((release) => (
           <Box
             key={release.id}
             ref={(node: HTMLDivElement | null) => {

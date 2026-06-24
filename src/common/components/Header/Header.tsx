@@ -29,6 +29,8 @@ const pageLinks: PageInfo[] = [
     dropdownID: 0,
     subPages: [
       { pageName: "Overview", link: "/about" },
+      { pageName: "cCRE Classification", link: "/about#classifications" },
+      { pageName: "How to Cite", link: "/about#citations" },
       { pageName: "Contact Us", link: "/about#contact-us" },
       { pageName: "Release History", link: "/about/versions" },
     ],
@@ -329,12 +331,9 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
         </Box>
         <MobileMenu pageLinks={pageLinks} />
       </Toolbar>
-      {/* {hasHydrated && isHomePage && (
-        <NewVersionBanner
-          versionId="r3.2026.1"
-          message="ChIP-seq peaks, PhastCons scores, CpG coverage, and promoter cCREs"
-        />
-      )} */}
+      {hasHydrated && isHomePage && process.env.NEXT_PUBLIC_SHOW_RELEASE_BANNER === "true" && (
+        <NewVersionBanner />
+      )}
     </AppBar>
   );
 }
