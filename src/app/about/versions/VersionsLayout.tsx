@@ -25,48 +25,36 @@ const VersionsLayout = () => {
       const scrollBottom = window.scrollY + window.innerHeight;
       const pageBottom = document.documentElement.scrollHeight;
 
+      // Keep the final release selected once the page can't scroll any further,
+      // since a short last section's top may never reach the anchor line.
       if (lastRelease && pageBottom - scrollBottom <= 8) {
         setSelectedReleaseId((current) => (current === lastRelease.id ? current : lastRelease.id));
         ticking = false;
         return;
       }
 
-      const fullyVisibleRelease = RELEASE_NOTES.find((release) => {
+      // Activate a release only once its top reaches the same line that clicking
+      // it on the timeline scrolls it to: scroll-padding-top (header height + 8px).
+      const headerHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 64;
+      const anchorLine = headerHeight + 8;
+
+      let activeReleaseId = RELEASE_NOTES[0]?.id ?? "";
+      for (const release of RELEASE_NOTES) {
         const element = sectionRefs.current[release.id];
         if (!element) {
-          return false;
+          continue;
         }
 
-        const rect = element.getBoundingClientRect();
-        return rect.top >= 0 && rect.bottom <= window.innerHeight;
-      });
-
-      if (fullyVisibleRelease) {
-        setSelectedReleaseId((current) => (current === fullyVisibleRelease.id ? current : fullyVisibleRelease.id));
-        ticking = false;
-        return;
+        // Sections render in document order, so the active one is the last whose
+        // top has crossed (scrolled above) the anchor line.
+        if (element.getBoundingClientRect().top <= anchorLine + 1) {
+          activeReleaseId = release.id;
+        } else {
+          break;
+        }
       }
 
-      const viewportAnchor = window.innerHeight * 0.3;
-      let closestReleaseId = RELEASE_NOTES[0]?.id ?? "";
-      let closestDistance = Number.POSITIVE_INFINITY;
-
-      RELEASE_NOTES.forEach((release) => {
-        const element = sectionRefs.current[release.id];
-        if (!element) {
-          return;
-        }
-
-        const rect = element.getBoundingClientRect();
-        const distance = Math.abs(rect.top - viewportAnchor);
-
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestReleaseId = release.id;
-        }
-      });
-
-      setSelectedReleaseId((current) => (current === closestReleaseId ? current : closestReleaseId));
+      setSelectedReleaseId((current) => (current === activeReleaseId ? current : activeReleaseId));
       ticking = false;
     };
 
@@ -122,7 +110,7 @@ const VersionsLayout = () => {
       }}
     >
       <VersionHistoryBar releases={RELEASE_NOTES} selectedReleaseId={selectedReleaseId} onSelect={handleSelectRelease} />
-      <Stack spacing={3}>
+      <Stack spacing={2} divider={<Divider />}>
         {RELEASE_NOTES.map((release) => (
           <Box
             key={release.id}
@@ -130,12 +118,8 @@ const VersionsLayout = () => {
               sectionRefs.current[release.id] = node;
             }}
             data-release-id={release.id}
-            sx={{
-              scrollMarginTop: "calc(var(--header-height, 64px) + 32px)",
-            }}
           >
             <ReleaseContent release={release} />
-            <Divider />
           </Box>
         ))}
       </Stack>
