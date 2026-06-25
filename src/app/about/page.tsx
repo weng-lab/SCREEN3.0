@@ -17,6 +17,7 @@ import ContactForm from "./contactForm";
 import { LinkComponent } from "common/components/LinkComponent";
 import classifications from "../../../public/assets/about/images/classifications.png";
 import LegacyVersionsTable from "common/components/LegacyVersionsTable";
+import { RELEASE_NOTES } from "./versions/releaseNotes";
 
 const Citation = ({title, link, authors, journal}: {title: string, link: string, authors: string, journal: string}) => (
   <>
@@ -298,7 +299,7 @@ export default function About() {
               />
             </Grid>
             <Grid size={12}>
-              <Typography  variant="h5" fontWeight={600}>Current Site Version: r3.2026.1</Typography>
+              <Typography  variant="h5" fontWeight={600}>Current Site Version: {RELEASE_NOTES[0]?.version}</Typography>
               <LinkComponent href={"/about/versions"}>View release history</LinkComponent>
             </Grid>
             <Grid size={12} id="versions">
