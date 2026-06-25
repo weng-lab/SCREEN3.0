@@ -1,13 +1,16 @@
 "use client";
-import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
-import useLinkedGenes, { LinkedGeneInfo } from "common/hooks/useLinkedGenes";
+import { Box, Button, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
+import { useLinkedGenes, LinkedGeneInfo } from "common/hooks/data/ccre";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import useClosestGenes from "common/hooks/useClosestGenes";
+import { useCcreClosest3Genes as useClosestGenes } from "common/hooks/data/ccre";
+import { useDistanceAnchor } from "common/hooks/ui";
+
+type ClosestGeneRow = NonNullable<ReturnType<typeof useClosestGenes>["data"]>["edgeAnchor"][number];
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useCompuLinkedGenes } from "common/hooks/useCompuLinkedGenes";
+import { useCompuLinkedGenes } from "common/hooks/data/ccre";
 import { useState } from "react";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
 import { InfoOutlineRounded } from "@mui/icons-material";
@@ -69,7 +72,10 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
     data: dataClosest,
     loading: loadingClosest,
     error: errorClosest,
+    loadingMetadata: loadingMetadataClosest,
   } = useClosestGenes(entity.entityID, entity.assembly);
+
+  const { anchor: distanceAnchor, tooltip: distanceTooltip } = useDistanceAnchor();
 
   const {
     data: dataCompuGenes,
@@ -201,12 +207,16 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
     },
   ];
 
-  const closestGenesCols: TableColDef[] = [
+  // Skeleton while the second (gene metadata) query is in flight; "—" once it settles with no match
+  const metadataCell = (params: { value?: string | number | null }, width: number) =>
+    loadingMetadataClosest ? <Skeleton variant="text" width={width} /> : params.value ?? "—";
+
+  const closestGenesCols: TableColDef<ClosestGeneRow>[] = [
     {
-      field: "name",
+      field: "gene",
       headerName: "Name",
       flex: 1,
-      renderCell: (params: any) =>
+      renderCell: (params) =>
         params.value.startsWith("ENSG") ? (
           <i>{params.value}</i>
         ) : (
@@ -215,23 +225,54 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
           </LinkComponent>
         ),
     },
-    { field: "type", headerName: "Type" },
-    { field: "chromosome", headerName: "Chromosome" },
-    { field: "start", headerName: "Start", type: "number" },
-    { field: "stop", headerName: "End", type: "number" },
-    { field: "distance", headerName: "Distance", type: "number" },
+    {
+      field: "type",
+      headerName: "Type",
+      renderCell: (params) => metadataCell(params, 80),
+    },
+    {
+      field: "chromosome",
+      headerName: "Chromosome",
+      valueGetter: (_, row) => row.coordinates?.chromosome ?? null,
+      renderCell: (params) => metadataCell(params, 60),
+    },
+    {
+      field: "start",
+      headerName: "Start",
+      type: "number",
+      display: "flex", // allows text-align: right from type: number to apply to block Skeleton
+      valueGetter: (_, row) => row.coordinates?.start ?? null,
+      renderCell: (params) => metadataCell(params, 60),
+    },
+    {
+      field: "end",
+      headerName: "End",
+      type: "number",
+      display: "flex",
+      valueGetter: (_, row) => row.coordinates?.end ?? null,
+      renderCell: (params) => metadataCell(params, 60),
+    },
+    {
+      field: "distance",
+      headerName: "Distance to TSS",
+      type: "number",
+      tooltip: distanceTooltip,
+      minWidth: 150,
+    },
   ];
 
   return (
     <Stack spacing={2}>
       <Table
-        rows={dataClosest}
+        rows={dataClosest?.[distanceAnchor]}
+        getRowId={(row) => row.gene}
         columns={closestGenesCols}
         label="Closest Genes"
         emptyTableFallback={"No closest genes found"}
         loading={loadingClosest}
         error={!!errorClosest}
         autoHeight
+        divHeight={{minHeight: 201}} // expected height of element with 3 rows
         hideFooter
       />
       {isHuman && <LinkedElements tables={tables} />}

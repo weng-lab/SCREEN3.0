@@ -2,13 +2,13 @@
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
-import { toScientificNotationElement } from "common/utility";
+import { toScientificNotationElement } from "common/utils";
 import { useState } from "react";
 import SelectCompuGenesMethod from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/SelectCompuGenesMethod";
 
-import useLinkedGenes from "common/hooks/useLinkedGenes";
-import { useCompuLinkedGenes } from "common/hooks/useCompuLinkedGenes";
-import { useGWASSnpsIntersectingcCREsData } from "common/hooks/useGWASSnpsIntersectingcCREsData";
+import { useLinkedGenes } from "common/hooks/data/ccre";
+import { useCompuLinkedGenes } from "common/hooks/data/ccre";
+import { useGWASSnpsIntersectingcCREsData } from "common/hooks/data/gwas";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 export function formatCoord(str: string) {

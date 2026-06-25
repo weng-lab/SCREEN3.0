@@ -6,7 +6,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { Cancel, WarningAmberRounded } from "@mui/icons-material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { GenomicRange } from "common/types/globalTypes";
-import { encodeRegions } from "common/utility";
+import { encodeRegions } from "common/utils";
 
 type MultipleRegionSearchProps = {
   assembly: "GRCh38" | "mm10";

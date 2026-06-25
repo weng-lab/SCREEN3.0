@@ -2,18 +2,18 @@
 import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { Grid, Skeleton } from "@mui/material";
-import { useLinkedCcres, useLinkedCcresReturn } from "common/hooks/useLinkedCcres";
+import { useLinkedCcres, useLinkedCcresReturn } from "common/hooks/data/gene";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "../../_CcreTabs/_Genes/columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";
-import { UseGeneDataReturn } from "common/hooks/useGeneData";
+import { UseGeneDataReturn } from "common/hooks/data/gene";
 import { usePathname } from "next/navigation";
 import { Assembly } from "common/types/globalTypes";
 import { TableColDef } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useCcreData } from "common/hooks/useCcreData";
+import { useCcreData } from "common/hooks/data/ccre";
 import { useState } from "react";
-import { useCompuLinkedcCREs } from "common/hooks/useCompuLinkedcCREs";
+import { useCompuLinkedcCREs } from "common/hooks/data/gene";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
@@ -94,12 +94,12 @@ export default function ComputationalLinkedCcres({
     loading: loadingCcres,
     error: errorCcres,
   } = useCcreData({
-    accession: data?.map((acc) => acc.accession),
+    accessions: data?.map((acc) => acc.accession) ?? [],
     assembly: assembly as Assembly,
     skip: !data,
   });
 
-  const classByAccession = Object.fromEntries(dataCcres?.map((c) => [c.info.accession, c.pct]) ?? []);
+  const classByAccession = Object.fromEntries(dataCcres?.map((c) => [c.accession, c.group]) ?? []);
 
   if (geneData.loading || loading || loadingCcres) {
     return (

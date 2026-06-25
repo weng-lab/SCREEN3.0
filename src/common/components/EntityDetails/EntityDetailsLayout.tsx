@@ -3,14 +3,13 @@ import { Box, Divider, Stack } from "@mui/material";
 import EntityDetailsTabs from "./EntityDetailsTabs";
 import { EntityDetailsHeader } from "./EntityDetailsHeader";
 import RegionSearchHeader from "./RegionSearchHeader";
-import { parseGenomicRangeString } from "common/utility";
+import { parseGenomicRangeString } from "common/utils";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { GwasStudyHeader } from "./GwasStudyHeader";
 import BedUploadHeader from "./BedUploadHeader";
-import { useElementHeights } from "./useElementHeights";
-import useScrollReset from "common/hooks/useScrollReset";
+import { useEntityTabsHeight, useScrollReset } from "common/hooks/ui";
 
 export type EntityDetailsLayoutProps = {
   assembly: Assembly;
@@ -41,7 +40,7 @@ const EntityHeader = ({
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
 
-  useElementHeights();
+  useEntityTabsHeight();
   useScrollReset();
 
   return (

@@ -3,7 +3,7 @@
 import { NavigateNext } from "@mui/icons-material";
 import { Breadcrumbs, Typography } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
-import { formatPortal } from "common/utility";
+import { formatPortal } from "common/entityTabsConfig";
 import { usePathname } from "next/navigation";
 
 /**

@@ -1,13 +1,13 @@
 import { Button, Skeleton, Stack, Typography } from "@mui/material";
 import Image from "next/image";
-import { useEntityMetadata } from "common/hooks/useEntityMetadata";
-import { formatPortal } from "common/utility";
+import { useEntityMetadata } from "common/hooks/data/entity";
+import { formatPortal } from "common/entityTabsConfig";
 import { Assembly } from "common/types/globalTypes";
 import Grid from "@mui/material/Grid";
 import { LinkComponent } from "common/components/LinkComponent";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { useMemo } from "react";
-import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
+import { useGWASSnpsData } from "common/hooks/data/gwas";
 import { expandCoordinates } from "../GenomeBrowser/utils";
 
 export type GwasStudyHeaderProps = {
@@ -94,10 +94,10 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
         )}
       </Grid>
       <Grid
-        size={{ xs: 12, sm: 3 }}
+        size={{ xs: 12, sm: "auto" }}
         display={entityType === "ccre" ? "none" : "flex"}
         height={{ xs: 60 }}
-        justifyContent={"flex-end"}
+        justifyContent={{xs: "flex-start", sm: "flex-end"}}
         gap={1}
       >
         <Button
@@ -111,8 +111,10 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
           target="_blank"
           rel="noopener noreferrer"
           sx={{
-            flex: 1,
-            maxWidth: { xs: "none", sm: 130 },
+            width: 125,
+            height: 60,
+            minWidth: 0,
+            position: "relative",
             backgroundColor: "transparent",
             borderColor: "divider",
             "& img": { transition: "filter 0.2s ease" },

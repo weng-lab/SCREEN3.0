@@ -1,11 +1,11 @@
 "use client";
-import { useSnpData } from "common/hooks/useSnpData";
+import { useSnpData } from "common/hooks/data/variant";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useEntityMetadata } from "common/hooks/useEntityMetadata";
+import { useEntityMetadata } from "common/hooks/data/entity";
 import { CSSProperties, useMemo } from "react";
-import { decodeRegions } from "common/utility";
+import { decodeRegions } from "common/utils";
 
 const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { divHeight?: CSSProperties }) => {
   //fetch coordinates since this is used by cCRE entity for overlapping variants
@@ -13,9 +13,7 @@ const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { di
 
   const coordinates = useMemo(() => {
     if (!dataCoords || dataCoords.__typename === "GwasStudiesMetadata") return null;
-    if (dataCoords.__typename === "SCREENSearchResult") {
-      return { chromosome: dataCoords.chrom, start: dataCoords.start, end: dataCoords.start + dataCoords.len };
-    } else if (dataCoords.__typename === "Bed") {
+    if (dataCoords.__typename === "Bed") {
       if (typeof window === "undefined") return null;
       const encoded = sessionStorage.getItem(entity.entityID);
       return decodeRegions(encoded);
@@ -66,7 +64,7 @@ const IntersectingSNPs = ({ entity, divHeight }: EntityViewComponentProps & { di
       label={`Intersecting SNPs`}
       emptyTableFallback={"No intersecting SNPs found in this region"}
       initialState={{ sorting: { sortModel: [{ field: "coordinates.start", sort: "asc" }] } }}
-      divHeight={{ maxHeight: "600px", ...divHeight }}
+      divHeight={{ height: "600px", ...divHeight }}
     />
   );
 };

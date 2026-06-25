@@ -1,7 +1,8 @@
 import { Typography, Divider, Button } from "@mui/material";
 import { Stack } from "@mui/system";
 import MouseIcon from "common/components/MouseIcon";
-import { DNase_seq, H3K4me3, H3K27ac, CA_CTCF } from "../../../common/colors";
+import { DNase_seq, H3K4me3, H3K27ac } from "common/colors";
+import { CA_CTCF } from "common/ccre";
 import HumanIcon from "common/components/HumanIcon";
 
 type AssemblyControlsProps = {

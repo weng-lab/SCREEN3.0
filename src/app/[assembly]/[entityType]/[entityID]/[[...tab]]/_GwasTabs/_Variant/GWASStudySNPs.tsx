@@ -1,7 +1,7 @@
 "use client";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
+import { useGWASSnpsData } from "common/hooks/data/gwas";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {

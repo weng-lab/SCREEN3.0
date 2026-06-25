@@ -2,12 +2,12 @@ import { Draggable } from "@hello-pangea/dnd";
 import { Close, Error } from "@mui/icons-material";
 import { CircularProgress, styled, SxProps, Tab, TabProps, Theme, Tooltip } from "@mui/material";
 import { AnyOpenEntity, OpenEntitiesContext } from "common/OpenEntitiesContext";
-import { truncateString } from "common/utility";
+import { truncateString } from "common/utils";
 import { useCallback, useContext, useMemo, useState } from "react";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 import { theme } from "app/theme";
-import useEntityDisplayname from "common/hooks/useEntityDisplayname";
+import { useEntityDisplayname } from "common/hooks/data/entity";
 
 export type DraggableTabProps = TabProps & {
   entity: AnyOpenEntity;

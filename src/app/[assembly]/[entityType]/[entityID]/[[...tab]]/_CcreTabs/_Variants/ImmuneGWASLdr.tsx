@@ -1,6 +1,6 @@
 "use client";
-import useImmuneGWASLdr from "common/hooks/useImmuneGWASLdr";
-import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
+import { useImmuneGWASLdr } from "common/hooks/data/gwas";
+import { useSnpFrequencies } from "common/hooks/data/variant";
 import { useMemo } from "react";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";

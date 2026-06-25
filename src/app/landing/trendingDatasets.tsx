@@ -5,7 +5,7 @@ import Link from "next/link";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useTheme } from "@mui/material/styles";
 import Config from "common/config.json";
-import { useGrowOnScroll } from "common/hooks/useGrowOnScroll";
+import { useGrowOnScroll } from "common/hooks/ui";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 

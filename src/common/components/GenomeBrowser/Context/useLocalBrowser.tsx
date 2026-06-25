@@ -95,10 +95,11 @@ export function useLocalTracks(assembly: string, entitytype: AnyEntityType, call
   // Rehydrate the tfPeaks custom track: functions (fetcher, renderers, tooltip, settingsPanel)
   // are lost on JSON serialization, so replace with the canonical object while preserving user settings
   initialTracks = initialTracks.map((t) => {
-    if (t.id !== "custom-tf-peaks") return t;
+    if (t.id !== "custom-tf-peaks" && t.id !== "human-other-tracks/tf-peaks") return t;
     const stale = t as unknown as Record<string, unknown>;
     return {
       ...tfPeaksTrack,
+      id: t.id,
       filter: stale.filter as string[] | undefined,
       color: (stale.color as string) ?? tfPeaksTrack.color,
       height: (stale.height as number) ?? tfPeaksTrack.height,

@@ -16,7 +16,7 @@
 // import CCRETooltip from "common/components/GenomeBrowser/Tooltips/CcreTooltip";
 // import { randomColor } from "common/components/GenomeBrowser/utils";
 // import { EntityViewComponentProps } from "common/entityTabsConfig";
-// import { useGWASSnpsData } from "common/hooks/useGWASSnpsData";
+// import { useGWASSnpsData } from "common/hooks/data/gwas";
 // import { Exon } from "common/types/generated/graphql";
 // import { useRouter } from "next/navigation";
 // import SelectLdBlock from "./SelectLdBlock";

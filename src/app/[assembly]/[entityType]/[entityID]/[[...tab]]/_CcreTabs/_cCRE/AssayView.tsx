@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
-import usePlotDownload from "common/hooks/usePlotDownload";
+import { usePlotDownload } from "common/hooks/ui";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";

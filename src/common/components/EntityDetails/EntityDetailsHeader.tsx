@@ -1,12 +1,13 @@
-import { Box, Button, Skeleton, Stack, Typography } from "@mui/material";
-import { useEntityMetadata } from "common/hooks/useEntityMetadata";
-import { formatGenomicRange, formatPortal } from "common/utility";
-import { CLASS_DESCRIPTIONS } from "common/consts";
+import { Button, Skeleton, Stack, Typography } from "@mui/material";
+import { useEntityMetadata } from "common/hooks/data/entity";
+import { formatGenomicRange } from "common/utils";
+import { formatPortal } from "common/entityTabsConfig";
+import { CLASS_DESCRIPTIONS } from "common/ccre";
 import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
-import { useGeneDescription } from "common/hooks/useGeneDescription";
-import { useSnpFrequencies } from "common/hooks/useSnpFrequencies";
+import { useGeneDescription } from "common/hooks/data/gene";
+import { useSnpFrequencies } from "common/hooks/data/variant";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { expandCoordinates } from "../GenomeBrowser/utils";
 export type EntityDetailsHeaderProps = {
@@ -22,13 +23,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
   const c =
     entityMetadata?.__typename !== "GwasStudiesMetadata" &&
     entityMetadata?.__typename !== "Bed" &&
-    (entityMetadata?.__typename === "SCREENSearchResult"
-      ? {
-        chromosome: entityMetadata?.chrom,
-        start: entityMetadata?.start,
-        end: entityMetadata?.start + entityMetadata?.len,
-      }
-      : entityMetadata?.coordinates);
+    entityMetadata?.coordinates;
   const coordinatesDisplay = c && formatGenomicRange(c);
   const coordinatesGenomeBrowser = c && formatGenomicRange(expandCoordinates(c, entityType))
   const description = useGeneDescription(entityID, entityType).description;
@@ -37,7 +32,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
   //All data used in the subtitle of the element header based on the element type
   const geneID = entityMetadata?.__typename === "Gene" ? entityMetadata?.id : "";
   const strand = entityMetadata?.__typename === "Gene" ? entityMetadata.strand : "";
-  const ccreClass = entityMetadata?.__typename === "SCREENSearchResult" ? entityMetadata?.pct : "";
+  const ccreClass = entityMetadata?.__typename === "CCRE" ? entityMetadata?.group : "";
   const ref =
     entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.ref : "";
   const alt =
@@ -91,13 +86,12 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
               ""
             )}
           </Typography>
-          <Box display="flex" flexDirection="row" gap={1}>
-            <Typography>{loading ? <Skeleton width={215} /> : subtitle}</Typography>
-            <Typography>{loading ? <Skeleton width={215} /> : "| " + coordinatesDisplay}</Typography>
-          </Box>
+          <Typography>
+            {loading ? <Skeleton width={215} /> : <>{subtitle}{coordinatesDisplay ? ` | ${coordinatesDisplay}` : ""}</>}
+          </Typography>
         </Stack>
       </Grid>
-      <Grid size={{ xs: 12, sm: 3 }} display={"flex"} height={{ xs: 60 }} justifyContent={"flex-end"} gap={1}>
+      <Grid size={{ xs: 12, sm: "auto" }} display={"flex"} justifyContent={{xs: "flex-start", sm: "flex-end"}} alignItems={"flex-start"} gap={1}>
         {entityType !== "ccre" && (
           <Button
             variant="outlined"
@@ -111,7 +105,10 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             target="_blank"
             rel="noopener noreferrer"
             sx={{
-              flex: 1,
+              width: 125,
+              height: 60,
+              minWidth: 0,
+              position: "relative",
               backgroundColor: "transparent",
               borderColor: "divider",
               "& img": { transition: "filter 0.2s ease" },
@@ -140,7 +137,10 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           target="_blank"
           rel="noopener noreferrer"
           sx={{
-            flex: 1,
+            width: 125,
+            height: 60,
+            minWidth: 0,
+            position: "relative",
             backgroundColor: "transparent",
             borderColor: "divider",
             "& img": { transition: "filter 0.2s ease" },

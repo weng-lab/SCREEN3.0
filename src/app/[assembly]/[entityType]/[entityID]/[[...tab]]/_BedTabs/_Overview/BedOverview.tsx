@@ -1,7 +1,7 @@
 "use client";
 import { Stack } from "@mui/system";
 import { EntityViewComponentProps } from "common/entityTabsConfig/types";
-import { decodeRegions } from "common/utility";
+import { decodeRegions } from "common/utils";
 import { useMemo } from "react";
 import { GenomicRange } from "common/types/generated/graphql";
 import {
@@ -12,13 +12,13 @@ import {
   // useGridApiRef,
 } from "@weng-lab/ui-components";
 import { Grid, IconButton } from "@mui/material";
-import { OpenInNew } from "@mui/icons-material";
+import { ManageSearch } from "@mui/icons-material";
 import { LinkComponent } from "common/components/LinkComponent";
 import OverviewCards from "./OverviewCards";
 // import AutoSortSwitch from "common/components/AutoSortSwitch";
-import { useCcreData } from "common/hooks/useCcreData";
-import { useSnpData } from "common/hooks/useSnpData";
-import { useGeneData } from "common/hooks/useGeneData";
+import { useCcreData } from "common/hooks/data/ccre";
+import { useSnpData } from "common/hooks/data/variant";
+import { useGeneData } from "common/hooks/data/gene";
 
 type RegionRow = GenomicRange & {
   numCcres: number;
@@ -39,7 +39,6 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
   const { data: dataCcres, loading: loadingCcres } = useCcreData({
     coordinates: regions,
     assembly: entity.assembly,
-    nearbygeneslimit: 1,
     skip: regions === null,
   });
 
@@ -53,12 +52,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
 
   // convert all coordiantes to Genomic Range for each query
   const ccresRanges: GenomicRange[] = useMemo(
-    () =>
-      dataCcres?.map((c) => ({
-        chromosome: c.chrom,
-        start: c.start,
-        end: c.start + c.len,
-      })) ?? [],
+    () => dataCcres?.map((c) => c.coordinates) ?? [],
     [dataCcres]
   );
 
@@ -144,7 +138,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
     },
     {
       field: "link",
-      headerName: "Open in New Tab",
+      headerName: "Open in New SCREEN Tab",
       sortable: false,
       valueGetter: (_, row) => {
         return `${row.chromosome}:${row.start}-${row.end}`;
@@ -153,7 +147,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
         return (
           <LinkComponent href={`/${entity.assembly}/region/${params.value}`}>
             <IconButton size="small">
-              <OpenInNew fontSize="small" />
+              <ManageSearch fontSize="medium" />
             </IconButton>
           </LinkComponent>
         );

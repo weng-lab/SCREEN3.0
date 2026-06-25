@@ -1,13 +1,14 @@
 import { Tooltip } from "@mui/material";
 import { TableColDef } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
-import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/consts";
+import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/ccre";
 import { LinkComponent } from "./LinkComponent";
-import { CLASS_COLORS } from "common/colors";
+import { CLASS_COLORS } from "common/ccre";
 
 export const ClassificationFormatting: Partial<TableColDef> = {
   type: "singleSelect",
   valueOptions: CCRE_CLASSES.map((group) => ({ value: group, label: CLASS_DESCRIPTIONS[group] })),
+  minWidth: 150,
   renderCell: (params: GridRenderCellParams) => {
     const group = params.value;
     // Override the InActive color here since it's being used for coloring text and is too light

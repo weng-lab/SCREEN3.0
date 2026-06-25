@@ -3,7 +3,7 @@ import { Stack } from "@mui/material";
 import ComputationalLinkedCcres from "./ComputationalLinkedCcres";
 import DistanceLinkedCcres from "./DistanceLinkedCcres";
 import PromoterCcres from "./PromoterCcres";
-import { useGeneData } from "common/hooks/useGeneData";
+import { useGeneData } from "common/hooks/data/gene";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
 const GeneLinkedIcres = ({ entity }: EntityViewComponentProps) => {

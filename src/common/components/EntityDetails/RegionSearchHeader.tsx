@@ -1,5 +1,5 @@
 import { Stack, Typography, Button } from "@mui/material";
-import { formatGenomicRange } from "common/utility";
+import { formatGenomicRange } from "common/utils";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import Grid from "@mui/material/Grid";
 import Image from "next/image";

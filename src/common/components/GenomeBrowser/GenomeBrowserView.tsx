@@ -36,6 +36,7 @@ interface Transcript {
   strand: string;
   exons?: Exon[];
   color?: string;
+  parentName?: string;
 }
 
 export type GenomeBrowserViewProps = EntityViewComponentProps & {
@@ -105,7 +106,7 @@ export default function GenomeBrowserView({
   );
   const onGeneClick = useCallback(
     (gene: Transcript) => {
-      const name = gene.name.split("-")[0];
+      const name = gene.parentName;
       if (name.includes("ENSG")) {
         return;
       }
