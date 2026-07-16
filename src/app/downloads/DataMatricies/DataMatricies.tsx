@@ -177,14 +177,21 @@ export function DataMatrices() {
     }
   };
 
-  const columnVisibilityModel: GridColumnVisibilityModel = useMemo(
-    () => ({
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(() => ({
+    ...allColsHidden,
+    assays: true,
+    [`${selectedAssay.assay.toLowerCase()}_experiment_accession`]: true,
+  }));
+
+  // Keep the visible accession column in sync with the selected assay.
+  // Note: switching assays resets any manual column modifications the user made.
+  useEffect(() => {
+    setColumnVisibilityModel({
       ...allColsHidden,
       assays: true,
       [`${selectedAssay.assay.toLowerCase()}_experiment_accession`]: true,
-    }),
-    [selectedAssay]
-  );
+    });
+  }, [selectedAssay]);
 
   return (
     <Box
@@ -328,6 +335,7 @@ export function DataMatrices() {
           selected={selectedBiosamples}
           prefilterBiosamples={(biosample) => biosampleHasAssay(biosample, selectedAssay.assay)}
           columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={setColumnVisibilityModel}
           // temporary fix while other tables are not setup to group rows
           disableRowGrouping={false}
           divHeight={{ height: 750 }}
