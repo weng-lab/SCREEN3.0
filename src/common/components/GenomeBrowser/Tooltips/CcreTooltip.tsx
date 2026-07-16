@@ -1,47 +1,18 @@
-import { useQuery } from "@apollo/client/react";
-import { gql } from "common/types/generated";
 import { CLASS_COLORS } from "common/ccre";
 import { CLASS_DESCRIPTIONS } from "common/ccre";
 import { CcreTooltipBiosample } from "../TrackSelect/defaultTracks";
+import { useCcreZScores } from "common/hooks/data/ccre";
+import { Assembly } from "common/types/globalTypes";
 import { useMemo } from "react";
 
 interface CCRETooltipProps {
-  assembly: string;
+  assembly: Assembly;
   name: string;
   biosample?: CcreTooltipBiosample;
 }
 
-const BIOSAMPLE_QUERY = gql(`
-  query cCREBiosampleTooltip($assembly: String!, $biosampleName: [String!], $accession: [String!]) {
-    ccREBiosampleQuery(assembly: $assembly, name: $biosampleName) {
-      biosamples {
-        name
-        displayname
-        cCREZScores(accession: $accession) {
-          assay
-          score
-          experiment_accession
-        }
-      }
-    }
-  }
-`);
-
-const MAXZ_QUERY = gql(`
-  query cCRE_2($assembly: String!, $accession: [String!]) {
-    cCREQuery(assembly: $assembly, accession: $accession) {
-      group
-      dnase: maxZ(assay: "dnase")
-      h3k4me3: maxZ(assay: "h3k4me3")
-      h3k27ac: maxZ(assay: "h3k27ac")
-      ctcf: maxZ(assay: "ctcf")
-      atac: maxZ(assay: "atac")
-    }
-  }
-`);
-
 const MARKS = ["DNase", "H3K4me3", "H3K27ac", "CTCF", "ATAC"];
-const ASSAY_ORDER = ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"];
+const ASSAY_ORDER = ["dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"] as const;
 
 function truncate(text: string, maxLength: number) {
   if (text.length <= maxLength) return text;
@@ -49,58 +20,30 @@ function truncate(text: string, maxLength: number) {
 }
 
 export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipProps) {
-  const {
-    data: ccreData,
-    loading: ccreLoading,
-    error: ccreError,
-  } = useQuery(MAXZ_QUERY, {
-    variables: {
-      assembly,
-      accession: [name],
-    },
-  });
-  const {
-    data: biosampleData,
-    loading: biosampleLoading,
-    error: biosampleError,
-  } = useQuery(BIOSAMPLE_QUERY, {
-    variables: {
-      assembly: assembly.toLowerCase(),
-      accession: [name],
-      biosampleName: biosample?.name ? [biosample.name] : undefined,
-    },
-    skip: !biosample,
+  const { data, loading, error } = useCcreZScores({
+    accessions: [name],
+    assembly,
+    biosample: biosample?.name,
   });
 
-  const biosampleScores = useMemo(() => {
-    if (!biosample) return [];
+  const ccre = data?.[name];
 
-    const zScores = biosampleData?.ccREBiosampleQuery?.biosamples?.[0]?.cCREZScores ?? [];
-
-    return ASSAY_ORDER.flatMap((assay, index) => {
-      const score = zScores.find((entry) => entry?.assay?.toLowerCase() === assay)?.score;
-      return score == null ? [] : [{ label: MARKS[index], score: score.toFixed(2) }];
-    });
-  }, [biosample, biosampleData]);
-
-  const maxZSscores = useMemo(() => {
-    if (biosample || !ccreData?.cCREQuery?.[0]) return [];
+  const scoreRows = useMemo(() => {
+    if (!ccre) return [];
 
     return ASSAY_ORDER.flatMap((assay, index) => {
-      const score = ccreData.cCREQuery[0][assay];
+      const score = ccre[assay];
       return score == null ? [] : [{ label: MARKS[index], score: score.toFixed(2) }];
     });
-  }, [biosample, ccreData]);
+  }, [ccre]);
 
-  if (ccreError || biosampleError) {
+  if (error) {
     return null;
   }
 
-  const loading = ccreLoading || (biosample ? biosampleLoading : false);
-
-  const scoreRows = biosample ? biosampleScores : maxZSscores;
-  const biosampleDisplayName = biosampleData?.ccREBiosampleQuery?.biosamples?.[0]?.displayname ?? biosample?.displayname;
-  const hasData = !!ccreData?.cCREQuery?.[0] && (!biosample || !!biosampleData?.ccREBiosampleQuery?.biosamples?.[0]);
+  const group = ccre?.group;
+  const hasData = !!ccre;
+  const biosampleDisplayName = biosample?.displayname;
   const width = 236;
   const padding = 10;
   const compactLineHeight = 16;
@@ -152,13 +95,13 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
             y={10}
             width={10}
             height={10}
-            fill={CLASS_COLORS[ccreData?.cCREQuery?.[0]?.group] ?? "#8c8c8c"}
+            fill={group ? CLASS_COLORS[group] : "#8c8c8c"}
           />
           <text x={padding + 16} y={titleY} fontSize={12} fontWeight="bold" fill="#000000">
             {name}
           </text>
           <text x={padding} y={groupY} fontSize={12} fill="#000000">
-            {CLASS_DESCRIPTIONS[ccreData?.cCREQuery?.[0]?.group]}
+            {group ? CLASS_DESCRIPTIONS[group] : ""}
           </text>
           <text x={padding} y={hintY} fontSize={12} fill="#666666">
             Click for details about this cCRE
