@@ -86,9 +86,6 @@ export const useCcreZScores = ({
           ? parseZScoresArray(entry.zscores as ZScoresEntry<null>[])
           : undefined;
 
-        // When a biosample is selected, scores and classification come solely from its
-        // biosample-specific z-scores; an assay the biosample did not perform stays absent
-        // rather than falling back to the biosample-agnostic max (see fetchCcreDownloadData).
         return [
           [
             entry.accession,

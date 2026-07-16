@@ -20,8 +20,6 @@ function truncate(text: string, maxLength: number) {
 }
 
 export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipProps) {
-  // Scores and group come from a single call: biosample-agnostic max-Z + global group when no
-  // biosample is passed, biosample-specific z-scores + classification when one is (see useCcreZScores).
   const { data, loading, error } = useCcreZScores({
     accessions: [name],
     assembly,
