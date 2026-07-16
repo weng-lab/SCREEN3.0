@@ -28,6 +28,7 @@
     "HumanGeneLinksGraphRegLR": "https://downloads.wenglab.org/V4-hg38.Gene-Links.Computational-Methods.GraphRegLR.txt.gz",
     "HumanGeneLinksrE2G": "https://downloads.wenglab.org/V4-hg38.Gene-Links.Computational-Methods.rE2G.txt.gz",
     "HumanNearestPC": "https://downloads.wenglab.org/GRCh38-Closest-Genes-PC.tsv",
+    "HumanGeneExpression" : "https://downloads.wenglab.org/human_gene_expression_files.tar.gz",
     "HumanNearestAll": "https://downloads.wenglab.org/GRCh38-Closest-Genes-All.tsv",
     "HumanCAPRA": "https://downloads.wenglab.org/human_capra_functional_characterization.tar.gz",
     "HumanMPRA": "https://downloads.wenglab.org/human_mpra_functional_characterization.tar.gz",
@@ -51,6 +52,8 @@
     "MouseVISTA": "https://downloads.wenglab.org/VISTA-mm10.04-22-2023.bed",
 
     "HumanMouseOrtholog": "https://downloads.wenglab.org/hg38-mm10-Homologous.tsv",
+
+    "MouseGeneExpression" : "https://downloads.wenglab.org/mouse_gene_expression_files.tar.gz",
 
     "HumanDNaseSignalMatrix": "https://www.encodeproject.org/files/ENCFF434ORT/@@download/ENCFF434ORT.txt.gz",
     "HumanPromoterSignalMatrix": "https://www.encodeproject.org/files/ENCFF015SIE/@@download/ENCFF015SIE.txt.gz",
