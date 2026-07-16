@@ -97,6 +97,9 @@ export const useIntersectingCcreZScores = ({
         ? parseZScoresArray(entry.zscores as ZScoresEntry<null>[])
         : undefined;
 
+      // When a biosample is selected, scores and classification come solely from its
+      // biosample-specific z-scores; an assay the biosample did not perform stays absent
+      // rather than falling back to the biosample-agnostic max (see fetchCcreDownloadData).
       return [
         {
           accession: entry.accession,
@@ -105,12 +108,14 @@ export const useIntersectingCcreZScores = ({
             start: entry.start,
             end: entry.stop,
           },
-          dnase: zScores?.dnase ?? entry.dnase_max_zscore,
-          atac: zScores?.atac ?? entry.atac_max_zscore,
-          h3k4me3: zScores?.h3k4me3 ?? entry.h3k4me3_max_zscore,
-          h3k27ac: zScores?.h3k27ac ?? entry.h3k27ac_max_zscore,
-          ctcf: zScores?.ctcf ?? entry.ctcf_max_zscore,
-          group: zScores ? classifyCcre(zScores, zScores.tf, distance) : (entry.ccre_group as CcreClass),
+          dnase: biosample ? zScores?.dnase : entry.dnase_max_zscore ?? undefined,
+          atac: biosample ? zScores?.atac : entry.atac_max_zscore ?? undefined,
+          h3k4me3: biosample ? zScores?.h3k4me3 : entry.h3k4me3_max_zscore ?? undefined,
+          h3k27ac: biosample ? zScores?.h3k27ac : entry.h3k27ac_max_zscore ?? undefined,
+          ctcf: biosample ? zScores?.ctcf : entry.ctcf_max_zscore ?? undefined,
+          group: biosample
+            ? classifyCcre(zScores ?? {}, zScores?.tf ?? false, distance)
+            : (entry.ccre_group as CcreClass),
         },
       ];
     });
