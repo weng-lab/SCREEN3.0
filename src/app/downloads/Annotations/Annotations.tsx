@@ -9,6 +9,7 @@ import { TreeItem, TreeItemProps } from "@mui/x-tree-view";
 import AnnotationsOtherOrthologous from "./AnnotationsOtherOrthologous";
 import AnnotationsContactUs from "./AnnotationsContactUs";
 import AnnotationsFunctional from "./AnnotationsFunctional";
+import AnnotationsGeneExpression from "./AnnotationsGeneExpression";
 
 const StyledTreeItem = styled(TreeItem)<TreeItemProps>(({ theme }) => ({
   "& .MuiTreeItem-label": {
@@ -39,6 +40,8 @@ const Content = ({ tab, assembly }: { tab: string; assembly: Assembly }) => {
       return <AnnotationsOtherOrthologous />;
     case "functional":
       return <AnnotationsFunctional assembly={assembly} />;
+    case "geneExpression":
+      return <AnnotationsGeneExpression assembly={assembly} />;
   }
 };
 
@@ -66,11 +69,13 @@ const Annotations = () => {
             <StyledTreeItem itemId="GRCh38/byCelltype" label="cCREs by Cell and Tissue Type" />
             <StyledTreeItem itemId="GRCh38/geneLinks" label="cCRE-Gene Links" />
             <StyledTreeItem itemId="GRCh38/functional" label="Functional Characterization" />
+            <StyledTreeItem itemId="GRCh38/geneExpression" label="Gene Expression" />
           </StyledTreeItem>
           <StyledTreeItem className="tree-category" itemId="mouse" label="Mouse">
             <StyledTreeItem itemId="mm10/byClass" label="cCREs by Class" />
             <StyledTreeItem itemId="mm10/byCelltype" label="cCREs by Cell and Tissue Type" />
             <StyledTreeItem itemId="mm10/functional" label="Functional Characterization" />
+            <StyledTreeItem itemId="mm10/geneExpression" label="Gene Expression" />
           </StyledTreeItem>
           <StyledTreeItem className="tree-category" itemId="other" label="Other">
             <StyledTreeItem itemId="other/ortho" label="Orthologous cCREs" />
