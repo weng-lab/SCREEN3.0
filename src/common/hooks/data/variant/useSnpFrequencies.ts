@@ -1,6 +1,6 @@
 "use client";
 import { EntityType } from "common/entityTabsConfig";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Frequency {
   population: string;
@@ -27,6 +27,16 @@ export function useSnpFrequencies(
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // rsids is often passed as a fresh array literal on every render, so compare
+  // its content instead of its identity to decide when to reset loading/error.
+  const rsidsKey = rsids ? rsids.join(",") : "";
+  const prevRsidsKey = useRef(rsidsKey);
+  if (rsidsKey !== prevRsidsKey.current) {
+    prevRsidsKey.current = rsidsKey;
+    setLoading(true);
+    setError(null);
+  }
+
   useEffect(() => {
     if (entityType !== undefined && entityType !== "variant") return;
 
@@ -36,9 +46,6 @@ export function useSnpFrequencies(
     const rsidsToFetch = [...new Set(rsids)];
 
     if (rsidsToFetch.length === 0) return; // If all rsids are already fetched, do nothing
-
-    setLoading(true);
-    setError(null);
 
     const fetchData = async () => {
       try {

@@ -3,7 +3,7 @@ import { CircularProgress, Alert, Box } from "@mui/material";
 import GenomeBrowserView from "common/components/GenomeBrowser/GenomeBrowserView";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useGWASSnpsData } from "common/hooks/data/gwas";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import SelectLdBlock from "./SelectLdBlock";
 import { expandCoordinates } from "common/components/GenomeBrowser/utils";
 import { createDataStoreMemo, useCustomData } from "@weng-lab/genomebrowser";
@@ -47,10 +47,12 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ldblockStats]);
 
-  useEffect(() => {
+  const prevEntityID = useRef(entity.entityID);
+  if (entity.entityID !== prevEntityID.current) {
+    prevEntityID.current = entity.entityID;
     setselectedLdBlock(null);
     setResolvedCoordinates(null);
-  }, [entity.entityID]);
+  }
 
   const [ldblockOpen, setLdBlockOpen] = useState(false);
   const onLdBlockSelected = (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => {

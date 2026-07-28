@@ -22,10 +22,6 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
   }, [data, entity.entityID]);
 
   useEffect(() => {
-    setResolvedCoordinates(null);
-  }, [entityKey]);
-
-  useEffect(() => {
     if (!coordinates) return;
     const nextCoordinates = Array.isArray(coordinates) ? coordinates[0] : coordinates;
     setResolvedCoordinates((current) =>
