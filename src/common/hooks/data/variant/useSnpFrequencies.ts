@@ -28,10 +28,10 @@ export function useSnpFrequencies(
   const [error, setError] = useState<string | null>(null);
 
   // rsids is often passed as a fresh array literal on every render, so compare
-  // its content instead of its identity to decide when to reset loading/error.
-  const rsidsKey = rsids ? rsids.join(",") : "";
-  const prevRsidsKey = useRef(rsidsKey);
-  if (rsidsKey !== prevRsidsKey.current) {
+  // its content instead of its identity to decide when a new fetch is needed.
+  const rsidsKey = rsids && rsids.length > 0 ? [...new Set(rsids)].join(",") : "";
+  const prevRsidsKey = useRef<string | null>(null);
+  if (rsidsKey !== "" && rsidsKey !== prevRsidsKey.current) {
     prevRsidsKey.current = rsidsKey;
     setLoading(true);
     setError(null);
@@ -40,7 +40,9 @@ export function useSnpFrequencies(
   useEffect(() => {
     if (entityType !== undefined && entityType !== "variant") return;
 
-    if (data || loading || !rsids || rsids.length === 0) return; // Avoid fetching if no rsids are provided
+    // loading is set to true (above) before this effect runs for a new rsidsKey,
+    // so it isn't part of this guard; data is the source of truth for "already fetched."
+    if (data || !rsids || rsids.length === 0) return; // Avoid fetching if no rsids are provided
 
     // Prevent multiple fetch calls for the same rsid
     const rsidsToFetch = [...new Set(rsids)];
