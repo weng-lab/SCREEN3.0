@@ -17,6 +17,8 @@ type Assembly = "GRCh38" | "mm10";
 type TrackSelectFolder = TrackSelectProps["folders"][number];
 type TrackSelectRow = BiosampleRowInfo | GeneRowInfo | OtherTrackInfo;
 
+const excludedFolderIds = new Set(["human-mohd", "human-psychscreen"]);
+
 const defaultSelectedTrackIds: InitialSelectedIdsByAssembly = {
   GRCh38: {
     "human-genes": ["human-genes/gencode-basic"],
@@ -53,13 +55,15 @@ export default function TrackSelectModal({
 }) {
   const [open, setOpen] = useState(false);
 
-  const folders = useMemo(() => foldersByAssembly[assembly as Assembly], [assembly]);
+  const folders = useMemo(
+    () => foldersByAssembly[assembly as Assembly].filter((folder) => !excludedFolderIds.has(folder.id)),
+    [assembly]
+  );
 
   const screenFolders = useMemo(
     () => folders.map((folder) => withScreenCallbacks(folder, callbacks)),
     [folders, callbacks]
   );
-
   const sessionStorageKey = `${assembly}-screen-track-select-v2`;
 
   return (
