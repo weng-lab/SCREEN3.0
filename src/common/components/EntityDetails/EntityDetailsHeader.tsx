@@ -122,7 +122,8 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
                   ? "https://geneanalytics.genecards.org/media/81632/gc.png"
                   : "https://www.ncbi.nlm.nih.gov/core/assets/style-guide/img/NLM-square-logo.png"
               }
-              fill
+              width={125}
+              height={60}
               alt="genecard-snpcard-button"
             />
           </Button>
@@ -150,7 +151,8 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
           <Image
             style={{ objectFit: "contain" }}
             src={"https://genome.ucsc.edu/images/ucscHelixLogo.png"}
-            fill
+            width={125}
+            height={60}
             unoptimized
             alt="ucsc-gb-icon"
           />

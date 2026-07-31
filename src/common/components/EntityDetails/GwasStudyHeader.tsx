@@ -124,7 +124,8 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
           <Image
             style={{ objectFit: "contain" }}
             src={"https://genome.ucsc.edu/images/ucscHelixLogo.png"}
-            fill
+            width={125}
+            height={60}
             unoptimized
             alt="ucsc-gb-icon"
           />

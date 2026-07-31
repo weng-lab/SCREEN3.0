@@ -54,10 +54,12 @@ const RegionSearchHeader = ({ assembly, region }: RegionSearchHeaderProps) => {
             "&:hover img": { filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.25))" },
           }}
         >
+          {/* Button width is fluid (flex: 1, capped at 130 from sm up), so this stays `fill` + `sizes` */}
           <Image
             style={{ objectFit: "contain" }}
             src={"https://genome.ucsc.edu/images/ucscHelixLogo.png"}
             fill
+            sizes="(max-width: 600px) 100vw, 130px"
             unoptimized
             alt="ucsc-gb-icon"
           />

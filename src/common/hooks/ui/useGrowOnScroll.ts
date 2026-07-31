@@ -22,9 +22,9 @@ export function useGrowOnScroll(length: number) {
       { threshold: 0.1 }
     );
 
-    refs.current.forEach((el) => {
+    for (const el of refs.current) {
       if (el) observer.observe(el);
-    });
+    }
 
     return () => observer.disconnect();
   }, [length]);

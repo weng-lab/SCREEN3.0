@@ -27,22 +27,26 @@ export function useSnpFrequencies(
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const rsidKey = rsids ? [...new Set(rsids)].sort().join(",") : "";
+
   useEffect(() => {
     if (entityType !== undefined && entityType !== "variant") return;
 
-    if (data || loading || !rsids || rsids.length === 0) return; // Avoid fetching if no rsids are provided
+    if (!rsidKey) return; // Nothing to fetch
 
-    // Prevent multiple fetch calls for the same rsid
-    const rsidsToFetch = [...new Set(rsids)];
+    const rsidsToFetch = rsidKey.split(",");
 
-    if (rsidsToFetch.length === 0) return; // If all rsids are already fetched, do nothing
+    // A superseded fetch must not clobber the state of a newer one
+    let cancelled = false;
 
     setLoading(true);
     setError(null);
 
     const fetchData = async () => {
       try {
-        const results: { [rsid: string]: SnpFrequencies | null } = { ...data };
+        // Built fresh rather than spread over the previous `data`, which would be a stale read from
+        // this closure. The result then always describes exactly the rsids that were requested.
+        const results: { [rsid: string]: SnpFrequencies | null } = {};
 
         // Fetch data for the remaining rsids concurrently using Promise.all
         await Promise.all(
@@ -83,17 +87,23 @@ export function useSnpFrequencies(
           })
         );
 
-        setData(results); // Update state with new results
+        if (!cancelled) setData(results); // Update state with new results
       } catch (err: any) {
-        setError(err.message || "Unknown error");
-        setData({});
+        if (!cancelled) {
+          setError(err.message || "Unknown error");
+          setData({});
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchData();
-  }, [rsids]); // Only trigger fetch if rsids array changes or new rsids are added
+
+    return () => {
+      cancelled = true;
+    };
+  }, [rsidKey, entityType]); // Value-based key, so equal rsid sets do not refetch
 
   return { data, loading, error };
 }

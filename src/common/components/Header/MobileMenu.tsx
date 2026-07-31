@@ -1,5 +1,4 @@
 "use client";
-import { Search } from "@mui/icons-material";
 import {
   Box,
   Divider,
@@ -16,20 +15,22 @@ import {
   useTheme,
 } from "@mui/material";
 import MuiLink from "@mui/material/Link";
-import AutoComplete from "../autocomplete";
 import Link from "next/link";
 import CloseIcon from "@mui/icons-material/Close";
 import { useMenuControl } from "common/components/MenuContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { Assembly } from "common/types/globalTypes";
+import HeaderSearch from "./HeaderSearch";
 import { PageInfo } from "./types";
 
 export type MobileMenuProps = {
   pageLinks: PageInfo[];
+  assembly: Assembly;
+  onAssemblyChange: (assembly: Assembly) => void;
 };
 
-export default function MobileMenu({ pageLinks }: MobileMenuProps) {
+export default function MobileMenu({ pageLinks, assembly, onAssemblyChange }: MobileMenuProps) {
   const { isMenuOpen, setMenuCanBeOpen, closeMenu, setIsMenuMounted } = useMenuControl();
-  const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38");
 
   const theme = useTheme();
   // This breakpoint needs to match the breakpoints used below
@@ -53,9 +54,11 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
         anchor="right"
         open={isMenuOpen}
         onClose={handleCloseDrawer}
-        SlideProps={{
-          onEntered: () => setIsMenuMounted(true),
-          onExited: () => setIsMenuMounted(false),
+        slotProps={{
+          transition: {
+            onEntered: () => setIsMenuMounted(true),
+            onExited: () => setIsMenuMounted(false),
+          },
         }}
       >
         <Box sx={{ width: 350, p: 2 }}>
@@ -63,35 +66,16 @@ export default function MobileMenu({ pageLinks }: MobileMenuProps) {
             <IconButton sx={{ color: "black" }} onClick={handleCloseDrawer}>
               <CloseIcon />
             </IconButton>
-            <AutoComplete
+            <HeaderSearch
               id="mobile-search-component"
-              style={{ width: "100%" }}
-              closeDrawer={handleCloseDrawer}
+              variant="mobile"
               assembly={assembly}
-              slots={{
-                button: IconButton,
-              }}
-              slotProps={{
-                box: { gap: 1 },
-                button: {
-                  sx: { color: "black" },
-                  children: <Search />,
-                },
-                input: {
-                  size: "small",
-                  label: `Enter a gene, cCRE${assembly === "GRCh38" ? ", variant" : ""} or locus`,
-                  sx: {
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#ffffff",
-                    },
-                  },
-                },
-              }}
+              closeDrawer={handleCloseDrawer}
             />
           </Stack>
           <RadioGroup
             value={assembly}
-            onChange={(e) => setAssembly(e.target.value as "GRCh38" | "mm10")}
+            onChange={(e) => onAssemblyChange(e.target.value as Assembly)}
             row
             sx={{
               justifyContent: "center",
