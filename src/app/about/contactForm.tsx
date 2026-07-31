@@ -3,6 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export default function ContactForm() {
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -11,10 +15,6 @@ export default function ContactForm() {
   const [success, setSuccess] = useState(false);
 
   const form = useRef<HTMLFormElement>(null);
-
-  function isValidEmail(email: string) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
 
   // Move validation logic into useEffect to avoid state updates during render
   useEffect(() => {

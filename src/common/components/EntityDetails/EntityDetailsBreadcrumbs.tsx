@@ -6,21 +6,21 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { formatPortal } from "common/entityTabsConfig";
 import { usePathname } from "next/navigation";
 
+const formatSubPath = (path: string) => {
+  // handle encoded colons in region path
+  if (path.includes("%3A")) {
+    return path.replace("%3A", ":");
+  } else {
+    return path;
+  }
+};
+
 /**
  * Currently not used, but saving for now
  */
 const ElementDetailsBreadcrumbs = () => {
   const pathname = usePathname();
   const links = pathname.split("/").slice(1, 3);
-
-  const formatSubPath = (path: string) => {
-    // handle encoded colons in region path
-    if (path.includes("%3A")) {
-      return path.replace("%3A", ":");
-    } else {
-      return path;
-    }
-  };
 
   return (
     <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumbs">

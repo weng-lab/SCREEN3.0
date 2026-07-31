@@ -8,6 +8,13 @@ interface ChromHmmTooltipProps {
   displayName: string;
 }
 
+const truncate = (word: string) => {
+  if (word.length >= 35) {
+    return word.slice(0, 35) + "...";
+  }
+  return word;
+};
+
 const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, displayName }) => {
   const stateDetails = humanChromStates[rect.name] || mouseChromStates[rect.name];
 
@@ -21,13 +28,6 @@ const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, display
       </svg>
     );
   }
-
-  const truncate = (word: string) => {
-    if (word.length >= 35) {
-      return word.slice(0, 35) + "...";
-    }
-    return word;
-  };
 
   return (
     <svg width={240} height={92}>

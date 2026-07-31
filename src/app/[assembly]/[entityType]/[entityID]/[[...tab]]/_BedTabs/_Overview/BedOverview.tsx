@@ -26,6 +26,10 @@ type RegionRow = GenomicRange & {
   numSnps: number;
 };
 
+// function to check if uploaded region overlaps a given entity's region
+const overlaps = (a: GenomicRange, b: GenomicRange) =>
+  a.chromosome === b.chromosome && a.start <= b.end && b.start <= a.end;
+
 const BedOverview = ({ entity }: EntityViewComponentProps) => {
   // const [autoSort, setAutoSort] = useState<boolean>(true);
   // const [selected, setSelected] = useState<RegionRow[]>([]);
@@ -75,10 +79,6 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
       })) ?? [],
     [dataSnps]
   );
-
-  // function to check if uploaded region overlaps a given entity's region
-  const overlaps = (a: GenomicRange, b: GenomicRange) =>
-    a.chromosome === b.chromosome && a.start <= b.end && b.start <= a.end;
 
   // generate rows with counts of overlapping entities
   const rows: RegionRow[] = useMemo(() => {

@@ -13,6 +13,21 @@ type MultipleRegionSearchProps = {
   toggleMultipleRegionSearchVisible: () => void;
 };
 
+function getBasePairs(regions: GenomicRange[]): number {
+  return regions.reduce((total, region) => {
+    const length = Math.max(0, region.end - region.start);
+    return total + length;
+  }, 0);
+}
+
+function truncateFileName(string, maxLength, ellipsis = "...") {
+  if (string.length <= maxLength) {
+    return string;
+  }
+
+  return string.substring(0, maxLength - ellipsis.length) + ellipsis;
+}
+
 const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, toggleMultipleRegionSearchVisible }) => {
   const [file, setFile] = useState<File>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,13 +55,6 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
     setFile(null);
     setBpLimit(false);
   };
-
-  function getBasePairs(regions: GenomicRange[]): number {
-    return regions.reduce((total, region) => {
-      const length = Math.max(0, region.end - region.start);
-      return total + length;
-    }, 0);
-  }
 
   //Encode the regions and open the tab
   const configureInputedRegions = useCallback(
@@ -108,14 +116,6 @@ const MultipleRegionSearch: React.FC<MultipleRegionSearchProps> = ({ assembly, t
     };
     reader.readAsText(file);
   };
-
-  function truncateFileName(string, maxLength, ellipsis = "...") {
-    if (string.length <= maxLength) {
-      return string;
-    }
-
-    return string.substring(0, maxLength - ellipsis.length) + ellipsis;
-  }
 
   return (
     <Box mt={5} justifyContent={"center"} alignItems={"center"} display={"flex"} flexDirection={"column"}>

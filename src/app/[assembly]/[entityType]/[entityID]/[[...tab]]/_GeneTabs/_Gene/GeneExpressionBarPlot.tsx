@@ -6,6 +6,16 @@ import { tissueColors } from "common/colors";
 import { BarPlot, BarData } from "@weng-lab/visualization";
 import GenePlotControls from "./GenePlotControls";
 
+const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
+  const maxLength = 20;
+  let name = biosample.replaceAll("_", " ");
+  if (name.length > maxLength) {
+    name = name.slice(0, maxLength) + "...";
+  }
+  name = capitalizeFirstLetter(name);
+  return `${tpm.toFixed(2)}, ${name} (${accession}${biorep ? ", rep. " + biorep : ""})`;
+};
+
 const GeneExpressionBarPlot = ({
   scale,
   selected,
@@ -23,16 +33,6 @@ const GeneExpressionBarPlot = ({
   assembly,
   getRowId,
 }: GeneExpressionBarPlotProps) => {
-  const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
-    const maxLength = 20;
-    let name = biosample.replaceAll("_", " ");
-    if (name.length > maxLength) {
-      name = name.slice(0, maxLength) + "...";
-    }
-    name = capitalizeFirstLetter(name);
-    return `${tpm.toFixed(2)}, ${name} (${accession}${biorep ? ", rep. " + biorep : ""})`;
-  };
-
   const plotData: BarData<PointMetadata>[] = useMemo(() => {
     if (!sortedFilteredData) return [];
     return sortedFilteredData.map((x, i) => {

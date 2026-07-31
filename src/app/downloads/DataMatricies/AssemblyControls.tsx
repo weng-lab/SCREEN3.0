@@ -30,24 +30,24 @@ const assemblyInfo = {
   },
 };
 
-const AssemblyControls = ({ assembly, setSelected, selectedAssay }: AssemblyControlsProps) => {
-  /**
-   * @param assay an assay
-   * @returns the corresponding color for the given assay
-   */
-  function borderColor(assay: Selected["assay"]) {
-    switch (assay) {
-      case "DNase":
-        return DNase_seq;
-      case "H3K4me3":
-        return H3K4me3;
-      case "H3K27ac":
-        return H3K27ac;
-      case "CTCF":
-        return CA_CTCF;
-    }
+/**
+ * @param assay an assay
+ * @returns the corresponding color for the given assay
+ */
+function borderColor(assay: Selected["assay"]) {
+  switch (assay) {
+    case "DNase":
+      return DNase_seq;
+    case "H3K4me3":
+      return H3K4me3;
+    case "H3K27ac":
+      return H3K27ac;
+    case "CTCF":
+      return CA_CTCF;
   }
+}
 
+const AssemblyControls = ({ assembly, setSelected, selectedAssay }: AssemblyControlsProps) => {
   // Assay selectors
   const selectorButton = (variant: Selected) => {
     return (

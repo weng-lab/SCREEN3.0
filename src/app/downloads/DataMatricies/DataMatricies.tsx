@@ -29,6 +29,19 @@ function colorMap(strings) {
   return [colors, counts];
 }
 
+const biosampleHasAssay = (biosample: EncodeBiosample, assay: Selected["assay"]) => {
+  switch (assay) {
+    case "DNase":
+      return !!biosample.dnase_experiment_accession;
+    case "H3K4me3":
+      return !!biosample.h3k4me3_experiment_accession;
+    case "H3K27ac":
+      return !!biosample.h3k27ac_experiment_accession;
+    case "CTCF":
+      return !!biosample.ctcf_experiment_accession;
+  }
+};
+
 export function DataMatrices() {
   const [selectedAssay, setSelectedAssay] = useState<Selected>({ assembly: "Human", assay: "DNase" });
   const [lifeStage, setLifeStage] = useState("all");
@@ -163,19 +176,6 @@ export function DataMatrices() {
       };
     });
   }, [fData, colorBy, sampleTypeColors, ontologyColors, selectedBiosamples]);
-
-  const biosampleHasAssay = (biosample: EncodeBiosample, assay: Selected["assay"]) => {
-    switch (assay) {
-      case "DNase":
-        return !!biosample.dnase_experiment_accession;
-      case "H3K4me3":
-        return !!biosample.h3k4me3_experiment_accession;
-      case "H3K27ac":
-        return !!biosample.h3k27ac_experiment_accession;
-      case "CTCF":
-        return !!biosample.ctcf_experiment_accession;
-    }
-  };
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(() => ({
     ...allColsHidden,
