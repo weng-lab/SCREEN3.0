@@ -17,7 +17,7 @@ export type RegionSearchHeaderProps = {
 const RegionSearchHeader = ({ assembly, region }: RegionSearchHeaderProps) => {
   const assemblyDb = assembly === "mm10" ? "mm10" : "hg38";
   const ucscTrack = assembly === "mm10" ? "encodeCcreCombined" : "cCREs";
-  const coordinatesGenomeBrowser = formatGenomicRange(expandCoordinates(region, "region"))
+  const coordinatesGenomeBrowser = formatGenomicRange(expandCoordinates(region, "region"));
   return (
     <Grid
       sx={{ p: 1 }}

@@ -10,7 +10,9 @@ import GenomeBrowserView from "./GenomeBrowserView";
 export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
   const { data, loading, error } = useEntityMetadata(entity);
   const entityKey = `${entity.assembly}:${entity.entityType}:${entity.entityID}`;
-  const [resolvedCoordinates, setResolvedCoordinates] = useState<{ key: string; coordinates: GenomicRange } | null>(null);
+  const [resolvedCoordinates, setResolvedCoordinates] = useState<{ key: string; coordinates: GenomicRange } | null>(
+    null
+  );
 
   const coordinates = useMemo(() => {
     if (!data || data.__typename === "GwasStudiesMetadata") return null;

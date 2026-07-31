@@ -185,7 +185,6 @@ export const humanCcreTabs = [
     label: "TF Motifs",
     iconPath: TFMotifsIconPath,
     component: TfBinding,
-
   },
   {
     route: "browser",
@@ -258,7 +257,7 @@ export const humanBedTabs = [
     iconPath: GbIconPath,
     component: GenomeBrowser,
     getIsDisabled: () => Promise.resolve(true),
-    disabledMessage: "Coming Soon"
+    disabledMessage: "Coming Soon",
   },
 ] as const satisfies TabConfig[];
 
@@ -363,7 +362,7 @@ export const mouseBedTabs = [
     iconPath: GbIconPath,
     component: GenomeBrowser,
     getIsDisabled: () => Promise.resolve(true),
-    disabledMessage: "Coming Soon"
+    disabledMessage: "Coming Soon",
   },
 ] as const satisfies TabConfig[];
 

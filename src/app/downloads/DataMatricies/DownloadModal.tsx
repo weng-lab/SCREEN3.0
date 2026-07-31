@@ -65,7 +65,7 @@ const matrixDownloadURL = (selectedAssay: Selected, variant: "signal" | "zScore"
         H3K27ac: Config.Downloads.MouseEnhancerZScoreMatrix,
         CTCF: Config.Downloads.MouseCTCFZScoreMatrix,
       },
-       zScoreCoreCollection: {
+      zScoreCoreCollection: {
         DNase: Config.Downloads.MouseDNaseCoreCollectionZScoreMatrix,
         H3K4me3: Config.Downloads.MousePromoterCoreCollectionZScoreMatrix,
         H3K27ac: Config.Downloads.MouseEnhancerCoreCollectionZScoreMatrix,

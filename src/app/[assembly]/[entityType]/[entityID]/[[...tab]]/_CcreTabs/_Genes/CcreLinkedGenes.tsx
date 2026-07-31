@@ -209,7 +209,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
 
   // Skeleton while the second (gene metadata) query is in flight; "—" once it settles with no match
   const metadataCell = (params: { value?: string | number | null }, width: number) =>
-    loadingMetadataClosest ? <Skeleton variant="text" width={width} /> : params.value ?? "—";
+    loadingMetadataClosest ? <Skeleton variant="text" width={width} /> : (params.value ?? "—");
 
   const closestGenesCols: TableColDef<ClosestGeneRow>[] = [
     {
@@ -272,7 +272,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
         loading={loadingClosest}
         error={!!errorClosest}
         autoHeight
-        divHeight={{minHeight: 201}} // expected height of element with 3 rows
+        divHeight={{ minHeight: 201 }} // expected height of element with 3 rows
         hideFooter
       />
       {isHuman && <LinkedElements tables={tables} />}

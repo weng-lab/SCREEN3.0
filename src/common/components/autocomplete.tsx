@@ -90,7 +90,7 @@ export const defaultMouseResults: Result[] = [
   },
 ];
 
-export function makeResultLink(result: Result, assembly: Assembly){
+export function makeResultLink(result: Result, assembly: Assembly) {
   let url = "";
   switch (result.type) {
     case "Gene":

@@ -121,27 +121,13 @@ const HeatmapPlot = ({
           height={plotHeight}
           sx={{ gridRow: 1, gridColumn: 2, display: "block", color: "text.secondary" }}
         >
-          <line
-            x1={AXIS_SIZE}
-            y1={0}
-            x2={AXIS_SIZE}
-            y2={plotHeight}
-            stroke="currentColor"
-            strokeWidth={1}
-          />
+          <line x1={AXIS_SIZE} y1={0} x2={AXIS_SIZE} y2={plotHeight} stroke="currentColor" strokeWidth={1} />
           {TICKS.map((v) => {
             const y = (1 - v / 240) * plotHeight;
             const baseline = v === 240 ? "hanging" : v === 0 ? "alphabetic" : "middle";
             return (
               <g key={v}>
-                <line
-                  x1={AXIS_SIZE - 5}
-                  y1={y}
-                  x2={AXIS_SIZE}
-                  y2={y}
-                  stroke="currentColor"
-                  strokeWidth={1}
-                />
+                <line x1={AXIS_SIZE - 5} y1={y} x2={AXIS_SIZE} y2={y} stroke="currentColor" strokeWidth={1} />
                 <text
                   x={AXIS_SIZE - 7}
                   y={y}
@@ -166,71 +152,71 @@ const HeatmapPlot = ({
           }}
         >
           <Image src={src} alt={alt} fill unoptimized priority />
-            <svg
-              viewBox={`0 0 ${240 * xScale} 240`}
-              width={PLOT_WIDTH}
-              height={plotHeight}
-              preserveAspectRatio="xMinYMin meet"
-              style={{ position: "absolute", left: 0, top: 0 }}
+          <svg
+            viewBox={`0 0 ${240 * xScale} 240`}
+            width={PLOT_WIDTH}
+            height={plotHeight}
+            preserveAspectRatio="xMinYMin meet"
+            style={{ position: "absolute", left: 0, top: 0 }}
+          >
+            <Tooltip
+              arrow
+              placement="right-start"
+              slotProps={{
+                popper: {
+                  modifiers: [
+                    {
+                      name: "offset",
+                      options: {
+                        offset: [25, 20],
+                      },
+                    },
+                  ],
+                },
+              }}
+              title={GROUP_DESCRIPTIONS.G1}
             >
-              <Tooltip
-                arrow
-                placement="right-start"
-                slotProps={{
-                  popper: {
-                    modifiers: [
-                      {
-                        name: "offset",
-                        options: {
-                          offset: [25, 20],
-                        },
+              <rect fill="transparent" x={0} y={0} width={25 * xScale} height={240 - 120} />
+            </Tooltip>
+            <Tooltip
+              arrow
+              placement="bottom"
+              slotProps={{
+                popper: {
+                  modifiers: [
+                    {
+                      name: "offset",
+                      options: {
+                        offset: [0, 21],
                       },
-                    ],
-                  },
+                    },
+                  ],
+                },
+              }}
+              title={GROUP_DESCRIPTIONS.G2}
+            >
+              <rect fill="transparent" x={0} y={240 - 50} width={120 * xScale} height={30} />
+            </Tooltip>
+            <Tooltip arrow placement="bottom" title={GROUP_DESCRIPTIONS.G3}>
+              <rect fill="transparent" x={180 * xScale} y={240 - 50} width={(240 - 180) * xScale} height={50} />
+            </Tooltip>
+            <Tooltip arrow title={`${point.accession} (${point.group}): N1 = ${point.y}, N2 = ${point.x}`}>
+              <circle
+                cx={point.x * xScale}
+                cy={240 - point.y}
+                r={6}
+                fill={point.color}
+                stroke="white"
+                strokeWidth={2}
+                style={{
+                  transition: "transform 0.15s ease-in-out",
+                  transformOrigin: `${point.x * xScale}px ${240 - point.y}px`,
+                  cursor: "pointer",
                 }}
-                title={GROUP_DESCRIPTIONS.G1}
-              >
-                <rect fill="transparent" x={0} y={0} width={25 * xScale} height={240 - 120} />
-              </Tooltip>
-              <Tooltip
-                arrow
-                placement="bottom"
-                slotProps={{
-                  popper: {
-                    modifiers: [
-                      {
-                        name: "offset",
-                        options: {
-                          offset: [0, 21],
-                        },
-                      },
-                    ],
-                  },
-                }}
-                title={GROUP_DESCRIPTIONS.G2}
-              >
-                <rect fill="transparent" x={0} y={240 - 50} width={120 * xScale} height={30} />
-              </Tooltip>
-              <Tooltip arrow placement="bottom" title={GROUP_DESCRIPTIONS.G3}>
-                <rect fill="transparent" x={180 * xScale} y={240 - 50} width={(240 - 180) * xScale} height={50} />
-              </Tooltip>
-              <Tooltip arrow title={`${point.accession} (${point.group}): N1 = ${point.y}, N2 = ${point.x}`}>
-                <circle
-                  cx={point.x * xScale}
-                  cy={240 - point.y}
-                  r={6}
-                  fill={point.color}
-                  stroke="white"
-                  strokeWidth={2}
-                  style={{
-                    transition: "transform 0.15s ease-in-out",
-                    transformOrigin: `${point.x * xScale}px ${240 - point.y}px`,
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.setAttribute("transform", `scale(1.25)`)}
-                  onMouseLeave={(e) => e.currentTarget.removeAttribute("transform")}
-                />
-              </Tooltip>
+                onMouseEnter={(e) => e.currentTarget.setAttribute("transform", `scale(1.25)`)}
+                onMouseLeave={(e) => e.currentTarget.removeAttribute("transform")}
+              />
+            </Tooltip>
           </svg>
         </Box>
         <Box
@@ -253,11 +239,8 @@ const HeatmapPlot = ({
             );
           })}
         </Box>
-        <Typography
-          variant="body2"
-          sx={{ gridRow: 3, gridColumn: 3, width: PLOT_WIDTH, textAlign: "center" }}
-        >
-            N₂
+        <Typography variant="body2" sx={{ gridRow: 3, gridColumn: 3, width: PLOT_WIDTH, textAlign: "center" }}>
+          N₂
         </Typography>
       </Box>
     </Box>
@@ -279,18 +262,16 @@ const GROUP_ITEMS = [
   { color: "red", label: GROUP_DESCRIPTIONS.G1 },
   { color: "green", label: GROUP_DESCRIPTIONS.G2 },
   { color: "blue", label: GROUP_DESCRIPTIONS.G3 },
-]
+];
 
 const Legend = () => (
-  <Box
-    border={(theme) => `1px solid ${theme.palette.divider}`}
-    borderRadius={1}
-    padding={2}
-  >
+  <Box border={(theme) => `1px solid ${theme.palette.divider}`} borderRadius={1} padding={2}>
     {AXIS_ITEMS.map(({ label }) => (
-      <Typography key={label} variant="body2">{label}</Typography>
+      <Typography key={label} variant="body2">
+        {label}
+      </Typography>
     ))}
-    <Divider sx={{mt: 1, mb: 0.5}} />
+    <Divider sx={{ mt: 1, mb: 0.5 }} />
     {GROUP_ITEMS.map(({ color, label }) => (
       <Stack key={label} direction="row" alignItems="center" spacing={1}>
         {color && <Box sx={{ width: 12, height: 12, backgroundColor: color, flexShrink: 0, borderRadius: 0.5 }} />}

@@ -254,8 +254,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     return biosampleRows?.filter((row) => row[tab] != null).map((row) => ({ ...row, value: row[tab] }));
   }, [biosampleRows, tab]);
 
-  const loadingCorePartialAncillary =
-    loading || !coreCollection || !partialDataCollection || !ancillaryCollection;
+  const loadingCorePartialAncillary = loading || !coreCollection || !partialDataCollection || !ancillaryCollection;
   const errorCorePartialAncillary = !!error;
 
   const ctAgnosticRow = celltypeAgnosticRow

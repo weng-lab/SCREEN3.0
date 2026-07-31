@@ -325,7 +325,8 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
         }}
         slotProps={{
           toolbar: {
-            labelTooltip: "Only one method can be shown at a time — select a method by clicking the button to the right",
+            labelTooltip:
+              "Only one method can be shown at a time — select a method by clicking the button to the right",
             extra: (
               <Tooltip title="Advanced Filters">
                 <Button variant="outlined" onClick={() => setOpen(true)}>

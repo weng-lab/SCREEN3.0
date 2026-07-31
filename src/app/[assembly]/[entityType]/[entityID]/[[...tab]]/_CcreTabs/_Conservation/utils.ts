@@ -138,7 +138,7 @@ const numberToNucleotide = new Map<number, AlignmentChar>([
   [4, "T"],
   [5, "N"],
   [6, "M"],
-  [7, "-"]
+  [7, "-"],
 ]);
 
 /**
@@ -172,6 +172,4 @@ export const allSpecies = new Set(SPECIES_ORDER_IN_API_RETURN);
 
 // Human is always shown in the alignment/tree and cannot be filtered out, so it is
 // excluded from the selectable set used by the species filter.
-export const selectableSpecies = new Set(
-  SPECIES_ORDER_IN_API_RETURN.filter((species) => species !== HUMAN_SPECIES_ID)
-);
+export const selectableSpecies = new Set(SPECIES_ORDER_IN_API_RETURN.filter((species) => species !== HUMAN_SPECIES_ID));

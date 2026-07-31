@@ -49,15 +49,10 @@ export const GET_GENE_TYPE_AND_COORDS = gql(`
 
 const formatGeneType = (type: string) => {
   if (type === "lncRNA") return type;
-  return type
-    .replaceAll("_", " ")
-    .split(" ")
-    .map(capitalizeFirstLetter)
-    .join(" ");
+  return type.replaceAll("_", " ").split(" ").map(capitalizeFirstLetter).join(" ");
 };
 
 export function useCcreClosest3Genes(accession: string, assembly: string) {
-
   const {
     data: dataClosest3,
     loading: loadingClosest3,
@@ -101,14 +96,18 @@ export function useCcreClosest3Genes(accession: string, assembly: string) {
     : {};
 
   const returnData = useMemo(() => {
-    if (!dataClosest3) return undefined
-    return (
-      {
-        middleAnchor: dataClosest3.getmaxZScoresQuery[0].midccre_nearestgenes.map(gene => ({...gene, ...geneMetadata[gene.gene]})),
-        edgeAnchor: dataClosest3.getmaxZScoresQuery[0].nearestgenes.map(gene => ({...gene, ...geneMetadata[gene.gene]})),
-      }
-    )
-  }, [dataClosest3, dataGenes])
+    if (!dataClosest3) return undefined;
+    return {
+      middleAnchor: dataClosest3.getmaxZScoresQuery[0].midccre_nearestgenes.map((gene) => ({
+        ...gene,
+        ...geneMetadata[gene.gene],
+      })),
+      edgeAnchor: dataClosest3.getmaxZScoresQuery[0].nearestgenes.map((gene) => ({
+        ...gene,
+        ...geneMetadata[gene.gene],
+      })),
+    };
+  }, [dataClosest3, dataGenes]);
 
   return {
     data: returnData,

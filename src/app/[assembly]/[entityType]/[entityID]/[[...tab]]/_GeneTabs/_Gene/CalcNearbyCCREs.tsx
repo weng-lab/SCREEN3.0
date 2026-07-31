@@ -13,7 +13,6 @@ import {
   Typography,
   Tooltip,
 } from "@mui/material";
-import { InfoOutlined } from "@mui/icons-material";
 interface CalculateNearbyCCREsPopperProps {
   open: boolean;
   anchorEl: HTMLButtonElement | null;

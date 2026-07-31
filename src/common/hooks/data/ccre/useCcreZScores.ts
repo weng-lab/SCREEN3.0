@@ -45,7 +45,7 @@ const GET_CCRE_Z_SCORES = gql(`
       zscores
     }
   }
-`)
+`);
 
 export const useCcreZScores = ({
   accessions,
@@ -53,12 +53,7 @@ export const useCcreZScores = ({
   biosample,
   skip,
 }: UseCcreZScoresParams): UseCcreZScoresReturn => {
-  const {
-    data,
-    previousData,
-    loading,
-    error,
-  } = useQuery(GET_CCRE_Z_SCORES, {
+  const { data, previousData, loading, error } = useQuery(GET_CCRE_Z_SCORES, {
     variables: { accessions, assembly, biosample: biosample ? [biosample] : [] },
     skip: skip || accessions.length === 0,
     notifyOnNetworkStatusChange: true,
@@ -82,19 +77,18 @@ export const useCcreZScores = ({
         if (!entry?.accession) return [];
 
         const distance = entry.midccre_nearestgenes?.[0]?.distance ?? Infinity;
-        const zScores = biosample && entry.zscores?.length
-          ? parseZScoresArray(entry.zscores as ZScoresEntry<null>[])
-          : undefined;
+        const zScores =
+          biosample && entry.zscores?.length ? parseZScoresArray(entry.zscores as ZScoresEntry<null>[]) : undefined;
 
         return [
           [
             entry.accession,
             {
-              dnase: biosample ? zScores?.dnase : entry.dnase_max_zscore ?? undefined,
-              atac: biosample ? zScores?.atac : entry.atac_max_zscore ?? undefined,
-              h3k4me3: biosample ? zScores?.h3k4me3 : entry.h3k4me3_max_zscore ?? undefined,
-              h3k27ac: biosample ? zScores?.h3k27ac : entry.h3k27ac_max_zscore ?? undefined,
-              ctcf: biosample ? zScores?.ctcf : entry.ctcf_max_zscore ?? undefined,
+              dnase: biosample ? zScores?.dnase : (entry.dnase_max_zscore ?? undefined),
+              atac: biosample ? zScores?.atac : (entry.atac_max_zscore ?? undefined),
+              h3k4me3: biosample ? zScores?.h3k4me3 : (entry.h3k4me3_max_zscore ?? undefined),
+              h3k27ac: biosample ? zScores?.h3k27ac : (entry.h3k27ac_max_zscore ?? undefined),
+              ctcf: biosample ? zScores?.ctcf : (entry.ctcf_max_zscore ?? undefined),
               group: biosample
                 ? classifyCcre(zScores ?? {}, zScores?.tf ?? false, distance)
                 : (entry.ccre_group as CcreClass),

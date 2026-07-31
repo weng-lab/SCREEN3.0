@@ -97,7 +97,7 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
         size={{ xs: 12, sm: "auto" }}
         display={entityType === "ccre" ? "none" : "flex"}
         height={{ xs: 60 }}
-        justifyContent={{xs: "flex-start", sm: "flex-end"}}
+        justifyContent={{ xs: "flex-start", sm: "flex-end" }}
         gap={1}
       >
         <Button

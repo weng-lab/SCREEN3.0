@@ -14,7 +14,7 @@ const classDownloads: {
       label: "Gene Expression TPM Matrix",
       fileSize: "21.8 MB",
       bordercolor: "gray",
-    }
+    },
   ],
   mm10: [
     {

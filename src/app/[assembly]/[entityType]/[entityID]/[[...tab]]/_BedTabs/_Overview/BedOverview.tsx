@@ -55,10 +55,7 @@ const BedOverview = ({ entity }: EntityViewComponentProps) => {
   const { data: dataGenes, loading: loadingGenes } = useGeneData({ coordinates: regions, assembly: entity.assembly });
 
   // convert all coordiantes to Genomic Range for each query
-  const ccresRanges: GenomicRange[] = useMemo(
-    () => dataCcres?.map((c) => c.coordinates) ?? [],
-    [dataCcres]
-  );
+  const ccresRanges: GenomicRange[] = useMemo(() => dataCcres?.map((c) => c.coordinates) ?? [], [dataCcres]);
 
   const geneRanges: GenomicRange[] = useMemo(
     () =>

@@ -31,15 +31,15 @@ type CcreBiosampleActivityRow = {
 
   h3k27acExpAccession?: string;
   h3k27acFileAccession?: string;
-  h3k27acZ?: number
+  h3k27acZ?: number;
 
   ctcfExpAccession?: string;
   ctcfFileAccession?: string;
-  ctcfZ?: number
+  ctcfZ?: number;
 
   // derived from assays + tf + distance to TSS
   collection: "core" | "partial" | "ancillary";
-  group: CcreClass
+  group: CcreClass;
 };
 
 type UseBiosampleActivityParams = {
@@ -63,18 +63,14 @@ const GET_CCRE_BIOSAMPLE_INFO = gql(`
       zscores
     }
   }
-`)
+`);
 
 /**
  * Groups the cross-biosample `zscores` array (one entry per biosample+assay) into one row per
  * biosample, collapsing each assay's score/accessions, then classifies and assigns the collection
  * with the same logic as useCcreZScores / BiosampleActivity.
  */
-const parseBiosampleRows = (
-  zscores: ZScoresEntry<string>[],
-  distanceToTSS: number
-): CcreBiosampleActivityRow[] => {
-
+const parseBiosampleRows = (zscores: ZScoresEntry<string>[], distanceToTSS: number): CcreBiosampleActivityRow[] => {
   // Experiments not run through the ENCODE pipeline come back with fileAccession "NA" and a junk
   // fallback score (-10). Treat them as nonexistent. Filtering before grouping means a biosample
   // whose only experiment is invalid drops out entirely, while one with other valid assays just
@@ -108,15 +104,30 @@ const parseBiosampleRows = (
       const score = exp[8];
       switch (exp[2]) {
         case "DNase":
-          row.dnaseZ = score; row.dnaseExpAccession = expAccession; row.dnaseFileAccession = fileAccession; break;
+          row.dnaseZ = score;
+          row.dnaseExpAccession = expAccession;
+          row.dnaseFileAccession = fileAccession;
+          break;
         case "ATAC":
-          row.atacZ = score; row.atacExpAccession = expAccession; row.atacFileAccession = fileAccession; break;
+          row.atacZ = score;
+          row.atacExpAccession = expAccession;
+          row.atacFileAccession = fileAccession;
+          break;
         case "H3K4me3":
-          row.h3k4me3Z = score; row.h3k4me3ExpAccession = expAccession; row.h3k4me3FileAccession = fileAccession; break;
+          row.h3k4me3Z = score;
+          row.h3k4me3ExpAccession = expAccession;
+          row.h3k4me3FileAccession = fileAccession;
+          break;
         case "H3K27ac":
-          row.h3k27acZ = score; row.h3k27acExpAccession = expAccession; row.h3k27acFileAccession = fileAccession; break;
+          row.h3k27acZ = score;
+          row.h3k27acExpAccession = expAccession;
+          row.h3k27acFileAccession = fileAccession;
+          break;
         case "CTCF":
-          row.ctcfZ = score; row.ctcfExpAccession = expAccession; row.ctcfFileAccession = fileAccession; break;
+          row.ctcfZ = score;
+          row.ctcfExpAccession = expAccession;
+          row.ctcfFileAccession = fileAccession;
+          break;
       }
     }
 
@@ -140,14 +151,10 @@ const parseBiosampleRows = (
 /**
  * This hook owns fetching biosample metadata, biosample z scores, assigning biosample collection, and celltype-specific classification
  */
-export const useBiosampleActivity = ({
-  accession,
-  assembly,
-  skip,
-}: UseBiosampleActivityParams) => {
+export const useBiosampleActivity = ({ accession, assembly, skip }: UseBiosampleActivityParams) => {
   const { data, loading, error } = useQuery(GET_CCRE_BIOSAMPLE_INFO, { variables: { accession, assembly }, skip });
 
-  const d = data?.getcCREZScoresQuery.length ? data?.getcCREZScoresQuery[0] : undefined
+  const d = data?.getcCREZScoresQuery.length ? data?.getcCREZScoresQuery[0] : undefined;
 
   const celltypeAgnosticRow: CcreZScoresAndGroup = d
     ? {

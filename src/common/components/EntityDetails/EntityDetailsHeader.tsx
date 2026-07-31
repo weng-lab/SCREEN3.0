@@ -25,7 +25,7 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
     entityMetadata?.__typename !== "Bed" &&
     entityMetadata?.coordinates;
   const coordinatesDisplay = c && formatGenomicRange(c);
-  const coordinatesGenomeBrowser = c && formatGenomicRange(expandCoordinates(c, entityType))
+  const coordinatesGenomeBrowser = c && formatGenomicRange(expandCoordinates(c, entityType));
   const description = useGeneDescription(entityID, entityType).description;
   const SnpAlleleFrequencies = useSnpFrequencies([entityID], entityType);
 
@@ -87,11 +87,24 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
             )}
           </Typography>
           <Typography>
-            {loading ? <Skeleton width={215} /> : <>{subtitle}{coordinatesDisplay ? ` | ${coordinatesDisplay}` : ""}</>}
+            {loading ? (
+              <Skeleton width={215} />
+            ) : (
+              <>
+                {subtitle}
+                {coordinatesDisplay ? ` | ${coordinatesDisplay}` : ""}
+              </>
+            )}
           </Typography>
         </Stack>
       </Grid>
-      <Grid size={{ xs: 12, sm: "auto" }} display={"flex"} justifyContent={{xs: "flex-start", sm: "flex-end"}} alignItems={"flex-start"} gap={1}>
+      <Grid
+        size={{ xs: 12, sm: "auto" }}
+        display={"flex"}
+        justifyContent={{ xs: "flex-start", sm: "flex-end" }}
+        alignItems={"flex-start"}
+        gap={1}
+      >
         {entityType !== "ccre" && (
           <Button
             variant="outlined"

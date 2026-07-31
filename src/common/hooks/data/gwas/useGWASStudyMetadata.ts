@@ -38,7 +38,7 @@ export type UseGWASStudyMetaDataParams = {
 };
 
 export type UseGWASStudyMetaDataReturn = {
-  data: GetGwasAllStudiesMetadataQuery['getGWASStudiesMetadata'] | undefined;
+  data: GetGwasAllStudiesMetadataQuery["getGWASStudiesMetadata"] | undefined;
   loading: boolean;
   error: ErrorLike;
 };
@@ -53,7 +53,7 @@ export const useGWASStudyMetaData = ({
     variables: {
       studyid: studyid,
       parent_terms,
-      layer_2_terms
+      layer_2_terms,
     },
     skip: entityType !== undefined && entityType !== "gwas",
   });

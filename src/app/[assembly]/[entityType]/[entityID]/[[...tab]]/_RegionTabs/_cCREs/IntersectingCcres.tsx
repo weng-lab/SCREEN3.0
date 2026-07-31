@@ -77,13 +77,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
     display: "flex", //allows text-align: right from type: number to apply to block Skeleton
     valueGetter: (_, row) => row[field] ?? null,
     renderCell: (params) =>
-      scoresLoading ? (
-        <Skeleton variant="text" width={30} />
-      ) : params.value != null ? (
-        params.value.toFixed(2)
-      ) : (
-        "—"
-      ),
+      scoresLoading ? <Skeleton variant="text" width={30} /> : params.value != null ? params.value.toFixed(2) : "—",
   });
 
   const columns: TableColDef<CcreRow>[] = [
@@ -103,11 +97,7 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
       ...ClassificationFormatting,
       valueGetter: (_, row) => row.group,
       renderCell: (params) =>
-        scoresLoading ? (
-          <Skeleton variant="text" width={80} />
-        ) : (
-          ClassificationFormatting.renderCell?.(params)
-        ),
+        scoresLoading ? <Skeleton variant="text" width={80} /> : ClassificationFormatting.renderCell?.(params),
     },
     {
       field: "chromosome",
@@ -156,9 +146,9 @@ const IntersectingCcres = ({ entity }: EntityViewComponentProps) => {
   ];
 
   const proportionsBarData = useMemo(() => {
-    if (!dataIntersectingCcres) return {}
-    return getProportionsFromArray(dataIntersectingCcres, "group", CCRE_CLASSES)
-  }, [dataIntersectingCcres])
+    if (!dataIntersectingCcres) return {};
+    return getProportionsFromArray(dataIntersectingCcres, "group", CCRE_CLASSES);
+  }, [dataIntersectingCcres]);
 
   return (
     <Stack spacing={1}>

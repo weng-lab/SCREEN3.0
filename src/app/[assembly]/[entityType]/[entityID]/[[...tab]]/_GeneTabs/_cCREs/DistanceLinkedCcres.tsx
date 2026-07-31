@@ -25,7 +25,7 @@ export type Transcript = {
   };
 };
 
-export type DistanceLinkMethod = "body" | "tss" | "3gene"
+export type DistanceLinkMethod = "body" | "tss" | "3gene";
 
 // Signed bp offsets relative to the TSS: negative = upstream, positive = downstream
 export type TssRange = [number, number];
@@ -62,7 +62,6 @@ export default function DistanceLinkedCcres({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { anchor, tooltip: distanceTooltip } = useDistanceAnchor();
-
 
   const handleMethodChange = (method: DistanceLinkMethod) => {
     setCalcMethod(method);
@@ -115,7 +114,7 @@ export default function DistanceLinkedCcres({
           skip: !geneData.data?.transcripts,
         };
     }
-  }, [calcMethod, dataCcresByClosestGenes, geneData, range]) satisfies UseCcreDataParams ;
+  }, [calcMethod, dataCcresByClosestGenes, geneData, range]) satisfies UseCcreDataParams;
 
   const { data, loading, error } = useCcreData(useCcreDataParams);
   const isCcreDataLoading = !useCcreDataParams.skip && loading;
@@ -148,7 +147,7 @@ export default function DistanceLinkedCcres({
     });
   }, [data, geneData.data, tssAnchor]);
 
-  const cols: TableColDef<typeof distanceLinkedCcres[number]>[] = [
+  const cols: TableColDef<(typeof distanceLinkedCcres)[number]>[] = [
     {
       field: "ccre",
       headerName: "Accession",
@@ -221,12 +220,7 @@ export default function DistanceLinkedCcres({
   const toolbarExtra = useMemo(
     () => (
       <Tooltip title="Calculate Nearby cCREs by">
-        <Button
-          ref={buttonRef}
-          onClick={() => setOpen(true)}
-          variant="outlined"
-          endIcon={<CalculateIcon />}
-        >
+        <Button ref={buttonRef} onClick={() => setOpen(true)} variant="outlined" endIcon={<CalculateIcon />}>
           Change Method
         </Button>
       </Tooltip>

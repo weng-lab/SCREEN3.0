@@ -39,7 +39,6 @@ const EntityHeader = ({
 };
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
-
   useEntityTabsHeight();
   useScrollReset();
 

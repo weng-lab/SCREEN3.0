@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Divider,
-  Link,
-  List,
-  ListItem,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Divider, Link, List, ListItem, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import EncyclopediaAll from "../../../public/assets/about/images/EncyclopediaAll.png";
@@ -19,19 +11,22 @@ import classifications from "../../../public/assets/about/images/classifications
 import LegacyVersionsTable from "common/components/LegacyVersionsTable";
 import { RELEASE_NOTES } from "./versions/releaseNotes";
 
-const Citation = ({title, link, authors, journal}: {title: string, link: string, authors: string, journal: string}) => (
+const Citation = ({
+  title,
+  link,
+  authors,
+  journal,
+}: {
+  title: string;
+  link: string;
+  authors: string;
+  journal: string;
+}) => (
   <>
-    <LinkComponent
-      href={link}
-      openInNewTab
-      variant="body2"
-      underline="always"
-    >
+    <LinkComponent href={link} openInNewTab variant="body2" underline="always">
       {title}
     </LinkComponent>
-    <Typography variant="body2">
-      {authors}
-    </Typography>
+    <Typography variant="body2">{authors}</Typography>
     <Typography variant="body2">{journal}</Typography>
   </>
 );
@@ -299,11 +294,15 @@ export default function About() {
               />
             </Grid>
             <Grid size={12}>
-              <Typography  variant="h5" fontWeight={600}>Current Site Version: {RELEASE_NOTES[0]?.version}</Typography>
+              <Typography variant="h5" fontWeight={600}>
+                Current Site Version: {RELEASE_NOTES[0]?.version}
+              </Typography>
               <LinkComponent href={"/about/versions"}>View release history</LinkComponent>
             </Grid>
             <Grid size={12} id="versions">
-              <Typography  variant="h5" fontWeight={600}>Legacy Releases</Typography>
+              <Typography variant="h5" fontWeight={600}>
+                Legacy Releases
+              </Typography>
               <Typography variant="body1" mb={1}>
                 Earlier versions of SCREEN remain available for reference and reproducibility but are no longer actively
                 updated. Users should be aware that data, annotations, and features in legacy releases may differ from

@@ -23,11 +23,7 @@ export const SelectedBiosampleCard = ({ biosample, onClear }: SelectedBiosampleC
     >
       <Typography sx={{ color: "#2C5BA0", pl: 1 }}>
         <b>Selected Biosample: </b>
-        {" " +
-          biosample.ontology.charAt(0).toUpperCase() +
-          biosample.ontology.slice(1) +
-          " - " +
-          biosample.displayname}
+        {" " + biosample.ontology.charAt(0).toUpperCase() + biosample.ontology.slice(1) + " - " + biosample.displayname}
       </Typography>
       <IconButton onClick={onClear}>
         <CancelRounded />

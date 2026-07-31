@@ -50,7 +50,7 @@ const Annotations = () => {
   const [assembly, tab] = selectedTab.split("/") as [Assembly, string];
 
   return (
-    <Box height={'100%'} display={"grid"} gridTemplateRows={"1fr auto"} gap={2} id="annotations">
+    <Box height={"100%"} display={"grid"} gridTemplateRows={"1fr auto"} gap={2} id="annotations">
       <Box
         display={"grid"}
         gridTemplateColumns={{ xs: "auto", md: "auto 1fr" }}

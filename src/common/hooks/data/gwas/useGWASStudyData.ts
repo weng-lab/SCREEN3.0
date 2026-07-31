@@ -43,14 +43,10 @@ export type UseGWASStudyDataReturn = {
   error: ErrorLike;
 };
 
-export const useGWASStudyData = ({
-  studyid,
-  parent_terms,
-  skip,
-}: UseGWASStudyDataParams): UseGWASStudyDataReturn => {
+export const useGWASStudyData = ({ studyid, parent_terms, skip }: UseGWASStudyDataParams): UseGWASStudyDataReturn => {
   const { data, loading, error } = useQuery(GWAS_STUDY_METADATA_Query, {
     variables: {
-      studyid: studyid
+      studyid: studyid,
     },
     skip,
   });

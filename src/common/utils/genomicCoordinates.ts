@@ -44,7 +44,7 @@ export function calcDistCcreToTSS(
     const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end;
     const distance = calcDistRegionToPosition(region.start, region.end, anchor, tss);
 
-    const middle = Math.floor(region.start + region.end) / 2
+    const middle = Math.floor(region.start + region.end) / 2;
 
     let direction: "Upstream" | "Downstream";
     if (strand === "+") {

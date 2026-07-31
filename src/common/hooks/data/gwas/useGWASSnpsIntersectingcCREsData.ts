@@ -23,7 +23,7 @@ export type UseGWASSnpsIntersectingcCREsReturn = {
     | {
         ccre: string;
         snpid: string;
-        ldblocksnpid: string;        
+        ldblocksnpid: string;
         rsquare: string;
         studyid: string;
       }[]
@@ -48,10 +48,9 @@ export const useGWASSnpsIntersectingcCREsData = ({
     skip: !studyid || studyid.length === 0,
   });
 
-
   return {
     data: gwasstudySNPs?.getCcresforGivenGWASStudy,
-    loading: gwasstudySNPsLoading ,
-    error: error ,
+    loading: gwasstudySNPsLoading,
+    error: error,
   };
 };

@@ -32,10 +32,14 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
   const handleBiosampleSelected = (biosample: EncodeBiosample) => {
     setSelectedBiosample(biosample);
   };
-  
+
   const accessions = useMemo(() => [...new Set(dataGWASSNPscCREs?.map((d) => d.ccre) ?? [])], [dataGWASSNPscCREs]);
 
-  const { data: dataZScores, loading: loadingZScores, error: errorZScores } = useCcreZScores({
+  const {
+    data: dataZScores,
+    loading: loadingZScores,
+    error: errorZScores,
+  } = useCcreZScores({
     accessions,
     assembly: "GRCh38",
     biosample: selectedBiosample ? selectedBiosample.name : undefined,
@@ -91,13 +95,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
     display: "flex",
     valueGetter: (_, row) => dataZScores?.[row.ccre]?.[field] ?? null,
     renderCell: (params) =>
-      zScoresLoading ? (
-        <Skeleton variant="text" width={30} />
-      ) : params.value != null ? (
-        params.value.toFixed(2)
-      ) : (
-        "—"
-      ),
+      zScoresLoading ? <Skeleton variant="text" width={30} /> : params.value != null ? params.value.toFixed(2) : "—",
   });
 
   const columns: TableColDef<CcreRow>[] = [
@@ -118,11 +116,7 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
       // Both come from useCcreZScores (its max-Z branch returns the global group).
       valueGetter: (_, row) => dataZScores?.[row.ccre]?.group ?? null,
       renderCell: (params) =>
-        zScoresLoading ? (
-          <Skeleton variant="text" width={80} />
-        ) : (
-          ClassificationFormatting.renderCell?.(params)
-        ),
+        zScoresLoading ? <Skeleton variant="text" width={80} /> : ClassificationFormatting.renderCell?.(params),
     },
     {
       field: "snpid",
@@ -178,7 +172,8 @@ const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
         divHeight={!data ? { height: "182px" } : undefined}
         slotProps={{
           toolbar: {
-            labelTooltip: "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)",
+            labelTooltip:
+              "LD Blocks are regions of the genome where genetic variants are inherited together due to high levels of linkage disequilibrium (LD)",
           },
         }}
         autoHeight
