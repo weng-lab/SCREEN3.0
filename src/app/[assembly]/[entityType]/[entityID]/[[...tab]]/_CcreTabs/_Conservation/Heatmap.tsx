@@ -151,7 +151,7 @@ const HeatmapPlot = ({
             height: plotHeight,
           }}
         >
-          <Image src={src} alt={alt} fill unoptimized priority />
+          <Image src={src} alt={alt} fill sizes={`${PLOT_WIDTH}px`} unoptimized priority />
           <svg
             viewBox={`0 0 ${240 * xScale} 240`}
             width={PLOT_WIDTH}

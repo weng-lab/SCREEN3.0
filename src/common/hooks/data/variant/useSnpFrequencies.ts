@@ -73,12 +73,16 @@ export function useSnpFrequencies(
                 "1000GENOMES:phase_3:EAS",
               ];
 
-              const frequencies = fetchedData["populations"]
-                .filter((p: any) => pop.includes(p["population"]) && p["allele"] === ref)
-                .map((f: any) => ({
-                  population: f.population.replace("1000GENOMES:phase_3:", ""),
-                  frequency: f.frequency,
-                }));
+              const frequencies = fetchedData["populations"].flatMap((p: any) =>
+                pop.includes(p["population"]) && p["allele"] === ref
+                  ? [
+                      {
+                        population: p.population.replace("1000GENOMES:phase_3:", ""),
+                        frequency: p.frequency,
+                      },
+                    ]
+                  : []
+              );
 
               results[rsid] = { ref, alt, frequencies };
             } catch (err: any) {

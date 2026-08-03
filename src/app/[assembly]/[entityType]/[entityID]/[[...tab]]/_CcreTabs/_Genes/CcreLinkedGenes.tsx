@@ -97,30 +97,16 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
   };
 
   // make types for the data
-  const HiCLinked = linkedGenes
-    ?.filter((x: LinkedGeneInfo) => x.assay === "Intact-HiC")
-    .map((x: LinkedGeneInfo, index: number) => ({
-      ...x,
-      id: index.toString(),
-    }));
-  const ChIAPETLinked = linkedGenes
-    ?.filter((x: LinkedGeneInfo) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
-    .map((x: LinkedGeneInfo, index: number) => ({
-      ...x,
-      id: index.toString(),
-    }));
-  const crisprLinked = linkedGenes
-    ?.filter((x: LinkedGeneInfo) => x.method === "CRISPR")
-    .map((x: LinkedGeneInfo, index: number) => ({
-      ...x,
-      id: index.toString(),
-    }));
-  const eqtlLinked = linkedGenes
-    ?.filter((x: LinkedGeneInfo) => x.method === "eQTLs")
-    .map((x: LinkedGeneInfo, index: number) => ({
-      ...x,
-      id: index.toString(),
-    }));
+  const collectLinked = (predicate: (x: LinkedGeneInfo) => boolean) =>
+    linkedGenes?.reduce<(LinkedGeneInfo & { id: string })[]>((acc, x: LinkedGeneInfo) => {
+      if (predicate(x)) acc.push({ ...x, id: acc.length.toString() });
+      return acc;
+    }, []);
+
+  const HiCLinked = collectLinked((x) => x.assay === "Intact-HiC");
+  const ChIAPETLinked = collectLinked((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET");
+  const crisprLinked = collectLinked((x) => x.method === "CRISPR");
+  const eqtlLinked = collectLinked((x) => x.method === "eQTLs");
 
   const tables: TableDef<LinkedGeneInfo>[] = [
     {

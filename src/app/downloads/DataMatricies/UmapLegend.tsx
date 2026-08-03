@@ -26,12 +26,11 @@ const UmapLegend = ({ scatterData, colorBy, sampleTypeColors, ontologyColors }: 
 
     // Map the color counts to the same format as before: label, color, and value
     return Object.entries(colorCounts)
-      .map(([color, count]) => ({
-        label: Object.keys(colorMapping).find((key) => colorMapping[key] === color) || color,
-        color,
-        value: count,
-      }))
-      .filter((x) => x.label !== "#aaaaaa") // quick fix for removing greyed out points from legend. Should be setup differently than this (why do we need to do this)
+      .flatMap(([color, count]) => {
+        const label = Object.keys(colorMapping).find((key) => colorMapping[key] === color) || color;
+        // quick fix for removing greyed out points from legend. Should be setup differently than this (why do we need to do this)
+        return label === "#aaaaaa" ? [] : [{ label, color, value: count }];
+      })
       .sort((a, b) => b.value - a.value);
   }, [scatterData, colorBy, sampleTypeColors, ontologyColors]);
 

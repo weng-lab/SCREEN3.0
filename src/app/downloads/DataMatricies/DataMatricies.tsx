@@ -29,6 +29,13 @@ function colorMap(strings) {
   return [colors, counts];
 }
 
+// Only the accession column for the selected assay is shown, everything else is hidden.
+const assayColumnVisibility = (selected: Selected): GridColumnVisibilityModel => ({
+  ...allColsHidden,
+  assays: true,
+  [`${selected.assay.toLowerCase()}_experiment_accession`]: true,
+});
+
 const biosampleHasAssay = (biosample: EncodeBiosample, assay: Selected["assay"]) => {
   switch (assay) {
     case "DNase":
@@ -52,10 +59,16 @@ export function DataMatrices() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const graphContainerRef = useRef(null);
 
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(() =>
+    assayColumnVisibility(selectedAssay)
+  );
+
   const handleSetSelectedAssay = (newSelected: Selected) => {
     if (JSON.stringify(newSelected) !== JSON.stringify(selectedAssay)) {
       setSelectedBiosamples([]); // clear umap selection when assay changes
       setSelectedAssay(newSelected);
+      // Note: this discards any manual column modifications the user made.
+      setColumnVisibilityModel(assayColumnVisibility(newSelected));
     }
   };
 
@@ -108,9 +121,9 @@ export function DataMatrices() {
   const fData = useMemo(() => {
     return (
       umapData &&
-      umapData.ccREBiosampleQuery.biosamples
-        .filter((x) => x.umap_coordinates)
-        .filter((x) => lifeStage === "all" || lifeStage === x.lifeStage)
+      umapData.ccREBiosampleQuery.biosamples.filter(
+        (x) => x.umap_coordinates && (lifeStage === "all" || lifeStage === x.lifeStage)
+      )
     );
   }, [umapData, lifeStage]);
 
@@ -119,7 +132,7 @@ export function DataMatrices() {
       colorMap(
         (umapData &&
           umapData.ccREBiosampleQuery &&
-          umapData.ccREBiosampleQuery.biosamples.filter((x) => x.umap_coordinates).map((x) => x.sampleType)) ||
+          umapData.ccREBiosampleQuery.biosamples.flatMap((x) => (x.umap_coordinates ? [x.sampleType] : []))) ||
           []
       ),
     [umapData]
@@ -130,34 +143,40 @@ export function DataMatrices() {
         (umapData &&
           umapData.ccREBiosampleQuery &&
           //Check if umap coordinates exist, then map each entry to it's ontology (tissue type). This array of strings is passed to colorMap
-          umapData.ccREBiosampleQuery.biosamples.filter((x) => x.umap_coordinates).map((x) => x.ontology)) ||
+          umapData.ccREBiosampleQuery.biosamples.flatMap((x) => (x.umap_coordinates ? [x.ontology] : []))) ||
           []
       ),
     [umapData]
   );
 
   const handleSelectionChange = (selectedPoints: Point<PointMetaData>[]) => {
-    const selected = selectedPoints.map((point) => point.x);
-    const selectedBiosamples = fData
-      .filter((biosample) => selected.includes(biosample.umap_coordinates[0]) && biosample.umap_coordinates)
-      .map((biosample) => ({
-        name: biosample.name,
-        displayname: biosample.displayname,
-        ontology: biosample.ontology,
-        sampleType: biosample.sampleType,
-        lifeStage: biosample.lifeStage,
-        umap_coordinates: biosample.umap_coordinates!,
-        experimentAccession: biosample.experimentAccession,
-      }));
+    const selected = new Set(selectedPoints.map((point) => point.x));
+    const selectedBiosamples = fData.flatMap((biosample) =>
+      selected.has(biosample.umap_coordinates[0]) && biosample.umap_coordinates
+        ? [
+            {
+              name: biosample.name,
+              displayname: biosample.displayname,
+              ontology: biosample.ontology,
+              sampleType: biosample.sampleType,
+              lifeStage: biosample.lifeStage,
+              umap_coordinates: biosample.umap_coordinates!,
+              experimentAccession: biosample.experimentAccession,
+            },
+          ]
+        : []
+    );
     setSelectedBiosamples(selectedBiosamples.map((x) => x.name));
   };
 
   const scatterData: Point<PointMetaData>[] = useMemo(() => {
     if (!fData) return [];
 
+    const selectedNames = new Set(selectedBiosamples);
+    const anySelected = selectedNames.size > 0;
+
     return fData.map((x) => {
-      const anySelected = selectedBiosamples.length > 0;
-      const isSelected = selectedBiosamples.includes(x.name);
+      const isSelected = selectedNames.has(x.name);
 
       return {
         x: x.umap_coordinates![0],
@@ -176,22 +195,6 @@ export function DataMatrices() {
       };
     });
   }, [fData, colorBy, sampleTypeColors, ontologyColors, selectedBiosamples]);
-
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(() => ({
-    ...allColsHidden,
-    assays: true,
-    [`${selectedAssay.assay.toLowerCase()}_experiment_accession`]: true,
-  }));
-
-  // Keep the visible accession column in sync with the selected assay.
-  // Note: switching assays resets any manual column modifications the user made.
-  useEffect(() => {
-    setColumnVisibilityModel({
-      ...allColsHidden,
-      assays: true,
-      [`${selectedAssay.assay.toLowerCase()}_experiment_accession`]: true,
-    });
-  }, [selectedAssay]);
 
   return (
     <Box

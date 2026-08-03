@@ -169,9 +169,9 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const highlightedSpecies = useMemo(
     () =>
-      speciesCoverageData
-        .filter((s) => s.coverage >= appliedRange[0] && s.coverage <= appliedRange[1])
-        .map((s) => s.id),
+      speciesCoverageData.flatMap((s) =>
+        s.coverage >= appliedRange[0] && s.coverage <= appliedRange[1] ? [s.id] : []
+      ),
     [speciesCoverageData, appliedRange]
   );
 

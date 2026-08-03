@@ -124,34 +124,24 @@ export default function ComputationalLinkedCcres({
     throw new Error(JSON.stringify(error));
   }
 
-  const HiCLinked = data
-    .filter((x) => x.assay === "Intact-HiC")
-    .map((x, index: number) => ({
-      ...x,
-      id: index.toString(),
-      class: classByAccession[x.accession] ?? "Unclassifed",
-    }));
-  const ChIAPETLinked = data
-    .filter((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
-    .map((x, index: number) => ({
-      ...x,
-      id: index.toString(),
-      class: classByAccession[x.accession] ?? "Unclassifed",
-    }));
-  const crisprLinked = data
-    .filter((x) => x.method === "CRISPR")
-    .map((x, index: number) => ({
-      ...x,
-      id: index.toString(),
-      class: classByAccession[x.accession] ?? "Unclassifed",
-    }));
-  const eqtlLinked = data
-    .filter((x) => x.method === "eQTLs")
-    .map((x, index: number) => ({
-      ...x,
-      id: index.toString(),
-      class: classByAccession[x.accession] ?? "Unclassifed",
-    }));
+  type LinkedCcreRow = useLinkedCcresReturn["data"][number] & { id: string; class: string };
+
+  const collectLinked = (predicate: (x: useLinkedCcresReturn["data"][number]) => boolean) =>
+    data.reduce<LinkedCcreRow[]>((acc, x) => {
+      if (predicate(x)) {
+        acc.push({
+          ...x,
+          id: acc.length.toString(),
+          class: classByAccession[x.accession] ?? "Unclassifed",
+        });
+      }
+      return acc;
+    }, []);
+
+  const HiCLinked = collectLinked((x) => x.assay === "Intact-HiC");
+  const ChIAPETLinked = collectLinked((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET");
+  const crisprLinked = collectLinked((x) => x.method === "CRISPR");
+  const eqtlLinked = collectLinked((x) => x.method === "eQTLs");
 
   const tables: TableDef<useLinkedCcresReturn["data"][number]>[] = [
     {
