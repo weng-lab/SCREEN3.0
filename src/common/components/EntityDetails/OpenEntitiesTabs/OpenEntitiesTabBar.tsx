@@ -88,7 +88,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
     if (!openEntities.length || isRoutingRef.current) return;
     const newUrl = pathname + "?open=" + compressOpenEntitiesToURL(openEntities);
     router.replace(newUrl); //don't use navigateAndMark since it's only set to false when navigating between elements (would be stuck false)
-  }, [navigateAndMark, openEntities, pathname, router]);
+  }, [openEntities, pathname, router]);
 
   /**
    *
@@ -117,7 +117,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
    * Called when Drag ends within <DragDropContext>. Dispatches reorder event
    */
   const onDragEnd: OnDragEndResponder<string> = (result, _) => {
-    if (result.destination.index !== result.source.index) {
+    if (result.destination?.index && result.destination.index !== result.source.index) {
       dispatch({
         type: "reorder",
         entity: openEntities.find((el) => el.entityID === result.draggableId),

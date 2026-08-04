@@ -23,13 +23,16 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
       ? ""
       : pathname.substring(pathname.lastIndexOf("/") + 1);
 
+  // Local state so the clicked tab highlights immediately, before the route transition resolves
   const [value, setValue] = React.useState(currentTab);
+  const [syncedTab, setSyncedTab] = React.useState(currentTab);
 
-  useEffect(() => {
-    if (currentTab !== value) {
-      setValue(currentTab);
-    }
-  }, []);
+  // Re-sync when the route changes from outside this component (back/forward, links elsewhere on
+  // the page). Adjusting during render rather than in an effect avoids rendering the stale tab first
+  if (syncedTab !== currentTab) {
+    setSyncedTab(currentTab);
+    setValue(currentTab);
+  }
 
   const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 

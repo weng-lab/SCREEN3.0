@@ -94,7 +94,8 @@ export default function DistanceLinkedCcres({
           assembly,
           skip: !dataCcresByClosestGenes,
         };
-      case "body": // query with gene body
+      case "body": {
+        // query with gene body
         if (!geneData.data) {
           return {
             coordinates: [],
@@ -107,6 +108,7 @@ export default function DistanceLinkedCcres({
           coordinates: [coordinates],
           assembly,
         };
+      }
       case "tss": // query with regions made using TSS + signed upstream/downstream range
         return {
           coordinates: getTssWindows(geneData.data?.transcripts, range),
@@ -114,7 +116,7 @@ export default function DistanceLinkedCcres({
           skip: !geneData.data?.transcripts,
         };
     }
-  }, [calcMethod, dataCcresByClosestGenes, geneData, range]) satisfies UseCcreDataParams;
+  }, [assembly, calcMethod, dataCcresByClosestGenes, geneData, range]) satisfies UseCcreDataParams;
 
   const { data, loading, error } = useCcreData(useCcreDataParams);
   const isCcreDataLoading = !useCcreDataParams.skip && loading;

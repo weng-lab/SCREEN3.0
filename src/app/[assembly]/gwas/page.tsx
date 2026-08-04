@@ -16,11 +16,11 @@ import {
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { useTheme } from "@mui/material/styles";
 import GWASLandingHeader from "./GWASLandingHeader";
-import { Treemap } from "@weng-lab/visualization";
+import { Treemap, TreemapNode } from "@weng-lab/visualization";
 import { useGWASStudyMetaData } from "common/hooks/data/gwas";
 import { GwasStudiesMetadata } from "common/types/generated/graphql";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { subdisease_treemap, tree } from "./gwas_tree_mappings";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ParentTermMetadata, subdisease_treemap, tree } from "./gwas_tree_mappings";
 import { Close } from "@mui/icons-material";
 
 export default function GWASLandingPage() {
@@ -60,7 +60,8 @@ export default function GWASLandingPage() {
       },
       {} as Record<string, GwasStudiesMetadata[]>
     );
-  }, [gwasStudyMetadata]);
+    // useGWASStudyMetaData returns a new object each render, so depend on the memoized data itself
+  }, [gwasStudyMetadata.data]);
 
   const active_categorizedStudies = useMemo(() => {
     if (!activeCategory || !gwasStudyMetadata?.data) return {};
@@ -81,7 +82,7 @@ export default function GWASLandingPage() {
     }
 
     return result;
-  }, [activeCategory, gwasStudyMetadata]);
+  }, [activeCategory, gwasStudyMetadata.data]);
 
   const sortedCategories = useMemo(
     () => Object.entries(categorizedStudies).sort((a, b) => b[1].length - a[1].length),
@@ -99,17 +100,21 @@ export default function GWASLandingPage() {
 
   const normalizedSearch = search.toLowerCase().trim();
 
-  const matchesSearch = (study: GwasStudiesMetadata, term?: string) => {
-    if (!normalizedSearch) return true;
+  // Memoized so the filtered category memos below don't recompute on every render
+  const matchesSearch = useCallback(
+    (study: GwasStudiesMetadata, term?: string) => {
+      if (!normalizedSearch) return true;
 
-    return (
-      term?.toLowerCase().includes(normalizedSearch) ||
-      study.disease_trait?.toLowerCase().includes(normalizedSearch) ||
-      study.author?.toLowerCase().includes(normalizedSearch) ||
-      study.population?.toLowerCase().includes(normalizedSearch) ||
-      study.studyid?.toLowerCase().includes(normalizedSearch)
-    );
-  };
+      return (
+        term?.toLowerCase().includes(normalizedSearch) ||
+        study.disease_trait?.toLowerCase().includes(normalizedSearch) ||
+        study.author?.toLowerCase().includes(normalizedSearch) ||
+        study.population?.toLowerCase().includes(normalizedSearch) ||
+        study.studyid?.toLowerCase().includes(normalizedSearch)
+      );
+    },
+    [normalizedSearch]
+  );
 
   /** --------------------------
       TOTAL STUDIES (UNFILTERED)
@@ -143,7 +148,7 @@ export default function GWASLandingPage() {
     });
 
     // --- SORTING LOGIC ---
-    return mapped.sort(([termA, studiesA], [termB, studiesB]) => {
+    return mapped.sort(([_termA, studiesA], [_termB, studiesB]) => {
       const aMatches = studiesA.length;
       const bMatches = studiesB.length;
 
@@ -159,7 +164,7 @@ export default function GWASLandingPage() {
       // Both unmatched → keep original order (or sort by total)
       return 0;
     });
-  }, [sortedCategories, normalizedSearch]);
+  }, [sortedCategories, normalizedSearch, matchesSearch]);
   const filteredActiveCategories: [string, GwasStudiesMetadata[]][] = useMemo(() => {
     if (!normalizedSearch) return sortedActiveCategories;
 
@@ -171,7 +176,7 @@ export default function GWASLandingPage() {
       return [term, studies.filter((s) => matchesSearch(s, term))] as [string, GwasStudiesMetadata[]];
     });
 
-    return mapped.sort(([termA, studiesA], [termB, studiesB]) => {
+    return mapped.sort(([_termA, studiesA], [_termB, studiesB]) => {
       const aMatches = studiesA.length;
       const bMatches = studiesB.length;
 
@@ -181,7 +186,7 @@ export default function GWASLandingPage() {
 
       return 0;
     });
-  }, [sortedActiveCategories, normalizedSearch]);
+  }, [sortedActiveCategories, normalizedSearch, matchesSearch]);
 
   const noResults =
     normalizedSearch &&
@@ -234,7 +239,7 @@ export default function GWASLandingPage() {
       TREEMAP HANDLERS
       --------------------------- */
 
-  const onNodeClicked = (node: any) => {
+  const onNodeClicked = (node: TreemapNode<ParentTermMetadata>) => {
     const label = node.label;
     const isTerminal = ["Other disease", "Other trait", "Other measurement"].includes(label);
 
