@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { Box, Stack, Tab } from "@mui/material";
 import { useCcre } from "common/hooks/data/ccre";
-import { GenomicRange } from "common/types/globalTypes";
 import { gql } from "common/types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
 import { CHROM_HMM_STATES, getChromHmmStateDisplayname, useChromHMMData } from "common/hooks/data/ccre";
@@ -156,7 +155,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
     error: errorCcre,
   } = useCcre({ assembly: entity.assembly, accession: entity.entityID });
 
-  const coordinates: GenomicRange = dataCcre?.coordinates;
+  const coordinates = dataCcre?.coordinates;
 
   const {
     data: dataEntex,

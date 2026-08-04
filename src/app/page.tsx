@@ -85,19 +85,21 @@ export default function Home() {
           sx={{
             width: { xs: "90%", sm: "80%", md: "60%", lg: "45%" },
             display: "flex",
+            gap: "3px",
             justifyContent: { xs: "center", md: "flex-end" },
+            alignItems: "baseline",
             mx: "auto",
           }}
         >
           <Typography variant="subtitle2" color="#b2bcf0" textAlign={{ xs: "center", md: "right" }}>
             Looking to search multiple regions?{" "}
-            <span
-              onClick={toggleMultipleRegionSearchVisible}
-              style={{ color: "#b2bcf0", textDecoration: "underline", cursor: "pointer" }}
-            >
-              Click here!
-            </span>
           </Typography>
+          <Button
+            onClick={toggleMultipleRegionSearchVisible}
+            sx={{ color: "#b2bcf0", textDecoration: "underline", p: 0 }}
+          >
+            Click here!
+          </Button>
         </Box>
         <Collapse in={multipleRegionSearchVisible} sx={{ width: "100%" }} timeout={500}>
           <MultipleRegionSearch

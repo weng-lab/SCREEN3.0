@@ -7,7 +7,7 @@ import { Assembly } from "common/types/globalTypes";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
 import { useGeneDescription } from "common/hooks/data/gene";
-import { useSnpFrequencies } from "common/hooks/data/variant";
+import { useSnpAlleles } from "common/hooks/data/variant";
 import { AnyEntityType } from "../../entityTabsConfig";
 import { expandCoordinates } from "../GenomeBrowser/utils";
 export type EntityDetailsHeaderProps = {
@@ -26,17 +26,15 @@ export const EntityDetailsHeader = ({ assembly, entityType, entityID }: EntityDe
     entityMetadata?.coordinates;
   const coordinatesDisplay = c && formatGenomicRange(c);
   const coordinatesGenomeBrowser = c && formatGenomicRange(expandCoordinates(c, entityType));
-  const description = useGeneDescription(entityID, entityType).description;
-  const SnpAlleleFrequencies = useSnpFrequencies([entityID], entityType);
+  const description = useGeneDescription(entityID, { skip: entityType !== "gene" }).description;
+  const snpAlleles = useSnpAlleles([entityID], { skip: entityType !== "variant" });
 
   //All data used in the subtitle of the element header based on the element type
   const geneID = entityMetadata?.__typename === "Gene" ? entityMetadata?.id : "";
   const strand = entityMetadata?.__typename === "Gene" ? entityMetadata.strand : "";
   const ccreClass = entityMetadata?.__typename === "CCRE" ? entityMetadata?.group : "";
-  const ref =
-    entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.ref : "";
-  const alt =
-    entityMetadata?.__typename === "SNP" && SnpAlleleFrequencies.data ? SnpAlleleFrequencies.data[entityID]?.alt : "";
+  const ref = entityMetadata?.__typename === "SNP" && snpAlleles.data ? snpAlleles.data[entityID]?.ref : "";
+  const alt = entityMetadata?.__typename === "SNP" && snpAlleles.data ? snpAlleles.data[entityID]?.alt : "";
 
   /**
    * @todo this should be put in a utils file

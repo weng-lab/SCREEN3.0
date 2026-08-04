@@ -2,6 +2,7 @@
 
 import React, { ReactNode } from "react";
 import { ApolloLink, HttpLink } from "@apollo/client";
+import { RemoveTypenameFromVariablesLink } from "@apollo/client/link/remove-typename";
 import {
   ApolloClient,
   ApolloNextAppProvider,
@@ -17,6 +18,9 @@ export function makeClient() {
       // attaching the API key which is only available server-side.
       cache: new InMemoryCache(),
       link: ApolloLink.from([
+        // Query results carry __typename, which input types reject. Strip it so
+        // data from one query can be fed back in as variables to another.
+        new RemoveTypenameFromVariablesLink(),
         new SSRMultipartLink({ stripDefer: true }),
         new HttpLink({
           uri: Config.API.CcreAPI,
@@ -28,7 +32,7 @@ export function makeClient() {
 
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link: new HttpLink({ uri: "/api/graphql" }),
+    link: ApolloLink.from([new RemoveTypenameFromVariablesLink(), new HttpLink({ uri: "/api/graphql" })]),
   });
 }
 

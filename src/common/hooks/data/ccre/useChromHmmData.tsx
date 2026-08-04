@@ -143,6 +143,7 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
 
   useEffect(() => {
     // A superseded fetch must not clobber the state of a newer one
+    const controller = new AbortController();
     let cancelled = false;
 
     const fetchAndProcessData = async () => {
@@ -156,7 +157,11 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
         }
 
         // Fetch tracks
-        const tracksData = await getTracks();
+        const response = await fetch(Config.Downloads.HumanChromHMM, { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        const tracksData = parseTracks(await response.text());
         if (cancelled) return;
         setTracks(tracksData);
 
@@ -186,6 +191,7 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
 
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [assembly]);
 
@@ -236,13 +242,8 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
   };
 }
 
-async function getTracks() {
-  const response = await fetch(Config.Downloads.HumanChromHMM);
-  if (!response.ok) {
-    throw new Error(`HTTP error ${response.status}`);
-  }
-  const text = await response.text();
-
+/** Parses the tab-delimited track manifest into tracks grouped by tissue */
+function parseTracks(text: string) {
   const chromHMMData: Record<string, ChromTrack[]> = {};
   text.split("\n").forEach((line) => {
     const [sample, fileId, tissue, displayName] = line.split("\t");

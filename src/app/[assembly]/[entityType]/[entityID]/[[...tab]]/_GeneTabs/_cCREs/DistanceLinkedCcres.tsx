@@ -103,9 +103,8 @@ export default function DistanceLinkedCcres({
             skip: true,
           };
         }
-        const { __typename, ...coordinates } = geneData.data.coordinates;
         return {
-          coordinates: [coordinates],
+          coordinates: [geneData.data.coordinates],
           assembly,
         };
       }

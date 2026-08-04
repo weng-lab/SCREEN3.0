@@ -43,7 +43,9 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
   const [dataMap, setDataMap] = useState<Map<string, number[][]>>(new Map());
 
   useEffect(() => {
-    fetch("/green-motifs.json") // Replace with actual filename in public folder
+    const controller = new AbortController();
+
+    fetch("/green-motifs.json", { signal: controller.signal })
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error ${res.status}`);
@@ -60,8 +62,11 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
         setDataMap(tfMap);
       })
       .catch((err) => {
+        if (controller.signal.aborted) return;
         console.error("Error loading JSON:", err);
       });
+
+    return () => controller.abort();
   }, []);
 
   const assembly = entity.assembly;

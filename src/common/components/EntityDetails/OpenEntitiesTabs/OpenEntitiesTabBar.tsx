@@ -87,6 +87,8 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   useEffect(() => {
     if (!openEntities.length || isRoutingRef.current) return;
     const newUrl = pathname + "?open=" + compressOpenEntitiesToURL(openEntities);
+    // Ignore react-doctor finding - false positive, only modifying query params not actually redirecting client side
+    // react-doctor-disable-next-line nextjs-no-client-side-redirect
     router.replace(newUrl); //don't use navigateAndMark since it's only set to false when navigating between elements (would be stuck false)
   }, [openEntities, pathname, router]);
 
