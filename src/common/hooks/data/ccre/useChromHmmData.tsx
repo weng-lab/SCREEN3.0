@@ -142,6 +142,9 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    // A superseded fetch must not clobber the state of a newer one
+    let cancelled = false;
+
     const fetchAndProcessData = async () => {
       try {
         setLoading(true);
@@ -149,12 +152,12 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
         if (assembly !== "GRCh38") {
           setTracks(null);
           setChromhmmTracksWithTissue(null);
-          setLoading(false);
           return;
         }
 
         // Fetch tracks
         const tracksData = await getTracks();
+        if (cancelled) return;
         setTracks(tracksData);
 
         // Process tracks into flat structure
@@ -170,14 +173,20 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
 
         setChromhmmTracksWithTissue(flatTracks);
       } catch (error) {
-        console.error("Error fetching ChromHMM data:", error);
-        setError(true);
+        if (!cancelled) {
+          console.error("Error fetching ChromHMM data:", error);
+          setError(true);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchAndProcessData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [assembly]);
 
   // BigQuery for the table data
@@ -229,6 +238,9 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
 
 async function getTracks() {
   const response = await fetch(Config.Downloads.HumanChromHMM);
+  if (!response.ok) {
+    throw new Error(`HTTP error ${response.status}`);
+  }
   const text = await response.text();
 
   const chromHMMData: Record<string, ChromTrack[]> = {};

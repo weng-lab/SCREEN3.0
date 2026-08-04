@@ -16,6 +16,9 @@ export function useGeneDescription(name: string, entityType: AnyEntityType = "ge
     if (entityType !== undefined && entityType !== "gene") return;
     if (!name) return;
 
+    // A superseded fetch must not clobber the state of a newer one
+    let cancelled = false;
+
     const fetchDescription = async () => {
       setLoading(true);
       setError(null);
@@ -29,18 +32,26 @@ export function useGeneDescription(name: string, entityType: AnyEntityType = "ge
         }
 
         const data = await response.json();
+        if (cancelled) return;
+
         const matches = data[3]?.filter((x: string[]) => x[3] === name.toUpperCase());
 
         setDescription(matches?.length ? matches[0][4] : null);
       } catch (err: any) {
-        setError(err.message || "Unknown error");
-        setDescription(null);
+        if (!cancelled) {
+          setError(err.message || "Unknown error");
+          setDescription(null);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchDescription();
+
+    return () => {
+      cancelled = true;
+    };
   }, [entityType, name]);
 
   return { description, loading, error };

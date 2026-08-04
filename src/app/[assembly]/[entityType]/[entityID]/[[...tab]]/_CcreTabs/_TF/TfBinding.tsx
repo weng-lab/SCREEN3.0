@@ -44,7 +44,12 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
 
   useEffect(() => {
     fetch("/green-motifs.json") // Replace with actual filename in public folder
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+        return res.json();
+      })
       .then((json) => {
         const tfMap = new Map<string, number[][]>();
 

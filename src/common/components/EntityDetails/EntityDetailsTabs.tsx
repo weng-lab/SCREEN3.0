@@ -41,16 +41,24 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
   const [tabsDisabledInfo, setTabsDisabledInfo] = useState<{ route: string; isDisabled: boolean }[]>(null);
 
   useEffect(() => {
+    // A superseded lookup must not clobber the state of a newer one
+    let cancelled = false;
+
     async function getTabIsDisabled(tab: TabConfig<string>) {
       return await (tab.getIsDisabled ? tab.getIsDisabled(entityID) : false);
     }
 
     async function fetchTabInfo(tabs: readonly TabConfig<string>[]) {
       const info = await Promise.all(tabs.map((x) => getTabIsDisabled(x)));
+      if (cancelled) return;
       setTabsDisabledInfo(tabs.map((x, i) => ({ route: x.route, isDisabled: info[i] })));
     }
 
     if (tabsDisabledInfo === null) fetchTabInfo(tabs);
+
+    return () => {
+      cancelled = true;
+    };
   }, [entityID, tabsDisabledInfo, tabs]);
 
   const tabItems = useMemo(

@@ -158,12 +158,12 @@ export default function UMAPLegend<T>({
           <Box
             sx={{
               display: "flex",
-              justifyContent: legendEntries?.length / cols >= 3 ? "space-between" : "flex-start",
-              gap: legendEntries?.length / cols >= 4 ? 0 : 10,
+              justifyContent: legendEntries.length / cols >= 3 ? "space-between" : "flex-start",
+              gap: legendEntries.length / cols >= 4 ? 0 : 10,
               p: 1,
             }}
           >
-            {Array.from({ length: Math.ceil(legendEntries?.length / cols) }, (_, colIndex) => (
+            {Array.from({ length: Math.ceil(legendEntries.length / cols) }, (_, colIndex) => (
               <Box key={colIndex} sx={{ mr: 2 }}>
                 {legendEntries.slice(colIndex * cols, colIndex * cols + cols).map((cellType) => (
                   <Box
