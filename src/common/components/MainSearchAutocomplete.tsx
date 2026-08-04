@@ -118,7 +118,7 @@ export function makeResultLink(result: Result, assembly: Assembly) {
  * Redirects the user to the a new page based on the search result
  * @param props - The props for the GenomeSearch component
  */
-export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProps) {
+export default function MainSearchAutocomplete({ closeDrawer, ...props }: AutoCompleteProps) {
   const router = useRouter();
 
   const handleSearchSubmit = (r: Result) => {
@@ -126,6 +126,7 @@ export default function AutoComplete({ closeDrawer, ...props }: AutoCompleteProp
     if (closeDrawer) {
       closeDrawer();
     }
+    console.log(r)
     router.push(makeResultLink(r, props.assembly), { scroll: false });
   };
 

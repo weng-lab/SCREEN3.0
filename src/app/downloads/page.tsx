@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import { Tabs, Tab, Divider, Box } from "@mui/material";
-import { DataMatrices } from "./DataMatricies/DataMatricies";
+import { DataMatrices } from "./_DataMatrices/DataMatricies";
 import { useState } from "react";
-import { DownloadRange } from "./DownloadRange/downloadrange";
-import Annotations from "./Annotations/Annotations";
+import { DownloadRange } from "./_DownloadRange/DownloadRange";
+import Annotations from "./_Annotations/Annotations";
 
 function a11yProps(index: number) {
   return {

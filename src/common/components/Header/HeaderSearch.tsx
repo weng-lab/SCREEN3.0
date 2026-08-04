@@ -1,7 +1,7 @@
 "use client";
 import { IconButton } from "@mui/material";
 import { Search } from "@mui/icons-material";
-import AutoComplete from "../autocomplete";
+import MainSearchAutocomplete from "../MainSearchAutocomplete";
 import { Assembly } from "common/types/globalTypes";
 
 // Sits on the dark toolbar, so the field fakes a borderless white input
@@ -40,7 +40,7 @@ export default function HeaderSearch({ id, variant, assembly, closeDrawer }: Hea
   const isDesktop = variant === "desktop";
 
   return (
-    <AutoComplete
+    <MainSearchAutocomplete
       id={id}
       assembly={assembly}
       closeDrawer={closeDrawer}

@@ -49,8 +49,8 @@ const UmapLegend = ({ scatterData, colorBy, sampleTypeColors, ontologyColors }: 
       >
         {Array.from({ length: Math.ceil(legendEntries.length / 6) }, (_, colIndex) => (
           <Box key={colIndex} sx={{ marginRight: 2 }}>
-            {legendEntries.slice(colIndex * 6, colIndex * 6 + 6).map((element, index) => (
-              <Box key={index} sx={{ display: "flex", alignItems: "center", marginBottom: 1 }}>
+            {legendEntries.slice(colIndex * 6, colIndex * 6 + 6).map((element) => (
+              <Box key={element.color} sx={{ display: "flex", alignItems: "center", marginBottom: 1 }}>
                 <Box
                   sx={{
                     width: "12px",

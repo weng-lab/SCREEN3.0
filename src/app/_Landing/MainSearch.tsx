@@ -10,7 +10,10 @@ import {
   FormControl,
   Tooltip,
 } from "@mui/material";
-import AutoComplete, { defaultHumanResults, defaultMouseResults } from "common/components/autocomplete";
+import MainSearchAutocomplete, {
+  defaultHumanResults,
+  defaultMouseResults,
+} from "common/components/MainSearchAutocomplete";
 import { Search, InfoOutlined } from "@mui/icons-material";
 
 type MainSearchProps = {
@@ -75,7 +78,7 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
           </Stack>
         </Stack>
         <FormControl sx={{ width: "75%" }}>
-          <AutoComplete
+          <MainSearchAutocomplete
             sx={{ display: { xs: "flex", md: "flex" } }}
             style={{ width: "100%" }}
             slots={{
@@ -120,8 +123,8 @@ const MainSearch: React.FC<MainSearchProps> = ({ assembly, handleAssemblyChange 
             <Tooltip
               title={
                 <Box>
-                  {defaultResults.map((r, i) => (
-                    <Typography key={i} variant="body2">
+                  {defaultResults.map((r) => (
+                    <Typography key={r.id ?? r.title} variant="body2">
                       <strong>{r.type}: </strong>
                       {r.title}
                     </Typography>

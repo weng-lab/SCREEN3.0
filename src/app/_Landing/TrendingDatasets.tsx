@@ -9,7 +9,7 @@ import { useGrowOnScroll } from "common/hooks/ui";
 import HumanIcon from "common/components/HumanIcon";
 import MouseIcon from "common/components/MouseIcon";
 
-const trendingDataSets = [
+const TRENDING_DATASTS = [
   {
     name: "All Human cCREs",
     subtitle: "2,348,854 cCREs • 1,888 cell types",
@@ -31,12 +31,12 @@ const trendingDataSets = [
 const TrendingDatasets: React.FC = () => {
   const theme = useTheme();
 
-  const { visible: trendingVisible, refs: trendingRefs } = useGrowOnScroll(trendingDataSets.length);
+  const { visible: trendingVisible, refs: trendingRefs } = useGrowOnScroll(TRENDING_DATASTS.length);
 
   return (
     <Grid container spacing={5} justifyContent="flex-start" marginTop={2}>
-      {trendingDataSets.map((data, index) => (
-        <Grow in={trendingVisible[index]} timeout={800 + index * 300} key={`trending-${index}`}>
+      {TRENDING_DATASTS.map((data, index) => (
+        <Grow in={trendingVisible[index]} timeout={800 + index * 300} key={data.name}>
           <Grid
             ref={(el) => {
               trendingRefs.current[index] = el;

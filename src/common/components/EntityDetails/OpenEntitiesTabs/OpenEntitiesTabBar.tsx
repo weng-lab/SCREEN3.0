@@ -4,7 +4,7 @@ import { OpenEntitiesContext, isSameEntity, isValidOpenEntity } from "common/Ope
 import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL } from "./helpers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
@@ -184,23 +184,24 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   //  ------- "New Search" Button Helpers -------
 
-  const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
+  // A ref, not state - nothing renders from this flag, and the menu mounting is what drives the effect
+  const shouldFocusSearchRef = useRef(false);
 
   useEffect(() => {
-    if (isMenuMounted && shouldFocusSearch) {
+    if (isMenuMounted && shouldFocusSearchRef.current) {
       const el = document.getElementById("mobile-search-component");
       if (el) {
         el.focus();
-        setShouldFocusSearch(false); // reset the flag
+        shouldFocusSearchRef.current = false; // reset the flag
       }
     }
-  }, [isMenuMounted, shouldFocusSearch]);
+  }, [isMenuMounted]);
 
   const handleFocusSearch = useCallback(() => {
     if (menuCanBeOpened) {
       // aka isMobile
       openMenu();
-      setShouldFocusSearch(true); // defer focusing until menu is open
+      shouldFocusSearchRef.current = true; // defer focusing until menu is open
     } else {
       document.getElementById("desktop-search-component")?.focus();
     }

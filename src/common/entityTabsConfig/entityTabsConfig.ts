@@ -2,7 +2,7 @@ import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...t
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionalCharacterization/FunctionalCharacterization";
 import { AdditionalChromatinSignatures } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_AdditionalChromatinSignatures/AdditionalChromatinSignatures";
-import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Convservation/GeneConservation";
+import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Conservation/GeneConservation";
 import CcreLinkedGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Variants/CcreVariantsTab";
 import GeneExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";

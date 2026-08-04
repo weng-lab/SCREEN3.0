@@ -1,7 +1,7 @@
 import { ApolloClient } from "@apollo/client";
 import { Dispatch, SetStateAction } from "react";
 import { Assembly, CcreClass } from "common/types/globalTypes";
-import { CcreDownloadRow, fetchCcreDownloadData } from "app/downloads/DownloadRange/fetchCcreDownloadData";
+import { CcreDownloadRow, fetchCcreDownloadData } from "app/downloads/_DownloadRange/fetchCcreDownloadData";
 import { trackDownload } from "../analytics";
 
 export type Assays = { atac: boolean; ctcf: boolean; dnase: boolean; h3k27ac: boolean; h3k4me3: boolean };

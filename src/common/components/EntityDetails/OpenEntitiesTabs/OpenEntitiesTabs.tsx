@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AnyOpenEntity, isSameEntity } from "common/OpenEntitiesContext";
+import { AnyOpenEntity, getEntityKey, isSameEntity } from "common/OpenEntitiesContext";
 import { DraggableTab } from "./DraggableTab";
 import { Droppable } from "@hello-pangea/dnd";
 import { TabList } from "@mui/lab";
@@ -54,7 +54,7 @@ export const OpenTabs: React.FC<OpenTabsProps> = ({
         >
           {openEntities.map((entity, i) => (
             <DraggableTab
-              key={i}
+              key={getEntityKey(entity)}
               index={i}
               entity={entity}
               isSelected={currentEntityState && isSameEntity(entity, currentEntityState)}

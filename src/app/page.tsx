@@ -5,17 +5,18 @@ import React, { useState } from "react";
 import { theme } from "./theme";
 import { alpha } from "@mui/material/styles";
 import Image from "next/image";
-import MainSearch from "./landing/mainSearch";
-import PopularSearches from "./landing/popularSearches";
-import TrendingDatasets from "./landing/trendingDatasets";
-import ExploreMore from "./landing/ExploreMore";
-import MultipleRegionSearch from "./landing/multipleRegionSearch";
+import MainSearch from "./_Landing/MainSearch";
+import PopularSearches from "./_Landing/PopularSearches";
+import TrendingDatasets from "./_Landing/TrendingDatasets";
+import ExploreMore from "./_Landing/ExploreMore";
+import MultipleRegionSearch from "./_Landing/MultipleRegionSearch";
+import { Assembly } from "common/types/globalTypes";
 
 export default function Home() {
-  const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38");
+  const [assembly, setAssembly] = useState<Assembly>("GRCh38");
   const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
 
-  const handleAssemblyChange = (asmb: "GRCh38" | "mm10") => {
+  const handleAssemblyChange = (asmb: Assembly) => {
     setAssembly(asmb);
   };
 

@@ -37,9 +37,9 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
   // Track the slider value locally so the handle follows the mouse during drag.
   const [localRange, setLocalRange] = React.useState(range);
 
-  React.useEffect(() => {
+  if (!open && localRange !== range) {
     setLocalRange(range);
-  }, [range]);
+  }
 
   return (
     <Popper open={open} anchorEl={anchorEl} placement="bottom-start" disablePortal sx={{ zIndex: 10 }}>

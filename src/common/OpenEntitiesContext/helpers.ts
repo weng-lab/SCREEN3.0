@@ -18,3 +18,11 @@ export const isSameEntity = (entity1: AnyOpenEntity, entity2: AnyOpenEntity) => 
     );
   } else return entity1.entityID === entity2.entityID && entity1.entityType === entity2.entityType;
 };
+
+/**
+ * Stable identity for an open entity, for use as a React key or a drag-and-drop ID.
+ * Assembly is included since the same region can be open in more than one assembly.
+ * @param entity
+ * @returns string
+ */
+export const getEntityKey = (entity: AnyOpenEntity) => entity.entityID + entity.assembly;

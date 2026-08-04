@@ -4,12 +4,15 @@ import { Grid, Grow, Box, Stack, Typography, IconButton } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Link from "next/link";
 import { useGrowOnScroll } from "common/hooks/ui";
+import { Assembly } from "common/types/globalTypes";
 
-export interface PopularSearchesProps {
-  assembly: string;
-}
+type PopularSearch = {
+  entity: "Gene" | "cCRE" | "Variant" | "Region" | "GWAS";
+  name: string;
+  region: string;
+};
 
-const popularSearchesGRCh38 = [
+const POPULAR_SEARCHES_GRCh38: readonly PopularSearch[] = [
   { entity: "Gene", name: "SOX4", region: "chr6:21,592,768-21,598,619" },
   { entity: "cCRE", name: "EH38E3314260", region: "chr19:50,417,519-50,417,853" },
   { entity: "Variant", name: "rs9466027", region: "chr6:21,298,226-21,298,227" },
@@ -19,7 +22,7 @@ const popularSearchesGRCh38 = [
   // { entity: "Biosample", name: "Brain", region: "chr6:21,298,226-21,298,227" },
 ];
 
-const popularSearchesMM10 = [
+const POPULAR_SEARCHES_MM10: readonly PopularSearch[] = [
   { entity: "Gene", name: "Sp1", region: "chr15:102,406,143-102,436,404" },
   { entity: "cCRE", name: "EM10E1179536", region: "chr7:19,698,911-19,699,257" },
   { entity: "Region", name: "chr7:19,696,109-19,699,188", region: "chr7:19,696,109-19,699,188" },
@@ -28,18 +31,18 @@ const popularSearchesMM10 = [
   // { entity: "Biosample", name: "Brain", region: "chr13:28,948,919-28,953,713" },
 ];
 
-const PopularSearches: React.FC<PopularSearchesProps> = ({ assembly }) => {
-  const popularSearches = assembly === "GRCh38" ? popularSearchesGRCh38 : popularSearchesMM10;
+const PopularSearches = ({ assembly }: { assembly: Assembly }) => {
+  const popularSearches = assembly === "GRCh38" ? POPULAR_SEARCHES_GRCh38 : POPULAR_SEARCHES_MM10;
 
   const { visible: popularSearchesVisible, refs: popularRefs } = useGrowOnScroll(popularSearches.length);
 
   return (
     <Grid container spacing={5} justifyContent="flex-start" marginTop={6} width={"100%"}>
-      {popularSearches.map((entity, index) => (
+      {popularSearches.map((search, index) => (
         <Grow
           in={popularSearchesVisible[index]}
           timeout={800 + index * 300}
-          key={`${assembly}-${entity.name}-${index}`}
+          key={`${assembly}-${search.entity}-${search.name}`}
         >
           <Grid
             ref={(el) => {
@@ -51,9 +54,9 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({ assembly }) => {
             <Box
               component={Link}
               href={
-                entity.entity === "GWAS"
+                search.entity === "GWAS"
                   ? `/GRCh38/gwas/36810956-GCST90296476-astrocytoma`
-                  : `/${assembly}/${entity.entity.toLowerCase()}/${entity.name.replaceAll(",", "")}`
+                  : `/${assembly}/${search.entity.toLowerCase()}/${search.name.replaceAll(",", "")}`
               }
               scroll={true}
               sx={{
@@ -81,7 +84,7 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({ assembly }) => {
             >
               <Stack spacing={1}>
                 <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
-                  {entity.region}
+                  {search.region}
                 </Typography>
                 <Typography
                   variant="h6"
@@ -94,7 +97,7 @@ const PopularSearches: React.FC<PopularSearchesProps> = ({ assembly }) => {
                     WebkitBoxOrient: "vertical",
                   }}
                 >
-                  {entity.entity}: {entity.name}
+                  {search.entity}: {search.name}
                 </Typography>
               </Stack>
               <IconButton
