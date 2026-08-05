@@ -1,7 +1,7 @@
 "use client";
 import { IconButton } from "@mui/material";
 import { Search } from "@mui/icons-material";
-import MainSearchAutocomplete from "../MainSearchAutocomplete";
+import { MainSearchAutocomplete } from "common/components/MainSearchAutocomplete";
 import { Assembly } from "common/types/globalTypes";
 
 // Sits on the dark toolbar, so the field fakes a borderless white input

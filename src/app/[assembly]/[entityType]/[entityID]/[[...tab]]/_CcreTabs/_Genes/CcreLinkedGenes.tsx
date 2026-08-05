@@ -12,7 +12,7 @@ type ClosestGeneRow = NonNullable<ReturnType<typeof useClosestGenes>["data"]>["e
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCompuLinkedGenes } from "common/hooks/data/ccre";
 import { useState } from "react";
-import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
+import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/columns";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 

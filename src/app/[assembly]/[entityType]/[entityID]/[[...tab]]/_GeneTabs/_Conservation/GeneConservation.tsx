@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import { gql } from "common/types/generated";
 import { Assembly } from "common/types/globalTypes";
 
-export const GET_ORTHOLOG = gql(`
+const GET_ORTHOLOG = gql(`
   query geneOrtholog($name: [String]!, $assembly: String!) {
     geneOrthologQuery: geneorthologQuery(name: $name, assembly: $assembly) {
       humanGene: external_gene_name

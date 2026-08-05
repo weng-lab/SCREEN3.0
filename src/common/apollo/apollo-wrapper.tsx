@@ -11,7 +11,7 @@ import {
 } from "@apollo/client-integration-nextjs";
 import Config from "common/config.json";
 
-export function makeClient() {
+function makeClient() {
   if (typeof window === "undefined") {
     return new ApolloClient({
       // SSR: hit the backend directly to avoid the /api/graphql proxy hop,

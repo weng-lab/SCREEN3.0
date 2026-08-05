@@ -12,7 +12,7 @@ import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/components/MenuContext";
 import { OpenTabs } from "./OpenEntitiesTabs";
 
-export const constructEntityURL = (entity: AnyOpenEntity) =>
+const constructEntityURL = (entity: AnyOpenEntity) =>
   `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {

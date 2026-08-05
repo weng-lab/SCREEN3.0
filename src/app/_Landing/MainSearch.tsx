@@ -10,9 +10,10 @@ import {
   FormControl,
   Tooltip,
 } from "@mui/material";
-import MainSearchAutocomplete, {
+import {
   defaultHumanResults,
   defaultMouseResults,
+  MainSearchAutocomplete,
 } from "common/components/MainSearchAutocomplete";
 import { Search, InfoOutlined } from "@mui/icons-material";
 

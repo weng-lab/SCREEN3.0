@@ -14,11 +14,11 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { useCcreData } from "common/hooks/data/ccre";
 import { useState } from "react";
 import { useCompuLinkedcCREs } from "common/hooks/data/gene";
-import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
+import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/columns";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 
-export const accessionCol = (assembly: string): TableColDef => ({
+const accessionCol = (assembly: string): TableColDef => ({
   field: "accession",
   headerName: "Accession",
   renderCell: (params: GridRenderCellParams) => (
