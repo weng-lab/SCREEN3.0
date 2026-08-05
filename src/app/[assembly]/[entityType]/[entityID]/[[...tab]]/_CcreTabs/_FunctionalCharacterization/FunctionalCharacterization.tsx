@@ -1,161 +1,20 @@
 "use client";
-import React from "react";
+import { useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
 import { Table } from "@weng-lab/ui-components";
 import { Stack } from "@mui/material";
-import { gql } from "common/types/generated/gql";
-import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCcre } from "common/hooks/data/ccre";
 import { GenomicRange } from "common/types/globalTypes";
-
-export const FUNCTIONAL_DATA_QUERY = gql(`
-query functionalCharacterizationQuery($coordinates: [GenomicRangeInput!],$assembly: String!) {
-  functionalCharacterizationQuery(assembly: $assembly, coordinates: $coordinates) {
-    tissues
-    element_id
-    assay_result
-    chromosome
-    stop
-    start
-  }
-}
-`);
-
-export const MPRA_FUNCTIONAL_DATA_QUERY = gql(`
-query MPRA_FCC($coordinates: [GenomicRangeInput!]) {
-  mpraFccQuery(coordinates: $coordinates) {
-    celltype
-    chromosome
-    stop
-    start
-    assay_type
-    element_location
-    series
-    strand
-    log2fc
-    experiment    
-    barcode_location
-  }
-}
-`);
-
-export const CRISPR_FUNCTIONAL_DATA_QUERY = gql(`
-  query crisprFccQuery($accession: [String]!) {
-    crisprFccQuery(accession: $accession) {
-      rdhs
-      log2fc
-      fdr      
-      pvalue
-      experiment
-    }
-  }
-`);
-
-export const CAPRA_SOLO_FUNCTIONAL_DATA_QUERY = gql(`
-query capraFccSoloQuery($accession: [String]!) {
-  capraFccSoloQuery(accession: $accession) {
-    rdhs
-    log2fc
-    fdr
-    dna_rep1
-    rna_rep1
-    rna_rep2
-    rna_rep3
-    pvalue
-    experiment
-  }
-}
-`);
-
-export const CAPRA_DOUBLE_FUNCTIONAL_DATA_QUERY = gql(`
-query capraFccDoubleQuery($accession: [String]!) {
-  capraFccDoubleQuery(accession: $accession) {
-    rdhs_p1
-    rdhs_p2
-    log2fc
-    fdr
-    dna_rep1
-    rna_rep1
-    rna_rep2
-    rna_rep3
-    pvalue
-    experiment
-  }
-}
-`);
-
-export const CCRE_RDHS_QUERY = gql(`
-query rdhs($rDHS: [String!],$assembly: String!) {
-  cCREQuery(assembly: $assembly, rDHS: $rDHS) {
-    accession
-  }
-}
-`);
-
-type CAPRA_ExperimentInfo = {
-  lab: string;
-  cellType: string;
-};
-
-type CRISPR_ExperimentInfo = {
-  lab: string;
-  cellType: string;
-  design: string;
-};
-
-// Define the map where experiment is the key
-const capra_experimentMap: Record<string, CAPRA_ExperimentInfo> = {
-  ENCSR064KUD: { lab: "Kevin White, UChicago", cellType: "HCT116" },
-  ENCSR135NXN: { lab: "Kevin White, UChicago", cellType: "HepG2" },
-  ENCSR547SBZ: { lab: "Kevin White, UChicago", cellType: "MCF-7" },
-  ENCSR661FOW: { lab: "Tim Reddy, Duke", cellType: "K562" },
-  ENCSR858MPS: { lab: "Kevin White, UChicago", cellType: "K562" },
-  ENCSR895FDL: { lab: "Kevin White, UChicago", cellType: "A549" },
-  ENCSR983SZZ: { lab: "Kevin White, UChicago", cellType: "SH-SY5Y" },
-};
-
-const crispr_experimentMap: Record<string, CRISPR_ExperimentInfo> = {
-  ENCSR179FSH: { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "OCI-AML2" },
-  ENCSR274OEB: { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "K562" },
-  ENCSR295VER: {
-    design: "proliferation CRISPRi screen (dCas9-KRAB-WSR7EEE)",
-    lab: "Will Greenleaf, Stanford",
-    cellType: "K562",
-  },
-  ENCSR369UFO: {
-    design: "proliferation CRISPRi screen (dCas9-RYBP)",
-    lab: "Will Greenleaf, Stanford",
-    cellType: "K562",
-  },
-  ENCSR372CKT: {
-    design: "proliferation CRISPRi screen (dCas9-ZNF705-KRAB)",
-    lab: "Will Greenleaf, Stanford",
-    cellType: "K562",
-  },
-  ENCSR381RDB: {
-    design: "proliferation CRISPRi screen (dCas9-RYBP)",
-    lab: "Will Greenleaf, Stanford",
-    cellType: "K562",
-  },
-  ENCSR386FFV: {
-    design: "proliferation CRISPRi screen (dCas9-KRAB-WSR7EEE)",
-    lab: "Will Greenleaf, Stanford",
-    cellType: "K562",
-  },
-  ENCSR427OCU: {
-    design: "proliferation CRISPRi screen (dCas9-KRAB-MGA1-MGA2)",
-    lab: "Will Greenleaf, Stanford",
-    cellType: "K562",
-  },
-  ENCSR446RYW: {
-    design: "proliferation CRISPRi screen (dCas9-KRAB)",
-    lab: "Will Greenleaf, Stanford",
-    cellType: "K562",
-  },
-  ENCSR690DTG: { design: "proliferation CRISPRi screen (dCas9-KRAB)", lab: "Tim Reddy, Duke", cellType: "K562" },
-  ENCSR997ZOY: { design: "proliferation CRISPRi screen (dCas)", lab: "Will Greenleaf, Stanford", cellType: "K562" },
-};
+import { CapraDoubleCols, CapraDoubleRow, CapraSoloCols, CrisprCols, MouseTransgenicCols, MpraCols } from "./columns";
+import {
+  CAPRA_DOUBLE_FUNCTIONAL_DATA_QUERY,
+  CAPRA_SOLO_FUNCTIONAL_DATA_QUERY,
+  CCRE_RDHS_QUERY,
+  CRISPR_FUNCTIONAL_DATA_QUERY,
+  FUNCTIONAL_DATA_QUERY,
+  MPRA_FUNCTIONAL_DATA_QUERY,
+} from "./queries";
 
 export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps) => {
   const { data: dataCcre, loading: loadingCoords } = useCcre({
@@ -233,7 +92,12 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
     nextFetchPolicy: "cache-first",
   });
 
-  //CCRE_RDHS_QUERY
+  // Double fragments identify their two halves by rDHS, so resolve every rDHS to its cCRE accession to link out to
+  const capraDoubleRdhs = useMemo(
+    () => [...new Set((dataCapraDouble?.capraFccDoubleQuery ?? []).flatMap((c) => [c.rdhs_p1, c.rdhs_p2]))],
+    [dataCapraDouble]
+  );
+
   const {
     loading: loadingCapraRdhs,
     error: errorCapraRdhs,
@@ -241,67 +105,35 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
   } = useQuery(CCRE_RDHS_QUERY, {
     variables: {
       assembly: "GRCh38",
-      rDHS: [
-        dataCapraDouble &&
-          dataCapraDouble.capraFccDoubleQuery.length > 0 &&
-          dataCapraDouble.capraFccDoubleQuery[0].rdhs_p1,
-        dataCapraDouble &&
-          dataCapraDouble.capraFccDoubleQuery.length > 0 &&
-          dataCapraDouble.capraFccDoubleQuery[0].rdhs_p2,
-      ],
+      rDHS: capraDoubleRdhs,
     },
-    skip:
-      dataCapraDouble === undefined ||
-      !dataCapraDouble ||
-      (dataCapraDouble && dataCapraDouble.capraFccDoubleQuery.length === 0),
+    skip: capraDoubleRdhs.length === 0,
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+
+  /** Keyed on the rDHS echoed back by the query, so the mapping doesn't depend on the order results come back in */
+  const accessionByRdhs = useMemo(
+    () => new Map(dataCapraRdhs?.cCREQuery.map((ccre) => [ccre.rDHS, ccre.accession] as const)),
+    [dataCapraRdhs]
+  );
+
+  const capraDoubleRows: CapraDoubleRow[] = useMemo(
+    () =>
+      (dataCapraDouble?.capraFccDoubleQuery ?? []).map((c) => ({
+        ...c,
+        ccrep1: accessionByRdhs.get(c.rdhs_p1),
+        ccrep2: accessionByRdhs.get(c.rdhs_p2),
+      })),
+    [dataCapraDouble, accessionByRdhs]
+  );
 
   return (
     <Stack spacing={2}>
       <Table
         label={`Mouse Transgenic Enhancer Assays`}
         emptyTableFallback={"No Mouse Transgenic Enhancer Assays"}
-        columns={[
-          {
-            headerName: "Chromosome",
-            field: "chromosome",
-          },
-          {
-            headerName: "Start",
-            field: "start",
-            type: "number",
-          },
-          {
-            headerName: "Stop",
-            field: "stop",
-            type: "number",
-          },
-          {
-            headerName: "Element Id",
-            field: "element_id",
-            renderCell: (params) => {
-              return (
-                <LinkComponent
-                  href={`https://enhancer.lbl.gov/vista/element?vistaId=${params.value}`}
-                  showExternalIcon
-                  openInNewTab
-                >
-                  {params.value}
-                </LinkComponent>
-              );
-            },
-          },
-          {
-            headerName: "Assay Result",
-            field: "assay_result",
-          },
-          {
-            headerName: "Tissues [number of embryos positive/number of embryos negative]",
-            field: "tissues",
-          },
-        ]}
+        columns={MouseTransgenicCols}
         rows={dataMouseTransgenic?.functionalCharacterizationQuery}
         loading={loadingCoords || loadingMouseTransgenic}
         error={!!errorMouseTransgenic}
@@ -312,67 +144,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           <Table
             label={`MPRA (Region Centric)`}
             emptyTableFallback={"No MPRA (Region Centric) Data"}
-            columns={[
-              {
-                headerName: "Chromosome",
-                field: "chromosome",
-              },
-              {
-                headerName: "Start",
-                field: "start",
-                type: "number",
-              },
-              {
-                headerName: "Stop",
-                field: "stop",
-                type: "number",
-              },
-              {
-                headerName: "Strand",
-                field: "strand",
-              },
-              {
-                headerName: "Log₂(Fold Change)",
-                field: "log2fc",
-                type: "number",
-                renderCell: (params) => params.value?.toFixed(2),
-              },
-              {
-                headerName: "Experiment",
-                field: "experiment",
-                renderCell: (params) => {
-                  return (
-                    <LinkComponent
-                      href={`https://www.encodeproject.org/experiments/${params.value}`}
-                      showExternalIcon
-                      openInNewTab
-                    >
-                      {params.value}
-                    </LinkComponent>
-                  );
-                },
-              },
-              {
-                headerName: "Cell Type",
-                field: "celltype",
-              },
-              {
-                headerName: "Assay Type",
-                field: "assay_type",
-              },
-              {
-                headerName: "Series",
-                field: "series",
-              },
-              {
-                headerName: "Location of element",
-                field: "element_location",
-              },
-              {
-                headerName: "Location of barcode",
-                field: "barcode_location",
-              },
-            ]}
+            columns={MpraCols}
             rows={dataMPRA?.mpraFccQuery}
             loading={loadingCoords || loadingMPRA}
             error={!!errorMPRA}
@@ -384,69 +156,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           <Table
             label={`STARR-seq (CAPRA quantification) Solo Fragments`}
             emptyTableFallback={"No STARR-seq (CAPRA quantification) Solo Fragments"}
-            columns={[
-              {
-                headerName: "Experiment",
-                field: "a",
-                renderCell: (params) => (
-                  <LinkComponent
-                    href={`https://www.encodeproject.org/experiments/${params.row.experiment}`}
-                    showExternalIcon
-                    openInNewTab
-                  >
-                    {params.row.experiment}
-                  </LinkComponent>
-                ),
-              },
-              {
-                headerName: "Celltype",
-                field: "b",
-                renderCell: (params) => capra_experimentMap[params.row.experiment]?.cellType,
-              },
-              {
-                headerName: "Lab",
-                field: "c",
-                renderCell: (params) => capra_experimentMap[params.row.experiment]?.lab,
-              },
-              {
-                headerName: "DNA Rep1",
-                field: "dna_rep1",
-                type: "number",
-              },
-              {
-                headerName: "RNA Rep1",
-                field: "rna_rep1",
-                type: "number",
-              },
-              {
-                headerName: "RNA Rep2",
-                field: "rna_rep2",
-                type: "number",
-              },
-              {
-                headerName: "RNA Rep3",
-                field: "rna_rep3",
-                type: "number",
-              },
-              {
-                headerName: "Log₂(Fold Change)",
-                field: "log2fc",
-                type: "number",
-                renderCell: (params) => params.row.log2fc?.toFixed(2),
-              },
-              {
-                headerName: "P-value",
-                field: "pvalue",
-                type: "number",
-                renderCell: (params) => (!params.row.pvalue ? "n/a" : params.row.pvalue.toFixed(2)),
-              },
-              {
-                headerName: "FDR",
-                field: "fdr",
-                type: "number",
-                renderCell: (params) => (!params.row.fdr ? "n/a" : params.row.fdr.toFixed(2)),
-              },
-            ]}
+            columns={CapraSoloCols}
             rows={dataCapraSolo?.capraFccSoloQuery}
             loading={loadingCapraSolo}
             error={!!errorCapraSolo}
@@ -458,88 +168,8 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           <Table
             label={`STARR-seq (CAPRA quantification) Double Fragments`}
             emptyTableFallback={"No STARR-seq (CAPRA quantification) Double Fragments"}
-            columns={[
-              {
-                headerName: "cCRE Pair",
-                field: "ccrePair",
-                renderCell: (params) => (
-                  <>
-                    <LinkComponent href={`/GRCh38/ccre/${params.row.ccrep1}`}>{params.row.ccrep1}</LinkComponent>-
-                    <LinkComponent href={`/GRCh38/ccre/${params.row.ccrep2}`}>{params.row.ccrep2}</LinkComponent>
-                  </>
-                ),
-              },
-              {
-                headerName: "Experiment",
-                field: "a",
-                renderCell: (params) => (
-                  <LinkComponent
-                    href={`https://www.encodeproject.org/experiments/${params.row.experiment}`}
-                    showExternalIcon
-                    openInNewTab
-                  >
-                    {params.row.experiment}
-                  </LinkComponent>
-                ),
-              },
-              {
-                headerName: "Celltype",
-                field: "b",
-                renderCell: (params) => capra_experimentMap[params.row.experiment]?.cellType,
-              },
-              {
-                headerName: "Lab",
-                field: "c",
-                renderCell: (params) => capra_experimentMap[params.row.experiment]?.lab,
-              },
-              {
-                headerName: "DNA Rep1",
-                field: "dna_rep1",
-                type: "number",
-              },
-              {
-                headerName: "RNA Rep1",
-                field: "rna_rep1",
-                type: "number",
-              },
-              {
-                headerName: "RNA Rep2",
-                field: "rna_rep2",
-                type: "number",
-              },
-              {
-                headerName: "RNA Rep3",
-                field: "rna_rep3",
-                type: "number",
-              },
-              {
-                headerName: "Log₂(Fold Change)",
-                field: "log2fc",
-                type: "number",
-                renderCell: (params) => params.row.log2fc?.toFixed(2),
-              },
-              {
-                headerName: "P-value",
-                field: "pvalue",
-                type: "number",
-                renderCell: (params) => (!params.row.pvalue ? "n/a" : params.row.pvalue.toFixed(2)),
-              },
-              {
-                headerName: "FDR",
-                field: "fdr",
-                type: "number",
-                renderCell: (params) => (!params.row.fdr ? "n/a" : params.row.fdr.toFixed(2)),
-              },
-            ]}
-            rows={
-              (dataCapraDouble &&
-                dataCapraDouble.capraFccDoubleQuery.map((c) => ({
-                  ...c,
-                  ccrep1: dataCapraRdhs && dataCapraRdhs.cCREQuery.length > 0 && dataCapraRdhs.cCREQuery[0].accession,
-                  ccrep2: dataCapraRdhs && dataCapraRdhs.cCREQuery.length > 0 && dataCapraRdhs.cCREQuery[1].accession,
-                }))) ||
-              []
-            }
+            columns={CapraDoubleCols}
+            rows={capraDoubleRows}
             loading={loadingCapraDouble || loadingCapraRdhs}
             error={!!errorCapraDouble || !!errorCapraRdhs}
             initialState={{
@@ -550,54 +180,7 @@ export const FunctionalCharacterization = ({ entity }: EntityViewComponentProps)
           <Table
             label={`CRISPR Perturbation Data`}
             emptyTableFallback={"No CRISPR Perturbation Data"}
-            columns={[
-              {
-                headerName: "Experiment",
-                field: "a",
-                renderCell: (params) => (
-                  <LinkComponent
-                    href={`https://www.encodeproject.org/experiments/${params.row.experiment}`}
-                    showExternalIcon
-                    openInNewTab
-                  >
-                    {params.row.experiment}
-                  </LinkComponent>
-                ),
-              },
-              {
-                headerName: "Design",
-                field: "b",
-                renderCell: (params) => crispr_experimentMap[params.row.experiment]?.design,
-              },
-              {
-                headerName: "Celltype",
-                field: "c",
-                renderCell: (params) => crispr_experimentMap[params.row.experiment]?.cellType,
-              },
-              {
-                headerName: "Lab",
-                field: "d",
-                renderCell: (params) => crispr_experimentMap[params.row.experiment]?.lab,
-              },
-              {
-                headerName: "Log₂(Fold Change)",
-                field: "log2fc",
-                type: "number",
-                renderCell: (params) => params.row.log2fc?.toFixed(2),
-              },
-              {
-                headerName: "P-value",
-                field: "pvalue",
-                type: "number",
-                renderCell: (params) => (!params.row.pvalue ? "n/a" : params.row.pvalue.toFixed(2)),
-              },
-              {
-                headerName: "FDR",
-                field: "fdr",
-                type: "number",
-                renderCell: (params) => (!params.row.fdr ? "n/a" : params.row.fdr.toFixed(2)),
-              },
-            ]}
+            columns={CrisprCols}
             rows={dataCrispr?.crisprFccQuery}
             loading={loadingCrispr}
             error={!!errorCrispr}

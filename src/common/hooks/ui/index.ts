@@ -5,4 +5,3 @@ export * from "./useGrowOnScroll";
 export * from "./usePlotDownload";
 export * from "./useScrollReset";
 export * from "./useScrollToSearch";
-export * from "./useTablePlotSync";

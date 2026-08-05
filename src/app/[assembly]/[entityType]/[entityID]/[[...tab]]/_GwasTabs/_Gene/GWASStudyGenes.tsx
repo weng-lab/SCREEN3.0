@@ -2,7 +2,7 @@
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
-import { toScientificNotationElement } from "common/utils";
+import { ScientificNotation } from "common/utils";
 import { useState } from "react";
 import SelectCompuGenesMethod from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/SelectCompuGenesMethod";
 
@@ -91,7 +91,7 @@ export const sharedColumns: { [key: string]: TableColDef } = {
       <>
         {params.value === 0
           ? "0"
-          : toScientificNotationElement(params.value, 2, {
+          : ScientificNotation(params.value, 2, {
               variant: "body2",
             })}
       </>

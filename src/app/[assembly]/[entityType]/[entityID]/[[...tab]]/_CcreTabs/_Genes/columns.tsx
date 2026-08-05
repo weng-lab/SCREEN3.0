@@ -3,7 +3,7 @@ import { TableColDef } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
 import { LinkedGeneInfo } from "common/hooks/data/gwas";
-import { toScientificNotationElement } from "common/utils";
+import { ScientificNotation } from "common/utils";
 
 const geneNameCol: TableColDef = {
   field: "gene",
@@ -67,7 +67,7 @@ const pValCol: TableColDef = {
     </Typography>
   ),
   renderCell: (params: GridRenderCellParams) =>
-    params.value === 0 ? "0" : toScientificNotationElement(params.value, 2, { variant: "body2" }),
+    params.value === 0 ? "0" : ScientificNotation(params.value, 2, { variant: "body2" }),
 };
 
 const assayCol: TableColDef = {

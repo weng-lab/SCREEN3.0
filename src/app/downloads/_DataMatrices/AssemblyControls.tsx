@@ -1,8 +1,7 @@
 import { Typography, Divider, Button } from "@mui/material";
 import { Stack } from "@mui/system";
 import MouseIcon from "common/components/MouseIcon";
-import { DNase_seq, H3K4me3, H3K27ac } from "common/colors";
-import { CA_CTCF } from "common/ccre";
+import { DNase, H3K4me3, H3K27ac, CTCF } from "common/colors";
 import HumanIcon from "common/components/HumanIcon";
 
 type AssemblyControlsProps = {
@@ -37,13 +36,13 @@ const assemblyInfo = {
 function borderColor(assay: Selected["assay"]) {
   switch (assay) {
     case "DNase":
-      return DNase_seq;
+      return DNase;
     case "H3K4me3":
       return H3K4me3;
     case "H3K27ac":
       return H3K27ac;
     case "CTCF":
-      return CA_CTCF;
+      return CTCF;
   }
 }
 

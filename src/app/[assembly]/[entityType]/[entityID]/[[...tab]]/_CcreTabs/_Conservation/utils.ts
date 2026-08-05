@@ -109,10 +109,6 @@ export const getPrimateGroup = (id: string) => {
   return SPECIES_META[id]?.primateGroup ?? null;
 };
 
-export const getDistToHuman = (id: string) => {
-  return SPECIES_META[id]?.distToHuman ?? null;
-};
-
 export const getColorLabel = (id: string) => {
   return SPECIES_META[id]?.colorLabel ?? null;
 };
@@ -167,8 +163,6 @@ export const makeAlignmentPlotData = (
 export const phyloTreeRoot = formatNode(data241);
 
 export const HUMAN_SPECIES_ID = "Homo_sapiens";
-
-export const allSpecies = new Set(SPECIES_ORDER_IN_API_RETURN);
 
 // Human is always shown in the alignment/tree and cannot be filtered out, so it is
 // excluded from the selectable set used by the species filter.
