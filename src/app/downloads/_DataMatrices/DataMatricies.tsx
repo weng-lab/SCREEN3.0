@@ -14,6 +14,13 @@ import DownloadModal from "./DownloadModal";
 
 const assemblies: Array<"Human" | "Mouse"> = ["Human", "Mouse"];
 
+const miniMapConfig = {
+  position: {
+    right: 50,
+    bottom: 50,
+  },
+};
+
 // Direct copy from old SCREEN
 function colorMap(strings) {
   const counts = {};
@@ -109,13 +116,6 @@ export function DataMatrices() {
 
   const handleCloseModal = () => {
     setOpenModal(false);
-  };
-
-  const map = {
-    position: {
-      right: 50,
-      bottom: 50,
-    },
   };
 
   const fData = useMemo(() => {
@@ -311,7 +311,7 @@ export function DataMatrices() {
             loading={umapLoading}
             selectable
             onSelectionChange={handleSelectionChange}
-            miniMap={map}
+            miniMap={miniMapConfig}
             leftAxisLabel="UMAP-2"
             bottomAxisLabel="UMAP-1"
             initialState={{

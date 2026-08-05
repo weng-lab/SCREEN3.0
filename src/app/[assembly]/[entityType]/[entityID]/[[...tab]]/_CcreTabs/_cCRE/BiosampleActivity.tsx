@@ -19,6 +19,10 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 import { useBiosampleActivity } from "common/hooks/data/ccre";
 
+const disableCsvEscapeChar = {
+  toolbar: { csvOptions: { escapeFormulas: false }, excelOptions: { escapeFormulas: false } },
+};
+
 /** Row shape returned by useBiosampleActivity (new field names / undefined-for-missing) */
 type RawBiosampleRow = NonNullable<ReturnType<typeof useBiosampleActivity>["biosampleRows"]>[number];
 
@@ -260,10 +264,6 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   const ctAgnosticRow = celltypeAgnosticRow
     ? [{ ...celltypeAgnosticRow, displayname: "Cell Type Agnostic" }]
     : undefined;
-
-  const disableCsvEscapeChar = {
-    toolbar: { csvOptions: { escapeFormulas: false }, excelOptions: { escapeFormulas: false } },
-  };
 
   const partialCollectionChromAccess = useMemo(() => {
     if (!partialDataCollection) return;

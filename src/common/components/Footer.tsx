@@ -4,45 +4,45 @@ import Image from "next/image";
 import { LinkComponent } from "./LinkComponent";
 import Link from "next/link";
 
-export default function Footer() {
-  const sections = [
-    {
-      title: "About us",
-      links: [
-        { name: "SCREEN", href: "/about" },
-        { name: "Weng Lab", href: "https://www.umassmed.edu/zlab/" },
-        { name: "Moore Lab", href: "https://sites.google.com/view/moore-lab/" },
-        { name: "ENCODE Consortium", href: "https://www.encodeproject.org/" },
-        { name: "UMass Chan Medical School", href: "https://www.umassmed.edu/" },
-      ],
-    },
-    {
-      title: "Explore/Tools",
-      links: [
-        { name: "PsychSCREEN", href: "https://psychscreen.wenglab.org/psychscreen" },
-        { name: "igSCREEN", href: "https://igscreen.vercel.app/" },
-        { name: "Factorbook", href: "https://www.factorbook.org/" },
-        // { name: "GWAS", href: "/gwas" },
-        // { name: "ARGO", href: "/argo" },
-      ],
-    },
-    {
-      title: "Data",
-      links: [
-        { name: "Downloads", href: "/downloads" },
-        { name: "Release History", href: "/about/versions" },
-      ],
-    },
-    {
-      title: "Help",
-      links: [
-        { name: "API Documentation", href: "/about#api-documentation" },
-        { name: "Citations", href: "/about#citations" },
-        { name: "Contact Us/Feedback", href: "/about#contact-us" },
-      ],
-    },
-  ];
+const sections = [
+  {
+    title: "About us",
+    links: [
+      { name: "SCREEN", href: "/about" },
+      { name: "Weng Lab", href: "https://www.umassmed.edu/zlab/" },
+      { name: "Moore Lab", href: "https://sites.google.com/view/moore-lab/" },
+      { name: "ENCODE Consortium", href: "https://www.encodeproject.org/" },
+      { name: "UMass Chan Medical School", href: "https://www.umassmed.edu/" },
+    ],
+  },
+  {
+    title: "Explore/Tools",
+    links: [
+      { name: "PsychSCREEN", href: "https://psychscreen.wenglab.org/psychscreen" },
+      { name: "igSCREEN", href: "https://igscreen.vercel.app/" },
+      { name: "Factorbook", href: "https://www.factorbook.org/" },
+      // { name: "GWAS", href: "/gwas" },
+      // { name: "ARGO", href: "/argo" },
+    ],
+  },
+  {
+    title: "Data",
+    links: [
+      { name: "Downloads", href: "/downloads" },
+      { name: "Release History", href: "/about/versions" },
+    ],
+  },
+  {
+    title: "Help",
+    links: [
+      { name: "API Documentation", href: "/about#api-documentation" },
+      { name: "Citations", href: "/about#citations" },
+      { name: "Contact Us/Feedback", href: "/about#contact-us" },
+    ],
+  },
+];
 
+export default function Footer() {
   return (
     <Box
       id="Footer"

@@ -1,19 +1,19 @@
 import { useSnpAlleles } from "common/hooks/data/variant";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 
+//map populations to
+const populations: Record<string, string> = {
+  SAS: "South Asian",
+  EUR: "European",
+  EAS: "East Asian",
+  AMR: "American",
+  AFR: "African",
+};
+
 export default function SnpFrequencies({ snpid }: { snpid: string }) {
   const SnpAlleleFrequencies = useSnpAlleles([snpid], { includeFrequencies: true });
   const loading = SnpAlleleFrequencies.loading;
   const frequencies = SnpAlleleFrequencies.data?.[snpid]?.frequencies ?? [];
-
-  //map populations to
-  const populations: Record<string, string> = {
-    SAS: "South Asian",
-    EUR: "European",
-    EAS: "East Asian",
-    AMR: "American",
-    AFR: "African",
-  };
 
   const columns: TableColDef<(typeof frequencies)[number]>[] = [
     {

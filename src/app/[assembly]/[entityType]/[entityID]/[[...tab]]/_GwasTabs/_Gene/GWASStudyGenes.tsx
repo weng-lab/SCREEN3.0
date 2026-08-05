@@ -7,6 +7,7 @@ import { useState } from "react";
 import SelectCompuGenesMethod from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/SelectCompuGenesMethod";
 
 import { useLinkedGenes } from "common/hooks/data/ccre";
+import type { LinkedGeneInfo } from "common/hooks/data/ccre/useLinkedGenes";
 import { useCompuLinkedGenes } from "common/hooks/data/ccre";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/data/gwas";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -100,6 +101,64 @@ export const sharedColumns: { [key: string]: TableColDef } = {
   },
 };
 
+const HiC_columns: TableColDef<LinkedGeneInfo>[] = [
+  sharedColumns.accession,
+  sharedColumns.gene,
+  sharedColumns.genetype,
+  sharedColumns.assay,
+  sharedColumns.experiment_accession,
+  sharedColumns.displayname,
+  sharedColumns.score,
+  sharedColumns.p_val,
+];
+
+const eqtl_columns: TableColDef<LinkedGeneInfo>[] = [
+  sharedColumns.accession,
+  sharedColumns.gene,
+  sharedColumns.genetype,
+  {
+    field: "variantid",
+    headerName: "Variant ID",
+  },
+  {
+    field: "source",
+    headerName: "Source",
+  },
+  {
+    field: "tissue",
+    headerName: "Tissue",
+  },
+  {
+    field: "slope",
+    headerName: "Slope",
+  },
+  sharedColumns.p_val,
+];
+
+const CRISPR_columns: TableColDef<LinkedGeneInfo>[] = [
+  sharedColumns.accession,
+  sharedColumns.gene,
+  sharedColumns.genetype,
+  sharedColumns.assay,
+  sharedColumns.experiment_accession,
+  sharedColumns.displayname,
+  {
+    field: "effectsize",
+    headerName: "Effect Size",
+  },
+  sharedColumns.p_val,
+];
+
+const ChIA_PET_columns: TableColDef<LinkedGeneInfo>[] = [
+  sharedColumns.accession,
+  sharedColumns.gene,
+  sharedColumns.genetype,
+  sharedColumns.assay,
+  sharedColumns.experiment_accession,
+  sharedColumns.score,
+  sharedColumns.displayname,
+];
+
 export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
   const {
@@ -181,64 +240,6 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
       ...sharedColumns.score,
       valueGetter: (_, row) => row.score.toFixed(2),
     },
-  ];
-
-  const HiC_columns: TableColDef<(typeof HiCLinked)[number]>[] = [
-    sharedColumns.accession,
-    sharedColumns.gene,
-    sharedColumns.genetype,
-    sharedColumns.assay,
-    sharedColumns.experiment_accession,
-    sharedColumns.displayname,
-    sharedColumns.score,
-    sharedColumns.p_val,
-  ];
-
-  const eqtl_columns: TableColDef<(typeof eqtlLinked)[number]>[] = [
-    sharedColumns.accession,
-    sharedColumns.gene,
-    sharedColumns.genetype,
-    {
-      field: "variantid",
-      headerName: "Variant ID",
-    },
-    {
-      field: "source",
-      headerName: "Source",
-    },
-    {
-      field: "tissue",
-      headerName: "Tissue",
-    },
-    {
-      field: "slope",
-      headerName: "Slope",
-    },
-    sharedColumns.p_val,
-  ];
-
-  const CRISPR_columns: TableColDef<(typeof crisprLinked)[number]>[] = [
-    sharedColumns.accession,
-    sharedColumns.gene,
-    sharedColumns.genetype,
-    sharedColumns.assay,
-    sharedColumns.experiment_accession,
-    sharedColumns.displayname,
-    {
-      field: "effectsize",
-      headerName: "Effect Size",
-    },
-    sharedColumns.p_val,
-  ];
-
-  const ChIA_PET_columns: TableColDef<(typeof ChIAPETLinked)[number]>[] = [
-    sharedColumns.accession,
-    sharedColumns.gene,
-    sharedColumns.genetype,
-    sharedColumns.assay,
-    sharedColumns.experiment_accession,
-    sharedColumns.score,
-    sharedColumns.displayname,
   ];
 
   const errorLinked = !!(errorGWASSNPscCREs || errorGWASSnpscCREsGenes);

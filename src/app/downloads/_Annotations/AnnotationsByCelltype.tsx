@@ -9,18 +9,18 @@ interface NewAnnotationsByCelltypeProps {
   assembly: Assembly;
 }
 
-const AnnotationsByCelltype: React.FC<NewAnnotationsByCelltypeProps> = ({ assembly }) => {
-  const overrideInitialTableState = {
-    ...initialTableState,
-    columns: {
-      columnVisibilityModel: {
-        ...allColsHidden,
-        ontology: true,
-        bedurl: true,
-      },
+const overrideInitialTableState = {
+  ...initialTableState,
+  columns: {
+    columnVisibilityModel: {
+      ...allColsHidden,
+      ontology: true,
+      bedurl: true,
     },
-  };
+  },
+};
 
+const AnnotationsByCelltype: React.FC<NewAnnotationsByCelltypeProps> = ({ assembly }) => {
   return (
     <DownloadContentLayout title="cCREs by Cell and Tissue Type">
       <BiosampleTable
