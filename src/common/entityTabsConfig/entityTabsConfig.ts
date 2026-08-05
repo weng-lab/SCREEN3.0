@@ -23,7 +23,6 @@ import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedT
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
 import GwasBrowser from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/GwasBrowser";
-// import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
