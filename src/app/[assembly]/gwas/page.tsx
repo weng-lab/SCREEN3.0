@@ -70,12 +70,15 @@ export default function GWASLandingPage() {
     const layer2Nodes = subdisease_treemap?.[activeCategory]?.[0]?.children?.map((c) => c.label) || [];
 
     const result: Record<string, GwasStudiesMetadata[]> = {};
-    for (const label of layer2Nodes) result[label] = [];
+    // Lowercase each label once up front instead of once per study
+    const labels = layer2Nodes.map((label) => ({ label, lowercased: label.toLowerCase() }));
+    for (const { label } of labels) result[label] = [];
 
     for (const study of studies) {
-      const layer2Terms = study.layer_2_terms || [];
-      for (const label of layer2Nodes) {
-        if (layer2Terms.includes(label.toLowerCase())) {
+      // Set lookup so each label check is constant time rather than a scan of the study's terms
+      const layer2Terms = new Set(study.layer_2_terms || []);
+      for (const { label, lowercased } of labels) {
+        if (layer2Terms.has(lowercased)) {
           result[label].push(study);
         }
       }

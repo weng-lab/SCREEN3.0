@@ -94,41 +94,6 @@ export function getChromHmmStateDisplayname(state: ChromHmmState) {
   return stateDetails[state].description + " (" + stateDetails[state].stateno + ")";
 }
 
-export const ChromHmmTissues = [
-  "adipose",
-  "adrenal gland",
-  "blood",
-  "blood vessel",
-  "bone",
-  "bone marrow",
-  "brain",
-  "breast",
-  "connective tissue",
-  "embryo",
-  "esophagus",
-  "heart",
-  "large intestine",
-  "liver",
-  "lung",
-  "muscle",
-  "nerve",
-  "ovary",
-  "pancreas",
-  "paraythroid gland",
-  "penis",
-  "placenta",
-  "prostate",
-  "skin",
-  "small intestine",
-  "spleen",
-  "stomach",
-  "testis",
-  "thymus",
-  "thyroid",
-  "uterus",
-  "vagina",
-];
-
 export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = "GRCh38") {
   const [tracks, setTracks] = useState<Record<string, ChromTrack[]>>(null);
   const [chromHmmTracksWithTissue, setChromhmmTracksWithTissue] = useState<
@@ -183,6 +148,9 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
           setError(true);
         }
       } finally {
+        // False positive: the reset is already in `finally`, so it runs on rejection too. The guard
+        // only stops a superseded run from clearing a newer run's spinner.
+        // react-doctor-disable-next-line react-doctor/no-loading-flag-reset-outside-finally
         if (!cancelled) setLoading(false);
       }
     };

@@ -69,9 +69,12 @@ export function useTablePlotSync<T>({ rows, getRowId }: UseTablePlotSyncOptions<
   const handleRowSelectionModelChange = useCallback(
     (model: GridRowSelectionModel) => {
       if (model.type === "include") {
-        const newSelected = Array.from(model.ids)
-          .map((id) => rowsRef.current.find((r) => stableGetRowId(r) === String(id)))
-          .filter(Boolean) as T[];
+        // Index the rows once so resolving the selected ids is a lookup per id, not a scan per id
+        const rowsById = new Map(rowsRef.current.map((r) => [stableGetRowId(r), r]));
+        const newSelected = Array.from(model.ids).flatMap((id) => {
+          const row = rowsById.get(String(id));
+          return row ? [row] : [];
+        });
         setSelected(newSelected);
       } else {
         // type "exclude" with 0 ids = select all

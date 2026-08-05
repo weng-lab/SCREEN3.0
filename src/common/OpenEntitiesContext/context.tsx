@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, Dispatch, ReactNode, useReducer } from "react";
+import { createContext, Dispatch, ReactNode, useMemo, useReducer } from "react";
 import { OpenEntityAction, OpenEntityState } from "./types";
 import { openEntitiesReducer } from "./reducer";
 
@@ -12,5 +12,8 @@ export const OpenEntitiesContextProvider = ({ children }: { children: ReactNode 
   // It checks openEntities.length before allowing pushes to the url.
   const [openEntities, dispatch] = useReducer(openEntitiesReducer, []);
 
-  return <OpenEntitiesContext.Provider value={[openEntities, dispatch]}>{children}</OpenEntitiesContext.Provider>;
+  // dispatch is stable, so consumers only rerender when openEntities actually changes
+  const value = useMemo<[OpenEntityState, Dispatch<OpenEntityAction>]>(() => [openEntities, dispatch], [openEntities]);
+
+  return <OpenEntitiesContext.Provider value={value}>{children}</OpenEntitiesContext.Provider>;
 };

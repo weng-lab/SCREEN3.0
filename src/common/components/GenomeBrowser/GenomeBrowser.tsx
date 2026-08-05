@@ -2,10 +2,10 @@
 import { Alert, CircularProgress } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/data/entity";
-import type { GenomicRange } from "common/types/globalTypes";
 import { decodeRegions } from "common/utils";
 import { useMemo } from "react";
 import GenomeBrowserView from "./GenomeBrowserView";
+import { useStableCoordinates } from "./utils";
 
 export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
   const { data, loading, error } = useEntityMetadata(entity);
@@ -19,19 +19,8 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
     } else return data.coordinates;
   }, [data, entity.entityID]);
 
-  /**
-   * The metadata hooks rebuild region objects on every render, so key the memo on the values
-   * themselves. That way GenomeBrowserView only sees a new reference when the region actually
-   * changes, instead of on every render.
-   */
   const region = Array.isArray(coordinates) ? coordinates[0] : coordinates;
-  const chromosome = region?.chromosome;
-  const start = region?.start;
-  const end = region?.end;
-  const currentCoordinates = useMemo<GenomicRange | null>(
-    () => (chromosome === undefined ? null : { chromosome, start, end }),
-    [chromosome, start, end]
-  );
+  const currentCoordinates = useStableCoordinates(region);
 
   if (!currentCoordinates && loading) return <CircularProgress />;
   if (error && !currentCoordinates)

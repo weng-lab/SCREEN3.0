@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 
 // @weng-lab
-import { Browser, BulkBedRect, Chromosome, DataStoreInstance, Rect } from "@weng-lab/genomebrowser";
+import { Browser, BulkBedRect, DataStoreInstance, Rect } from "@weng-lab/genomebrowser";
 import { Domain, GenomeSearch, Result } from "@weng-lab/ui-components";
 
 // internal
@@ -63,16 +63,33 @@ export default function GenomeBrowserView({
     entity.entityType === "region"
       ? entity.entityID.replace("%3A", ":")
       : entity.entityType === "bed"
-        ? `${coordinates[0].chromosome}:${coordinates[0].start}-${coordinates[0].end}`
+        ? `${coordinates.chromosome}:${coordinates.start}-${coordinates.end}`
         : entity.entityID;
 
-  const browserStore = useLocalBrowser(entity.entityID, entity.assembly, coordinates, entity.entityType, breakpoint);
+  /**
+   * The single place entity coordinates get padded for the browser. Callers pass the feature's own
+   * coordinates and everything downstream - the starting domain, the GWAS domain sync, and the
+   * recenter button - uses this one value, so the padding can never be applied twice.
+   */
+  const expandedCoordinates = useMemo(
+    () => expandCoordinates(coordinates, entity.entityType),
+    [coordinates, entity.entityType]
+  );
+
+  const browserStore = useLocalBrowser({
+    name: entity.entityID,
+    assembly: entity.assembly,
+    entityCoordinates: coordinates,
+    browserDomain: expandedCoordinates,
+    type: entity.entityType,
+    breakpoint,
+  });
 
   const setDomain = browserStore((s) => s.setDomain);
   useEffect(() => {
     if (entity.entityType !== "gwas") return;
-    setDomain({ ...coordinates, chromosome: coordinates.chromosome as Chromosome });
-  }, [coordinates, setDomain, entity.entityType]);
+    setDomain(expandedCoordinates);
+  }, [expandedCoordinates, setDomain, entity.entityType]);
 
   // interaction callback functions
   const addHighlight = browserStore((s) => s.addHighlight);
@@ -134,6 +151,7 @@ export default function GenomeBrowserView({
   const trackStore = useLocalTracks(entity.assembly, entity.entityType, callbacks);
 
   const editTrack = trackStore((state) => state.editTrack);
+
   const handeSearchSubmit = (r: Result) => {
     if (r.type === "Gene") {
       editTrack("ignore-gene-track", {
@@ -209,11 +227,7 @@ export default function GenomeBrowserView({
               startIcon={<PageviewIcon />}
               color="primary"
               size="small"
-              onClick={() =>
-                setDomain(
-                  expandCoordinates(Array.isArray(coordinates) ? coordinates[0] : coordinates, entity.entityType)
-                )
-              }
+              onClick={() => setDomain(expandedCoordinates)}
               sx={{
                 width: { xs: "100%", md: "auto" },
                 whiteSpace: "nowrap",

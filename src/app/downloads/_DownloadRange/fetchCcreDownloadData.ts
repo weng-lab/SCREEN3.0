@@ -167,5 +167,8 @@ export async function fetchCcreDownloadData(
     };
   });
 
-  return classes ? rows.filter((row) => classes.includes(row.group)) : rows;
+  if (!classes) return rows;
+
+  const classSet = new Set(classes);
+  return rows.filter((row) => classSet.has(row.group));
 }
