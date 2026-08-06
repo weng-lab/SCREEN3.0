@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { GwasStudiesMetadata } from "common/types/generated/graphql";
+import { GWASStudyListItem } from "common/hooks/data/gwas";
 import { capitalizeFirstLetter } from "common/utils";
 import { subdisease_treemap } from "./gwas_tree_mappings";
 
@@ -9,13 +9,13 @@ export type CategoryGroup = {
   /** Name shown in the accordion summary */
   label: string;
   /** Studies remaining after the search filter */
-  studies: GwasStudiesMetadata[];
+  studies: GWASStudyListItem[];
   /** Study count before the search filter was applied */
   total: number;
 };
 
 /** Groups every study under each of its parent terms — the top level treemap view */
-function groupByParentTerm(studies: GwasStudiesMetadata[]): Record<string, GwasStudiesMetadata[]> {
+function groupByParentTerm(studies: GWASStudyListItem[]): Record<string, GWASStudyListItem[]> {
   return studies.reduce(
     (acc, study) => {
       for (const term of study.parent_terms || []) {
@@ -24,22 +24,19 @@ function groupByParentTerm(studies: GwasStudiesMetadata[]): Record<string, GwasS
       }
       return acc;
     },
-    {} as Record<string, GwasStudiesMetadata[]>
+    {} as Record<string, GWASStudyListItem[]>
   );
 }
 
 /** Groups studies under the layer 2 terms of a single parent category — the drilled-in treemap view */
-function groupByLayer2Term(
-  studies: GwasStudiesMetadata[],
-  activeCategory: string
-): Record<string, GwasStudiesMetadata[]> {
+function groupByLayer2Term(studies: GWASStudyListItem[], activeCategory: string): Record<string, GWASStudyListItem[]> {
   // Lowercase each label once up front instead of once per study
   const labels = (subdisease_treemap?.[activeCategory]?.[0]?.children || []).map((child) => ({
     label: child.label,
     lowercased: child.label.toLowerCase(),
   }));
 
-  const result: Record<string, GwasStudiesMetadata[]> = {};
+  const result: Record<string, GWASStudyListItem[]> = {};
   for (const { label } of labels) result[label] = [];
 
   for (const study of studies) {
@@ -56,7 +53,7 @@ function groupByLayer2Term(
 }
 
 /** `search` is expected to already be lowercased and trimmed */
-function studyMatches(study: GwasStudiesMetadata, search: string): boolean {
+function studyMatches(study: GWASStudyListItem, search: string): boolean {
   return Boolean(
     study.disease_trait?.toLowerCase().includes(search) ||
     study.author?.toLowerCase().includes(search) ||
@@ -71,7 +68,7 @@ function studyMatches(study: GwasStudiesMetadata, search: string): boolean {
  * empties out are kept in the list, and render as disabled accordions showing their unfiltered total.
  */
 export function useCategorizedStudies(
-  studies: GwasStudiesMetadata[] | undefined,
+  studies: GWASStudyListItem[] | undefined,
   activeCategory: string | null,
   search: string
 ): CategoryGroup[] {

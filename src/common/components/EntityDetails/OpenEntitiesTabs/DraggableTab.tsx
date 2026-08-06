@@ -77,7 +77,7 @@ export const DraggableTab = ({
         const selectedStyles: SxProps<Theme> = isSelected
           ? {
               borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
-              borderTop: (theme) => `2px solid transparent`,
+              borderTop: `2px solid transparent`,
             }
           : {};
 

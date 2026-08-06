@@ -53,7 +53,7 @@ export interface TrackCallbacks {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onGeneClick: (item: any) => void;
   ccreTooltip: (rect: Rect, biosample?: CcreTooltipBiosample) => JSX.Element;
-  chromHmmTooltip: (rect: BulkBedRect, tissue: string, displayName: string) => JSX.Element;
+  chromHmmTooltip: (rect: BulkBedRect, tissue: string) => JSX.Element;
 }
 
 // Helper to inject callbacks based on track type
@@ -76,7 +76,7 @@ export function injectCallbacks(track: Track, callbacks: TrackCallbacks, row?: T
         ...track,
         onHover: callbacks.onHover,
         onLeave: callbacks.onLeave,
-        tooltip: (rect: BulkBedRect) => callbacks.chromHmmTooltip(rect, displayName, displayName),
+        tooltip: (rect: BulkBedRect) => callbacks.chromHmmTooltip(rect, displayName),
       };
     }
     return {

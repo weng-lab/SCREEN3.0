@@ -1,5 +1,5 @@
 import { Box, Link, Typography } from "@mui/material";
-import ContactForm from "../contactForm";
+import ContactForm from "./ContactForm";
 import { AboutSection } from "./AboutSection";
 
 export default function ContactUs() {

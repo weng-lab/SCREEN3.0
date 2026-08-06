@@ -2,7 +2,7 @@ import type { ErrorLike } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
 import type { Assembly, CcreClass, CcreZScores, GenomicRange } from "common/types/globalTypes";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useState } from "react";
 import { classifyCcre } from "common/ccre";
 import { parseZScoresArray, ZScoresEntry } from "common/ccre";
 
@@ -72,13 +72,17 @@ export const useIntersectingCcreZScores = ({
   });
 
   const regionKey = useMemo(() => JSON.stringify({ assembly, coordinates }), [assembly, coordinates]);
-  const lastDataRegionKey = useRef(regionKey);
 
-  useEffect(() => {
-    if (data) lastDataRegionKey.current = regionKey;
-  }, [data, regionKey]);
+  // Tracks the region the last successful result belonged to, so `previousData` is only reused while
+  // the region is unchanged (i.e. a biosample switch) and never leaks rows from a previous region.
+  // Adjusted during render rather than in an effect: a ref cannot be read during render, and an
+  // effect would land a frame too late.
+  const [lastDataRegionKey, setLastDataRegionKey] = useState(regionKey);
+  if (data && lastDataRegionKey !== regionKey) {
+    setLastDataRegionKey(regionKey);
+  }
 
-  const canUsePreviousData = lastDataRegionKey.current === regionKey;
+  const canUsePreviousData = lastDataRegionKey === regionKey;
   const displayData = data ?? (canUsePreviousData ? previousData : undefined);
 
   const ccreRows: UseIntersectingCcreZScoresReturn["data"] = useMemo(() => {

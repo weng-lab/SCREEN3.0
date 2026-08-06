@@ -67,6 +67,7 @@ export default function SnpImmuneGWASLdr({ snpid }: { snpid: string }) {
     <Table
       rows={gwasnps?.filter((g) => g.disease !== "" && g.study_source !== "")}
       loading={loading}
+      error={!!error}
       columns={cols}
       initialState={{
         sorting: {

@@ -8,13 +8,13 @@ import { useCcreZScores } from "common/hooks/data/ccre";
 import { useNearestTSSColumn } from "common/components/columns";
 import { Typography, Button, Tooltip, Skeleton } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useGWASStudyData } from "common/hooks/data/gwas";
+import { useGWASStudy } from "common/hooks/data/gwas";
 import { BiosampleSelectDialog } from "common/components/BiosampleSelectDialog";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 import { CcreAssay } from "common/types/globalTypes";
 
 const GWASStudyCcres = ({ entity }: EntityViewComponentProps) => {
-  const { data, loading, error } = useGWASStudyData({ studyid: [entity.entityID] });
+  const { data, loading, error } = useGWASStudy({ studyid: entity.entityID });
 
   const [open, setOpen] = useState(false);
 

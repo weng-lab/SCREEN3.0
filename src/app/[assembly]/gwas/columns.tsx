@@ -1,8 +1,8 @@
 import { TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
-import { GwasStudiesMetadata } from "common/types/generated/graphql";
+import { GWASStudyListItem } from "common/hooks/data/gwas";
 
-export const studiesColumns: TableColDef<GwasStudiesMetadata>[] = [
+export const studiesColumns: TableColDef<GWASStudyListItem>[] = [
   {
     field: "disease_trait",
     headerName: "Disease",

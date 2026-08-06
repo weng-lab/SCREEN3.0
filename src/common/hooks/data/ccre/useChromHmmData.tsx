@@ -18,12 +18,6 @@ export const BIG_QUERY = gql(`
   }
 `);
 
-export type ChromTrack = {
-  sample: string;
-  displayName: string;
-  url: string;
-};
-
 export const CHROM_HMM_STATES = [
   "TssFlnk",
   "TssFlnkD",
@@ -95,7 +89,6 @@ export function getChromHmmStateDisplayname(state: ChromHmmState) {
 }
 
 export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = "GRCh38") {
-  const [tracks, setTracks] = useState<Record<string, ChromTrack[]>>(null);
   const [chromHmmTracksWithTissue, setChromhmmTracksWithTissue] = useState<
     {
       tissue: string;
@@ -116,7 +109,6 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
         setLoading(true);
         // Skip fetching if not GRCh38
         if (assembly !== "GRCh38") {
-          setTracks(null);
           setChromhmmTracksWithTissue(null);
           return;
         }
@@ -128,7 +120,6 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
         }
         const tracksData = parseTracks(await response.text());
         if (cancelled) return;
-        setTracks(tracksData);
 
         // Process tracks into flat structure
         const flatTracks = Object.keys(tracksData)
@@ -203,12 +194,17 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
   }, [bigQueryData, chromHmmTracksWithTissue, bigQueryLoading]);
 
   return {
-    tracks,
     processedTableData,
     loading: loading || bigQueryLoading,
     error: error || bigQueryError,
   };
 }
+
+type ChromTrack = {
+  sample: string;
+  displayName: string;
+  url: string;
+};
 
 /** Parses the tab-delimited track manifest into tracks grouped by tissue */
 function parseTracks(text: string) {

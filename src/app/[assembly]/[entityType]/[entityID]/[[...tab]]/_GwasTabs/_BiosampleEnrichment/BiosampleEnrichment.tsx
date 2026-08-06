@@ -4,7 +4,7 @@ import BiosampleEnrichmentTable from "./BiosampleEnrichmentTable";
 import { GWASEnrichment, useGWASEnrichmentData } from "common/hooks/data/gwas";
 import BiosampleEnrichmentBarPlot from "./BiosampleEnrichmentBarPlot";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useGWASStudyMetaData } from "common/hooks/data/gwas";
+import { useGWASStudy } from "common/hooks/data/gwas";
 import { Table, TableColDef, TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import { Alert } from "@mui/material";
 import { usePlotDownload } from "common/hooks/ui";
@@ -37,7 +37,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
     data: dataGWASMetadata,
     loading: loadingGWASMetadata,
     error: errorGWASMetadata,
-  } = useGWASStudyMetaData({ studyid: [entity.entityID], entityType: "gwas" });
+  } = useGWASStudy({ studyid: entity.entityID });
 
   const { selected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: dataGWASEnrichment ?? emptyRows,
@@ -51,7 +51,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
       <Table
         label={`GWAS Study Metadata`}
         columns={gwasCols}
-        rows={dataGWASMetadata}
+        rows={dataGWASMetadata ? [dataGWASMetadata] : []}
         loading={loadingGWASMetadata}
         error={!!errorGWASMetadata}
         autoHeight

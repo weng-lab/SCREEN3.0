@@ -1,7 +1,7 @@
 "use client";
 import { Box } from "@mui/material";
 import { TreemapNode } from "@weng-lab/visualization";
-import { useGWASStudyMetaData } from "common/hooks/data/gwas";
+import { useAllGWASStudies } from "common/hooks/data/gwas";
 import { useCallback, useState } from "react";
 import CategoryAccordion from "./CategoryAccordion";
 import GWASLandingHeader from "./GWASLandingHeader";
@@ -18,12 +18,11 @@ export default function GWASLandingPage() {
   const [expanded, setExpanded] = useState<string | false>(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const gwasStudyMetadata = useGWASStudyMetaData({
-    entityType: "gwas",
+  const allStudies = useAllGWASStudies({
     parent_terms: activeCategory ? [activeCategory] : undefined,
   });
 
-  const categories = useCategorizedStudies(gwasStudyMetadata.data, activeCategory, search);
+  const categories = useCategorizedStudies(allStudies.data, activeCategory, search);
 
   const onNodeClicked = useCallback(
     (node: TreemapNode<ParentTermMetadata>) => {
@@ -56,7 +55,7 @@ export default function GWASLandingPage() {
           search={search}
           onSearchChange={setSearch}
           activeCategory={activeCategory}
-          loading={gwasStudyMetadata.loading}
+          loading={allStudies.loading}
         />
 
         {categories.map((category) => (
@@ -65,7 +64,7 @@ export default function GWASLandingPage() {
             category={category}
             expanded={expanded === category.term}
             onChange={(isExpanded) => setExpanded(isExpanded ? category.term : false)}
-            loading={gwasStudyMetadata.loading}
+            loading={allStudies.loading}
           />
         ))}
       </Box>

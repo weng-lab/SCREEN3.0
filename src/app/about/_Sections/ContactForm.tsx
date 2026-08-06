@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
@@ -16,28 +16,14 @@ export default function ContactForm() {
 
   const form = useRef<HTMLFormElement>(null);
 
-  // Move validation logic into useEffect to avoid state updates during render
-  useEffect(() => {
-    const newError = { ...error };
-    let hasChanges = false;
-
-    if (error.email && isValidEmail(contactEmail)) {
-      newError.email = false;
-      hasChanges = true;
-    }
-    if (error.name && contactName) {
-      newError.name = false;
-      hasChanges = true;
-    }
-    if (error.message && contactMessage) {
-      newError.message = false;
-      hasChanges = true;
-    }
-
-    if (hasChanges) {
-      setError(newError);
-    }
-  }, [contactEmail, contactName, contactMessage, error.email, error.name, error.message, error]);
+  // `error` records which fields failed the last submit. Whether a failure is still worth showing
+  // depends on the field's current value, so it is derived during render rather than synced by an
+  // effect (which would re-render the whole form on every keystroke that fixes a field).
+  const showError = {
+    name: error.name && !contactName,
+    email: error.email && !isValidEmail(contactEmail),
+    message: error.message && !contactMessage,
+  };
 
   const handleSubmit = async () => {
     const newErrorState = {
@@ -80,7 +66,7 @@ export default function ContactForm() {
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setContactName(event.target.value);
           }}
-          error={error.name}
+          error={showError.name}
           name="user_name"
           type="text"
           sx={{ display: "block", mb: 1 }}
@@ -94,8 +80,8 @@ export default function ContactForm() {
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setContactEmail(event.target.value);
           }}
-          error={error.email || (contactEmail !== "" && !isValidEmail(contactEmail))}
-          helperText={error.email && "Please enter a valid email"}
+          error={showError.email || (contactEmail !== "" && !isValidEmail(contactEmail))}
+          helperText={showError.email && "Please enter a valid email"}
           name="user_email"
           type="email"
           sx={{ display: "block", mb: 1 }}
@@ -109,7 +95,7 @@ export default function ContactForm() {
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setContactMessage(event.target.value);
           }}
-          error={error.message}
+          error={showError.message}
           name="message"
           type="text"
           fullWidth

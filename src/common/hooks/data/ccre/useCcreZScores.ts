@@ -2,7 +2,7 @@ import type { ErrorLike } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { gql } from "common/types/generated";
 import type { Assembly, CcreClass, CcreZScoresAndGroup } from "common/types/globalTypes";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useState } from "react";
 import { classifyCcre } from "common/ccre";
 import { parseZScoresArray, ZScoresEntry } from "common/ccre";
 
@@ -60,13 +60,17 @@ export const useCcreZScores = ({
   });
 
   const queryKey = useMemo(() => JSON.stringify({ assembly, accessions }), [assembly, accessions]);
-  const lastDataQueryKey = useRef(queryKey);
 
-  useEffect(() => {
-    if (data) lastDataQueryKey.current = queryKey;
-  }, [data, queryKey]);
+  // Tracks the accessions the last successful result belonged to, so `previousData` is only reused
+  // while they are unchanged (i.e. a biosample switch) and never leaks scores for other accessions.
+  // Adjusted during render rather than in an effect: a ref cannot be read during render, and an
+  // effect would land a frame too late.
+  const [lastDataQueryKey, setLastDataQueryKey] = useState(queryKey);
+  if (data && lastDataQueryKey !== queryKey) {
+    setLastDataQueryKey(queryKey);
+  }
 
-  const canUsePreviousData = lastDataQueryKey.current === queryKey;
+  const canUsePreviousData = lastDataQueryKey === queryKey;
   const displayData = data ?? (canUsePreviousData ? previousData : undefined);
 
   const ccreMap: UseCcreZScoresReturn["data"] = useMemo(() => {

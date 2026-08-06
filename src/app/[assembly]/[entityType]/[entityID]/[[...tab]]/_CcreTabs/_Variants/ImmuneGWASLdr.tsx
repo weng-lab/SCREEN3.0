@@ -91,6 +91,7 @@ export default function ImmuneGWASLdr({ accession }: { accession: string }) {
       rows={gwasSnps}
       columns={cols}
       loading={loading || loadingSnpAlleles}
+      error={!!error}
       initialState={{
         sorting: {
           sortModel: [{ field: "zscore", sort: "desc" }],

@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client/react";
 import { Stack } from "@mui/material";
 import { ScientificNotation } from "common/utils";
 import { gql } from "common/types/generated";
+import { GetimmuneeQtLsQueryQueryVariables } from "common/types/generated/graphql";
 import { LinkComponent } from "./LinkComponent";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -31,7 +32,7 @@ query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
 export default function EQTLs({ entity }: EntityViewComponentProps) {
   const { entityID, entityType, assembly } = entity;
 
-  let variables: Record<string, any> = {};
+  let variables: GetimmuneeQtLsQueryQueryVariables = {};
   let gtexTitle: string;
   let onekTitle: string;
 

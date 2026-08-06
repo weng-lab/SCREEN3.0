@@ -5,7 +5,7 @@ import { useSnpData, UseSnpDataReturn } from "common/hooks/data/variant/useSnpDa
 import { parseGenomicRangeString } from "common/utils";
 import { useCcre } from "common/hooks/data/ccre/useCcre";
 import { AnyEntityType } from "common/entityTabsConfig";
-import { useGWASStudyData, UseGWASStudyDataReturn } from "common/hooks/data/gwas/useGWASStudyData";
+import { useGWASStudy, UseGWASStudyReturn } from "common/hooks/data/gwas/useGWASStudy";
 
 type useEntityMetadataParams<T extends AnyEntityType> = {
   assembly: Assembly;
@@ -36,7 +36,7 @@ export type useEntityMetadataReturn<T extends AnyEntityType> = T extends "gene"
     : T extends "variant"
       ? UseSnpDataReturn<{ rsID: string; assembly: Assembly }>
       : T extends "gwas"
-        ? UseGWASStudyDataReturn
+        ? UseGWASStudyReturn
         : T extends "bed"
           ? UseBedReturn
           : UseGenomicRangeReturn;
@@ -54,7 +54,7 @@ export const useEntityMetadata = <T extends AnyEntityType>({
   const geneMetadata = useGeneData({ name: entityID, assembly, skip: entityType !== "gene" });
   const ccreMetadata = useCcre({ accession: entityID, assembly, skip: entityType !== "ccre" });
   const snpMetadata = useSnpData({ rsID: entityID, assembly: "GRCh38", skip: entityType !== "variant" });
-  const gwasStudyMetadata = useGWASStudyData({ studyid: [entityID], skip: entityType !== "gwas" });
+  const gwasStudyMetadata = useGWASStudy({ studyid: entityID, skip: entityType !== "gwas" });
 
   switch (entityType) {
     case "gene":
