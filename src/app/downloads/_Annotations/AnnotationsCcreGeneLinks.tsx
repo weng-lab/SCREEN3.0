@@ -1,4 +1,3 @@
-import React from "react";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
 import Config from "common/config.json";
 import DownloadContentLayout from "./DownloadContentLayout";
@@ -72,7 +71,7 @@ const geneLinkDownloads: DownloadButtonProps[] = [
   },
 ];
 
-const AnnotationsGeneLinks: React.FC = () => {
+function AnnotationsGeneLinks() {
   return (
     <DownloadContentLayout title="cCRE-Gene Associations">
       {geneLinkDownloads.map((item) => (
@@ -80,6 +79,6 @@ const AnnotationsGeneLinks: React.FC = () => {
       ))}
     </DownloadContentLayout>
   );
-};
+}
 
 export default AnnotationsGeneLinks;

@@ -12,7 +12,7 @@ export type DownloadButtonProps = {
 };
 
 // Download button for class/gene links files
-export const DownloadButton = (props: DownloadButtonProps) => {
+export function DownloadButton(props: DownloadButtonProps) {
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const handleClick = () => {
@@ -47,4 +47,4 @@ export const DownloadButton = (props: DownloadButtonProps) => {
       {props.fileSize}
     </Button>
   );
-};
+}

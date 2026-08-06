@@ -1,13 +1,9 @@
-import React from "react";
 import Config from "common/config.json";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
 import DownloadContentLayout from "./DownloadContentLayout";
-import { Assembly } from "./Annotations";
+import { Assembly } from "common/types/globalTypes";
 
-const classDownloads: {
-  GRCh38: DownloadButtonProps[];
-  mm10: DownloadButtonProps[];
-} = {
+const classDownloads: Record<Assembly, DownloadButtonProps[]> = {
   GRCh38: [
     {
       href: Config.Downloads.HumanCAPRA,
@@ -44,11 +40,7 @@ const classDownloads: {
   ],
 };
 
-interface AnnotationsFunctional {
-  assembly: Assembly;
-}
-
-const AnnotationsFunctional: React.FC<AnnotationsFunctional> = ({ assembly }) => {
+function AnnotationsFunctional({ assembly }: { assembly: Assembly }) {
   return (
     <DownloadContentLayout title="Functional Characterization">
       {classDownloads[assembly].map((item) => (
@@ -56,6 +48,6 @@ const AnnotationsFunctional: React.FC<AnnotationsFunctional> = ({ assembly }) =>
       ))}
     </DownloadContentLayout>
   );
-};
+}
 
 export default AnnotationsFunctional;

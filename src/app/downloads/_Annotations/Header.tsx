@@ -50,11 +50,7 @@ const ASSEMBLY_CONFIG = {
   },
 };
 
-type AnnotationsHeaderProps = {
-  assembly: Assembly;
-};
-
-const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
+function AnnotationsHeader({ assembly }: { assembly: Assembly }) {
   const [open, setOpen] = useState(false);
   const config = ASSEMBLY_CONFIG[assembly];
 
@@ -166,6 +162,6 @@ const AnnotationsHeader: React.FC<AnnotationsHeaderProps> = ({ assembly }) => {
       </Typography>
     </Stack>
   );
-};
+}
 
 export default AnnotationsHeader;

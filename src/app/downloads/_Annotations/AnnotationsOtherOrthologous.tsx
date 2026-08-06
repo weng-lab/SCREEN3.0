@@ -1,4 +1,3 @@
-import React from "react";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
 import Config from "common/config.json";
 import DownloadContentLayout from "./DownloadContentLayout";
@@ -12,7 +11,7 @@ const orthologousDownloads: DownloadButtonProps[] = [
   },
 ];
 
-const AnnotationsOtherOrthologous: React.FC = () => {
+function AnnotationsOtherOrthologous() {
   return (
     <DownloadContentLayout
       title="Orthologous cCREs"
@@ -23,6 +22,6 @@ const AnnotationsOtherOrthologous: React.FC = () => {
       ))}
     </DownloadContentLayout>
   );
-};
+}
 
 export default AnnotationsOtherOrthologous;

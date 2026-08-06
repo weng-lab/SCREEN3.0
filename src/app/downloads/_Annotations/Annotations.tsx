@@ -1,5 +1,5 @@
 import { Box, Stack, styled } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import AnnotationsHeader from "./Header";
 import AnnotationsByClass from "./AnnotationsByClass";
 import AnnotationsGeneLinks from "./AnnotationsCcreGeneLinks";
@@ -10,6 +10,7 @@ import AnnotationsOtherOrthologous from "./AnnotationsOtherOrthologous";
 import AnnotationsContactUs from "./AnnotationsContactUs";
 import AnnotationsFunctional from "./AnnotationsFunctional";
 import AnnotationsGeneExpression from "./AnnotationsGeneExpression";
+import { Assembly } from "common/types/globalTypes";
 
 const StyledTreeItem = styled(TreeItem)<TreeItemProps>(({ theme }) => ({
   "& .MuiTreeItem-label": {
@@ -26,28 +27,32 @@ const StyledTreeItem = styled(TreeItem)<TreeItemProps>(({ theme }) => ({
   },
 }));
 
-export type Assembly = "GRCh38" | "mm10" | "other";
+//The tree groups content by assembly, plus an "other" category that is not assembly specific
+type TreeCategory = Assembly | "other";
 
-const Content = ({ tab, assembly }: { tab: string; assembly: Assembly }) => {
+function Content({ tab, category }: { tab: string; category: TreeCategory }) {
+  //"other" only holds orthologous cCREs, so narrowing it off here leaves a real assembly below
+  if (category === "other") {
+    return <AnnotationsOtherOrthologous />;
+  }
+
   switch (tab) {
     case "byClass":
-      return <AnnotationsByClass assembly={assembly} />;
+      return <AnnotationsByClass assembly={category} />;
     case "byCelltype":
-      return <AnnotationsByCelltype assembly={assembly} />;
+      return <AnnotationsByCelltype assembly={category} />;
     case "geneLinks":
       return <AnnotationsGeneLinks />;
-    case "ortho":
-      return <AnnotationsOtherOrthologous />;
     case "functional":
-      return <AnnotationsFunctional assembly={assembly} />;
+      return <AnnotationsFunctional assembly={category} />;
     case "geneExpression":
-      return <AnnotationsGeneExpression assembly={assembly} />;
+      return <AnnotationsGeneExpression assembly={category} />;
   }
-};
+}
 
-const Annotations = () => {
+function Annotations() {
   const [selectedTab, setSelectedTab] = useState<string>("GRCh38/byClass");
-  const [assembly, tab] = selectedTab.split("/") as [Assembly, string];
+  const [category, tab] = selectedTab.split("/") as [TreeCategory, string];
 
   return (
     <Box height={"100%"} display={"grid"} gridTemplateRows={"1fr auto"} gap={2} id="annotations">
@@ -83,13 +88,13 @@ const Annotations = () => {
         </SimpleTreeView>
         {/* overflow: visible allows box shadows of buttons to not be clipped */}
         <Stack overflow={"visible"} gap={2} minWidth={0}>
-          {assembly !== "other" && <AnnotationsHeader assembly={assembly} />}
-          <Content tab={tab} assembly={assembly} />
+          {category !== "other" && <AnnotationsHeader assembly={category} />}
+          <Content tab={tab} category={category} />
         </Stack>
       </Box>
       <AnnotationsContactUs />
     </Box>
   );
-};
+}
 
 export default Annotations;

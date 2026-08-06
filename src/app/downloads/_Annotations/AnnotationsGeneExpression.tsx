@@ -1,13 +1,9 @@
-import React from "react";
 import Config from "common/config.json";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
 import DownloadContentLayout from "./DownloadContentLayout";
-import { Assembly } from "./Annotations";
+import { Assembly } from "common/types/globalTypes";
 
-const classDownloads: {
-  GRCh38: DownloadButtonProps[];
-  mm10: DownloadButtonProps[];
-} = {
+const classDownloads: Record<Assembly, DownloadButtonProps[]> = {
   GRCh38: [
     {
       href: Config.Downloads.HumanGeneExpression,
@@ -26,11 +22,7 @@ const classDownloads: {
   ],
 };
 
-interface AnnotationsGeneExpression {
-  assembly: Assembly;
-}
-
-const AnnotationsGeneExpression: React.FC<AnnotationsGeneExpression> = ({ assembly }) => {
+function AnnotationsGeneExpression({ assembly }: { assembly: Assembly }) {
   return (
     <DownloadContentLayout title="Gene Expression">
       {classDownloads[assembly].map((item) => (
@@ -38,6 +30,6 @@ const AnnotationsGeneExpression: React.FC<AnnotationsGeneExpression> = ({ assemb
       ))}
     </DownloadContentLayout>
   );
-};
+}
 
 export default AnnotationsGeneExpression;

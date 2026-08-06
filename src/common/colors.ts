@@ -9,17 +9,20 @@ export const CTCF = "#00B0F0";
 /**
  * MOHD Project
  */
+// react-doctor-disable-next-line deslop/unused-export
 export const mohdProtocolColors: Record<string, string> = {
   "Buffy Coat method": "#d1495b",
   "OPC method": "#00798c",
   "CPT method": "#edae49",
 };
 
+// react-doctor-disable-next-line deslop/unused-export
 export const mohdSexColors: Record<string, string> = {
   female: "#9d5ca3",
   male: "#62A35C",
 };
 
+// react-doctor-disable-next-line deslop/unused-export
 export const mohdSiteColors: Record<string, string> = {
   CCH: "#BF3831",
   CKD: "#79B4F0",
@@ -28,6 +31,7 @@ export const mohdSiteColors: Record<string, string> = {
   UIC: "#31487D",
 };
 
+// react-doctor-disable-next-line deslop/unused-export
 export const mohdStatusColors: Record<string, string> = {
   case: "#e41a1c",
   control: "#377eb8",

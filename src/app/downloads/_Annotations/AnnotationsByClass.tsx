@@ -1,14 +1,10 @@
-import React from "react";
 import Config from "common/config.json";
 import { DownloadButton, DownloadButtonProps } from "./DownloadButton";
 import { CA_CTCF, CA_H3K4me3, CA_TF, CA_only, PLS, TF_only, dELS, pELS, CTCF_Bound, ELS } from "common/ccre";
 import DownloadContentLayout from "./DownloadContentLayout";
-import type { Assembly } from "./Annotations";
+import type { Assembly } from "common/types/globalTypes";
 
-const classDownloads: {
-  GRCh38: DownloadButtonProps[];
-  mm10: DownloadButtonProps[];
-} = {
+const classDownloads: Record<Assembly, DownloadButtonProps[]> = {
   GRCh38: [
     {
       href: Config.Downloads.HumanPromoters,
@@ -147,7 +143,7 @@ const classDownloads: {
   ],
 };
 
-const otherAssemblies: { GRCh38: DownloadButtonProps[]; mm10: DownloadButtonProps[] } = {
+const otherAssemblies: Record<Assembly, DownloadButtonProps[]> = {
   GRCh38: [
     {
       href: Config.Downloads.HumanCCREsHg19,
@@ -167,11 +163,7 @@ const otherAssemblies: { GRCh38: DownloadButtonProps[]; mm10: DownloadButtonProp
   mm10: [],
 };
 
-interface NewAnnotationsByClassProps {
-  assembly: Assembly;
-}
-
-const AnnotationsByClass: React.FC<NewAnnotationsByClassProps> = ({ assembly }) => {
+function AnnotationsByClass({ assembly }: { assembly: Assembly }) {
   return (
     <>
       <DownloadContentLayout title="cCREs by Class (.bed)">
@@ -188,6 +180,6 @@ const AnnotationsByClass: React.FC<NewAnnotationsByClassProps> = ({ assembly }) 
       )}
     </>
   );
-};
+}
 
 export default AnnotationsByClass;

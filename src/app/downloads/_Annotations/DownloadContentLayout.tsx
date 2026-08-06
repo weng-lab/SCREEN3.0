@@ -1,7 +1,7 @@
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Divider, Stack, Tooltip, Typography } from "@mui/material";
 
-const DownloadContentLayout = ({
+function DownloadContentLayout({
   title,
   description,
   children,
@@ -9,7 +9,7 @@ const DownloadContentLayout = ({
   title: string;
   description?: React.ReactNode;
   children: React.ReactNode;
-}) => {
+}) {
   return (
     <Stack gap={1} display={"flex"} flexDirection={"column"} width={"100%"} flexGrow={1}>
       <Stack direction="row" alignItems="center" gap={0.75}>
@@ -26,6 +26,6 @@ const DownloadContentLayout = ({
       {children}
     </Stack>
   );
-};
+}
 
 export default DownloadContentLayout;
