@@ -2,13 +2,12 @@
 import { CircularProgress, Alert, Box } from "@mui/material";
 import GenomeBrowserView from "common/components/GenomeBrowser/GenomeBrowserView";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useGWASSnpsData } from "common/hooks/data/gwas";
-import { useMemo, useState } from "react";
+import { useGWASSnpsData, useLdBlocks, type LdBlock } from "common/hooks/data/gwas";
+import { useState } from "react";
 import SelectLdBlock from "./SelectLdBlock";
 import { useStableCoordinates } from "common/components/GenomeBrowser/utils";
 import { createDataStoreMemo, useCustomData } from "@weng-lab/genomebrowser";
 import type { GenomicRange } from "common/types/globalTypes";
-import type { LdBlock } from "./types";
 
 /** Shown when a study has no LD blocks to focus the browser on */
 const FALLBACK_COORDINATES: GenomicRange = { chromosome: "chr1", start: 1000000, end: 1500000 };
@@ -16,23 +15,7 @@ const FALLBACK_COORDINATES: GenomicRange = { chromosome: "chr1", start: 1000000,
 export default function GwasBrowser({ entity }: EntityViewComponentProps) {
   const { data: data, loading: loading, error: error } = useGWASSnpsData({ studyid: [entity.entityID] });
 
-  const ldblockStats = useMemo<LdBlock[]>(() => {
-    if (!data) return [];
-
-    const map = new Map<number, LdBlock>();
-
-    for (const { ldblock, chromosome, start, stop } of data) {
-      if (!map.has(ldblock)) {
-        map.set(ldblock, { ldblock, chromosome, start, end: stop });
-      } else {
-        const entry = map.get(ldblock)!;
-        entry.start = Math.min(entry.start, start);
-        entry.end = Math.max(entry.end, stop);
-      }
-    }
-
-    return Array.from(map.values()).sort((a, b) => a.ldblock - b.ldblock);
-  }, [data]);
+  const ldblockStats = useLdBlocks(data);
 
   /**
    * Keyed by study so a block picked for one study is never applied to the next one. Storing the

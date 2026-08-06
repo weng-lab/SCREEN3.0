@@ -1,64 +1,38 @@
 import { Skeleton } from "@mui/material";
-import { useEntityMetadata } from "common/hooks/data/entity";
-import { formatPortal } from "common/entityTabsConfig";
-import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { LinkComponent } from "common/components/LinkComponent";
-import { useMemo } from "react";
-import { useGWASSnpsData } from "common/hooks/data/gwas";
+import { formatPortal } from "common/entityTabsConfig";
+import { useEntityMetadata } from "common/hooks/data/entity";
+import { useGWASSnpsData, useLdBlocks } from "common/hooks/data/gwas";
+import { Assembly } from "common/types/globalTypes";
 import { EntityHeaderLayout } from "./EntityHeaderLayout";
 import { UcscBrowserButton } from "./UcscBrowserButton";
+import { headerErrorMessage } from "./headerErrorMessage";
 
 export type GwasStudyHeaderProps = {
   assembly: Assembly;
-  entityType: "gwas";
   entityID: string;
 };
 
-export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHeaderProps) => {
-  const {
-    data: study,
-    loading: studyLoading,
-    error: studyError,
-  } = useEntityMetadata({ assembly, entityType, entityID });
+export const GwasStudyHeader = ({ assembly, entityID }: GwasStudyHeaderProps) => {
+  const { data: study, loading, error } = useEntityMetadata({ assembly, entityType: "gwas", entityID });
   /**
    * Only the coordinates of the first LD block are needed here, so loading/error are not
    * destructured — the UCSC button is disabled whenever the coordinates are unavailable, for any
    * reason. The GWAS browser tab surfaces fetch failures of this query.
    */
   const { data: snps } = useGWASSnpsData({ studyid: [entityID] });
-
-  /** Span of the lowest-numbered LD block in the study, which is where the UCSC link points */
-  const firstLdBlock = useMemo(() => {
-    let span: (GenomicRange & { ldblock: number }) | undefined;
-
-    for (const { ldblock, chromosome, start, stop } of snps ?? []) {
-      if (!span || ldblock < span.ldblock) {
-        span = { ldblock, chromosome, start, end: stop };
-      } else if (ldblock === span.ldblock) {
-        span.start = Math.min(span.start, start);
-        span.end = Math.max(span.end, stop);
-      }
-    }
-
-    return span;
-  }, [snps]);
+  const [firstLdBlock] = useLdBlocks(snps);
 
   const pubmedID = study?.studyid.split("-")[0].trim();
 
-  const errorMessage = studyError
-    ? "Error fetching study details"
-    : !studyLoading && !study
-      ? `No GWAS study found with ID ${entityID}`
-      : null;
-
   return (
     <EntityHeaderLayout
-      label={`${formatPortal(entityType)} Details`}
+      label={`${formatPortal("gwas")} Details`}
       // Falls back to the study ID so the header still identifies the entity when the fetch fails
-      title={studyLoading ? <Skeleton width={"60%"} /> : (study?.disease_trait ?? entityID)}
-      errorMessage={errorMessage}
+      title={loading ? <Skeleton width={"60%"} /> : (study?.disease_trait ?? entityID)}
+      errorMessage={headerErrorMessage("gwas", entityID, { loading, error, data: study })}
       subtitle={
-        studyLoading || !study ? (
+        loading || !study ? (
           <Skeleton width={215} />
         ) : (
           <>
@@ -69,7 +43,7 @@ export const GwasStudyHeader = ({ assembly, entityType, entityID }: GwasStudyHea
           </>
         )
       }
-      actions={<UcscBrowserButton assembly={assembly} coordinates={firstLdBlock} entityType={entityType} />}
+      actions={<UcscBrowserButton assembly={assembly} coordinates={firstLdBlock} entityType="gwas" />}
     />
   );
 };

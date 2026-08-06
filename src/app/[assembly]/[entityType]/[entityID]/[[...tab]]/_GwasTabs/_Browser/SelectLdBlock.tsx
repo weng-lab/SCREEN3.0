@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
 import { useState } from "react";
-import type { LdBlock } from "./types";
+import type { LdBlock } from "common/hooks/data/gwas";
 
 interface Props {
   /** The block currently applied to the browser. The dialog opens with this one selected */
