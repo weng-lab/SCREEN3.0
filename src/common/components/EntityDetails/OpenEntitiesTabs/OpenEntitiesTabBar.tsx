@@ -119,7 +119,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
    * Called when Drag ends within <DragDropContext>. Dispatches reorder event
    */
   const onDragEnd: OnDragEndResponder<string> = (result, _) => {
-    if (result.destination?.index && result.destination.index !== result.source.index) {
+    if (result.destination && result.destination.index !== result.source.index) {
       dispatch({
         type: "reorder",
         entity: openEntities.find((el) => el.entityID === result.draggableId),

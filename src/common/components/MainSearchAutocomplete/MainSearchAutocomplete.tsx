@@ -20,7 +20,6 @@ export function MainSearchAutocomplete({ closeDrawer, ...props }: AutoCompletePr
     if (closeDrawer) {
       closeDrawer();
     }
-    console.log(r);
     router.push(makeResultLink(r, props.assembly), { scroll: false });
   };
 

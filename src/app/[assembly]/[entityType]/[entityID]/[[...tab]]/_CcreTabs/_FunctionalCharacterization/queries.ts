@@ -25,7 +25,7 @@ query MPRA_FCC($coordinates: [GenomicRangeInput!]) {
     series
     strand
     log2fc
-    experiment    
+    experiment
     barcode_location
   }
 }
@@ -36,7 +36,7 @@ export const CRISPR_FUNCTIONAL_DATA_QUERY = gql(`
     crisprFccQuery(accession: $accession) {
       rdhs
       log2fc
-      fdr      
+      fdr
       pvalue
       experiment
     }

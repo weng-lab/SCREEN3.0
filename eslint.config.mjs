@@ -4,17 +4,12 @@ import reactHooks from "eslint-plugin-react-hooks";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import unusedImports from "eslint-plugin-unused-imports";
 import prettierRecommended from "eslint-plugin-prettier/recommended";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 // eslint-config-next v15+ ships a native flat config (an array), so it is spread
 // directly. Routing it through FlatCompat crashes the legacy eslintrc loader.
-// It already registers the react, react-hooks, import, jsx-a11y, @next/next and
-// @typescript-eslint plugins, so nothing below may register those again.
+// It already registers the react, react-hooks, import, jsx-a11y and @next/next
+// plugins, plus @typescript-eslint for TypeScript source files.
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export default defineConfig([
   {
@@ -23,6 +18,14 @@ export default defineConfig([
   js.configs.recommended,
   ...nextCoreWebVitals,
   prettierRecommended,
+  {
+    // Next only registers this plugin for TypeScript files. This config itself is
+    // an .mjs file, but it uses the plugin's recommended rules below.
+    files: ["eslint.config.mjs"],
+    plugins: {
+      "@typescript-eslint": typescriptEslint,
+    },
+  },
   {
     files: ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"],
     // Only plugins that eslint-config-next does not already register.
