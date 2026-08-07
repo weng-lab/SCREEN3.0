@@ -8,7 +8,7 @@ import GenomeBrowserView from "./GenomeBrowserView";
 import { useStableCoordinates } from "./utils";
 
 export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
-  const { data, loading, error } = useEntityMetadata(entity);
+  const { data, error } = useEntityMetadata(entity);
 
   const coordinates = useMemo(() => {
     if (!data || data.__typename === "GwasStudiesMetadata") return null;
@@ -22,7 +22,6 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
   const region = Array.isArray(coordinates) ? coordinates[0] : coordinates;
   const currentCoordinates = useStableCoordinates(region);
 
-  if (!currentCoordinates && loading) return <CircularProgress />;
   if (error && !currentCoordinates)
     return (
       <Alert severity="error" variant="outlined">

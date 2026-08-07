@@ -57,7 +57,6 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
     dataStore
   );
 
-  if (!currentCoordinates && loading) return <CircularProgress />;
   if (error && !currentCoordinates)
     return (
       <Alert severity="error" variant="outlined">
