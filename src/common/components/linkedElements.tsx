@@ -15,6 +15,7 @@ export type TableDef<
 > = TableProps & {
   sortColumn: keyof T & string; // Constrain to string keys
   sortDirection: "asc" | "desc";
+  label: string; // Narrowed from TableProps, since it identifies the table across renders
 };
 
 export default function LinkedElements<
@@ -26,9 +27,9 @@ export default function LinkedElements<
 >({ tables }: { tables: TableDef<T>[] }) {
   return (
     <Stack spacing={2}>
-      {tables.map((table, index) => (
+      {tables.map((table) => (
         <Table
-          key={index}
+          key={table.label}
           initialState={{
             sorting: {
               sortModel: [{ field: table.sortColumn, sort: table.sortDirection }],

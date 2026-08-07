@@ -1,23 +1,34 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Alert, Skeleton, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { GridRenderCellParams, GridComparatorFn, gridNumberComparator } from "@mui/x-data-grid-premium";
 import type { CcreAssay } from "common/types/globalTypes";
-import { CLASS_COLORS } from "common/ccre";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { capitalizeFirstLetter } from "common/utils";
 import AssayView from "./AssayView";
 import { AssayWheel } from "@weng-lab/ui-components";
 import { ProportionsBar, getProportionsFromArray } from "@weng-lab/visualization";
-import { CCRE_CLASSES, CLASS_DESCRIPTIONS } from "common/ccre";
+import { CCRE_CLASSES, CLASS_COLORS, CLASS_DESCRIPTIONS } from "common/ccre";
 import { BiosampleRow } from "./types";
-import { useSilencersData } from "common/hooks/data/ccre";
-import { useDynamicEnhancersData } from "common/hooks/data/ccre";
+import { useBiosampleActivity, useDynamicEnhancersData, useSilencersData } from "common/hooks/data/ccre";
 import { Silencer_Studies } from "./consts";
 import { LinkComponent } from "common/components/LinkComponent";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
-import { useBiosampleActivity } from "common/hooks/data/ccre";
+
+const disableCsvEscapeChar = {
+  toolbar: { csvOptions: { escapeFormulas: false }, excelOptions: { escapeFormulas: false } },
+};
+
+/** Matches the horizontal inset of the tables it sits alongside */
+const bodyTextSx = {
+  display: "flex",
+  alignItems: "center",
+  fontWeight: 400,
+  color: "text.primary",
+  pl: 1,
+  ml: 0,
+};
 
 /** Row shape returned by useBiosampleActivity (new field names / undefined-for-missing) */
 type RawBiosampleRow = NonNullable<ReturnType<typeof useBiosampleActivity>["biosampleRows"]>[number];
@@ -93,18 +104,23 @@ const ctAgnosticCols: TableColDef[] = [
   },
 ];
 
-const silencersDataCols: TableColDef[] = [
+type SilencerRow = {
+  study: string;
+  pmid: string;
+  method: string;
+  pubmedLink: string;
+};
+
+const silencersDataCols: TableColDef<SilencerRow>[] = [
   {
     headerName: "Study",
     field: "study",
-    valueGetter: (value, row) => row.study,
   },
   {
     headerName: "PMID",
     field: "pmid",
-    valueGetter: (value, row) => row.pmid,
     renderCell: (params) => (
-      <LinkComponent href={params.row.pubmed_link} showExternalIcon openInNewTab>
+      <LinkComponent href={params.row.pubmedLink} showExternalIcon openInNewTab>
         {params.row.pmid}
       </LinkComponent>
     ),
@@ -112,7 +128,6 @@ const silencersDataCols: TableColDef[] = [
   {
     headerName: "Method",
     field: "method",
-    valueGetter: (value, row) => row.method,
   },
 ];
 
@@ -203,6 +218,86 @@ const PARTIAL_COLLECTION_TOOLTIP =
 const ANCILLARY_COLLECTION_TOOLTIP =
   "For the 562 biosamples lacking DNase data, we do not have the resolution to identify specific elements and we refer to these annotations as the Ancillary Collection. In these biosamples, we simply label cCREs as having a high or low signal for every available assay. We highly suggest that users do not use annotations from the Ancillary Collection unless they are anchoring their analysis on cCREs from the Core Collection or Partial Data Collection.";
 
+const cellTypeListFormat = new Intl.ListFormat("en", { style: "long", type: "conjunction" });
+
+/**
+ * "Additional Classification" tab: dynamic enhancer membership if the cCRE has any, otherwise the
+ * silencer studies it appears in. Both are optional annotations, so most cCREs land on the fallback.
+ */
+const AdditionalClassification = ({ entity }: EntityViewComponentProps) => {
+  const {
+    data: silencersData,
+    loading: loadingSilencers,
+    error: errorSilencers,
+  } = useSilencersData({ accession: [entity.entityID], assembly: entity.assembly });
+
+  const {
+    data: dynamicEnhancersData,
+    loading: loadingDynamicEnhancers,
+    error: errorDynamicEnhancers,
+  } = useDynamicEnhancersData({ accession: [entity.entityID], assembly: entity.assembly });
+
+  const silencerRows: SilencerRow[] = useMemo(
+    () =>
+      silencersData?.flatMap((item) =>
+        item.silencer_studies.flatMap((value) => {
+          const study = Silencer_Studies.find((s) => s.value === value);
+          // Drop studies the portal doesn't have metadata for rather than rendering a blank row
+          return study
+            ? [{ study: study.study, pmid: study.pubmed_id, method: study.method, pubmedLink: study.pubmed_link }]
+            : [];
+        })
+      ) ?? [],
+    [silencersData]
+  );
+
+  if (loadingSilencers || loadingDynamicEnhancers) {
+    return (
+      <Stack spacing={1} sx={{ pl: 1 }}>
+        <Skeleton variant="text" width="60%" />
+        <Skeleton variant="text" width="40%" />
+      </Stack>
+    );
+  }
+
+  if (dynamicEnhancersData && dynamicEnhancersData.length > 0) {
+    return (
+      <Typography variant="body1" sx={bodyTextSx}>
+        {entity.entityID} is classified as MAFF/MAFK+ cCRE in{" "}
+        {cellTypeListFormat.format(dynamicEnhancersData.map((d) => d.celltype))} cells
+      </Typography>
+    );
+  }
+
+  if (silencerRows.length > 0) {
+    return (
+      <Table
+        label="Silencers"
+        rows={silencerRows}
+        columns={silencersDataCols}
+        slotProps={disableCsvEscapeChar}
+        hideFooter
+      />
+    );
+  }
+
+  // Only surfaced once both queries have settled with nothing to show, so a failure can't hide behind
+  // the "no details" fallback
+  if (errorSilencers || errorDynamicEnhancers) {
+    return (
+      <Alert severity="error" variant="outlined" sx={{ alignSelf: "flex-start" }}>
+        Error fetching additional classification details for {entity.entityID}.
+      </Alert>
+    );
+  }
+
+  return (
+    <Typography variant="body1" sx={bodyTextSx}>
+      No further classification details are available for {entity.entityID}.
+    </Typography>
+  );
+};
+
 export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
   // Assay values are used to index into row object, so need to modify assaySpecificRows if changing assays here
   const [tab, setTab] = useState<"tables" | "add_classification" | CcreAssay>("tables");
@@ -217,18 +312,6 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     loading,
     error,
   } = useBiosampleActivity({ accession: entity.entityID, assembly: entity.assembly });
-
-  const {
-    data: silencersData,
-    loading: loadingSilencersData,
-    error: errorSilencersData,
-  } = useSilencersData({ accession: [entity.entityID], assembly: entity.assembly });
-
-  const {
-    data: dynamicEnhancersData,
-    loading: loadingDynamicEnhancersData,
-    error: errorDynamicEnhancersData,
-  } = useDynamicEnhancersData({ accession: [entity.entityID], assembly: entity.assembly });
 
   // Adapt the hook's rows (new field names, undefined-for-missing) to the BiosampleRow shape the
   // columns + Assay plot subsystem expect (bare assay-score field names, undefined for missing).
@@ -254,17 +337,12 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     return biosampleRows?.filter((row) => row[tab] != null).map((row) => ({ ...row, value: row[tab] }));
   }, [biosampleRows, tab]);
 
-  const loadingCorePartialAncillary =
-    loading || !coreCollection || !partialDataCollection || !ancillaryCollection;
+  const loadingCorePartialAncillary = loading || !coreCollection || !partialDataCollection || !ancillaryCollection;
   const errorCorePartialAncillary = !!error;
 
   const ctAgnosticRow = celltypeAgnosticRow
     ? [{ ...celltypeAgnosticRow, displayname: "Cell Type Agnostic" }]
     : undefined;
-
-  const disableCsvEscapeChar = {
-    toolbar: { csvOptions: { escapeFormulas: false }, excelOptions: { escapeFormulas: false } },
-  };
 
   const partialCollectionChromAccess = useMemo(() => {
     if (!partialDataCollection) return;
@@ -302,17 +380,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
       </Tabs>
       {tab === "tables" ? (
         <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
-          <Typography
-            variant="body1"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 400,
-              color: "text.primary",
-              pl: 1,
-              ml: 0, // match table start
-            }}
-          >
+          <Typography variant="body1" sx={bodyTextSx}>
             Cell Type Agnostic Classification
           </Typography>
           <Table
@@ -399,61 +467,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
         </Stack>
       ) : tab === "add_classification" ? (
         <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
-          {dynamicEnhancersData && dynamicEnhancersData.length > 0 ? (
-            <>
-              <Typography
-                variant="body1"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  fontWeight: 400,
-                  color: "text.primary",
-                  pl: 1,
-                  ml: 0,
-                }}
-              >
-                {entity.entityID} is classified as MAFF/MAFK+ cCRE in{" "}
-                {dynamicEnhancersData.length === 2
-                  ? `${dynamicEnhancersData[0].celltype} and ${dynamicEnhancersData[1].celltype}`
-                  : dynamicEnhancersData[0]?.celltype}{" "}
-                cells
-              </Typography>
-              <br />
-            </>
-          ) : silencersData && silencersData.length > 0 ? (
-            <Table
-              label="Silencers"
-              rows={
-                silencersData?.flatMap((item) =>
-                  item.silencer_studies.map((study) => ({
-                    study: Silencer_Studies.find((s) => s.value == study).study,
-                    pmid: Silencer_Studies.find((s) => s.value == study).pubmed_id,
-                    method: Silencer_Studies.find((s) => s.value == study).method,
-                    pubmed_link: Silencer_Studies.find((s) => s.value == study).pubmed_link,
-                  }))
-                ) || []
-              }
-              columns={silencersDataCols}
-              loading={loadingSilencersData}
-              error={!!errorSilencersData}
-              {...disableCsvEscapeChar}
-              hideFooter
-            />
-          ) : (
-            <Typography
-              variant="body1"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                fontWeight: 400,
-                color: "text.primary",
-                pl: 1,
-                ml: 0, // match table start
-              }}
-            >
-              No further classification details are available for {entity.entityID}.
-            </Typography>
-          )}
+          <AdditionalClassification entity={entity} />
         </Stack>
       ) : (
         <AssayView rows={assaySpecificRows} columns={coreAndPartialCols} assay={tab} entity={entity} />

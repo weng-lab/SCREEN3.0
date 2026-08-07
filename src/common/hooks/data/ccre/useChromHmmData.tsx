@@ -18,12 +18,6 @@ export const BIG_QUERY = gql(`
   }
 `);
 
-export type ChromTrack = {
-  sample: string;
-  displayName: string;
-  url: string;
-};
-
 export const CHROM_HMM_STATES = [
   "TssFlnk",
   "TssFlnkD",
@@ -94,43 +88,7 @@ export function getChromHmmStateDisplayname(state: ChromHmmState) {
   return stateDetails[state].description + " (" + stateDetails[state].stateno + ")";
 }
 
-export const ChromHmmTissues = [
-  "adipose",
-  "adrenal gland",
-  "blood",
-  "blood vessel",
-  "bone",
-  "bone marrow",
-  "brain",
-  "breast",
-  "connective tissue",
-  "embryo",
-  "esophagus",
-  "heart",
-  "large intestine",
-  "liver",
-  "lung",
-  "muscle",
-  "nerve",
-  "ovary",
-  "pancreas",
-  "paraythroid gland",
-  "penis",
-  "placenta",
-  "prostate",
-  "skin",
-  "small intestine",
-  "spleen",
-  "stomach",
-  "testis",
-  "thymus",
-  "thyroid",
-  "uterus",
-  "vagina",
-];
-
 export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = "GRCh38") {
-  const [tracks, setTracks] = useState<Record<string, ChromTrack[]>>(null);
   const [chromHmmTracksWithTissue, setChromhmmTracksWithTissue] = useState<
     {
       tissue: string;
@@ -142,20 +100,26 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    // A superseded fetch must not clobber the state of a newer one
+    const controller = new AbortController();
+    let cancelled = false;
+
     const fetchAndProcessData = async () => {
       try {
         setLoading(true);
         // Skip fetching if not GRCh38
         if (assembly !== "GRCh38") {
-          setTracks(null);
           setChromhmmTracksWithTissue(null);
-          setLoading(false);
           return;
         }
 
         // Fetch tracks
-        const tracksData = await getTracks();
-        setTracks(tracksData);
+        const response = await fetch(Config.Downloads.HumanChromHMM, { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        const tracksData = parseTracks(await response.text());
+        if (cancelled) return;
 
         // Process tracks into flat structure
         const flatTracks = Object.keys(tracksData)
@@ -170,14 +134,24 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
 
         setChromhmmTracksWithTissue(flatTracks);
       } catch (error) {
-        console.error("Error fetching ChromHMM data:", error);
-        setError(true);
+        if (!cancelled) {
+          console.error("Error fetching ChromHMM data:", error);
+          setError(true);
+        }
       } finally {
-        setLoading(false);
+        // False positive: the reset is already in `finally`, so it runs on rejection too. The guard
+        // only stops a superseded run from clearing a newer run's spinner.
+        // react-doctor-disable-next-line react-doctor/no-loading-flag-reset-outside-finally
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchAndProcessData();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [assembly]);
 
   // BigQuery for the table data
@@ -220,17 +194,20 @@ export function useChromHMMData(coordinates: GenomicRange, assembly: Assembly = 
   }, [bigQueryData, chromHmmTracksWithTissue, bigQueryLoading]);
 
   return {
-    tracks,
     processedTableData,
     loading: loading || bigQueryLoading,
     error: error || bigQueryError,
   };
 }
 
-async function getTracks() {
-  const response = await fetch(Config.Downloads.HumanChromHMM);
-  const text = await response.text();
+type ChromTrack = {
+  sample: string;
+  displayName: string;
+  url: string;
+};
 
+/** Parses the tab-delimited track manifest into tracks grouped by tissue */
+function parseTracks(text: string) {
   const chromHMMData: Record<string, ChromTrack[]> = {};
   text.split("\n").forEach((line) => {
     const [sample, fileId, tissue, displayName] = line.split("\t");

@@ -1,8 +1,7 @@
 import { CssBaseline } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
-import { ThemeProvider } from "@mui/material/styles";
 import { Analytics } from "@vercel/analytics/next";
-import { ApolloWrapper } from "common/apollo/apollo-wrapper";
+import { ApolloWrapper } from "common/apollo/ApolloWrapper";
 import { OpenEntitiesContextProvider } from "common/OpenEntitiesContext";
 import { MenuControlProvider } from "common/components/MenuContext";
 import MuiXLicense from "common/components/MuiXLicense";

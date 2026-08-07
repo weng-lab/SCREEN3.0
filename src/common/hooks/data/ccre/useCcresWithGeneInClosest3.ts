@@ -8,14 +8,22 @@ const GET_CCRES_WITH_GENE_IN_CLOSEST_3 = gql(`
       accession
     }
   }
-`)
+`);
 
-export const useCcresWithGeneInClosest3 = ({gene, assembly, skip}: {gene: string, assembly: Assembly, skip?: boolean}) => {
+export const useCcresWithGeneInClosest3 = ({
+  gene,
+  assembly,
+  skip,
+}: {
+  gene: string;
+  assembly: Assembly;
+  skip?: boolean;
+}) => {
   const { data, loading, error } = useQuery(GET_CCRES_WITH_GENE_IN_CLOSEST_3, { variables: { gene, assembly }, skip });
 
   return {
-    data: data?.getClosest3GenesTocCREQuery.map(item => item.accession),
+    data: data?.getClosest3GenesTocCREQuery.map((item) => item.accession),
     loading,
-    error
-  }
-}
+    error,
+  };
+};

@@ -8,4 +8,4 @@ export function usePlotDownload() {
     onDownloadSVG: () => ref.current?.downloadSVG(),
     onDownloadPNG: () => ref.current?.downloadPNG(),
   };
-};
+}

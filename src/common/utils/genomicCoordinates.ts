@@ -44,7 +44,7 @@ export function calcDistCcreToTSS(
     const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end;
     const distance = calcDistRegionToPosition(region.start, region.end, anchor, tss);
 
-    const middle = Math.floor(region.start + region.end) / 2
+    const middle = Math.floor(region.start + region.end) / 2;
 
     let direction: "Upstream" | "Downstream";
     if (strand === "+") {
@@ -61,19 +61,6 @@ export function calcDistCcreToTSS(
   });
 
   return results.reduce((closest, curr) => (curr.distance < closest.distance ? curr : closest));
-}
-
-export function ccreOverlapsTSS(
-  region: GenomicRange,
-  transcripts: { id: string; coordinates: GenomicRange }[],
-  strand: "+" | "-"
-): boolean {
-  const distances: number[] = transcripts.map((transcript) => {
-    const tss = strand === "+" ? transcript.coordinates.start : transcript.coordinates.end;
-    return calcDistRegionToRegion(region, { start: tss, end: tss });
-  });
-
-  return distances.includes(0);
 }
 
 /**
@@ -111,10 +98,6 @@ export function calcDistRegionToPosition(
 }
 
 /**
- * @todo why do we have two versions basically doing the same thing instead of one + a Math.abs()
- */
-
-/**
  * Returns the signed distance from coord1 to coord2.
  */
 export function calcSignedDistRegionToRegion(
@@ -125,25 +108,6 @@ export function calcSignedDistRegionToRegion(
     return coord2.end - coord1.start;
   } else if (coord2.start > coord1.end) {
     return coord2.start - coord1.end;
-  } else {
-    return 0;
-  }
-}
-
-/**
- *
- * @param coord1
- * @param coord2
- * @returns the smallest distance from any point in either region
- */
-export function calcDistRegionToRegion(
-  coord1: { start: number; end: number },
-  coord2: { start: number; end: number }
-): number {
-  if (coord1.end < coord2.start) {
-    return coord2.start - coord1.end;
-  } else if (coord2.end < coord1.start) {
-    return coord1.start - coord2.end;
   } else {
     return 0;
   }

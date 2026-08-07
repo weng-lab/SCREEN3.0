@@ -1,13 +1,12 @@
 import { useQuery } from "@apollo/client/react";
 import type { ErrorLike } from "@apollo/client";
-import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { GetcCreConservationDataQuery } from "common/types/generated/graphql";
 
 export type usecCREConservationDataParams = {
-  accession: string[],
-  assembly: string
-}
+  accession: string[];
+  assembly: string;
+};
 
 const cCREConservationData_Query = gql(`
 query getcCREConservationData($accession: [String]!){
@@ -23,14 +22,18 @@ query getcCREConservationData($accession: [String]!){
     vertebrates
   }
 }
-`)
+`);
 
-export type usecCREConservationDataReturn = { data: GetcCreConservationDataQuery['getcCREConservationDataQuery'] | undefined; loading: boolean; error: ErrorLike }
+export type usecCREConservationDataReturn = {
+  data: GetcCreConservationDataQuery["getcCREConservationDataQuery"] | undefined;
+  loading: boolean;
+  error: ErrorLike;
+};
 
 export function useConservationData({ accession, assembly }: usecCREConservationDataParams) {
   const { data, loading, error } = useQuery(cCREConservationData_Query, {
     variables: { accession: accession },
-    skip: !accession || (accession && accession.length ===0) || (assembly==="mm10"),
+    skip: !accession || (accession && accession.length === 0) || assembly === "mm10",
   });
 
   return {

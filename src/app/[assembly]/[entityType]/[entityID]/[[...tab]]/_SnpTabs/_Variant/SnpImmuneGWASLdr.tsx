@@ -1,13 +1,13 @@
 import { useImmuneGWASLdr } from "common/hooks/data/gwas";
-import { useSnpFrequencies } from "common/hooks/data/variant";
+import { useSnpAlleles } from "common/hooks/data/variant";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
 
 export default function SnpImmuneGWASLdr({ snpid }: { snpid: string }) {
   const { data, loading, error } = useImmuneGWASLdr(undefined, [snpid]);
-  const snpAlleles = useSnpFrequencies([snpid]);
-  const ref = snpAlleles.data && snpAlleles.data[snpid]?.ref;
-  const alt = snpAlleles.data && snpAlleles.data[snpid]?.alt;
+  const snpAlleles = useSnpAlleles([snpid]);
+  const ref = snpAlleles.data?.[snpid]?.ref;
+  const alt = snpAlleles.data?.[snpid]?.alt;
 
   const gwasnps = data?.map((d) => {
     let zscore = d.zscore;
@@ -67,6 +67,7 @@ export default function SnpImmuneGWASLdr({ snpid }: { snpid: string }) {
     <Table
       rows={gwasnps?.filter((g) => g.disease !== "" && g.study_source !== "")}
       loading={loading}
+      error={!!error}
       columns={cols}
       initialState={{
         sorting: {

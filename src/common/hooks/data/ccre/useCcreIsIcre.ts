@@ -21,10 +21,10 @@ const CCRE_ICRE_QUERY = gql(`
 type UseCcreIsIcreParams = {
   accessions: string[];
   assembly: Assembly;
-}
+};
 
 export const useCcreIsIcre = ({ accessions, assembly }: UseCcreIsIcreParams) => {
-  const { data, loading, error } =  useQuery(CCRE_ICRE_QUERY, {
+  const { data, loading, error } = useQuery(CCRE_ICRE_QUERY, {
     variables: {
       assembly: "grch38",
       accession: accessions,

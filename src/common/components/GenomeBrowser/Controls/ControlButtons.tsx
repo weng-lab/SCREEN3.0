@@ -7,10 +7,10 @@ type ButtonConfig = { label: string; onClick: (value: number) => void; value: nu
 // Reusable button group component
 const ButtonGroup = ({ buttons }: { buttons: ButtonConfig[] }) => (
   <MuiButtonGroup>
-    {buttons.map((btn, index) => {
+    {buttons.map((btn) => {
       return (
         <Button
-          key={index}
+          key={btn.label}
           variant="outlined"
           size="small"
           onClick={() => btn.onClick(btn.value)}

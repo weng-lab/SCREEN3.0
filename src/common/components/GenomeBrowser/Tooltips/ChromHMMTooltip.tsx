@@ -1,14 +1,14 @@
 import React from "react";
 import { BulkBedRect } from "@weng-lab/genomebrowser";
 import { humanChromStates, mouseChromStates } from "../constants";
+import { truncateString } from "common/utils";
 
 interface ChromHmmTooltipProps {
   rect: BulkBedRect;
   tissue: string;
-  displayName: string;
 }
 
-const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, displayName }) => {
+const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue }) => {
   const stateDetails = humanChromStates[rect.name] || mouseChromStates[rect.name];
 
   if (!stateDetails) {
@@ -21,13 +21,6 @@ const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, display
       </svg>
     );
   }
-
-  const truncate = (word: string) => {
-    if (word.length >= 35) {
-      return word.slice(0, 35) + "...";
-    }
-    return word;
-  };
 
   return (
     <svg width={240} height={92}>
@@ -42,7 +35,7 @@ const ChromHmmTooltip: React.FC<ChromHmmTooltipProps> = ({ rect, tissue, display
         {rect.name}
       </text>
       <text x={10} y={58} fontSize={12} fill="#000000">
-        {truncate(tissue)}
+        {truncateString(tissue, 35)}
       </text>
     </svg>
   );

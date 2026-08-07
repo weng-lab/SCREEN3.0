@@ -6,15 +6,15 @@ import type { CcreZScores } from "common/types/globalTypes";
  * query was run with `include_biosample_details: true`, otherwise `null`.
  */
 export type ZScoresEntry<Details extends string | null = string | null> = [
-  string,              // 0 experiment_accession
-  string,              // 1 file_accession
-  string,              // 2 assay
-  string,              // 3 biosample name (internal, used as the grouping key)
-  Details,             // 4 biosample displayname
-  Details,             // 5 ontology
-  Details,             // 6 sample_type
-  Details,             // 7 lifestage
-  number,              // 8 score
+  string, // 0 experiment_accession
+  string, // 1 file_accession
+  string, // 2 assay
+  string, // 3 biosample name (internal, used as the grouping key)
+  Details, // 4 biosample displayname
+  Details, // 5 ontology
+  Details, // 6 sample_type
+  Details, // 7 lifestage
+  number, // 8 score
   "yes" | "no" | "na", // 9 tf
 ];
 

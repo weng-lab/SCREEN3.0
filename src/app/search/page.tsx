@@ -5,7 +5,7 @@ import { Assembly, isValidAssembly } from "common/types/globalTypes";
 import { redirect } from "next/navigation";
 import { use, useMemo, useState } from "react";
 import { Result, useEntityAutocomplete } from "@weng-lab/ui-components";
-import { makeResultLink } from "common/components/autocomplete";
+import { makeResultLink } from "common/components/MainSearchAutocomplete";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 const ReturnEl = ({ result, assembly }: { result: Result; assembly: Assembly }) => {
@@ -61,9 +61,9 @@ const LegacyCcreReturnEl = ({ result, assembly }: { result: Result; assembly: As
             .split("\n")
             .join(", ")
             .split(/(EH38[A-Z0-9]+|EM10[A-Z0-9]+)/g)
-            .map((part, i) =>
+            .map((part) =>
               /^(EH38|EM10)[A-Z0-9]+$/.test(part) ? (
-                <LinkComponent key={i} href={`/${assembly}/ccre/${part}`}>
+                <LinkComponent key={part} href={`/${assembly}/ccre/${part}`}>
                   {part}
                 </LinkComponent>
               ) : (
@@ -97,7 +97,7 @@ const AlertSection = ({ type }: { type: "encode" | "old-screen" | "no-results" }
     case "old-screen":
       return (
         <Alert severity="info" variant="outlined">
-          <b>This site has been updated.</b> We&apos;ve pulled the relevant search terms from your URL and displayed
+          <b>This site has been updated</b>. We&apos;ve pulled the relevant search terms from your URL and displayed
           results below. <LinkComponent href="/about#versions">[View old versions of SCREEN here]</LinkComponent>. If
           you don&apos;t see what you&apos;re looking for, please try to search directly on our site or visiting our
           downloads section.
@@ -205,17 +205,17 @@ export default function Page({
         <TabContext value={tabValue}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
             {resultTypes.map((x, i) => (
-              <Tab key={i} label={`${x} (${grouped[x].length})`} value={i} />
+              <Tab key={x} label={`${x} (${grouped[x].length})`} value={i} />
             ))}
           </TabList>
           {resultTypes.map((x, i) => (
-            <TabPanel key={i} value={i} sx={{ p: 0 }}>
+            <TabPanel key={x} value={i} sx={{ p: 0 }}>
               <Stack spacing={2}>
-                {grouped[x].map((result, idx) =>
+                {grouped[x].map((result) =>
                   result.type === "Legacy cCRE" ? (
-                    <LegacyCcreReturnEl result={result} assembly={assembly} key={`${x}-${idx}`} />
+                    <LegacyCcreReturnEl result={result} assembly={assembly} key={result.id ?? result.title} />
                   ) : (
-                    <ReturnEl result={result} assembly={assembly} key={`${x}-${idx}`} />
+                    <ReturnEl result={result} assembly={assembly} key={result.id ?? result.title} />
                   )
                 )}
               </Stack>
@@ -226,5 +226,3 @@ export default function Page({
     </Stack>
   );
 }
-
-

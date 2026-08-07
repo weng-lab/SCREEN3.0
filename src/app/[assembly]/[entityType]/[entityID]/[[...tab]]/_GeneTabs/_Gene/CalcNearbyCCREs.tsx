@@ -13,7 +13,8 @@ import {
   Typography,
   Tooltip,
 } from "@mui/material";
-import { InfoOutlined } from "@mui/icons-material";
+import { formatTssOffset } from "./utils";
+
 interface CalculateNearbyCCREsPopperProps {
   open: boolean;
   anchorEl: HTMLButtonElement | null;
@@ -38,9 +39,9 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
   // Track the slider value locally so the handle follows the mouse during drag.
   const [localRange, setLocalRange] = React.useState(range);
 
-  React.useEffect(() => {
+  if (!open && localRange !== range) {
     setLocalRange(range);
-  }, [range]);
+  }
 
   return (
     <Popper open={open} anchorEl={anchorEl} placement="bottom-start" disablePortal sx={{ zIndex: 10 }}>
@@ -93,12 +94,6 @@ const CalculateNearbyCCREsPopper: React.FC<CalculateNearbyCCREsPopperProps> = ({
       </ClickAwayListener>
     </Popper>
   );
-};
-
-// Signed offset relative to the TSS: negative = upstream, positive = downstream
-export const formatTssOffset = (value: number) => {
-  if (value === 0) return "TSS";
-  return `${Math.abs(value) / 1000}kb ${value < 0 ? "upstream" : "downstream"}`;
 };
 
 const tssMarks = [

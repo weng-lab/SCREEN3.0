@@ -12,9 +12,10 @@ export default function PromoterCcres({
   geneData,
 }: {
   geneData: UseGeneDataReturn<{ name: string; assembly: Assembly }>;
-  
-}) {   
-  const { data, loading, error } = useGenePromotersData({ geneid:  geneData.data ? [geneData?.data?.id.split(".")[0]] : [] });
+}) {
+  const { data, loading, error } = useGenePromotersData({
+    geneid: geneData.data ? [geneData?.data?.id.split(".")[0]] : [],
+  });
   const cols: TableColDef[] = [
     {
       field: "accession",
@@ -53,10 +54,9 @@ export default function PromoterCcres({
         }
         return value.toLocaleString();
       },
-    }
+    },
   ];
 
- 
   return (
     <Box width={"100%"}>
       <Table
@@ -64,9 +64,9 @@ export default function PromoterCcres({
         columns={cols}
         error={!!error}
         label={"Promoter cCREs"}
-        loading={loading}               
+        loading={loading}
         emptyTableFallback={"No Promoter cCREs Found"}
-      />     
+      />
     </Box>
   );
 }

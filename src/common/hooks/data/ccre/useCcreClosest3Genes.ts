@@ -49,15 +49,10 @@ export const GET_GENE_TYPE_AND_COORDS = gql(`
 
 const formatGeneType = (type: string) => {
   if (type === "lncRNA") return type;
-  return type
-    .replaceAll("_", " ")
-    .split(" ")
-    .map(capitalizeFirstLetter)
-    .join(" ");
+  return type.replaceAll("_", " ").split(" ").map(capitalizeFirstLetter).join(" ");
 };
 
 export function useCcreClosest3Genes(accession: string, assembly: string) {
-
   const {
     data: dataClosest3,
     loading: loadingClosest3,
@@ -69,14 +64,18 @@ export function useCcreClosest3Genes(accession: string, assembly: string) {
     },
   });
 
-  const uniqueGenes = dataClosest3?.getmaxZScoresQuery.length
-    ? [
-        ...new Set([
-          ...dataClosest3.getmaxZScoresQuery[0].nearestgenes.map((x) => x.gene),
-          ...dataClosest3.getmaxZScoresQuery[0].midccre_nearestgenes.map((x) => x.gene),
-        ]),
-      ]
-    : null;
+  const uniqueGenes = useMemo(
+    () =>
+      dataClosest3?.getmaxZScoresQuery.length
+        ? [
+            ...new Set([
+              ...dataClosest3.getmaxZScoresQuery[0].nearestgenes.map((x) => x.gene),
+              ...dataClosest3.getmaxZScoresQuery[0].midccre_nearestgenes.map((x) => x.gene),
+            ]),
+          ]
+        : null,
+    [dataClosest3]
+  );
 
   const {
     data: dataGenes,
@@ -91,24 +90,33 @@ export function useCcreClosest3Genes(accession: string, assembly: string) {
     skip: !dataClosest3 || (dataClosest3 && dataClosest3.getmaxZScoresQuery.length === 0),
   });
 
-  const geneMetadata = dataGenes
-    ? Object.fromEntries(
-        dataGenes?.gene.map((item) => [
-          item.name,
-          { type: formatGeneType(item.gene_type), coordinates: item.coordinates },
-        ])
-      )
-    : {};
+  // Memoized so returnData below can depend on it directly without recomputing every render
+  const geneMetadata = useMemo(
+    () =>
+      dataGenes
+        ? Object.fromEntries(
+            dataGenes.gene.map((item) => [
+              item.name,
+              { type: formatGeneType(item.gene_type), coordinates: item.coordinates },
+            ])
+          )
+        : {},
+    [dataGenes]
+  );
 
   const returnData = useMemo(() => {
-    if (!dataClosest3) return undefined
-    return (
-      {
-        middleAnchor: dataClosest3.getmaxZScoresQuery[0].midccre_nearestgenes.map(gene => ({...gene, ...geneMetadata[gene.gene]})),
-        edgeAnchor: dataClosest3.getmaxZScoresQuery[0].nearestgenes.map(gene => ({...gene, ...geneMetadata[gene.gene]})),
-      }
-    )
-  }, [dataClosest3, dataGenes])
+    if (!dataClosest3?.getmaxZScoresQuery.length) return undefined;
+    return {
+      middleAnchor: dataClosest3.getmaxZScoresQuery[0].midccre_nearestgenes.map((gene) => ({
+        ...gene,
+        ...geneMetadata[gene.gene],
+      })),
+      edgeAnchor: dataClosest3.getmaxZScoresQuery[0].nearestgenes.map((gene) => ({
+        ...gene,
+        ...geneMetadata[gene.gene],
+      })),
+    };
+  }, [dataClosest3, geneMetadata]);
 
   return {
     data: returnData,

@@ -5,8 +5,9 @@ import { UseGeneDataReturn } from "common/hooks/data/gene";
 import { LinkComponent } from "common/components/LinkComponent";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import CalculateIcon from "@mui/icons-material/Calculate";
-import { useMemo, useState, useRef } from "react";
-import CalculateNearbyCCREsPopper, { formatTssOffset } from "../_Gene/CalcNearbyCCREs";
+import { useMemo, useState } from "react";
+import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
+import { formatTssOffset } from "../_Gene/utils";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import { calcDistCcreToTSS } from "common/utils";
@@ -25,7 +26,7 @@ export type Transcript = {
   };
 };
 
-export type DistanceLinkMethod = "body" | "tss" | "3gene"
+export type DistanceLinkMethod = "body" | "tss" | "3gene";
 
 // Signed bp offsets relative to the TSS: negative = upstream, positive = downstream
 export type TssRange = [number, number];
@@ -58,11 +59,12 @@ export default function DistanceLinkedCcres({
 }) {
   const [calcMethod, setCalcMethod] = useState<DistanceLinkMethod>("tss");
   const [range, setRange] = useState<TssRange>([-10000, 10000]);
-  const [open, setOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  // The popper's anchor lives in state rather than a ref: a ref's `.current` is not readable during
+  // render, so the popper would miss its anchor on the render that opens it.
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const open = !!anchorEl;
 
   const { anchor, tooltip: distanceTooltip } = useDistanceAnchor();
-
 
   const handleMethodChange = (method: DistanceLinkMethod) => {
     setCalcMethod(method);
@@ -73,7 +75,7 @@ export default function DistanceLinkedCcres({
   };
 
   const handleClickAway = () => {
-    setOpen(false);
+    setAnchorEl(null);
   };
 
   // This gets cCREs whose closest 3 genes includes the input gene. Skip unless calcMethod is 3gene
@@ -95,7 +97,8 @@ export default function DistanceLinkedCcres({
           assembly,
           skip: !dataCcresByClosestGenes,
         };
-      case "body": // query with gene body
+      case "body": {
+        // query with gene body
         if (!geneData.data) {
           return {
             coordinates: [],
@@ -103,11 +106,11 @@ export default function DistanceLinkedCcres({
             skip: true,
           };
         }
-        const { __typename, ...coordinates } = geneData.data.coordinates;
         return {
-          coordinates: [coordinates],
+          coordinates: [geneData.data.coordinates],
           assembly,
         };
+      }
       case "tss": // query with regions made using TSS + signed upstream/downstream range
         return {
           coordinates: getTssWindows(geneData.data?.transcripts, range),
@@ -115,7 +118,7 @@ export default function DistanceLinkedCcres({
           skip: !geneData.data?.transcripts,
         };
     }
-  }, [calcMethod, dataCcresByClosestGenes, geneData, range]) satisfies UseCcreDataParams ;
+  }, [assembly, calcMethod, dataCcresByClosestGenes, geneData, range]) satisfies UseCcreDataParams;
 
   const { data, loading, error } = useCcreData(useCcreDataParams);
   const isCcreDataLoading = !useCcreDataParams.skip && loading;
@@ -148,7 +151,7 @@ export default function DistanceLinkedCcres({
     });
   }, [data, geneData.data, tssAnchor]);
 
-  const cols: TableColDef<typeof distanceLinkedCcres[number]>[] = [
+  const cols: TableColDef<(typeof distanceLinkedCcres)[number]>[] = [
     {
       field: "ccre",
       headerName: "Accession",
@@ -221,12 +224,7 @@ export default function DistanceLinkedCcres({
   const toolbarExtra = useMemo(
     () => (
       <Tooltip title="Calculate Nearby cCREs by">
-        <Button
-          ref={buttonRef}
-          onClick={() => setOpen(true)}
-          variant="outlined"
-          endIcon={<CalculateIcon />}
-        >
+        <Button onClick={(event) => setAnchorEl(event.currentTarget)} variant="outlined" endIcon={<CalculateIcon />}>
           Change Method
         </Button>
       </Tooltip>
@@ -286,6 +284,7 @@ export default function DistanceLinkedCcres({
         columns={cols}
         label={"Nearby cCREs"}
         loading={geneData.loading || isCcreDataLoading || isClosestGenesLoading}
+        error={!!error || !!errorCcresByClosestGenes || !!geneData.error}
         initialState={{
           sorting: {
             sortModel: [{ field: "distance", sort: "asc" }],
@@ -302,7 +301,7 @@ export default function DistanceLinkedCcres({
       />
       <CalculateNearbyCCREsPopper
         open={open}
-        anchorEl={buttonRef.current}
+        anchorEl={anchorEl}
         handleClickAway={handleClickAway}
         range={range}
         calcMethod={calcMethod}

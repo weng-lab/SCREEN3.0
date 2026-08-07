@@ -38,7 +38,6 @@ export type ReleaseNote = {
   sections: ReleaseNoteSection[];
 };
 
-
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
     id: "r3.2026.2",
@@ -52,9 +51,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         description: (
           <>
             All SCREEN data is publicly available for download at{" "}
-            <LinkComponent href={"https://screen.wenglab.org/downloads"}>
-              screen.wenglab.org/downloads
-            </LinkComponent>{" "}
+            <LinkComponent href={"https://screen.wenglab.org/downloads"}>screen.wenglab.org/downloads</LinkComponent>{" "}
             and can also be accessed through our API. We are providing authorized access to the API, which requires an
             API key for programmatic use. Please sign in to the API Console{" "}
             <LinkComponent href={"https://console.wenglab.org/"} openInNewTab showExternalIcon>
@@ -77,7 +74,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
             link: "/GRCh38/ccre/EH38E3314260/conservation?open=BYegDCCiASDMAclawIwBYBMA2CB2IA",
             screenshot: "ConservationSimplex.png",
             disableScreenshotStyling: true,
-            imgWidth: 350
+            imgWidth: 350,
           },
           {
             title: "240 Mammal Sequence Alignment",
@@ -86,7 +83,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
             link: "/GRCh38/ccre/EH38E3314260/conservation?open=BYegDCCiASDMAclawIwBYBMA2CB2IA",
             screenshot: "240MammalAlignment.png",
             disableScreenshotStyling: true,
-            imgWidth: 350
+            imgWidth: 350,
           },
         ],
       },

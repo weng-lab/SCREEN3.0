@@ -55,12 +55,11 @@ const NewVersionBanner = () => {
         >
           <Typography variant="caption">NEW</Typography>
         </Box>
-        <Typography
-          variant="body2"
-          noWrap
-          sx={{ color: "#FFFFFF" }}
-        >
-          <b>{versionId}</b><Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>: {message}</Box>
+        <Typography variant="body2" noWrap sx={{ color: "#FFFFFF" }}>
+          <b>{versionId}</b>
+          <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+            : {message}
+          </Box>
         </Typography>
         <Typography variant="body2">
           <LinkComponent href={"/about/versions"} underline="hover" sx={{ color: "#FFFFFF", fontWeight: 600 }}>

@@ -32,16 +32,10 @@ const methodDescriptions = {
   "rE2G_(extended)": "Extended Regulatory Element to Gene mapping using multiple features",
 };
 
+const methods = ["ABC_(DNase_only)", "ABC_(full)", "EPIraction", "GraphRegLR", "rE2G_(DNase_only)", "rE2G_(extended)"];
+
 const SelectCompuGenesMethod = ({ method, open, setOpen, onMethodSelect }: Props) => {
   const [selectedmethod, setSelectedMethod] = useState<string>(method);
-  const methods = [
-    "ABC_(DNase_only)",
-    "ABC_(full)",
-    "EPIraction",
-    "GraphRegLR",
-    "rE2G_(DNase_only)",
-    "rE2G_(extended)",
-  ];
 
   const handleSubmit = () => {
     onMethodSelect(selectedmethod); // send to parent

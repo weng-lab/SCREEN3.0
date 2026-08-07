@@ -17,6 +17,28 @@ const generateDomain = (max: number, steps: number) => {
 
 const MINIMAP_CONFIG = { position: { right: 50, bottom: 50 } };
 
+const TooltipBody = (point: Point<PointMetadata>) => {
+  return (
+    <>
+      <Typography>
+        <b>Accession:</b> {point.metaData.exp_accession}
+      </Typography>
+      <Typography>
+        <b>Biosample:</b> {point.metaData.biosample}
+      </Typography>
+      <Typography>
+        <b>Tissue:</b> {point.metaData.tissue}
+      </Typography>
+      <Typography>
+        <b>Log₁₀(TPM + 1):</b> {getLogTPM(point.metaData).toFixed(2)}
+      </Typography>
+      <Typography>
+        <b>TPM:</b> {getTPM(point.metaData).toFixed(2)}
+      </Typography>
+    </>
+  );
+};
+
 const GeneExpressionUMAP = ({
   geneName,
   rows,
@@ -99,28 +121,6 @@ const GeneExpressionUMAP = ({
 
   const handlePointSelected = (selectedPoint: Point<PointMetadata>) => {
     onPointToggle(selectedPoint.metaData);
-  };
-
-  const TooltipBody = (point: Point<PointMetadata>) => {
-    return (
-      <>
-        <Typography>
-          <b>Accession:</b> {point.metaData.exp_accession}
-        </Typography>
-        <Typography>
-          <b>Biosample:</b> {point.metaData.biosample}
-        </Typography>
-        <Typography>
-          <b>Tissue:</b> {point.metaData.tissue}
-        </Typography>
-        <Typography>
-          <b>Log₁₀(TPM + 1):</b> {getLogTPM(point.metaData).toFixed(2)}
-        </Typography>
-        <Typography>
-          <b>TPM:</b> {getTPM(point.metaData).toFixed(2)}
-        </Typography>
-      </>
-    );
   };
 
   const expressionGradient = useMemo(() => {

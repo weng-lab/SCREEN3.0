@@ -120,7 +120,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
     skip: entity.assembly === "mm10",
   });
 
-  const hasSequenceAlignmentData = Boolean(dataSeq?.ccreSequenceAlignmentQuery[0]?.sequence_alignment)
+  const hasSequenceAlignmentData = Boolean(dataSeq?.ccreSequenceAlignmentQuery[0]?.sequence_alignment);
 
   const allSpeciesSelected = selectedSpecies.size === selectableSpecies.size;
 
@@ -128,10 +128,7 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const unfilteredAlignmentPlotData = useMemo(() => {
     if (!hasSequenceAlignmentData) return null;
-    return makeAlignmentPlotData(
-      dataSeq.ccreSequenceAlignmentQuery[0].sequence_alignment,
-      SPECIES_ORDER_IN_API_RETURN
-    );
+    return makeAlignmentPlotData(dataSeq.ccreSequenceAlignmentQuery[0].sequence_alignment, SPECIES_ORDER_IN_API_RETURN);
   }, [dataSeq, hasSequenceAlignmentData]);
 
   const filteredAlignmentPlotData = useMemo(() => {
@@ -172,9 +169,9 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
 
   const highlightedSpecies = useMemo(
     () =>
-      speciesCoverageData
-        .filter((s) => s.coverage >= appliedRange[0] && s.coverage <= appliedRange[1])
-        .map((s) => s.id),
+      speciesCoverageData.flatMap((s) =>
+        s.coverage >= appliedRange[0] && s.coverage <= appliedRange[1] ? [s.id] : []
+      ),
     [speciesCoverageData, appliedRange]
   );
 
@@ -244,7 +241,8 @@ const SequenceCoverage = ({ entity }: { entity: AnyOpenEntity }) => {
         <div>
           <Box width={300} marginBottom={{ sm: -2 }}>
             <Typography variant="body2" display={"flex"} alignItems={"center"}>
-              Coverage Highlight: {displayRange[0] * 100}%{"\u00A0\u2013\u00A0"}{displayRange[1] * 100}%{"\u00A0"}
+              Coverage Highlight: {displayRange[0] * 100}%{"\u00A0\u2013\u00A0"}
+              {displayRange[1] * 100}%{"\u00A0"}
               <Tooltip
                 title="Highlights species whose aligned sequence covers a percentage of the cCRE region within the selected range"
                 placement="right-end"

@@ -1,14 +1,10 @@
 "use client";
 import { Box, Divider, Stack } from "@mui/material";
 import EntityDetailsTabs from "./EntityDetailsTabs";
-import { EntityDetailsHeader } from "./EntityDetailsHeader";
-import RegionSearchHeader from "./RegionSearchHeader";
-import { parseGenomicRangeString } from "common/utils";
+import { EntityHeader } from "./EntityHeader";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
-import { GwasStudyHeader } from "./GwasStudyHeader";
-import BedUploadHeader from "./BedUploadHeader";
 import { useEntityTabsHeight, useScrollReset } from "common/hooks/ui";
 
 export type EntityDetailsLayoutProps = {
@@ -17,29 +13,7 @@ export type EntityDetailsLayoutProps = {
   entityID: string;
 } & { children: React.ReactNode };
 
-const EntityHeader = ({
-  entityType,
-  entityID,
-  assembly,
-}: {
-  entityType: AnyEntityType;
-  entityID: string;
-  assembly: Assembly;
-}) => {
-  switch (entityType) {
-    case "region":
-      return <RegionSearchHeader assembly={assembly} region={parseGenomicRangeString(entityID)} />;
-    case "gwas":
-      return <GwasStudyHeader assembly={assembly} entityType={entityType} entityID={entityID} />;
-    case "bed":
-      return <BedUploadHeader fileName={entityID} />;
-    default:
-      return <EntityDetailsHeader assembly={assembly} entityType={entityType} entityID={entityID} />;
-  }
-};
-
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
-
   useEntityTabsHeight();
   useScrollReset();
 

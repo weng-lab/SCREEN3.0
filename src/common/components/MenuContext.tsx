@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState, ReactNode } from "react";
 
 type MenuContextType = {
   isMenuOpen: boolean;
@@ -28,27 +28,27 @@ export const MenuControlProvider = ({ children }: { children: ReactNode }) => {
   // MobileMenu controls this. Set to true by Drawer onEntered
   const [isMenuMounted, setIsMenuMounted] = useState(false);
 
-  const openMenu = () => setIsMenuOpen(true);
-  const closeMenu = () => setIsMenuOpen(false);
-  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const openMenu = useCallback(() => setIsMenuOpen(true), []);
+  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+  const toggleMenu = useCallback(() => setIsMenuOpen((prev) => !prev), []);
 
-  return (
-    <MenuContext.Provider
-      value={{
-        isMenuOpen,
-        menuCanBeOpened,
-        setMenuCanBeOpen,
-        isMenuMounted,
-        setIsMenuMounted,
-        openMenu,
-        closeMenu,
-        toggleMenu,
-        setMenuOpen: setIsMenuOpen,
-      }}
-    >
-      {children}
-    </MenuContext.Provider>
+  // Memoized so consumers only rerender when the menu state actually changes
+  const value = useMemo(
+    () => ({
+      isMenuOpen,
+      menuCanBeOpened,
+      setMenuCanBeOpen,
+      isMenuMounted,
+      setIsMenuMounted,
+      openMenu,
+      closeMenu,
+      toggleMenu,
+      setMenuOpen: setIsMenuOpen,
+    }),
+    [isMenuOpen, menuCanBeOpened, isMenuMounted, openMenu, closeMenu, toggleMenu]
   );
+
+  return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;
 };
 
 /**

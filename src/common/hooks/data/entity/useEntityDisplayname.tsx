@@ -1,4 +1,4 @@
-import { useGWASStudyData } from "common/hooks/data/gwas/useGWASStudyData";
+import { useGWASStudy } from "common/hooks/data/gwas/useGWASStudy";
 import { parseGenomicRangeString } from "common/utils";
 import { AnyEntityType } from "common/entityTabsConfig";
 
@@ -8,7 +8,7 @@ type useEntityDisplaynameProps = {
 };
 
 export const useEntityDisplayname = ({ entityID, entityType }: useEntityDisplaynameProps) => {
-  const { data, loading, error } = useGWASStudyData({ studyid: [entityID], skip: entityType !== "gwas" });
+  const { data, loading, error } = useGWASStudy({ studyid: entityID, skip: entityType !== "gwas" });
 
   let label: React.ReactNode;
 

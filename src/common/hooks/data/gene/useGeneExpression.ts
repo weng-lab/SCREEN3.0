@@ -26,7 +26,7 @@ query geneexpression($assembly: String!, $gene_id: String) {
 export type UseGeneExpressionDataParams = {
   id: string;
   assembly: Assembly;
-  skip?: boolean
+  skip?: boolean;
 };
 
 export const useGeneExpression = ({ id, assembly, skip }: UseGeneExpressionDataParams) => {

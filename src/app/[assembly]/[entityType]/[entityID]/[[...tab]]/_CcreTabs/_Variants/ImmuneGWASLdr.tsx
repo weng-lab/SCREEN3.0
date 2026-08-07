@@ -1,6 +1,6 @@
 "use client";
 import { useImmuneGWASLdr } from "common/hooks/data/gwas";
-import { useSnpFrequencies } from "common/hooks/data/variant";
+import { useSnpAlleles } from "common/hooks/data/variant";
 import { useMemo } from "react";
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { LinkComponent } from "common/components/LinkComponent";
@@ -8,7 +8,7 @@ import { LinkComponent } from "common/components/LinkComponent";
 export default function ImmuneGWASLdr({ accession }: { accession: string }) {
   const { data, loading, error } = useImmuneGWASLdr([accession]);
   const snpids = [...new Set(data?.map((l) => l.snpid))];
-  const { data: snpAlleles, loading: loadingSnpAlleles } = useSnpFrequencies(snpids);
+  const { data: snpAlleles, loading: loadingSnpAlleles } = useSnpAlleles(snpids);
 
   const gwasSnps = useMemo(() => {
     if (!data || !snpAlleles) return undefined;
@@ -91,6 +91,7 @@ export default function ImmuneGWASLdr({ accession }: { accession: string }) {
       rows={gwasSnps}
       columns={cols}
       loading={loading || loadingSnpAlleles}
+      error={!!error}
       initialState={{
         sorting: {
           sortModel: [{ field: "zscore", sort: "desc" }],

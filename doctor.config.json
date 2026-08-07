@@ -1,0 +1,9 @@
+{
+  "ignore": {
+    "files": [
+      "src/common/types/generated/**",
+      "src/common/apollo/mohd-client.ts",
+      "src/common/components/MohdInfoBanner.tsx"
+    ]
+  }
+}

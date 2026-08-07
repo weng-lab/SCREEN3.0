@@ -10,6 +10,9 @@ const config: CodegenConfig = {
       plugins: [],
       presetConfig: {
         gqlTagName: "gql",
+        // No GraphQL fragments are defined in this codebase, so the fragment-masking
+        // helpers (useFragment/makeFragmentData/isFragmentReady) are dead surface.
+        fragmentMasking: false,
       },
     },
   },

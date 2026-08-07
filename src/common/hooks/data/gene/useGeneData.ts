@@ -44,8 +44,7 @@ export type UseGeneDataParams =
     };
 
 export type UseGeneDataReturn<T extends UseGeneDataParams> = T extends
-  | { coordinates: GenomicRange | GenomicRange[] }
-  | { name: string[] }
+  { coordinates: GenomicRange | GenomicRange[] } | { name: string[] }
   ? { data: GeneQuery["gene"] | undefined; loading: boolean; error: ErrorLike }
   : { data: GeneQuery["gene"][0] | undefined; loading: boolean; error: ErrorLike };
 
@@ -56,7 +55,7 @@ const toBedRange = (c: GenomicRange): ChromRange => ({
 });
 
 const convertCoordsToQueryFormat = (coordinates: GenomicRange | GenomicRange[]): ChromRange | ChromRange[] => {
-  if (!coordinates) return undefined
+  if (!coordinates) return undefined;
   if (Array.isArray(coordinates)) {
     return coordinates.map(toBedRange);
   } else return toBedRange(coordinates);

@@ -4,22 +4,22 @@ import { LinkComponent } from "common/components/LinkComponent";
 import { useGWASSnpsData } from "common/hooks/data/gwas";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 
+const r2SortComparator = (v1: string | number, v2: string | number) => {
+  const parse = (v: string | number) => {
+    if (v === "*") return 1.1; // lead SNP
+    const n = Number(v);
+    return isNaN(n) ? 0 : n; // fallback for safety
+  };
+
+  return parse(v1) - parse(v2);
+};
+
 export const GWASStudySNPs = ({ entity }: EntityViewComponentProps) => {
   const {
     data: dataGWASSnps,
     loading: loadingGWASSnps,
     error: errorGWASSnps,
   } = useGWASSnpsData({ studyid: [entity.entityID] });
-
-  const r2SortComparator = (v1: string | number, v2: string | number) => {
-    const parse = (v: string | number) => {
-      if (v === "*") return 1.1; // lead SNP
-      const n = Number(v);
-      return isNaN(n) ? 0 : n; // fallback for safety
-    };
-
-    return parse(v1) - parse(v2);
-  };
 
   const columns: TableColDef<(typeof dataGWASSnps)[number]>[] = [
     {

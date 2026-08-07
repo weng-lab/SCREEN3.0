@@ -1,5 +1,5 @@
 export * from "./strings";
-export * from "./scientificNotation";
+export * from "./ScientificNotation";
 export * from "./genomicCoordinates";
 export * from "./regionEncoding";
 export * from "./violin";

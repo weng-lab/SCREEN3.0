@@ -12,29 +12,24 @@ import {
   Typography,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import type { LdBlock } from "common/hooks/data/gwas";
 
 interface Props {
-  ldblock: { ldblock: number; chromosome: string; start: number; end: number };
-  ldblockList: { ldblock: number; chromosome: string; start: number; end: number }[];
+  /** The block currently applied to the browser. The dialog opens with this one selected */
+  ldblock: LdBlock | null;
+  ldblockList: LdBlock[];
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onLdBlockSelect: (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => void;
+  onLdBlockSelect: (ldblock: LdBlock) => void;
 }
 
 const SelectLdBlock = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }: Props) => {
-  const [selectedldblock, setSelectedLdBlock] = useState(JSON.stringify(ldblock));
-
-  useEffect(() => {
-    if (open && ldblock) {
-      setSelectedLdBlock(JSON.stringify(ldblock));
-    }
-  }, [open, ldblock]);
-
-  const handleSubmit = () => {
-    onLdBlockSelect(JSON.parse(selectedldblock)); // send to parent
+  const handleSubmit = (selected: LdBlock) => {
+    onLdBlockSelect(selected); // send to parent
     setOpen(false); // close dialog
   };
+
   return (
     <Dialog open={open} onClose={() => setOpen(false)} disableRestoreFocus>
       <Stack direction={"row"} justifyContent={"space-between"}>
@@ -43,12 +38,36 @@ const SelectLdBlock = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }:
           <CloseOutlined fontSize="inherit" />
         </IconButton>
       </Stack>
+      {/* Dialog unmounts its children while closed, so the picker remounts on every open and its
+          selection always starts from the applied block. That is what discards a selection the user
+          made but never submitted, without needing an effect to re-sync it. */}
+      <LdBlockPicker applied={ldblock} ldblockList={ldblockList} onSubmit={handleSubmit} />
+    </Dialog>
+  );
+};
+
+const LdBlockPicker = ({
+  applied,
+  ldblockList,
+  onSubmit,
+}: {
+  applied: LdBlock | null;
+  ldblockList: LdBlock[];
+  onSubmit: (ldblock: LdBlock) => void;
+}) => {
+  // The radio value is the block number rather than a serialized block, so the selection stays a
+  // plain id and the block itself is looked up once on submit
+  const [selectedId, setSelectedId] = useState(applied ? String(applied.ldblock) : "");
+  const selected = ldblockList.find((m) => String(m.ldblock) === selectedId);
+
+  return (
+    <>
       <DialogContent>
-        <RadioGroup value={selectedldblock} onChange={(e) => setSelectedLdBlock(e.target.value)}>
+        <RadioGroup value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
           {ldblockList.map((m) => (
             <FormControlLabel
               key={m.ldblock}
-              value={JSON.stringify(m)}
+              value={String(m.ldblock)}
               control={<Radio />}
               label={
                 <span>
@@ -63,11 +82,16 @@ const SelectLdBlock = ({ ldblock, ldblockList, open, setOpen, onLdBlockSelect }:
         </RadioGroup>
       </DialogContent>
       <DialogActions>
-        <Button sx={{ textTransform: "none" }} variant="contained" onClick={handleSubmit}>
+        <Button
+          sx={{ textTransform: "none" }}
+          variant="contained"
+          disabled={!selected}
+          onClick={() => selected && onSubmit(selected)}
+        >
           Submit
         </Button>
       </DialogActions>
-    </Dialog>
+    </>
   );
 };
 

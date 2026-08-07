@@ -90,13 +90,7 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
         </g>
       ) : (
         <g>
-          <rect
-            x={padding}
-            y={10}
-            width={10}
-            height={10}
-            fill={group ? CLASS_COLORS[group] : "#8c8c8c"}
-          />
+          <rect x={padding} y={10} width={10} height={10} fill={group ? CLASS_COLORS[group] : "#8c8c8c"} />
           <text x={padding + 16} y={titleY} fontSize={12} fontWeight="bold" fill="#000000">
             {name}
           </text>
@@ -118,7 +112,7 @@ export default function CCRETooltip({ assembly, name, biosample }: CCRETooltipPr
             const y = scoresStartY + i * compactLineHeight;
 
             return (
-              <g key={i}>
+              <g key={row.label}>
                 <text x={padding} y={y} fontSize={12} fontWeight="bold" fill="#000000">
                   {row.label}:
                 </text>
