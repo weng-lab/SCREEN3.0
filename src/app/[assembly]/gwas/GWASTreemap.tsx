@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { Treemap, TreemapNode } from "@weng-lab/visualization";
-import { ParentTermMetadata, subdisease_treemap, tree } from "./gwas_tree_mappings";
+import { ParentTermMetadata, subdisease_treemap, tree } from "./gwasTreeMappings";
 
 const treemapStyle = {
   padding: 8,

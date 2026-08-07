@@ -7,7 +7,7 @@ import CategoryAccordion from "./CategoryAccordion";
 import GWASLandingHeader from "./GWASLandingHeader";
 import GWASTreemap from "./GWASTreemap";
 import StudySearchBar from "./StudySearchBar";
-import { ParentTermMetadata } from "./gwas_tree_mappings";
+import { ParentTermMetadata } from "./gwasTreeMappings";
 import { useCategorizedStudies } from "./useCategorizedStudies";
 
 /** Categories with no subdisease treemap to drill into */

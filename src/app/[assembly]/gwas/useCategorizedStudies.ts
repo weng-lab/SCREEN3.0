@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { GWASStudyListItem } from "common/hooks/data/gwas";
 import { capitalizeFirstLetter } from "common/utils";
-import { subdisease_treemap } from "./gwas_tree_mappings";
+import { subdisease_treemap } from "./gwasTreeMappings";
 
 export type CategoryGroup = {
   /** Grouping key. Matches the treemap node label, and is what accordion expansion is tracked by */
