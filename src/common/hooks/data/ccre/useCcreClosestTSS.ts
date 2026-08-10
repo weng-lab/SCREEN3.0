@@ -24,16 +24,24 @@ const GET_NEAREST_GENE = gql(`
       }
     }
   }
-`)
+`);
 
 /**
  * Distance uses middle of cCRE as anchor, or 0 if overlap
  */
-export const useCcreClosestTSS = ({accessions, assembly, skip}: {accessions: string[], assembly: Assembly, skip?: boolean}) => {
+export const useCcreClosestTSS = ({
+  accessions,
+  assembly,
+  skip,
+}: {
+  accessions: string[];
+  assembly: Assembly;
+  skip?: boolean;
+}) => {
   const { data, loading, error } = useQuery(GET_NEAREST_GENE, { variables: { accessions, assembly }, skip });
 
   const returnData = useMemo(() => {
-    if (!data?.getmaxZScoresQuery) return undefined
+    if (!data?.getmaxZScoresQuery) return undefined;
 
     return Object.fromEntries(
       data.getmaxZScoresQuery.map((item) => [
@@ -44,11 +52,11 @@ export const useCcreClosestTSS = ({accessions, assembly, skip}: {accessions: str
         },
       ])
     );
-  }, [data])
+  }, [data]);
 
   return {
     data: returnData,
     loading,
-    error
-  }
-}
+    error,
+  };
+};

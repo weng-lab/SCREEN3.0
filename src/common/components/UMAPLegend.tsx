@@ -121,9 +121,9 @@ export default function UMAPLegend<T>({
           <Typography color="text.secondary" fontWeight="bold">
             Legend:
           </Typography>
-          {legendEntries.slice(0, 3).map((entry, i) => (
+          {legendEntries.slice(0, 3).map((entry) => (
             <Box
-              key={i}
+              key={entry.label}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -158,16 +158,16 @@ export default function UMAPLegend<T>({
           <Box
             sx={{
               display: "flex",
-              justifyContent: legendEntries?.length / cols >= 3 ? "space-between" : "flex-start",
-              gap: legendEntries?.length / cols >= 4 ? 0 : 10,
+              justifyContent: legendEntries.length / cols >= 3 ? "space-between" : "flex-start",
+              gap: legendEntries.length / cols >= 4 ? 0 : 10,
               p: 1,
             }}
           >
-            {Array.from({ length: Math.ceil(legendEntries?.length / cols) }, (_, colIndex) => (
+            {Array.from({ length: Math.ceil(legendEntries.length / cols) }, (_, colIndex) => (
               <Box key={colIndex} sx={{ mr: 2 }}>
-                {legendEntries.slice(colIndex * cols, colIndex * cols + cols).map((cellType, index) => (
+                {legendEntries.slice(colIndex * cols, colIndex * cols + cols).map((cellType) => (
                   <Box
-                    key={index}
+                    key={cellType.label}
                     sx={{
                       display: "flex",
                       alignItems: "center",

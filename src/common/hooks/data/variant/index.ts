@@ -1,2 +1,2 @@
 export * from "./useSnpData";
-export * from "./useSnpFrequencies";
+export * from "./useSnpAlleles";

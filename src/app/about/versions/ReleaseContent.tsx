@@ -64,12 +64,7 @@ const Screenshot = ({ src, alt, width, disableStyling, disableLightbox }: Screen
               }),
         }}
       >
-        <Box
-          component="img"
-          src={fullSrc}
-          alt={alt}
-          sx={{ display: "block", width: "100%", height: "auto" }}
-        />
+        <Box component="img" src={fullSrc} alt={alt} sx={{ display: "block", width: "100%", height: "auto" }} />
       </Box>
 
       {lightboxEnabled && (
@@ -252,14 +247,10 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
                               color="black"
                               sx={{ display: "inline-block", mb: 1 }}
                             >
-                              <Typography sx={{ fontWeight: 600 }}>
-                                {child.title}
-                              </Typography>
+                              <Typography sx={{ fontWeight: 600 }}>{child.title}</Typography>
                             </Link>
                           ) : (
-                            <Typography sx={{ mb: 1, fontWeight: 600 }}>
-                              {child.title}
-                            </Typography>
+                            <Typography sx={{ mb: 1, fontWeight: 600 }}>{child.title}</Typography>
                           )
                         ) : null}
                         {child.link ? (

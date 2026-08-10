@@ -11,7 +11,7 @@ const GeneLinkedIcres = ({ entity }: EntityViewComponentProps) => {
 
   return (
     <Stack spacing={2}>
-      {entity.assembly === "GRCh38" && <PromoterCcres geneData={geneData} />}      
+      {entity.assembly === "GRCh38" && <PromoterCcres geneData={geneData} />}
       <DistanceLinkedCcres geneData={geneData} assembly={entity.assembly} />
       {entity.assembly === "GRCh38" && <ComputationalLinkedCcres geneData={geneData} />}
     </Stack>

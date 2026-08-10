@@ -20,8 +20,8 @@ export const useDistanceAnchor = () => {
     <Box sx={{ p: 0.5 }}>
       <Typography variant="body2" gutterBottom>
         Distance to TSS measured from the{" "}
-        {anchor === "middleAnchor" ? "middle of the cCRE" : "nearest edge of the cCRE"}.
-        Classification uses the middle of the cCRE as anchor for distance to TSS, or 0 if the cCRE overlaps.
+        {anchor === "middleAnchor" ? "middle of the cCRE" : "nearest edge of the cCRE"}. Classification uses the middle
+        of the cCRE as anchor for distance to TSS, or 0 if the cCRE overlaps.
       </Typography>
       <Button
         variant="outlined"

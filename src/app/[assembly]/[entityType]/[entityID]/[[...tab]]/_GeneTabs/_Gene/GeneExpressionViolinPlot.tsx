@@ -45,16 +45,13 @@ const GeneExpressionViolinPlot = ({
       const values = group.map((d) => getScaledTPM(d, scale));
       const label = tissue;
       const violinColor =
-        selected.length === 0 ||
-        group.every((d) => selected.some((s) => getRowId(s) === getRowId(d)))
+        selected.length === 0 || group.every((d) => selected.some((s) => getRowId(s) === getRowId(d)))
           ? (tissueColors[tissue] ?? tissueColors.missing)
           : "#CCCCCC";
 
       const data: ViolinPoint<PointMetadata>[] = values.map((value, i) => {
         const metadata = group[i];
-        const isSelected =
-          selected.length === 0 ||
-          selected.some((s) => getRowId(s) === getRowId(metadata));
+        const isSelected = selected.length === 0 || selected.some((s) => getRowId(s) === getRowId(metadata));
         const pointColor = isSelected ? (tissueColors[tissue] ?? tissueColors.missing) : "#CCCCCC";
         const pointRadius = isSelected ? 4 : 2;
 

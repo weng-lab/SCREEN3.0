@@ -1,5 +1,5 @@
 import { Assembly } from "common/types/globalTypes";
-import type { EntityType, TabConfig } from "./types";
+import type { AnyEntityType, EntityType, TabConfig } from "./types";
 import { entityTabsConfig } from "./entityTabsConfig";
 import type { AnyOpenEntity } from "common/OpenEntitiesContext";
 
@@ -11,26 +11,27 @@ export const getTabsForEntity = <A extends Assembly, E extends EntityType<A>>(
   return entityTabsConfig[assembly][entityType];
 };
 
-// Helper to get component for given OpenEntity
+// Helper to get component for given OpenEntity. Undefined if the entity's tab has no matching config
 export const getComponentForEntity = (openEntity: AnyOpenEntity) => {
   switch (openEntity.assembly) {
     case "GRCh38":
       return entityTabsConfig.GRCh38[openEntity.entityType as EntityType<"GRCh38">].find(
         (x) => x.route === openEntity.tab
-      ).component;
+      )?.component;
     case "mm10":
       return entityTabsConfig.mm10[openEntity.entityType as EntityType<"mm10">].find((x) => x.route === openEntity.tab)
-        .component;
+        ?.component;
   }
 };
 
 /**
  *
- * @param subpath
- * @returns A formatted portal name for the passed string. If no matching portal returns null
+ * @param entityType
+ * @returns The display name of the entity type's portal. Exhaustive, so adding an entity type to
+ * validEntityTypes surfaces here rather than silently rendering no name.
  */
-export function formatPortal(subpath: string): string {
-  switch (subpath) {
+export function formatPortal(entityType: AnyEntityType): string {
+  switch (entityType) {
     case "variant":
       return "Variant";
     case "gene":
@@ -41,7 +42,7 @@ export function formatPortal(subpath: string): string {
       return "Region";
     case "gwas":
       return "GWAS";
-    default:
-      return null;
+    case "bed":
+      return "Bed";
   }
 }

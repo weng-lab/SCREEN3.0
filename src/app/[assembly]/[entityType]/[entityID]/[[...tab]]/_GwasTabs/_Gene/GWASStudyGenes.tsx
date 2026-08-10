@@ -2,103 +2,73 @@
 import { Table, TableColDef } from "@weng-lab/ui-components";
 import { Box, Button, Tooltip } from "@mui/material";
 import { LinkComponent } from "common/components/LinkComponent";
-import { toScientificNotationElement } from "common/utils";
 import { useState } from "react";
 import SelectCompuGenesMethod from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Gene/SelectCompuGenesMethod";
 
 import { useLinkedGenes } from "common/hooks/data/ccre";
+import type { LinkedGeneInfo } from "common/hooks/data/ccre/useLinkedGenes";
 import { useCompuLinkedGenes } from "common/hooks/data/ccre";
 import { useGWASSnpsIntersectingcCREsData } from "common/hooks/data/gwas";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { formatCoord, sharedColumns } from "./columns";
 
-export function formatCoord(str: string) {
-  const [chrom, start, end] = str.split("_");
-  return `${chrom}:${start}-${end}`;
-}
+const HiC_columns: TableColDef<LinkedGeneInfo>[] = [
+  sharedColumns.accession,
+  sharedColumns.gene,
+  sharedColumns.genetype,
+  sharedColumns.assay,
+  sharedColumns.experiment_accession,
+  sharedColumns.displayname,
+  sharedColumns.score,
+  sharedColumns.p_val,
+];
 
-// Shared column definitions
-export const sharedColumns: { [key: string]: TableColDef } = {
-  accession: {
-    field: "accession",
-    headerName: "Accession",
-    renderCell: (params) => (
-      <LinkComponent href={`/GRCh38/ccre/${params.value}`}>
-        <i>{params.value}</i>
-      </LinkComponent>
-    ),
+const eqtl_columns: TableColDef<LinkedGeneInfo>[] = [
+  sharedColumns.accession,
+  sharedColumns.gene,
+  sharedColumns.genetype,
+  {
+    field: "variantid",
+    headerName: "Variant ID",
   },
-  gene: {
-    field: "gene",
-    headerName: "Common Gene Name",
-    renderCell: (params) => (
-      <LinkComponent href={`/GRCh38/gene/${params.value}`}>
-        <i>{params.value}</i>
-      </LinkComponent>
-    ),
+  {
+    field: "source",
+    headerName: "Source",
   },
-  genename: {
-    field: "genename",
-    headerName: "Common Gene Name",
-    renderCell: (params) => (
-      <LinkComponent href={`/GRCh38/gene/${params.value}`}>
-        <i>{params.value}</i>
-      </LinkComponent>
-    ),
+  {
+    field: "tissue",
+    headerName: "Tissue",
   },
-  genetype: {
-    field: "genetype",
-    headerName: "Gene Type",
-    valueGetter: (_, row) =>
-      row.genetype === "lncRNA"
-        ? row.genetype
-        : row.genetype
-            .replaceAll("_", " ")
-            .split(" ")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" "),
+  {
+    field: "slope",
+    headerName: "Slope",
   },
-  assay: {
-    field: "assay",
-    headerName: "Assay Type",
+  sharedColumns.p_val,
+];
+
+const CRISPR_columns: TableColDef<LinkedGeneInfo>[] = [
+  sharedColumns.accession,
+  sharedColumns.gene,
+  sharedColumns.genetype,
+  sharedColumns.assay,
+  sharedColumns.experiment_accession,
+  sharedColumns.displayname,
+  {
+    field: "effectsize",
+    headerName: "Effect Size",
   },
-  experiment_accession: {
-    field: "experiment_accession",
-    headerName: "Experiment ID",
-    renderCell: (params) => (
-      <LinkComponent href={`https://www.encodeproject.org/experiments/${params.value}`} openInNewTab showExternalIcon>
-        {params.value}
-      </LinkComponent>
-    ),
-  },
-  displayname: {
-    field: "displayname",
-    headerName: "Biosample",
-  },
-  score: {
-    field: "score",
-    headerName: "Score",
-    type: "number",
-  },
-  p_val: {
-    field: "p_val",
-    headerName: "P",
-    renderHeader: () => (
-      <p>
-        <i>P&nbsp;</i>
-      </p>
-    ),
-    renderCell: (params) => (
-      <>
-        {params.value === 0
-          ? "0"
-          : toScientificNotationElement(params.value, 2, {
-              variant: "body2",
-            })}
-      </>
-    ),
-    type: "number",
-  },
-};
+  sharedColumns.p_val,
+];
+
+const ChIA_PET_columns: TableColDef<LinkedGeneInfo>[] = [
+  sharedColumns.accession,
+  sharedColumns.gene,
+  sharedColumns.genetype,
+  sharedColumns.assay,
+  sharedColumns.experiment_accession,
+  sharedColumns.score,
+  sharedColumns.displayname,
+];
 
 export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
   const [method, setMethod] = useState<string>("rE2G_(DNase_only)");
@@ -181,64 +151,6 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
       ...sharedColumns.score,
       valueGetter: (_, row) => row.score.toFixed(2),
     },
-  ];
-
-  const HiC_columns: TableColDef<(typeof HiCLinked)[number]>[] = [
-    sharedColumns.accession,
-    sharedColumns.gene,
-    sharedColumns.genetype,
-    sharedColumns.assay,
-    sharedColumns.experiment_accession,
-    sharedColumns.displayname,
-    sharedColumns.score,
-    sharedColumns.p_val,
-  ];
-
-  const eqtl_columns: TableColDef<(typeof eqtlLinked)[number]>[] = [
-    sharedColumns.accession,
-    sharedColumns.gene,
-    sharedColumns.genetype,
-    {
-      field: "variantid",
-      headerName: "Variant ID",
-    },
-    {
-      field: "source",
-      headerName: "Source",
-    },
-    {
-      field: "tissue",
-      headerName: "Tissue",
-    },
-    {
-      field: "slope",
-      headerName: "Slope",
-    },
-    sharedColumns.p_val,
-  ];
-
-  const CRISPR_columns: TableColDef<(typeof crisprLinked)[number]>[] = [
-    sharedColumns.accession,
-    sharedColumns.gene,
-    sharedColumns.genetype,
-    sharedColumns.assay,
-    sharedColumns.experiment_accession,
-    sharedColumns.displayname,
-    {
-      field: "effectsize",
-      headerName: "Effect Size",
-    },
-    sharedColumns.p_val,
-  ];
-
-  const ChIA_PET_columns: TableColDef<(typeof ChIAPETLinked)[number]>[] = [
-    sharedColumns.accession,
-    sharedColumns.gene,
-    sharedColumns.genetype,
-    sharedColumns.assay,
-    sharedColumns.experiment_accession,
-    sharedColumns.score,
-    sharedColumns.displayname,
   ];
 
   const errorLinked = !!(errorGWASSNPscCREs || errorGWASSnpscCREsGenes);
@@ -325,7 +237,8 @@ export const GWASStudyGenes = ({ entity }: EntityViewComponentProps) => {
         }}
         slotProps={{
           toolbar: {
-            labelTooltip: "Only one method can be shown at a time — select a method by clicking the button to the right",
+            labelTooltip:
+              "Only one method can be shown at a time — select a method by clicking the button to the right",
             extra: (
               <Tooltip title="Advanced Filters">
                 <Button variant="outlined" onClick={() => setOpen(true)}>

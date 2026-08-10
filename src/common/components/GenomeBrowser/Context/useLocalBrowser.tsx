@@ -1,27 +1,41 @@
-import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, Track } from "@weng-lab/genomebrowser";
+import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, Domain, Track } from "@weng-lab/genomebrowser";
 import { tfPeaksTrack } from "@weng-lab/genomebrowser-ui";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
-import { expandCoordinates, randomColor } from "../utils";
+import { randomColor } from "../utils";
 import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
 import { gwasTracks, injectCallbacks, TrackCallbacks } from "../TrackSelect/defaultTracks";
 
+export type UseLocalBrowserParams = {
+  /** The entity's id/name, used as the local storage key and the default highlight's id */
+  name: string;
+  assembly: string;
+  /** The entity's own coordinates, highlighted so the feature stays visible within the padded view */
+  entityCoordinates: GenomicRange;
+  /**
+   * The browser's starting view. Already padded by the caller - this hook deliberately does not
+   * expand it, so that `expandCoordinates` is applied exactly once per browser (see
+   * GenomeBrowserView).
+   */
+  browserDomain: Domain;
+  type: AnyEntityType;
+  breakpoint?: "sm" | "md";
+};
+
 /**
- * Pass entity name/id and coordinates to get back the browser and track stores.
- * Will first check local storage for any saved browser and track state before
- * re-creating them from scratch.
- * @param name the entity's id/name
- * @param coordinates the entity's genomic coordinates
+ * Pass entity name/id, coordinates and starting domain to get back the browser store.
+ * Will first check local storage for any saved browser state before creating it from scratch.
  * @returns a browser store instance
  */
-export function useLocalBrowser(
-  name: string,
-  assembly: string,
-  coordinates: GenomicRange,
-  type: AnyEntityType,
-  breakpoint?: "sm" | "md"
-) {
+export function useLocalBrowser({
+  name,
+  assembly,
+  entityCoordinates,
+  browserDomain,
+  type,
+  breakpoint,
+}: UseLocalBrowserParams) {
   const trackWidth = breakpoint === "sm" ? 550 : breakpoint === "md" ? 950 : 1450;
 
   const localBrowser = useMemo(() => getLocalBrowser(name, assembly), [name, assembly]);
@@ -29,26 +43,16 @@ export function useLocalBrowser(
   // potential infinite loop
   const browserStore = createBrowserStoreMemo(
     {
-      domain:
-        localBrowser?.domain != null
-          ? localBrowser?.domain
-          : expandCoordinates(
-              {
-                chromosome: coordinates.chromosome as Chromosome,
-                start: coordinates.start,
-                end: coordinates.end,
-              },
-              type
-            ),
+      domain: localBrowser?.domain != null ? localBrowser?.domain : browserDomain,
       highlights:
         localBrowser?.highlights ||
         (type !== "gwas" && [
           {
             color: randomColor(),
             domain: {
-              chromosome: coordinates.chromosome as Chromosome,
-              start: coordinates.start,
-              end: coordinates.end,
+              chromosome: entityCoordinates.chromosome as Chromosome,
+              start: entityCoordinates.start,
+              end: entityCoordinates.end,
             },
             id: name,
             opacity: 0.2,
@@ -73,13 +77,13 @@ export function useLocalBrowser(
     setFontSize(titleSize - 2);
   }, [breakpoint, trackWidth, setTrackWidth, setTitleSize, setFontSize]);
 
-  const domain = browserStore((state) => state.domain);
+  const currentDomain = browserStore((state) => state.domain);
   const highlights = browserStore((state) => state.highlights);
 
   // Any time domain and highlights change, we update the local storage
   useEffect(() => {
-    setLocalBrowser(name, assembly, { domain: domain, highlights: highlights });
-  }, [name, assembly, domain, highlights]);
+    setLocalBrowser(name, assembly, { domain: currentDomain, highlights: highlights });
+  }, [name, assembly, currentDomain, highlights]);
 
   return browserStore;
 }

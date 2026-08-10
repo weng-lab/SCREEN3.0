@@ -13,9 +13,8 @@ export async function POST(request: NextRequest) {
     body,
   });
 
-  const data = await response.text();
-  return new NextResponse(data, {
+  return new NextResponse(response.body, {
     status: response.status,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": response.headers.get("content-type") ?? "application/json" },
   });
 }

@@ -5,17 +5,18 @@ import React, { useState } from "react";
 import { theme } from "./theme";
 import { alpha } from "@mui/material/styles";
 import Image from "next/image";
-import MainSearch from "./landing/mainSearch";
-import PopularSearches from "./landing/popularSearches";
-import TrendingDatasets from "./landing/trendingDatasets";
-import ExploreMore from "./landing/ExploreMore";
-import MultipleRegionSearch from "./landing/multipleRegionSearch";
+import MainSearch from "./_Landing/MainSearch";
+import PopularSearches from "./_Landing/PopularSearches";
+import TrendingDatasets from "./_Landing/TrendingDatasets";
+import ExploreMore from "./_Landing/ExploreMore";
+import MultipleRegionSearch from "./_Landing/MultipleRegionSearch";
+import { Assembly } from "common/types/globalTypes";
 
 export default function Home() {
-  const [assembly, setAssembly] = useState<"GRCh38" | "mm10">("GRCh38");
+  const [assembly, setAssembly] = useState<Assembly>("GRCh38");
   const [multipleRegionSearchVisible, setMultipleRegionSearchVisible] = useState(false);
 
-  const handleAssemblyChange = (asmb: "GRCh38" | "mm10") => {
+  const handleAssemblyChange = (asmb: Assembly) => {
     setAssembly(asmb);
   };
 
@@ -84,19 +85,21 @@ export default function Home() {
           sx={{
             width: { xs: "90%", sm: "80%", md: "60%", lg: "45%" },
             display: "flex",
+            gap: "3px",
             justifyContent: { xs: "center", md: "flex-end" },
+            alignItems: "baseline",
             mx: "auto",
           }}
         >
           <Typography variant="subtitle2" color="#b2bcf0" textAlign={{ xs: "center", md: "right" }}>
             Looking to search multiple regions?{" "}
-            <span
-              onClick={toggleMultipleRegionSearchVisible}
-              style={{ color: "#b2bcf0", textDecoration: "underline", cursor: "pointer" }}
-            >
-              Click here!
-            </span>
           </Typography>
+          <Button
+            onClick={toggleMultipleRegionSearchVisible}
+            sx={{ color: "#b2bcf0", textDecoration: "underline", p: 0 }}
+          >
+            Click here!
+          </Button>
         </Box>
         <Collapse in={multipleRegionSearchVisible} sx={{ width: "100%" }} timeout={500}>
           <MultipleRegionSearch

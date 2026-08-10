@@ -35,7 +35,8 @@ const VersionsLayout = () => {
 
       // Activate a release only once its top reaches the same line that clicking
       // it on the timeline scrolls it to: scroll-padding-top (header height + 8px).
-      const headerHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 64;
+      const headerHeight =
+        parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 64;
       const anchorLine = headerHeight + 8;
 
       let activeReleaseId = RELEASE_NOTES[0]?.id ?? "";
@@ -109,7 +110,11 @@ const VersionsLayout = () => {
         alignItems: "start",
       }}
     >
-      <VersionHistoryBar releases={RELEASE_NOTES} selectedReleaseId={selectedReleaseId} onSelect={handleSelectRelease} />
+      <VersionHistoryBar
+        releases={RELEASE_NOTES}
+        selectedReleaseId={selectedReleaseId}
+        onSelect={handleSelectRelease}
+      />
       <Stack spacing={2} divider={<Divider />}>
         {RELEASE_NOTES.map((release) => (
           <Box

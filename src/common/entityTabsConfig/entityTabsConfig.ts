@@ -2,7 +2,7 @@ import { BiosampleActivity } from "app/[assembly]/[entityType]/[entityID]/[[...t
 import { Conservation } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Conservation/Conservation";
 import { FunctionalCharacterization } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_FunctionalCharacterization/FunctionalCharacterization";
 import { AdditionalChromatinSignatures } from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_AdditionalChromatinSignatures/AdditionalChromatinSignatures";
-import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Convservation/GeneConservation";
+import GeneConservation from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Conservation/GeneConservation";
 import CcreLinkedGenes from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Genes/CcreLinkedGenes";
 import CcreVariantsTab from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_CcreTabs/_Variants/CcreVariantsTab";
 import GeneExpression from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GeneTabs/_Gene/GeneExpression";
@@ -23,7 +23,6 @@ import BedOverview from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_BedT
 import GenomeBrowser from "common/components/GenomeBrowser/GenomeBrowser";
 import type { EntityTabsConfig, TabConfig } from "./types";
 import GwasBrowser from "app/[assembly]/[entityType]/[entityID]/[[...tab]]/_GwasTabs/_Browser/GwasBrowser";
-// import { hasNoEnrichmentData } from "common/entityTabsConfig/hasNoEnrichmentData";
 
 const GbIconPath = "/assets/GbIcon.svg";
 const CcreIconPath = "/assets/CcreIcon.svg";
@@ -185,7 +184,6 @@ export const humanCcreTabs = [
     label: "TF Motifs",
     iconPath: TFMotifsIconPath,
     component: TfBinding,
-
   },
   {
     route: "browser",
@@ -258,7 +256,7 @@ export const humanBedTabs = [
     iconPath: GbIconPath,
     component: GenomeBrowser,
     getIsDisabled: () => Promise.resolve(true),
-    disabledMessage: "Coming Soon"
+    disabledMessage: "Coming Soon",
   },
 ] as const satisfies TabConfig[];
 
@@ -363,7 +361,7 @@ export const mouseBedTabs = [
     iconPath: GbIconPath,
     component: GenomeBrowser,
     getIsDisabled: () => Promise.resolve(true),
-    disabledMessage: "Coming Soon"
+    disabledMessage: "Coming Soon",
   },
 ] as const satisfies TabConfig[];
 
