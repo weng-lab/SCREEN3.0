@@ -75,11 +75,11 @@ function AnnotationsBiosampleTable({ assembly }: { assembly: Assembly }) {
 function AnnotationsByCelltype({ assembly }: { assembly: Assembly }) {
   return (
     <>
-      <DownloadContentLayout title="cCREs by Cell and Tissue Type">
-        <AnnotationsBiosampleTable assembly={assembly} />
-      </DownloadContentLayout>
       <DownloadContentLayout title="Core Collection Class Matrix">
         <DownloadButton {...classMatrix} />
+      </DownloadContentLayout>
+      <DownloadContentLayout title="cCREs by Cell and Tissue Type">
+        <AnnotationsBiosampleTable assembly={assembly} />
       </DownloadContentLayout>
     </>
   );
