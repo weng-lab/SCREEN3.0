@@ -2,8 +2,6 @@ import type { CcreAssay } from "common/types/globalTypes";
 
 export const CCRE_ASSAYS = ["dnase", "atac", "h3k4me3", "h3k27ac", "ctcf"] as const;
 
-export const unusedVar = "t";
-
 /**
  *
  * @param assay
