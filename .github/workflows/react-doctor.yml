@@ -44,7 +44,7 @@ jobs:
         # Full reference: https://www.react.doctor/ci
         with:
           blocking: warning          # Gate level: "none" (advisory, the default) | "warning" | "error"
-        #   scope: full              # On PRs, scan the whole project instead of just changed files
+          scope: full              # On PRs, scan the whole project instead of just changed files
         #   comment: false           # Disable the sticky PR summary comment
         #   review-comments: false   # Disable inline review comments on changed lines
         #   commit-status: false     # Disable the commit status (score + counts, links to the run)
