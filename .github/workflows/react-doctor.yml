@@ -7,7 +7,7 @@
 name: React Doctor
 
 on:
-  # Scans the PR's changed files and posts a sticky summary comment listing only the new issues introduced relative to the merge base of the target branch.
+  # Scans the whole project (see `scope: full` below) and posts a sticky summary comment with the findings.
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   # Scans `staging` on every push to track the health-score trend and catch regressions that slipped past PR review.
@@ -34,17 +34,56 @@ jobs:
         with:
           fetch-depth: 0
 
+      # React Doctor's dead-code rules resolve imports through a real
+      # node_modules tree, and the action does not install for you. On a bare
+      # checkout every dependency that is only reached indirectly looks unused:
+      # @visx/visx is declared but the code imports the subpackages it bundles
+      # (@visx/scale, @visx/tooltip, ...), and rxjs is a required peer of
+      # @apollo/client that nothing imports directly. Both are false positives
+      # that disappear once the tree is installed, so install before scanning.
+      #
+      # Node 24 matches the react-doctor action's own default, so the install
+      # and the scan run under the same runtime.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      # package.json pins `packageManager: yarn@4.18.0`; corepack reads that
+      # field and routes `yarn` to it, and .yarnrc.yml's yarnPath then hands off
+      # to the release committed under .yarn/releases. Without corepack the
+      # runner would use its bundled Yarn 1, which does not understand this
+      # project's config.
+      - run: corepack enable
+
+      # Yarn keeps its cache in the project at .yarn/cache (gitignored, this
+      # repo is not zero-install). Keying on yarn.lock means the cache is reused
+      # verbatim until a dependency actually changes; restore-keys lets a
+      # near-miss still warm most of the tree.
+      - uses: actions/cache@v4
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
+      - run: yarn install --immutable
+
       - uses: millionco/react-doctor@v2
-        # Advisory by default: React Doctor reports findings on every PR — a
-        # sticky summary comment, inline review comments, and a commit status
-        # with the health score — but never fails the check, so it won't red-X
-        # a teammate's PR on day one. When your team trusts the signal, graduate
-        # the gate: uncomment the block below and set blocking to "error" (fail
-        # on new error-severity findings) or "warning" (fail on any finding).
+        # `scope: full` is what makes the dead-code rules work at all.
+        # unused-export and the dependency rules are whole-program analyses: to
+        # prove an export is unused you have to inspect every file that could
+        # import it. Under the action's default `changed` scope only the PR's
+        # changed files are scanned, so those rules have no import graph to
+        # reason about and silently never fire.
+        #
+        # The tradeoff is that `full` reports the whole project rather than only
+        # what the PR introduced, so with `blocking: warning` any pre-existing
+        # finding fails every open PR — the baseline has to stay clean. Drop to
+        # `blocking: error` if warning-severity findings become noisy; they will
+        # still show up in the summary comment and the score.
         # Full reference: https://www.react.doctor/ci
         with:
-          blocking: warning          # Gate level: "none" (advisory, the default) | "warning" | "error"
-          scope: full              # On PRs, scan the whole project instead of just changed files
+          blocking: warning        # Gate level: "none" (advisory, the default) | "warning" | "error"
+          scope: full              # Scan and report the whole project, not just changed files
         #   comment: false           # Disable the sticky PR summary comment
         #   review-comments: false   # Disable inline review comments on changed lines
         #   commit-status: false     # Disable the commit status (score + counts, links to the run)

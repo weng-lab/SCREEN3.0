@@ -26,14 +26,16 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
 
-      # package.json pins `packageManager: yarn@3.5.0`; corepack reads that field
-      # and installs exactly that Yarn. Without it the runner would use its
-      # bundled Yarn 1, which does not understand this project's config.
+      # package.json pins `packageManager: yarn@4.18.0`; corepack reads that
+      # field and routes `yarn` to it, and .yarnrc.yml's yarnPath then hands off
+      # to the release committed under .yarn/releases. Without corepack the
+      # runner would use its bundled Yarn 1, which does not understand this
+      # project's config.
       - run: corepack enable
 
-      # Yarn 3 keeps its cache in the project at .yarn/cache (it is gitignored,
+      # Yarn keeps its cache in the project at .yarn/cache (it is gitignored,
       # this repo is not zero-install). Keying on yarn.lock means the cache is
       # reused verbatim until a dependency actually changes; restore-keys lets a
       # near-miss still warm most of the tree.
@@ -46,7 +48,7 @@ jobs:
       # --immutable installs exactly what yarn.lock resolved and fails if
       # anything would change it, so CI can never silently drift from local and a
       # PR that edits package.json without regenerating the lock gets caught here.
-      # (Yarn 3 would apply this by default under CI=true; setting it explicitly
+      # (Yarn 4 would apply this by default under CI=true; setting it explicitly
       # keeps the intent readable and makes local reproduction identical.)
       - run: yarn install --immutable
 
