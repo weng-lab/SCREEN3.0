@@ -1,12 +1,35 @@
 import type { MetadataRoute } from "next";
 import { RELEASE_NOTES } from "app/about/versions/releaseNotes";
 
+const PRODUCTION_URL = "https://screen.wenglab.org";
+
 /**
- * Canonical origin. Sitemap entries must be on the same host as the sitemap itself --
- * Google discards cross-host URLs -- so this needs to match where the app is actually
- * served, not a preview or legacy domain.
+ * Canonical origin for this deployment. Backs `metadataBase`, so it resolves every canonical
+ * link, OpenGraph image and sitemap entry.
+ *
+ * Sitemap entries must be on the same host as the sitemap serving them -- Google discards
+ * cross-host URLs -- so this has to track where the app is actually served.
+ *
+ * Production deliberately keeps the hardcoded domain rather than reading VERCEL_URL: on Vercel
+ * that variable is the generated deployment hostname (screen-<hash>-<team>.vercel.app), not the
+ * custom domain, even for production deploys. Using it there would point canonicals at a URL
+ * users never visit and split ranking signals across two hosts.
+ *
+ * Preview deployments use their own origin so share cards and canonicals resolve to the
+ * deployment being previewed instead of reaching into production -- which is what makes it
+ * possible to test an OpenGraph card before it ships. Vercel serves previews with
+ * X-Robots-Tag: noindex, so these origins never reach a search index.
+ *
+ * Everywhere else (local dev, CI) falls back to production, which keeps a local `yarn build`
+ * comparable with what production emits.
+ *
+ * Read at build time: robots.txt and sitemap.xml are statically generated, so each deployment
+ * bakes in its own origin.
  */
-export const SITE_URL = "https://screen.wenglab.org";
+export const SITE_URL =
+  process.env.VERCEL_ENV !== "production" && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : PRODUCTION_URL;
 
 /**
  * Latest release date as YYYY-MM-DD, or undefined if it can't be read.
