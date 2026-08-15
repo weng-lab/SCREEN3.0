@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { RELEASE_NOTES } from "app/about/versions/releaseNotes";
+import { parseReleaseDay, RELEASE_NOTES } from "app/about/versions/releaseNotes";
 
 const PRODUCTION_URL = "https://screen.wenglab.org";
 
@@ -32,25 +32,15 @@ export const SITE_URL =
     : PRODUCTION_URL;
 
 /**
- * Latest release date as YYYY-MM-DD, or undefined if it can't be read.
+ * Latest release date as YYYY-MM-DD, or undefined when the newest entry carries no exact day
+ * (legacy year-only releases) or is malformed.
  *
- * Derived from RELEASE_NOTES rather than hardcoded so it stays truthful as releases are
- * added. That matters: Google only honors lastmod when it is "consistently and verifiably
- * accurate", and a stale or always-current value teaches it to ignore the field entirely.
- * For the same reason, do not fall back to new Date() here -- that would stamp the page as
- * modified on every deploy.
+ * Assumes RELEASE_NOTES is ordered newest-first, which is also the order the versions page
+ * renders it in.
  */
 function latestReleaseDate(): string | undefined {
-  const raw = RELEASE_NOTES[0]?.date;
-  if (!raw) return undefined;
-
-  const parsed = new Date(raw);
-  if (Number.isNaN(parsed.getTime())) return undefined;
-
-  // Built from local parts instead of toISOString(), which shifts the calendar date across
-  // the UTC boundary depending on the timezone the build runs in.
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}`;
+  const date = RELEASE_NOTES[0]?.date;
+  return date && parseReleaseDay(date) ? date : undefined;
 }
 
 /**

@@ -10,14 +10,6 @@ import HowToCite from "./_Sections/HowToCite";
 import RegistryOfCcres from "./_Sections/RegistryOfCcres";
 import SiteVersions from "./_Sections/SiteVersions";
 
-/**
- * This is a server component: every section here is static composition, and the only
- * interactive one (ContactForm) declares its own "use client". MUI ships client boundaries on
- * its own components, so <Stack> and friends need nothing from this file.
- *
- * Keep it that way -- adding a hook here pulls the whole section tree back into the client
- * bundle and makes this metadata export illegal.
- */
 export const metadata = pageMetadata({
   title: "About the ENCODE Registry of cCREs",
   description:

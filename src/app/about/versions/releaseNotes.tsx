@@ -28,10 +28,75 @@ export type ReleaseNoteSection = {
   children?: ReleaseNoteChild[];
 };
 
+/**
+ * Machine-readable release date: zero-padded `YYYY-MM-DD` where the exact day is known, or a
+ * bare `YYYY` for legacy releases that predate exact dating.
+ *
+ * Stored in this shape rather than as display text ("25 June 2026") because sitemap.ts feeds it
+ * to `lastModified`, and prose dates only survive `new Date`'s implementation-defined fallback
+ * parser. Render it with `formatReleaseDate` -- nothing should display this value raw.
+ *
+ * The template literal constrains shape, not meaning: it still admits "2026-6-5" and
+ * "2026-13-45". `parseReleaseDay` is what actually validates.
+ */
+export type ReleaseDate = `${number}-${number}-${number}` | `${number}`;
+
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/**
+ * Splits a full-day `ReleaseDate` into calendar parts, or returns null for year-only entries and
+ * for values the template literal type can't rule out -- unpadded ("2026-6-5"), out of range
+ * ("2026-13-45"), or nonexistent ("2026-02-30").
+ */
+export function parseReleaseDay(date: ReleaseDate): { year: number; month: number; day: number } | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  if (!match) return null;
+
+  const [year, month, day] = match.slice(1).map(Number);
+
+  // Round-trip through UTC to reject days the calendar doesn't have; Date silently rolls those
+  // forward (Feb 30 -> Mar 2) rather than failing.
+  const utc = new Date(Date.UTC(year, month - 1, day));
+  if (utc.getUTCFullYear() !== year || utc.getUTCMonth() !== month - 1 || utc.getUTCDate() !== day) {
+    return null;
+  }
+
+  return { year, month, day };
+}
+
+/**
+ * Renders a `ReleaseDate` for display: "25 June 2026", or the year alone for legacy year-only
+ * entries. Anything that slipped past `ReleaseDate` unvalidated falls back to the raw string, so
+ * a malformed entry shows up in the UI instead of throwing.
+ *
+ * Month names come from a table rather than `toLocaleDateString` so that this renders identically
+ * on the server and in the browser, without depending on either one's ICU data.
+ */
+export function formatReleaseDate(date: ReleaseDate): string {
+  const parsed = parseReleaseDay(date);
+  if (!parsed) return date;
+
+  return `${parsed.day} ${MONTH_NAMES[parsed.month - 1]} ${parsed.year}`;
+}
+
 export type ReleaseNote = {
   id: string;
   version: string;
-  date: string;
+  /** Machine-readable -- see {@link ReleaseDate}. Display it with {@link formatReleaseDate}. */
+  date: ReleaseDate;
   title: string;
   /** One-line summary of the release. Shown as a subheader below the title, and used by the homepage banner for the most recent release. */
   summary?: string;
@@ -42,7 +107,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     id: "r3.2026.2",
     version: "r3.2026.2",
-    date: "25 June 2026",
+    date: "2026-06-25",
     title: "June 2026 Release",
     summary: "Public API Access, 240 Mammal Conservation Simplex + Alignment, and sitewide improvements",
     sections: [
@@ -122,7 +187,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     id: "r3.2026.1",
     version: "r3.2026.1",
-    date: "30 April 2026",
+    date: "2026-04-30",
     title: "April 2026 Release",
     summary: "ChIP-seq peaks, PhastCons scores, CpG coverage, and promoter cCREs",
     sections: [

@@ -7,7 +7,7 @@ import TimelineDot from "@mui/lab/TimelineDot";
 import TimelineItem from "@mui/lab/TimelineItem";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import { Box, Stack, Typography } from "@mui/material";
-import { ReleaseNote } from "./releaseNotes";
+import { formatReleaseDate, ReleaseNote } from "./releaseNotes";
 
 type VersionHistoryBarProps = {
   releases: ReleaseNote[];
@@ -125,7 +125,7 @@ const VersionHistoryBar = ({ releases, selectedReleaseId, onSelect }: VersionHis
                       </Typography>
                     </Box>
                     <Typography variant="body2" sx={{ color: isSelected ? "primary.main" : "grey.600" }}>
-                      {release.date}
+                      {formatReleaseDate(release.date)}
                     </Typography>
                   </Stack>
                   <Typography variant="body2" sx={{ color: isSelected ? "primary.main" : "grey.600" }}>
