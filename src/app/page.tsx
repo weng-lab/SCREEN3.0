@@ -67,6 +67,8 @@ export default function Home() {
 
           <Typography
             variant="h4"
+            /* Renders as <h1> while keeping the h4 styling -- this is the page's main heading. */
+            component="h1"
             sx={{
               fontWeight: 400,
               fontSize: { xs: "28px", md: "40px" },

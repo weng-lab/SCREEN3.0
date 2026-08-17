@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Tabs, Tab, Divider, Box } from "@mui/material";
+import { Tabs, Tab, Divider, Box, Typography } from "@mui/material";
 import { DataMatrices } from "./_DataMatrices/DataMatrices";
 import { useState } from "react";
 import { DownloadRange } from "./_DownloadRange/DownloadRange";
@@ -31,6 +31,28 @@ export default function Downloads() {
       gap={2}
       id="downloads"
     >
+      {/*
+        The page leads straight into the tabs, so there is no visible heading to promote. This
+        gives screen readers and crawlers the main heading the page otherwise lacks, without
+        changing the layout. Standard clip-rect pattern -- display:none would hide it from both.
+      */}
+      <Typography
+        variant="h1"
+        component="h1"
+        sx={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          padding: 0,
+          margin: -1,
+          overflow: "hidden",
+          clip: "rect(0 0 0 0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
+      >
+        Download cCRE Data
+      </Typography>
       <Box id="downloads-tabs" minWidth={0}>
         <Tabs
           value={page}

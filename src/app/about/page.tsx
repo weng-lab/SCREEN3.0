@@ -1,6 +1,5 @@
-"use client";
-
 import { Stack } from "@mui/material";
+import { pageMetadata } from "common/seo";
 import AboutHeader from "./_Sections/AboutHeader";
 import ApiDocumentation from "./_Sections/ApiDocumentation";
 import CcreCollections from "./_Sections/CcreCollections";
@@ -10,6 +9,13 @@ import EncodeIntegration from "./_Sections/EncodeIntegration";
 import HowToCite from "./_Sections/HowToCite";
 import RegistryOfCcres from "./_Sections/RegistryOfCcres";
 import SiteVersions from "./_Sections/SiteVersions";
+
+export const metadata = pageMetadata({
+  title: "About the ENCODE Registry of cCREs",
+  description:
+    "How SCREEN and the ENCODE Registry of candidate cis-regulatory elements are built: cCRE classifications and collections, ENCODE integration, API access, and how to cite the resource.",
+  path: "/about",
+});
 
 export default function About() {
   return (

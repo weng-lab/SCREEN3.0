@@ -4,7 +4,7 @@ export default function AboutHeader() {
   return (
     <Stack component="header" spacing={1}>
       <Box>
-        <Typography variant="h2" fontWeight={500}>
+        <Typography variant="h2" component="h1" fontWeight={500}>
           About SCREEN
         </Typography>
         <Divider />

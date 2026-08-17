@@ -21,8 +21,6 @@ const sections = [
       { name: "PsychSCREEN", href: "https://psychscreen.wenglab.org/psychscreen" },
       { name: "igSCREEN", href: "https://igscreen.vercel.app/" },
       { name: "Factorbook", href: "https://www.factorbook.org/" },
-      // { name: "GWAS", href: "/gwas" },
-      // { name: "ARGO", href: "/argo" },
     ],
   },
   {
