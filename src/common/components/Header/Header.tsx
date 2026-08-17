@@ -15,7 +15,7 @@ import NewVersionBanner from "./NewVersionBanner";
 import DesktopNav from "./DesktopNav";
 import AssemblySelect from "./AssemblySelect";
 import HeaderSearch from "./HeaderSearch";
-import { pageLinks } from "./navLinks";
+import { HEADER_NAV_LINKS } from "./navLinks";
 
 type ResponsiveAppBarProps = {
   maintenance?: boolean;
@@ -46,7 +46,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
               style={{ objectFit: "contain", objectPosition: "left center" }}
             />
           </Box>
-          <DesktopNav pageLinks={pageLinks} />
+          <DesktopNav pageLinks={HEADER_NAV_LINKS} />
         </Stack>
         {isHomePage ? (
           <IconButton sx={{ color: "white", display: { xs: "none", md: "flex" } }} onClick={handleFocusSearch}>
@@ -64,7 +64,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
             <MenuIcon />
           </IconButton>
         </Box>
-        <MobileMenu pageLinks={pageLinks} assembly={assembly} onAssemblyChange={setAssembly} />
+        <MobileMenu pageLinks={HEADER_NAV_LINKS} assembly={assembly} onAssemblyChange={setAssembly} />
       </Toolbar>
       {isHomePage && process.env.NEXT_PUBLIC_SHOW_RELEASE_BANNER === "true" && <NewVersionBanner />}
     </AppBar>

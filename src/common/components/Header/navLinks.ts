@@ -1,7 +1,7 @@
 import { PageInfo } from "./types";
 
 /** Top level navigation, shared by the desktop nav and the mobile drawer */
-export const pageLinks: PageInfo[] = [
+export const HEADER_NAV_LINKS: PageInfo[] = [
   {
     pageName: "Downloads",
     link: "/downloads",
@@ -13,6 +13,7 @@ export const pageLinks: PageInfo[] = [
       { pageName: "Overview", link: "/about" },
       { pageName: "cCRE Classification", link: "/about#classifications" },
       { pageName: "How to Cite", link: "/about#citations" },
+      { pageName: "API Documentation", link: "/about#api-documentation" },
       { pageName: "Contact Us", link: "/about#contact-us" },
       { pageName: "Release History", link: "/about/versions" },
     ],
