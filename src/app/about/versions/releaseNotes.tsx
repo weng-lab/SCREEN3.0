@@ -105,6 +105,28 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    id: "r3.2026.3",
+    version: "r3.2026.3",
+    date: "2026-08-21",
+    title: "August 2026 Release",
+    summary: "Core Collection Class Matrix download, bug fixes, and performance improvements",
+    sections: [
+      {
+        bulletedChildren: true,
+        children: [
+          {
+            description:
+              'The Core Collection Class Matrix is now available for download on the Annotations tab of the downloads page, on "cCREs by Cell and Tissue Type". This file gives the class assigned to each human cCRE in every Core Collection biosample.',
+            link: "/downloads",
+          },
+          {
+            description: "Bug fixes and performance improvements throughout the site.",
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "r3.2026.2",
     version: "r3.2026.2",
     date: "2026-06-25",
