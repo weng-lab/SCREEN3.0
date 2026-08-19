@@ -386,7 +386,7 @@ const STANDALONE = [
   },
 ];
 
-export const DOWNLOADS_STRUCTURED_DATA = {
+export const GOOGLE_DATASETS = {
   "@context": "https://schema.org",
   "@graph": [
     SCREEN_CATALOG,

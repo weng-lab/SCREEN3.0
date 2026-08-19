@@ -1,5 +1,5 @@
 import { pageMetadata } from "common/seo";
-import { DOWNLOADS_STRUCTURED_DATA } from "./structuredData";
+import { GOOGLE_DATASETS } from "./googleDatasets";
 
 /**
  * Exists so /downloads gets its own title and description -- page.tsx is a client component
@@ -20,7 +20,7 @@ export default function DownloadsLayout({ children }: { children: React.ReactNod
         `pageMetadata` because Next's metadata API has no JSON-LD support -- the script tag has
         to be emitted by hand. It lives in this server component so it ships in the initial HTML.
       */}
-      <script type="application/ld+json">{JSON.stringify(DOWNLOADS_STRUCTURED_DATA)}</script>
+      <script type="application/ld+json">{JSON.stringify(GOOGLE_DATASETS)}</script>
       {children}
     </>
   );
