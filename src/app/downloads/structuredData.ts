@@ -4,30 +4,6 @@ import type { Assembly } from "common/types/globalTypes";
 
 /**
  * schema.org `Dataset` markup for the cCRE registries, emitted as JSON-LD by layout.tsx.
- *
- * This is what registers SCREEN with Google Dataset Search: there is no submission form, the
- * crawler reads this markup off the page. It only works on a page robots.ts allows -- /downloads
- * is on the allowlist, most of the site is not -- and it must be in the server-rendered HTML,
- * since markup injected after hydration is only picked up on Google's slower second pass.
- *
- * Shape of the graph:
- *   - one DataCatalog for SCREEN itself
- *   - one Dataset per assembly for the whole registry
- *   - one Dataset per cCRE class per assembly, linked to its registry by hasPart/isPartOf, so
- *     each class file is independently findable rather than buried in the registry entry
- *   - standalone Datasets for the archives that are distributed alongside the registry but are
- *     not subsets of it (silencers, dynamic enhancers)
- *
- * No `identifier`: that field is the dataset's own DOI, and the only DOI we hold is the Nature
- * article's, which Crossref registers as a journal-article. Google's spec is explicit that the
- * citation DOI is "not for the dataset itself" -- claiming it here would make the node cite
- * itself and would merge this registry with anything else citing the same paper. The field is
- * Recommended, not Required, so absent beats wrong. Add one only if a DataCite DOI is minted.
- *
- * Download URLs come from config.json, the same source the download buttons read, so the markup
- * can never advertise a file the page does not offer. File sizes are the one value duplicated
- * from _Annotations/AnnotationsByClass.tsx; Google does not consume contentSize, so a drift
- * there costs nothing that justifies coupling the UI to this file.
  */
 
 /**
