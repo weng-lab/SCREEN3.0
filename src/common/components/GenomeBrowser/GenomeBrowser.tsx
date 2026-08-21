@@ -2,15 +2,13 @@
 import { Alert, CircularProgress } from "@mui/material";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useEntityMetadata } from "common/hooks/data/entity";
-import type { GenomicRange } from "common/types/globalTypes";
 import { decodeRegions } from "common/utils";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import GenomeBrowserView from "./GenomeBrowserView";
+import { useStableCoordinates } from "./utils";
 
 export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
-  const { data, loading, error } = useEntityMetadata(entity);
-  const entityKey = `${entity.assembly}:${entity.entityType}:${entity.entityID}`;
-  const [resolvedCoordinates, setResolvedCoordinates] = useState<{ key: string; coordinates: GenomicRange } | null>(null);
+  const { data, error } = useEntityMetadata(entity);
 
   const coordinates = useMemo(() => {
     if (!data || data.__typename === "GwasStudiesMetadata") return null;
@@ -21,26 +19,9 @@ export default function GenomeBrowser({ entity }: EntityViewComponentProps) {
     } else return data.coordinates;
   }, [data, entity.entityID]);
 
-  useEffect(() => {
-    setResolvedCoordinates(null);
-  }, [entityKey]);
+  const region = Array.isArray(coordinates) ? coordinates[0] : coordinates;
+  const currentCoordinates = useStableCoordinates(region);
 
-  useEffect(() => {
-    if (!coordinates) return;
-    const nextCoordinates = Array.isArray(coordinates) ? coordinates[0] : coordinates;
-    setResolvedCoordinates((current) =>
-      current?.key === entityKey &&
-      current.coordinates.chromosome === nextCoordinates.chromosome &&
-      current.coordinates.start === nextCoordinates.start &&
-      current.coordinates.end === nextCoordinates.end
-        ? current
-        : { key: entityKey, coordinates: nextCoordinates }
-    );
-  }, [coordinates, entityKey]);
-
-  const currentCoordinates = resolvedCoordinates?.key === entityKey ? resolvedCoordinates.coordinates : null;
-
-  if (!currentCoordinates && loading) return <CircularProgress />;
   if (error && !currentCoordinates)
     return (
       <Alert severity="error" variant="outlined">

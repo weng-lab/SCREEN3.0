@@ -4,7 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, IconButton, Link, Modal, Stack, Typography } from "@mui/material";
 import { useState } from "react";
-import { ReleaseNote } from "./releaseNotes";
+import { formatReleaseDate, ReleaseNote } from "./releaseNotes";
 
 type ReleaseContentProps = {
   release: ReleaseNote;
@@ -64,12 +64,7 @@ const Screenshot = ({ src, alt, width, disableStyling, disableLightbox }: Screen
               }),
         }}
       >
-        <Box
-          component="img"
-          src={fullSrc}
-          alt={alt}
-          sx={{ display: "block", width: "100%", height: "auto" }}
-        />
+        <Box component="img" src={fullSrc} alt={alt} sx={{ display: "block", width: "100%", height: "auto" }} />
       </Box>
 
       {lightboxEnabled && (
@@ -160,7 +155,7 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
           </Typography>
         </Box>
         <Typography variant="body2" sx={{ color: "grey.600" }}>
-          {release.date}
+          {formatReleaseDate(release.date)}
         </Typography>
       </Stack>
       <Typography variant="h5" sx={{ mb: release.summary ? 0.5 : 2, fontWeight: 600 }}>
@@ -252,14 +247,10 @@ const ReleaseContent = ({ release }: ReleaseContentProps) => {
                               color="black"
                               sx={{ display: "inline-block", mb: 1 }}
                             >
-                              <Typography sx={{ fontWeight: 600 }}>
-                                {child.title}
-                              </Typography>
+                              <Typography sx={{ fontWeight: 600 }}>{child.title}</Typography>
                             </Link>
                           ) : (
-                            <Typography sx={{ mb: 1, fontWeight: 600 }}>
-                              {child.title}
-                            </Typography>
+                            <Typography sx={{ mb: 1, fontWeight: 600 }}>{child.title}</Typography>
                           )
                         ) : null}
                         {child.link ? (

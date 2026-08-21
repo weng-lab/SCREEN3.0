@@ -37,6 +37,7 @@
     "HumanChromHMM": "https://downloads.wenglab.org/humanchromhmmchipseq.tsv",
     "HumanDynamicEnhancers": "https://downloads.wenglab.org/dynamic_enhancers.tar.gz",
     "HumanT2TcCREs": "https://downloads.wenglab.org/GRCh38-cCREs.Lifted-hs1.bed",
+    "HumanCoreCollectionClassMatrix": "https://downloads.wenglab.org/Core-Collection-Class-Matrix.txt.gz",
     "MouseCCREs": "https://downloads.wenglab.org/Registry-V4/mm10-cCREs.bed",
     "MouseCCREsMultimappers": "https://downloads.wenglab.org/mm10-cCREs-All.bed",
     "MousePromoters": "https://downloads.wenglab.org/Registry-V4/mm10-cCREs.PLS.bed",

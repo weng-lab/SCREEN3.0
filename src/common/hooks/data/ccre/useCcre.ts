@@ -11,7 +11,7 @@ export type UseCcreParams = {
  * useCcreData wrapper to cover single-accession cases where we will need to index into the 0th item
  */
 export const useCcre = ({ assembly, accession, skip }: UseCcreParams) => {
-  const { data, loading, error } = useCcreData({assembly, accessions: [accession], skip })
+  const { data, loading, error } = useCcreData({ assembly, accessions: [accession], skip });
 
   return {
     data: data ? data[0] : undefined,

@@ -12,24 +12,31 @@ export default function ClientAppWrapper({ children }: { children: React.ReactNo
   // Keeps --header-height accurate on every page so hash-link scroll targets
   // can offset for the sticky header (see scroll-padding-top rule below).
   useHeaderHeight();
+
   useEffect(() => {
+    const controller = new AbortController();
+
     const checkAPIHealth = async () => {
       try {
         const res = await fetch("/api/graphql", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: "{ __typename }" }),
+          signal: controller.signal,
         });
 
         if (!res.ok) throw new Error("API down");
         const json = await res.json();
         if (json.errors || !json.data) throw new Error("API returned errors");
       } catch (err) {
+        if (controller.signal.aborted) return;
         console.error("API unreachable:", err);
         setMaintenance(true);
       }
     };
     checkAPIHealth();
+
+    return () => controller.abort();
   }, []);
 
   return (

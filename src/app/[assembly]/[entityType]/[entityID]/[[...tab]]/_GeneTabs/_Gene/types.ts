@@ -4,7 +4,7 @@ import type { useGeneExpression } from "common/hooks/data/gene";
 import type { useTablePlotSync } from "@weng-lab/ui-components";
 import type { Assembly } from "common/types/globalTypes";
 
-type GeneExpressionReturnItem = ReturnType<typeof useGeneExpression>["data"][number]
+type GeneExpressionReturnItem = ReturnType<typeof useGeneExpression>["data"][number];
 
 // Define type which flattens the replicates array into normal properties of the data point
 // Each point contains a single tpm value, file_accession/biorep/techrep will be null if averaging tpm

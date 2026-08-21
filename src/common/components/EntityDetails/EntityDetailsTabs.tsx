@@ -23,13 +23,16 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
       ? ""
       : pathname.substring(pathname.lastIndexOf("/") + 1);
 
+  // Local state so the clicked tab highlights immediately, before the route transition resolves
   const [value, setValue] = React.useState(currentTab);
+  const [syncedTab, setSyncedTab] = React.useState(currentTab);
 
-  useEffect(() => {
-    if (currentTab !== value) {
-      setValue(currentTab);
-    }
-  }, []);
+  // Re-sync when the route changes from outside this component (back/forward, links elsewhere on
+  // the page). Adjusting during render rather than in an effect avoids rendering the stale tab first
+  if (syncedTab !== currentTab) {
+    setSyncedTab(currentTab);
+    setValue(currentTab);
+  }
 
   const tabs = useMemo(() => getTabsForEntity(assembly, entityType), [assembly, entityType]);
 
@@ -38,16 +41,24 @@ const EntityDetailsTabs = ({ assembly, entityType, entityID, orientation }: Elem
   const [tabsDisabledInfo, setTabsDisabledInfo] = useState<{ route: string; isDisabled: boolean }[]>(null);
 
   useEffect(() => {
+    // A superseded lookup must not clobber the state of a newer one
+    let cancelled = false;
+
     async function getTabIsDisabled(tab: TabConfig<string>) {
       return await (tab.getIsDisabled ? tab.getIsDisabled(entityID) : false);
     }
 
     async function fetchTabInfo(tabs: readonly TabConfig<string>[]) {
       const info = await Promise.all(tabs.map((x) => getTabIsDisabled(x)));
+      if (cancelled) return;
       setTabsDisabledInfo(tabs.map((x, i) => ({ route: x.route, isDisabled: info[i] })));
     }
 
     if (tabsDisabledInfo === null) fetchTabInfo(tabs);
+
+    return () => {
+      cancelled = true;
+    };
   }, [entityID, tabsDisabledInfo, tabs]);
 
   const tabItems = useMemo(

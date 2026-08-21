@@ -1,13 +1,12 @@
 import { useQuery } from "@apollo/client/react";
 import type { ErrorLike } from "@apollo/client";
-import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { FetchDynamicEnhancersQuery } from "common/types/generated/graphql";
 
 export type useDynamicEnhancersDataParams = {
-  accession: string[],
-  assembly: string
-}
+  accession: string[];
+  assembly: string;
+};
 
 const DynamicEnhancers_Query = gql(`
 query fetchDynamicEnhancers($accession: [String]!) {  
@@ -16,14 +15,18 @@ query fetchDynamicEnhancers($accession: [String]!) {
     accession
   }
 }
-`)
+`);
 
-export type useDynamicEnhancersDataReturn = { data: FetchDynamicEnhancersQuery['dynamicEnhancersQuery'] | undefined; loading: boolean; error: ErrorLike }
+export type useDynamicEnhancersDataReturn = {
+  data: FetchDynamicEnhancersQuery["dynamicEnhancersQuery"] | undefined;
+  loading: boolean;
+  error: ErrorLike;
+};
 
 export function useDynamicEnhancersData({ accession, assembly }: useDynamicEnhancersDataParams) {
   const { data, loading, error } = useQuery(DynamicEnhancers_Query, {
     variables: { accession: accession },
-    skip: !accession || (assembly==="mm10"),
+    skip: !accession || assembly === "mm10",
   });
 
   return {

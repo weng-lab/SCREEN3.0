@@ -2,8 +2,7 @@ import { Typography } from "@mui/material";
 import { TableColDef } from "@weng-lab/ui-components";
 import { GridRenderCellParams } from "@mui/x-data-grid-premium";
 import { LinkComponent } from "common/components/LinkComponent";
-import { LinkedGeneInfo } from "common/hooks/data/gwas";
-import { toScientificNotationElement } from "common/utils";
+import { ScientificNotation } from "common/utils";
 
 const geneNameCol: TableColDef = {
   field: "gene",
@@ -18,7 +17,8 @@ const geneNameCol: TableColDef = {
     ),
 };
 
-const GeneTypeFormatter = (value: string, row: LinkedGeneInfo) =>
+/** Shared by cCRE-linked-gene rows and gene-linked-cCRE rows, so it depends only on the field it reads */
+const GeneTypeFormatter = (value: string, row: { genetype: string }) =>
   row.genetype
     ? row.genetype === "lncRNA"
       ? row.genetype
@@ -32,7 +32,7 @@ const GeneTypeFormatter = (value: string, row: LinkedGeneInfo) =>
 const geneTypeCol: TableColDef = {
   field: "genetype",
   headerName: "Gene Type",
-  valueGetter: (value, row: LinkedGeneInfo) => GeneTypeFormatter(value, row),
+  valueGetter: (value, row: { genetype: string }) => GeneTypeFormatter(value, row),
 };
 
 const experimentCol: TableColDef = {
@@ -67,7 +67,7 @@ const pValCol: TableColDef = {
     </Typography>
   ),
   renderCell: (params: GridRenderCellParams) =>
-    params.value === 0 ? "0" : toScientificNotationElement(params.value, 2, { variant: "body2" }),
+    params.value === 0 ? "0" : ScientificNotation(params.value, 2, { variant: "body2" }),
 };
 
 const assayCol: TableColDef = {

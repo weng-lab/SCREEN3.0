@@ -9,7 +9,7 @@ import type { CcreClass } from "common/types/globalTypes";
 export function classifyCcre(
   scores: { dnase?: number; atac?: number; h3k4me3?: number; h3k27ac?: number; ctcf?: number },
   bindsTF: boolean,
-  distanceToTSS: number,
+  distanceToTSS: number
 ): CcreClass {
   const dnase = scores.dnase ?? -11.0;
   const h3k4me3 = scores.h3k4me3 ?? -11.0;
@@ -53,7 +53,7 @@ export function classifyCcre(
     ccreClass = "noclass"; //If not active in DNase, No class assigned
   }
   return ccreClass;
-};
+}
 
 /**
  * The set of biosample-specific classes a cCRE can be assigned given which assays are available,

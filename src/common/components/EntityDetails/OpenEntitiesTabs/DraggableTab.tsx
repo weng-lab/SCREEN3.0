@@ -1,7 +1,7 @@
 import { Draggable } from "@hello-pangea/dnd";
 import { Close, Error } from "@mui/icons-material";
 import { CircularProgress, styled, SxProps, Tab, TabProps, Theme, Tooltip } from "@mui/material";
-import { AnyOpenEntity, OpenEntitiesContext } from "common/OpenEntitiesContext";
+import { AnyOpenEntity, getEntityKey, OpenEntitiesContext } from "common/OpenEntitiesContext";
 import { truncateString } from "common/utils";
 import { useCallback, useContext, useMemo, useState } from "react";
 import HumanIcon from "common/components/HumanIcon";
@@ -53,7 +53,7 @@ export const DraggableTab = ({
     }
   }, [closable, entity, handleCloseTab, isHovered, isSelected, multipleAssembliesOpen]);
 
-  const dragID = entity.entityID + entity.assembly;
+  const dragID = getEntityKey(entity);
 
   const { label, loading, error } = useEntityDisplayname(entity);
 
@@ -77,7 +77,7 @@ export const DraggableTab = ({
         const selectedStyles: SxProps<Theme> = isSelected
           ? {
               borderBottom: (theme) => `2px solid ${theme.palette.primary.main}`,
-              borderTop: (theme) => `2px solid transparent`,
+              borderTop: `2px solid transparent`,
             }
           : {};
 

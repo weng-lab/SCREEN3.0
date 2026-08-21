@@ -8,7 +8,7 @@ import type {
 } from "./types";
 
 const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
-  ...theme.typography.body2
+  ...theme.typography.body2,
 }));
 
 interface ControlProps {

@@ -26,7 +26,7 @@ const GWASLandingHeader = ({ activeCategory, backToGWASHome }) => {
             //sx={{ mb: 2 }}
             onClick={backToGWASHome}
           >
-            ← Back to GWAS Home Page
+            ← Reset Chart
           </Button>
         )}
       </Grid>

@@ -27,8 +27,7 @@ type UseSnpDataParams =
     };
 
 export type UseSnpDataReturn<T extends UseSnpDataParams> = T extends
-  | { coordinates: GenomicRange | GenomicRange[] }
-  | { rsID: string[] }
+  { coordinates: GenomicRange | GenomicRange[] } | { rsID: string[] }
   ? { data: SnpQuery["snpQuery"] | undefined; loading: boolean; error: ErrorLike }
   : { data: SnpQuery["snpQuery"][0] | undefined; loading: boolean; error: ErrorLike };
 

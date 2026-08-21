@@ -1,5 +1,6 @@
-import { AnyEntityType } from "common/entityTabsConfig";
+"use client";
 import { useEffect, useState } from "react";
+import type { GeneDescriptionResponse } from "app/api/ncbi/gene-description/route";
 
 export interface UseGeneDescriptionResult {
   description: string | null;
@@ -7,41 +8,65 @@ export interface UseGeneDescriptionResult {
   error: string | null;
 }
 
-export function useGeneDescription(name: string, entityType: AnyEntityType = "gene"): UseGeneDescriptionResult {
-  const [description, setDescription] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+export interface UseGeneDescriptionOptions {
+  /** Skip fetching entirely, for callers that only sometimes describe a gene */
+  skip?: boolean;
+}
+
+/**
+ * Looks up an NCBI gene description via the /api/ncbi/gene-description proxy, which caches the
+ * upstream NLM request and matches the gene symbol exactly.
+ *
+ * `description` is null when the gene has no matching entry.
+ */
+export function useGeneDescription(name: string, options: UseGeneDescriptionOptions = {}): UseGeneDescriptionResult {
+  const { skip = false } = options;
+
+  const requestKey = skip || !name ? null : name;
+
+  const [result, setResult] = useState<{ key: string; description: string | null; error: string | null } | null>(null);
 
   useEffect(() => {
-    if (entityType !== undefined && entityType !== "gene") return;
-    if (!name) return;
+    if (!requestKey) return;
+
+    // A superseded fetch must not clobber the state of a newer one
+    let cancelled = false;
 
     const fetchDescription = async () => {
-      setLoading(true);
-      setError(null);
-
       try {
-        const response = await fetch(
-          `https://clinicaltables.nlm.nih.gov/api/ncbi_genes/v3/search?authenticity_token=&terms=${name.toUpperCase()}`
-        );
+        const response = await fetch(`/api/ncbi/gene-description?name=${encodeURIComponent(requestKey)}`);
+
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
         }
 
-        const data = await response.json();
-        const matches = data[3]?.filter((x: string[]) => x[3] === name.toUpperCase());
-
-        setDescription(matches?.length ? matches[0][4] : null);
-      } catch (err: any) {
-        setError(err.message || "Unknown error");
-        setDescription(null);
-      } finally {
-        setLoading(false);
+        const data: GeneDescriptionResponse = await response.json();
+        if (!cancelled) setResult({ key: requestKey, description: data.description, error: null });
+      } catch (err) {
+        if (!cancelled) {
+          setResult({
+            key: requestKey,
+            description: null,
+            error: err instanceof Error ? err.message : "Unknown error",
+          });
+        }
       }
     };
 
     fetchDescription();
-  }, [entityType, name]);
 
-  return { description, loading, error };
+    return () => {
+      cancelled = true;
+    };
+  }, [requestKey]);
+
+  // Derived rather than stored, so a changed gene reports as loading during the same render that
+  // changed it, and a description belonging to an older gene is never shown
+  const current = result?.key === requestKey ? result : null;
+
+  return {
+    description: current?.description ?? null,
+    loading: requestKey !== null && current === null,
+    error: current?.error ?? null,
+  };
 }

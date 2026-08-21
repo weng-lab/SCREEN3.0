@@ -1,13 +1,12 @@
 import { useQuery } from "@apollo/client/react";
 import type { ErrorLike } from "@apollo/client";
-import { AnyEntityType } from "common/entityTabsConfig";
 import { gql } from "common/types/generated/gql";
 import { SilencersQueryQuery } from "common/types/generated/graphql";
 
 export type useSilencersDataParams = {
-  accession: string[],
-  assembly: string
-}
+  accession: string[];
+  assembly: string;
+};
 
 const Silencers_Query = gql(`
 query silencersQuery($accession: [String]!){
@@ -15,14 +14,18 @@ query silencersQuery($accession: [String]!){
    silencer_studies
   }
 }
-`)
+`);
 
-export type useSilencersDataReturn = { data: SilencersQueryQuery['silencersQuery'] | undefined; loading: boolean; error: ErrorLike }
+export type useSilencersDataReturn = {
+  data: SilencersQueryQuery["silencersQuery"] | undefined;
+  loading: boolean;
+  error: ErrorLike;
+};
 
 export function useSilencersData({ accession, assembly }: useSilencersDataParams) {
   const { data, loading, error } = useQuery(Silencers_Query, {
     variables: { accession: accession },
-    skip: !accession || (assembly==="mm10"),
+    skip: !accession || assembly === "mm10",
   });
 
   return {

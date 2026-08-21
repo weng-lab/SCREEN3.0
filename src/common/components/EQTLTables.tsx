@@ -1,8 +1,9 @@
 "use client";
 import { useQuery } from "@apollo/client/react";
 import { Stack } from "@mui/material";
-import { toScientificNotationElement } from "common/utils";
+import { ScientificNotation } from "common/utils";
 import { gql } from "common/types/generated";
+import { GetimmuneeQtLsQueryQueryVariables } from "common/types/generated/graphql";
 import { LinkComponent } from "./LinkComponent";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -31,7 +32,7 @@ query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
 export default function EQTLs({ entity }: EntityViewComponentProps) {
   const { entityID, entityType, assembly } = entity;
 
-  let variables: Record<string, any> = {};
+  let variables: GetimmuneeQtLsQueryQueryVariables = {};
   let gtexTitle: string;
   let onekTitle: string;
 
@@ -109,13 +110,13 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
       field: "slope",
       headerName: "Slope",
       display: "flex",
-      renderCell: (params) => toScientificNotationElement(params.value, 2, { variant: "body2" }),
+      renderCell: (params) => ScientificNotation(params.value, 2, { variant: "body2" }),
     },
     {
       field: "pval_nominal",
       headerName: "Q Value",
       display: "flex",
-      renderCell: (params) => toScientificNotationElement(params.value, 2, { variant: "body2" }),
+      renderCell: (params) => ScientificNotation(params.value, 2, { variant: "body2" }),
     },
     {
       field: "celltype",
@@ -185,13 +186,13 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
       field: "fdr",
       headerName: "FDR",
       display: "flex",
-      renderCell: (params) => toScientificNotationElement(params.value, 2, { variant: "body2" }),
+      renderCell: (params) => ScientificNotation(params.value, 2, { variant: "body2" }),
     },
     {
       field: "spearmans_rho",
       headerName: "Spearman's rho",
       display: "flex",
-      renderCell: (params) => toScientificNotationElement(params.value, 2, { variant: "body2" }),
+      renderCell: (params) => ScientificNotation(params.value, 2, { variant: "body2" }),
     },
     {
       field: "celltype",

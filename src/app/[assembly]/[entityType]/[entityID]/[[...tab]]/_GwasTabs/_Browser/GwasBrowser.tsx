@@ -2,102 +2,48 @@
 import { CircularProgress, Alert, Box } from "@mui/material";
 import GenomeBrowserView from "common/components/GenomeBrowser/GenomeBrowserView";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { useGWASSnpsData } from "common/hooks/data/gwas";
-import { useEffect, useMemo, useState } from "react";
+import { useGWASSnpsData, useLdBlocks, type LdBlock } from "common/hooks/data/gwas";
+import { useState } from "react";
 import SelectLdBlock from "./SelectLdBlock";
-import { expandCoordinates } from "common/components/GenomeBrowser/utils";
+import { useStableCoordinates } from "common/components/GenomeBrowser/utils";
 import { createDataStoreMemo, useCustomData } from "@weng-lab/genomebrowser";
 import type { GenomicRange } from "common/types/globalTypes";
 
+/** Shown when a study has no LD blocks to focus the browser on */
+const FALLBACK_COORDINATES: GenomicRange = { chromosome: "chr1", start: 1000000, end: 1500000 };
+
 export default function GwasBrowser({ entity }: EntityViewComponentProps) {
   const { data: data, loading: loading, error: error } = useGWASSnpsData({ studyid: [entity.entityID] });
-  const [resolvedCoordinates, setResolvedCoordinates] = useState<{ key: string; coordinates: GenomicRange } | null>(
-    null
-  );
 
-  const ldblockStats = useMemo(() => {
-    if (!data) return [];
+  const ldblockStats = useLdBlocks(data);
 
-    const map = new Map<number, { ldblock: number; chromosome: string; start: number; end: number }>();
+  /**
+   * Keyed by study so a block picked for one study is never applied to the next one. Storing the
+   * key alongside the selection removes the need for an effect that clears it on entity change.
+   */
+  const [selection, setSelection] = useState<{ studyId: string; ldblock: LdBlock } | null>(null);
+  const selectedLdBlock = selection?.studyId === entity.entityID ? selection.ldblock : null;
 
-    for (const { ldblock, chromosome, start, stop } of data) {
-      if (!map.has(ldblock)) {
-        map.set(ldblock, { ldblock, chromosome, start, end: stop });
-      } else {
-        const entry = map.get(ldblock)!;
-        entry.start = Math.min(entry.start, start);
-        entry.end = Math.max(entry.end, stop);
-      }
-    }
-
-    return Array.from(map.values()).sort((a, b) => a.ldblock - b.ldblock);
-  }, [data]);
-
-  const [selectedLdBlock, setselectedLdBlock] = useState<{
-    ldblock: number;
-    chromosome: string;
-    start: number;
-    end: number;
-  } | null>(null);
-
-  useEffect(() => {
-    if (ldblockStats.length > 0 && !selectedLdBlock) {
-      setselectedLdBlock(ldblockStats[0]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ldblockStats]);
-
-  useEffect(() => {
-    setselectedLdBlock(null);
-    setResolvedCoordinates(null);
-  }, [entity.entityID]);
+  /**
+   * Falling back to the first block during render, rather than assigning it in an effect, means the
+   * first render after data arrives already has the default block. The effect version rendered once
+   * with no selection first, briefly showing an unexpanded domain before widening it.
+   */
+  const activeLdBlock = selectedLdBlock ?? ldblockStats[0] ?? null;
 
   const [ldblockOpen, setLdBlockOpen] = useState(false);
-  const onLdBlockSelected = (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => {
-    setselectedLdBlock(ldblock);
-  };
 
   const handleSelectLDblockClick = () => {
     setLdBlockOpen(!ldblockOpen);
   };
 
-  const handleLdBlockSelected = (ldblock: { ldblock: number; chromosome: string; start: number; end: number }) => {
-    onLdBlockSelected(ldblock);
+  const handleLdBlockSelected = (ldblock: LdBlock) => {
+    setSelection({ studyId: entity.entityID, ldblock });
   };
 
-  const coordinates = useMemo<GenomicRange | null>(() => {
-    if (selectedLdBlock) {
-      return expandCoordinates(
-        {
-          chromosome: selectedLdBlock.chromosome,
-          start: selectedLdBlock.start,
-          end: selectedLdBlock.end,
-        },
-        "gwas"
-      );
-    }
-    if (!ldblockStats || ldblockStats === null || ldblockStats.length === 0) {
-      if (loading) return null;
-      return {
-        chromosome: "chr1",
-        start: 1000000,
-        end: 1500000,
-      };
-    }
-    return { chromosome: ldblockStats[0].chromosome, start: ldblockStats[0].start, end: ldblockStats[0].end };
-  }, [selectedLdBlock, ldblockStats, loading]);
-
-  useEffect(() => {
-    if (!coordinates) return;
-    setResolvedCoordinates((current) =>
-      current?.key === entity.entityID &&
-      current.coordinates.chromosome === coordinates.chromosome &&
-      current.coordinates.start === coordinates.start &&
-      current.coordinates.end === coordinates.end
-        ? current
-        : { key: entity.entityID, coordinates }
-    );
-  }, [coordinates, entity.entityID]);
+  // Passed unpadded - GenomeBrowserView owns the one call to expandCoordinates
+  const stableLdBlock = useStableCoordinates(activeLdBlock);
+  const currentCoordinates = stableLdBlock ?? (loading ? null : FALLBACK_COORDINATES);
 
   const dataStore = createDataStoreMemo();
 
@@ -106,14 +52,11 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
     {
       data: data,
       loading: loading,
-      error: error as any,
+      error: error ? { message: error.message } : undefined,
     },
     dataStore
   );
 
-  const currentCoordinates = resolvedCoordinates?.key === entity.entityID ? resolvedCoordinates.coordinates : null;
-
-  if (!currentCoordinates && loading) return <CircularProgress />;
   if (error && !currentCoordinates)
     return (
       <Alert severity="error" variant="outlined">
@@ -131,7 +74,7 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
           setOpen={handleSelectLDblockClick}
           onLdBlockSelect={handleLdBlockSelected}
           ldblockList={ldblockStats}
-          ldblock={selectedLdBlock ?? null}
+          ldblock={activeLdBlock}
         />
       </Box>
       <GenomeBrowserView

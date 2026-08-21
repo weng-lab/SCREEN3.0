@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { Box, Stack, Tab } from "@mui/material";
 import { useCcre } from "common/hooks/data/ccre";
-import { GenomicRange } from "common/types/globalTypes";
 import { gql } from "common/types/generated/gql";
 import { LinkComponent } from "common/components/LinkComponent";
 import { CHROM_HMM_STATES, getChromHmmStateDisplayname, useChromHMMData } from "common/hooks/data/ccre";
@@ -156,7 +155,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
     error: errorCcre,
   } = useCcre({ assembly: entity.assembly, accession: entity.entityID });
 
-  const coordinates: GenomicRange = dataCcre?.coordinates;
+  const coordinates = dataCcre?.coordinates;
 
   const {
     data: dataEntex,
@@ -175,7 +174,12 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
     skip: !coordinates,
   });
 
-  const { tracks, processedTableData, loading, error } = useChromHMMData(coordinates);
+  const { processedTableData, loading, error } = useChromHMMData(coordinates);
+
+  // The ChromHMM queries are gated on the cCRE's coordinates, so the cCRE fetch is part of this tab's
+  // load: without folding it in, the table reports "empty" while the coordinates are still in flight.
+  const loadingChromHmm = loadingCcre || loading;
+  const errorChromHmm = !!errorCcre || !!error;
 
   return (
     <TabContext value={tab}>
@@ -191,7 +195,7 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
           data={getProportionsFromArray(processedTableData, "state", CHROM_HMM_STATES)}
           getColor={(key) => humanChromStates[key].color}
           formatLabel={(key) => getChromHmmStateDisplayname(key)}
-          loading={loading || !!error}
+          loading={loadingChromHmm || errorChromHmm}
           tooltipTitle="ChromHMM State Proportions, All Tissues"
           style={{ marginBottom: "8px" }}
         />
@@ -199,8 +203,8 @@ export const AdditionalChromatinSignatures = ({ entity }: EntityViewComponentPro
           label={`ChromHMM States`}
           columns={chromHmmCols}
           rows={processedTableData}
-          loading={loading}
-          error={!!error}
+          loading={loadingChromHmm}
+          error={errorChromHmm}
           divHeight={{ height: "600px" }}
           initialState={{ sorting: { sortModel: [{ field: "tissue", sort: "asc" }] } }}
         />

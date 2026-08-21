@@ -2,6 +2,7 @@ import { Chromosome, Vibrant } from "@weng-lab/genomebrowser";
 import { Result } from "@weng-lab/ui-components";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
+import { useMemo } from "react";
 
 export function randomColor() {
   const idx = Math.floor(Math.random() * Vibrant.length);
@@ -42,4 +43,23 @@ export function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType
     start: Math.max(0, coordinates.start - padding),
     end: coordinates.end + padding,
   };
+}
+
+/**
+ * Narrows any region-shaped value to a GenomicRange whose identity only changes when the
+ * chromosome/start/end values do.
+ *
+ * The data hooks rebuild region objects on every render, and GenomeBrowserView's GWAS effect calls
+ * setDomain whenever the `coordinates` reference changes. Without this, an upstream data update
+ * would hand the browser a new-but-equal object and snap the view back, discarding the user's pan
+ * and zoom.
+ */
+export function useStableCoordinates(
+  region: { chromosome?: string; start?: number; end?: number } | null | undefined
+): GenomicRange | null {
+  const chromosome = region?.chromosome;
+  const start = region?.start;
+  const end = region?.end;
+
+  return useMemo(() => (chromosome === undefined ? null : { chromosome, start, end }), [chromosome, start, end]);
 }

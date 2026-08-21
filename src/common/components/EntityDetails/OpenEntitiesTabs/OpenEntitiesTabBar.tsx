@@ -4,7 +4,7 @@ import { OpenEntitiesContext, isSameEntity, isValidOpenEntity } from "common/Ope
 import type { AnyOpenEntity, CandidateOpenEntity } from "common/OpenEntitiesContext";
 import { compressOpenEntitiesToURL, decompressOpenEntitiesFromURL } from "./helpers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { DragDropContext, OnDragEndResponder } from "@hello-pangea/dnd";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
@@ -12,7 +12,7 @@ import OpenEntitiesTabsMenu from "./OpenEntitiesTabsMenu";
 import { useMenuControl } from "common/components/MenuContext";
 import { OpenTabs } from "./OpenEntitiesTabs";
 
-export const constructEntityURL = (entity: AnyOpenEntity) =>
+const constructEntityURL = (entity: AnyOpenEntity) =>
   `/${entity.assembly}/${entity.entityType}/${entity.entityID}/${entity.tab}`;
 
 export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => {
@@ -87,8 +87,10 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
   useEffect(() => {
     if (!openEntities.length || isRoutingRef.current) return;
     const newUrl = pathname + "?open=" + compressOpenEntitiesToURL(openEntities);
+    // Ignore react-doctor finding - false positive, only modifying query params not actually redirecting client side
+    // react-doctor-disable-next-line nextjs-no-client-side-redirect
     router.replace(newUrl); //don't use navigateAndMark since it's only set to false when navigating between elements (would be stuck false)
-  }, [navigateAndMark, openEntities, pathname, router]);
+  }, [openEntities, pathname, router]);
 
   /**
    *
@@ -117,7 +119,7 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
    * Called when Drag ends within <DragDropContext>. Dispatches reorder event
    */
   const onDragEnd: OnDragEndResponder<string> = (result, _) => {
-    if (result.destination.index !== result.source.index) {
+    if (result.destination && result.destination.index !== result.source.index) {
       dispatch({
         type: "reorder",
         entity: openEntities.find((el) => el.entityID === result.draggableId),
@@ -184,23 +186,24 @@ export const OpenEntityTabs = ({ children }: { children?: React.ReactNode }) => 
 
   //  ------- "New Search" Button Helpers -------
 
-  const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
+  // A ref, not state - nothing renders from this flag, and the menu mounting is what drives the effect
+  const shouldFocusSearchRef = useRef(false);
 
   useEffect(() => {
-    if (isMenuMounted && shouldFocusSearch) {
+    if (isMenuMounted && shouldFocusSearchRef.current) {
       const el = document.getElementById("mobile-search-component");
       if (el) {
         el.focus();
-        setShouldFocusSearch(false); // reset the flag
+        shouldFocusSearchRef.current = false; // reset the flag
       }
     }
-  }, [isMenuMounted, shouldFocusSearch]);
+  }, [isMenuMounted]);
 
   const handleFocusSearch = useCallback(() => {
     if (menuCanBeOpened) {
       // aka isMobile
       openMenu();
-      setShouldFocusSearch(true); // defer focusing until menu is open
+      shouldFocusSearchRef.current = true; // defer focusing until menu is open
     } else {
       document.getElementById("desktop-search-component")?.focus();
     }

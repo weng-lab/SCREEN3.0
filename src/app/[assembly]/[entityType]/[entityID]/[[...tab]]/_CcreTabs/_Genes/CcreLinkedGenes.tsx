@@ -12,7 +12,7 @@ type ClosestGeneRow = NonNullable<ReturnType<typeof useClosestGenes>["data"]>["e
 import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCompuLinkedGenes } from "common/hooks/data/ccre";
 import { useState } from "react";
-import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/GWASStudyGenes";
+import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/columns";
 import { InfoOutlineRounded } from "@mui/icons-material";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 
@@ -97,30 +97,16 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
   };
 
   // make types for the data
-  const HiCLinked = linkedGenes
-    ?.filter((x: LinkedGeneInfo) => x.assay === "Intact-HiC")
-    .map((x: LinkedGeneInfo, index: number) => ({
-      ...x,
-      id: index.toString(),
-    }));
-  const ChIAPETLinked = linkedGenes
-    ?.filter((x: LinkedGeneInfo) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET")
-    .map((x: LinkedGeneInfo, index: number) => ({
-      ...x,
-      id: index.toString(),
-    }));
-  const crisprLinked = linkedGenes
-    ?.filter((x: LinkedGeneInfo) => x.method === "CRISPR")
-    .map((x: LinkedGeneInfo, index: number) => ({
-      ...x,
-      id: index.toString(),
-    }));
-  const eqtlLinked = linkedGenes
-    ?.filter((x: LinkedGeneInfo) => x.method === "eQTLs")
-    .map((x: LinkedGeneInfo, index: number) => ({
-      ...x,
-      id: index.toString(),
-    }));
+  const collectLinked = (predicate: (x: LinkedGeneInfo) => boolean) =>
+    linkedGenes?.reduce<(LinkedGeneInfo & { id: string })[]>((acc, x: LinkedGeneInfo) => {
+      if (predicate(x)) acc.push({ ...x, id: acc.length.toString() });
+      return acc;
+    }, []);
+
+  const HiCLinked = collectLinked((x) => x.assay === "Intact-HiC");
+  const ChIAPETLinked = collectLinked((x) => x.assay === "RNAPII-ChIAPET" || x.assay === "CTCF-ChIAPET");
+  const crisprLinked = collectLinked((x) => x.method === "CRISPR");
+  const eqtlLinked = collectLinked((x) => x.method === "eQTLs");
 
   const tables: TableDef<LinkedGeneInfo>[] = [
     {
@@ -209,7 +195,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
 
   // Skeleton while the second (gene metadata) query is in flight; "—" once it settles with no match
   const metadataCell = (params: { value?: string | number | null }, width: number) =>
-    loadingMetadataClosest ? <Skeleton variant="text" width={width} /> : params.value ?? "—";
+    loadingMetadataClosest ? <Skeleton variant="text" width={width} /> : (params.value ?? "—");
 
   const closestGenesCols: TableColDef<ClosestGeneRow>[] = [
     {
@@ -272,7 +258,7 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
         loading={loadingClosest}
         error={!!errorClosest}
         autoHeight
-        divHeight={{minHeight: 201}} // expected height of element with 3 rows
+        divHeight={{ minHeight: 201 }} // expected height of element with 3 rows
         hideFooter
       />
       {isHuman && <LinkedElements tables={tables} />}

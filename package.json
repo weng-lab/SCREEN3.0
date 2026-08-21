@@ -7,8 +7,11 @@
     "build": "next build",
     "start": "next start",
     "export": "next export",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "gen-types": "dotenv -e .env.local -- graphql-codegen",
-    "gen-types -w": "dotenv -e .env.local -- graphql-codegen -w"
+    "gen-types -w": "dotenv -e .env.local -- graphql-codegen -w",
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "@apollo/client": "^4",
@@ -31,17 +34,16 @@
     "@visx/visx": "^3",
     "@weng-lab/genomebrowser": "1.8.7",
     "@weng-lab/genomebrowser-ui": "0.4.2",
-    "@weng-lab/ui-components": "3.1.4",
+    "@weng-lab/ui-components": "3.1.6",
     "@weng-lab/visualization": "1.5.0",
     "d3-scale-chromatic": "^3.1.0",
     "logo-test": "^0.0.5",
     "lz-string": "^1.5.0",
-    "next": "16.2.4",
+    "next": "16.2.6",
     "react": "19.2.5",
     "react-dom": "19.2.5",
     "react-dropzone": "^14.3.8",
-    "rxjs": "^7",
-    "sharp": "^0.34.5"
+    "rxjs": "^7"
   },
   "devDependencies": {
     "@eslint/compat": "^1.4.0",
@@ -58,7 +60,7 @@
     "@typescript/native-preview": "^7.0.0-dev.20260422.1",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.38.0",
-    "eslint-config-next": "16.2.4",
+    "eslint-config-next": "16.2.6",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
@@ -72,5 +74,5 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3"
   },
-  "packageManager": "yarn@3.5.0+sha512.2dc70be5fce9f66756d25b00a888f3ca66f86b502b76750e72ba54cec89da767b938c54124595e26f868825688e0fe3552c26c76a330673343057acadd5cfcf2"
+  "packageManager": "yarn@4.18.0"
 }
