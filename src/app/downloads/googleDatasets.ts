@@ -48,12 +48,7 @@ const MOORE_AND_WENG_LABS = {
   },
 };
 
-/**
- * Primary registry citation, mirroring the first entry in about/_Sections/HowToCite.tsx.
- *
- * Deliberately not reused as the datasets' `identifier`: Crossref registers this DOI as a
- * journal-article, so claiming it there would merge the registry with anything citing the paper.
- */
+/** Primary registry citation, mirroring the first entry in about/_Sections/HowToCite.tsx. */
 const REGISTRY_CITATION = {
   "@type": "ScholarlyArticle",
   name: "An Expanded Registry of Candidate cis-Regulatory Elements",
@@ -61,54 +56,52 @@ const REGISTRY_CITATION = {
   url: "https://doi.org/10.1038/s41586-025-09909-9",
 };
 
-/** True of everything SCREEN publishes, regardless of how it was generated. */
-const PROVENANCE = {
+/**
+ * Fields shared by every dataset in the graph. No ATAC-seq: the site surfaces it for some
+ * biosamples, but it is not used to generate these classifications.
+ */
+const REGISTRY_COMMON = {
   "@type": "Dataset",
   creator: MOORE_AND_WENG_LABS,
-  // Kept so the consortium stays credited: ENCODE's data use policy asks that it be
-  // acknowledged, and CC BY makes attribution a condition rather than a courtesy.
+  // Keeps the consortium credited: ENCODE's data use policy asks for acknowledgement, and CC BY
+  // makes attribution a condition rather than a courtesy.
   sourceOrganization: ENCODE_CONSORTIUM,
   citation: REGISTRY_CITATION,
   includedInDataCatalog: { "@id": SCREEN_CATALOG["@id"] },
   isAccessibleForFree: true,
   license: LICENSE,
   url: `${SITE_URL}/downloads`,
-};
-
-/**
- * Adds the assay claims, which only hold for registry-derived data. The silencer and dynamic
- * enhancer archives deliberately do not spread this -- asserting DNase/ChIP-seq provenance for
- * data whose derivation is not documented here would be a guess.
- *
- * `variableMeasured` and `measurementTechnique` are what let Dataset Search match assay-level
- * queries ("DNase-seq enhancer annotations") rather than only matching on the dataset title.
- */
-const REGISTRY_COMMON = {
-  ...PROVENANCE,
   version: "V4",
-  measurementTechnique: ["DNase-seq", "ATAC-seq", "ChIP-seq"],
-  variableMeasured: [
-    "DNase-seq signal (Z-score)",
-    "H3K4me3 ChIP-seq signal (Z-score)",
-    "H3K27ac ChIP-seq signal (Z-score)",
-    "CTCF ChIP-seq signal (Z-score)",
-  ],
+  // The BED files carry the class, not the Z-scores it was derived from.
+  variableMeasured: {
+    "@type": "PropertyValue",
+    name: "cCRE class",
+    description:
+      "Cell type-agnostic classification assigned from the element's dominant biochemical signature, " +
+      "derived by combining per-assay Z-scores across surveyed biosamples.",
+  },
+  measurementTechnique: ["DNase-seq", "H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"],
 };
 
-const ASSEMBLIES: Record<Assembly, { label: string; species: string; genome: string; registryId: string }> = {
+const ASSEMBLIES: Record<Assembly, { label: string; genome: string; registryId: string }> = {
   GRCh38: {
     label: "Human (GRCh38)",
-    species: "human",
     genome: "human genome (GRCh38/hg38)",
     registryId: `${SITE_URL}/downloads#ccres-grch38`,
   },
   mm10: {
     label: "Mouse (mm10)",
-    species: "mouse",
     genome: "mouse genome (GRCm38/mm10)",
     registryId: `${SITE_URL}/downloads#ccres-mm10`,
   },
 };
+
+/**
+ * Field-level terms that appear in no name or description, so a search for the general area still
+ * reaches these datasets. Terms already in the prose are left out deliberately: name and
+ * description are the fields Google names as driving findability, so repeating them adds nothing.
+ */
+const GENERIC_KEYWORDS = ["regulatory genomics", "genome annotation", "epigenomics", "gene regulation"];
 
 /** BED files are tab-separated; Google matches on the MIME type rather than the "BED" name. */
 const BED = "text/tab-separated-values";
@@ -145,7 +138,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     phrase: "promoter-like cCREs (PLS)",
     definition:
       "Elements located near annotated or experimentally derived TSSs with high chromatin accessibility and H3K4me3 signal.",
-    keywords: ["promoter", "PLS", "H3K4me3", "transcription start site"],
+    keywords: ["transcription start site"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanPromoters, contentSize: "2.6 MB", count: "47,532" },
       mm10: { contentUrl: Config.Downloads.MousePromoters, contentSize: "1.5 MB", count: "27,332" },
@@ -156,7 +149,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     phrase: "candidate enhancers (pELS and dELS combined)",
     definition:
       "Accessible elements with high H3K27ac signal, subdivided into TSS-proximal and TSS-distal enhancers based on distance to the nearest TSS.",
-    keywords: ["enhancer", "ELS", "H3K27ac"],
+    keywords: ["ELS", "chromatin accessibility"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanEnhancers, contentSize: "94.4 MB", count: "1,718,669" },
       mm10: { contentUrl: Config.Downloads.MouseEnhancers, contentSize: "28.2 MB", count: "512,001" },
@@ -167,7 +160,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     phrase: "proximal enhancer-like cCREs (pELS)",
     definition:
       "Accessible elements with high H3K27ac signal, classified as TSS-proximal by distance to the nearest annotated TSS.",
-    keywords: ["enhancer", "pELS", "proximal enhancer", "H3K27ac"],
+    keywords: ["chromatin accessibility", "transcription start site"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanProximalEnhancers, contentSize: "13.7 MB", count: "249,464" },
       mm10: { contentUrl: Config.Downloads.MouseProximalEnhancers, contentSize: "6.1 MB", count: "111,218" },
@@ -178,7 +171,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     phrase: "distal enhancer-like cCREs (dELS)",
     definition:
       "Accessible elements with high H3K27ac signal, classified as TSS-distal by distance to the nearest annotated TSS.",
-    keywords: ["enhancer", "dELS", "distal enhancer", "H3K27ac"],
+    keywords: ["chromatin accessibility", "transcription start site"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanDistalEnhancers, contentSize: "80.7 MB", count: "1,469,205" },
       mm10: { contentUrl: Config.Downloads.MouseDistalEnhancers, contentSize: "22.0 MB", count: "400,783" },
@@ -188,7 +181,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     slug: "ca-ctcf",
     phrase: "chromatin accessible cCREs with CTCF (CA-CTCF)",
     definition: "Accessible elements with strong CTCF binding and low histone acetylation.",
-    keywords: ["CTCF", "CA-CTCF", "chromatin accessibility", "insulator"],
+    keywords: ["chromatin accessibility", "CTCF binding site"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanCA_CTCF, contentSize: "7.3 MB", count: "126,034" },
       mm10: { contentUrl: Config.Downloads.MouseCA_CTCF, contentSize: "2.7 MB", count: "45,933" },
@@ -198,7 +191,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     slug: "ca-h3k4me3",
     phrase: "chromatin accessible cCREs with H3K4me3 (CA-H3K4me3)",
     definition: "Accessible elements with H3K4me3 but lacking strong H3K27ac and located away from TSSs.",
-    keywords: ["H3K4me3", "CA-H3K4me3", "chromatin accessibility"],
+    keywords: ["chromatin accessibility", "transcription start site"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanCA_H3K4me3, contentSize: "4.8 MB", count: "79,246" },
       mm10: { contentUrl: Config.Downloads.MouseCA_H3K4me3, contentSize: "1.5 MB", count: "23,832" },
@@ -209,7 +202,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     phrase: "chromatin accessible cCREs with transcription factor binding (CA-TF)",
     definition:
       "Accessible elements overlapping transcription factor clusters but lacking strong histone modification signals.",
-    keywords: ["transcription factor", "CA-TF", "chromatin accessibility"],
+    keywords: ["chromatin accessibility", "TF binding site"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanCA_TF, contentSize: "1.5 MB", count: "26,102" },
       mm10: { contentUrl: Config.Downloads.MouseCA_TF, contentSize: "0.6 MB", count: "10,707" },
@@ -219,7 +212,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     slug: "ca",
     phrase: "chromatin accessible only cCREs (CA)",
     definition: "Accessible elements lacking strong H3K4me3, H3K27ac, or CTCF signals.",
-    keywords: ["chromatin accessibility", "CA", "DNase hypersensitivity"],
+    keywords: ["chromatin accessibility", "DNase hypersensitivity"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanCA_only, contentSize: "13.0 MB", count: "245,985" },
       mm10: { contentUrl: Config.Downloads.MouseCA_only, contentSize: "15.4 MB", count: "291,800" },
@@ -230,7 +223,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     phrase: "transcription factor only cCREs (TF)",
     definition:
       "Elements defined by transcription factor binding in the absence of detectable chromatin accessibility or histone modification signals.",
-    keywords: ["transcription factor", "TF", "TF binding site"],
+    keywords: ["TF binding site"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanTF_only, contentSize: "5.6 MB", count: "105,286" },
       mm10: { contentUrl: Config.Downloads.MouseTF_only, contentSize: "0.8 MB", count: "15,283" },
@@ -244,7 +237,7 @@ const CCRE_CLASSES: CcreClassSpec[] = [
     // them -- it spans several of them.
     phrase: "CTCF-bound cCREs",
     definition: "cCREs carrying CTCF binding support, spanning several of the cell type-agnostic classes.",
-    keywords: ["CTCF", "CTCF-bound", "insulator"],
+    keywords: ["CTCF binding site", "chromatin accessibility"],
     files: {
       GRCh38: { contentUrl: Config.Downloads.HumanCA_Bound, contentSize: "63.0 MB", count: "948,642" },
       mm10: { contentUrl: Config.Downloads.MouseCA_Bound, contentSize: "9.4 MB", count: "139,894" },
@@ -257,7 +250,7 @@ const classId = (spec: CcreClassSpec, assembly: Assembly) =>
 
 /** One subdataset per class per assembly, linked back to its registry with isPartOf. */
 function classSubdataset(spec: CcreClassSpec, assembly: Assembly) {
-  const { label, species, genome, registryId } = ASSEMBLIES[assembly];
+  const { label, genome, registryId } = ASSEMBLIES[assembly];
   const file = spec.files[assembly];
 
   return {
@@ -268,7 +261,7 @@ function classSubdataset(spec: CcreClassSpec, assembly: Assembly) {
       `${spec.definition} This file contains the ${file.count} ${spec.phrase} in the ENCODE Registry of ` +
       `candidate cis-regulatory elements (V4) for the ${genome}, as a BED file of genomic coordinates, ` +
       `accessions and cCRE classes.`,
-    keywords: [...spec.keywords, species, assembly, "cCRE", "cis-regulatory elements", "ENCODE"],
+    keywords: [...spec.keywords, ...GENERIC_KEYWORDS],
     isPartOf: { "@id": registryId },
     distribution: [
       {
@@ -290,9 +283,9 @@ const registryDescription = (genome: string, elements: string, biosamples: strin
   `The ENCODE Registry of candidate cis-regulatory elements (cCREs) for the ${genome}. ${elements} elements ` +
   `annotated across ${biosamples} cell and tissue types, each assigned a cell type-agnostic class from its ` +
   `dominant biochemical signature: promoter-like (PLS), proximal and distal enhancer-like (pELS, dELS), ` +
-  `CTCF-bound, chromatin accessible, and transcription factor bound. Derived from integrated DNase-seq, ` +
-  `ATAC-seq, and H3K4me3, H3K27ac and CTCF ChIP-seq experiments. Distributed as BED files giving the ` +
-  `genomic coordinates, accession and class of every element.`;
+  `CTCF-bound, chromatin accessible, and transcription factor bound. Classes are called from combined ` +
+  `per-assay Z-scores computed over DNase-seq and H3K4me3, H3K27ac and CTCF ChIP-seq signal. Distributed ` +
+  `as BED files giving the genomic coordinates, accession and class of every element.`;
 
 /** hasPart mirrors the isPartOf on each subdataset, so the link reads in both directions. */
 const registryParts = (assembly: Assembly) => CCRE_CLASSES.map((spec) => ({ "@id": classId(spec, assembly) }));
@@ -302,18 +295,7 @@ const HUMAN_REGISTRY = {
   "@id": ASSEMBLIES.GRCh38.registryId,
   name: "ENCODE Registry of candidate cis-Regulatory Elements (cCREs), human GRCh38",
   description: registryDescription(ASSEMBLIES.GRCh38.genome, "2,348,854", "1,888"),
-  keywords: [
-    "cis-regulatory elements",
-    "cCRE",
-    "enhancer",
-    "promoter",
-    "human",
-    "GRCh38",
-    "hg38",
-    "ENCODE",
-    "regulatory genomics",
-    "chromatin accessibility",
-  ],
+  keywords: ["chromatin accessibility", ...GENERIC_KEYWORDS],
   hasPart: registryParts("GRCh38"),
   distribution: [
     {
@@ -338,18 +320,7 @@ const MOUSE_REGISTRY = {
   "@id": ASSEMBLIES.mm10.registryId,
   name: "ENCODE Registry of candidate cis-Regulatory Elements (cCREs), mouse mm10",
   description: registryDescription(ASSEMBLIES.mm10.genome, "926,843", "366"),
-  keywords: [
-    "cis-regulatory elements",
-    "cCRE",
-    "enhancer",
-    "promoter",
-    "mouse",
-    "mm10",
-    "GRCm38",
-    "ENCODE",
-    "regulatory genomics",
-    "chromatin accessibility",
-  ],
+  keywords: ["chromatin accessibility", ...GENERIC_KEYWORDS],
   hasPart: registryParts("mm10"),
   distribution: [
     {
@@ -369,49 +340,6 @@ const MOUSE_REGISTRY = {
   ],
 };
 
-/**
- * Distributed under the same heading as the class files but not subsets of the registry, so
- * they are standalone Datasets rather than hasPart members. Neither carries contentSize: the
- * size shown on the download button is the unzipped size, not the size of the archive fetched.
- */
-const STANDALONE = [
-  {
-    ...PROVENANCE,
-    "@id": `${SITE_URL}/downloads#silencers-grch38`,
-    name: "Human (GRCh38) silencer sets — SCREEN",
-    description:
-      "Archive of GRCh38 BED annotations mapping SCREEN candidate cis-regulatory elements to silencer calls " +
-      "from published and assay-based datasets. Individual files provide the genomic coordinates for each " +
-      "source-specific silencer set.",
-    keywords: ["silencer", "human", "GRCh38", "hg38", "ENCODE", "regulatory genomics"],
-    distribution: [
-      {
-        "@type": "DataDownload",
-        name: "Human silencer sets (GRCh38)",
-        contentUrl: Config.Downloads.HumanSilencers,
-        encodingFormat: "application/gzip",
-      },
-    ],
-  },
-  {
-    ...PROVENANCE,
-    "@id": `${SITE_URL}/downloads#dynamic-enhancers-grch38`,
-    name: "Human (GRCh38) MAFF/MAFK dynamic enhancers — SCREEN",
-    description:
-      "Archive of GRCh38 BED annotations for SCREEN candidate cis-regulatory elements classified as MAFF/MAFK " +
-      "dynamic enhancers. The files provide the genomic coordinates and annotations for each dynamic enhancer set.",
-    keywords: ["dynamic enhancer", "MAFF", "MAFK", "human", "GRCh38", "hg38", "ENCODE"],
-    distribution: [
-      {
-        "@type": "DataDownload",
-        name: "Human MAFF/MAFK dynamic enhancers (GRCh38)",
-        contentUrl: Config.Downloads.HumanDynamicEnhancers,
-        encodingFormat: "application/gzip",
-      },
-    ],
-  },
-];
-
 export const GOOGLE_DATASETS = {
   "@context": "https://schema.org",
   "@graph": [
@@ -420,6 +348,5 @@ export const GOOGLE_DATASETS = {
     MOUSE_REGISTRY,
     ...CCRE_CLASSES.map((spec) => classSubdataset(spec, "GRCh38")),
     ...CCRE_CLASSES.map((spec) => classSubdataset(spec, "mm10")),
-    ...STANDALONE,
   ],
 };
