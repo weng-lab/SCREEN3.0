@@ -7,11 +7,12 @@ import type { Assembly } from "common/types/globalTypes";
  */
 
 /**
- * TODO: replace with the versioned ENCODE data use policy URL. Google asks for a version-
- * specific license URL, not a generic one. It is a filter facet in Dataset Search, so entries
- * without a valid one are dropped when users filter by usage rights.
+ * Matches the license the ENCODE portal declares for the upstream data, so this is neither
+ * looser nor tighter than what we received. Version-specific by design -- Google asks for the
+ * exact license URL rather than a generic creativecommons.org link, and Dataset Search uses it
+ * as a usage-rights filter facet.
  */
-const PLACEHOLDER_LICENSE = "TODO-REPLACE-WITH-ENCODE-DATA-USE-POLICY-URL";
+const LICENSE = "https://creativecommons.org/licenses/by/4.0/";
 
 /** The catalog every dataset below belongs to. Referenced by @id so it is described once. */
 const SCREEN_CATALOG = {
@@ -28,7 +29,31 @@ const ENCODE_CONSORTIUM = {
   url: "https://www.encodeproject.org",
 };
 
-/** Primary registry citation, mirroring the first entry in about/_Sections/HowToCite.tsx. */
+/**
+ * The labs that build and maintain the registry. The ROR ID identifies the institution rather
+ * than the labs, so it hangs off parentOrganization -- Google asks for ROR IDs on institutions
+ * specifically, and it is what ties this to UMass Chan in their knowledge graph.
+ */
+const MOORE_AND_WENG_LABS = {
+  "@type": "Organization",
+  name: "Moore and Weng Labs at UMass Chan Medical School",
+  parentOrganization: {
+    "@type": "Organization",
+    name: "University of Massachusetts Chan Medical School",
+    identifier: {
+      "@type": "PropertyValue",
+      propertyID: "ROR",
+      value: "https://ror.org/0464eyp60",
+    },
+  },
+};
+
+/**
+ * Primary registry citation, mirroring the first entry in about/_Sections/HowToCite.tsx.
+ *
+ * Deliberately not reused as the datasets' `identifier`: Crossref registers this DOI as a
+ * journal-article, so claiming it there would merge the registry with anything citing the paper.
+ */
 const REGISTRY_CITATION = {
   "@type": "ScholarlyArticle",
   name: "An Expanded Registry of Candidate cis-Regulatory Elements",
@@ -39,11 +64,14 @@ const REGISTRY_CITATION = {
 /** True of everything SCREEN publishes, regardless of how it was generated. */
 const PROVENANCE = {
   "@type": "Dataset",
-  creator: ENCODE_CONSORTIUM,
+  creator: MOORE_AND_WENG_LABS,
+  // Kept so the consortium stays credited: ENCODE's data use policy asks that it be
+  // acknowledged, and CC BY makes attribution a condition rather than a courtesy.
+  sourceOrganization: ENCODE_CONSORTIUM,
   citation: REGISTRY_CITATION,
   includedInDataCatalog: { "@id": SCREEN_CATALOG["@id"] },
   isAccessibleForFree: true,
-  license: PLACEHOLDER_LICENSE,
+  license: LICENSE,
   url: `${SITE_URL}/downloads`,
 };
 
@@ -351,11 +379,10 @@ const STANDALONE = [
     ...PROVENANCE,
     "@id": `${SITE_URL}/downloads#silencers-grch38`,
     name: "Human (GRCh38) silencer sets — SCREEN",
-    // TODO(descriptions): placeholder. Restates the download label; needs real wording covering
-    // how the sets were derived and what the archive contains.
     description:
-      "Silencer element sets for the human genome (GRCh38/hg38), distributed by SCREEN alongside the ENCODE " +
-      "Registry of candidate cis-regulatory elements as a gzipped tar archive.",
+      "Archive of GRCh38 BED annotations mapping SCREEN candidate cis-regulatory elements to silencer calls " +
+      "from published and assay-based datasets. Individual files provide the genomic coordinates for each " +
+      "source-specific silencer set.",
     keywords: ["silencer", "human", "GRCh38", "hg38", "ENCODE", "regulatory genomics"],
     distribution: [
       {
@@ -370,10 +397,9 @@ const STANDALONE = [
     ...PROVENANCE,
     "@id": `${SITE_URL}/downloads#dynamic-enhancers-grch38`,
     name: "Human (GRCh38) MAFF/MAFK dynamic enhancers — SCREEN",
-    // TODO(descriptions): placeholder, as above.
     description:
-      "MAFF/MAFK dynamic enhancer annotations for the human genome (GRCh38/hg38), distributed by SCREEN " +
-      "alongside the ENCODE Registry of candidate cis-regulatory elements as a gzipped tar archive.",
+      "Archive of GRCh38 BED annotations for SCREEN candidate cis-regulatory elements classified as MAFF/MAFK " +
+      "dynamic enhancers. The files provide the genomic coordinates and annotations for each dynamic enhancer set.",
     keywords: ["dynamic enhancer", "MAFF", "MAFK", "human", "GRCh38", "hg38", "ENCODE"],
     distribution: [
       {
