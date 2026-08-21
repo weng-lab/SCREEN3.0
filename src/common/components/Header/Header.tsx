@@ -39,7 +39,7 @@ function Header({ maintenance }: ResponsiveAppBarProps) {
           <Box component={Link} href={"/"} height={45} width={110}>
             <Image
               priority
-              src="/on-dark@16x.png"
+              src="/on-dark.svg"
               width={110}
               height={45}
               alt="SCREEN logo"
