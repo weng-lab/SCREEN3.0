@@ -1,4 +1,5 @@
 import { pageMetadata } from "common/seo";
+import { GOOGLE_DATASETS } from "./googleDatasets";
 
 /**
  * Exists so /downloads gets its own title and description -- page.tsx is a client component
@@ -12,5 +13,15 @@ export const metadata = pageMetadata({
 });
 
 export default function DownloadsLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      {/*
+        Dataset markup for Google Dataset Search. Rendered here rather than through
+        `pageMetadata` because Next's metadata API has no JSON-LD support -- the script tag has
+        to be emitted by hand. It lives in this server component so it ships in the initial HTML.
+      */}
+      <script type="application/ld+json">{JSON.stringify(GOOGLE_DATASETS)}</script>
+      {children}
+    </>
+  );
 }
