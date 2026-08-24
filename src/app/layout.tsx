@@ -37,6 +37,9 @@ export const metadata: Metadata = {
     template: TITLE_TEMPLATE,
   },
   description: HOMEPAGE_DESCRIPTION,
+  verification: {
+    google: "H2VVXqQVz2PtEDtxCjYTYa3Ft06k7hYomFeVATshViA",
+  },
   openGraph: {
     title: "SCREEN: Search Candidate cis-Regulatory Elements by ENCODE",
     description: HOMEPAGE_DESCRIPTION,
