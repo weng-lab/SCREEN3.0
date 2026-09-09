@@ -2,10 +2,9 @@ import {
   createBrowserStore,
   createTrackStore,
   createTrackFromEntry,
-  hg38,
-  mm10,
   type GenomicRegion,
 } from "@weng-lab/genomebrowser";
+import { assemblies } from "common/assemblies";
 import type { AnyEntityType } from "common/entityTabsConfig";
 import type { Assembly, GenomicRange } from "common/types/globalTypes";
 import { useEffect, useMemo } from "react";
@@ -34,7 +33,7 @@ export function useLocalBrowser({
   const trackWidth = breakpoint === "sm" ? 550 : breakpoint === "md" ? 950 : 1450;
   const useStore = useMemo(() => {
     const initial = {
-      assembly: assembly === "GRCh38" ? hg38 : mm10,
+      assembly: assemblies[assembly].browserAssembly,
       region: browserDomain,
       trackWidth,
       marginWidth: 50,

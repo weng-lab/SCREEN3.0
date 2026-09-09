@@ -20,8 +20,13 @@ highlights are excluded. Invalid or inaccessible storage falls back to defaults.
 - Human genes use the file-backed GENCODE v40 **comprehensive** Gene module, in `merged` display.
   This replaces the previous GraphQL/basic annotation track. The mm10 Gene track is intentionally
   absent pending an annotation URL; add it in `TrackSelect/collections.ts` when available.
-- Human cytobands are bundled from the monorepo's `hg38.cytoBand.txt`. Mouse cytobands retain the
-  existing SCREEN GraphQL query until a static dataset is available.
+- `common/assemblies.ts` maps SCREEN assembly IDs (`GRCh38` and `mm10`) to browser assembly
+  objects, UCSC database/track names, and supporting file URLs. Chromosome lengths come from the
+  browser assembly objects; UCSC `chromInfo.txt.gz` references are provided for verification.
+- Both assemblies load bundled UCSC five-column cytoband tables from `public/genome-browser/`.
+  Human bands retain the monorepo's `hg38.cytoBand.txt`; mouse bands are the decompressed UCSC
+  mm10 `cytoBand.txt.gz`, including band names. No GraphQL cytoband query is needed.
+  Source URLs are recorded in `common/assemblies.ts`.
 
 The selector edits a private store. Submit combines ChromHMM selections into the single
 `screen-chromhmm` BulkBed track; Cancel does not touch the live store. Dataset URLs are deduplicated,
