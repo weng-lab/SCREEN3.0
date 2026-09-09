@@ -1,106 +1,65 @@
-import { BulkBedRect, DisplayMode, Rect, Track, TrackType } from "@weng-lab/genomebrowser";
-import { defaultBigBed, defaultTranscript } from "./defaultConfigs";
-import CCRETooltip from "../Tooltips/CcreTooltip";
-import { JSX } from "react";
+import { assemblies } from "common/assemblies";
+import type { Assembly } from "common/types/globalTypes";
+import { rulerModule } from "@weng-lab/genomebrowser-tracks/ruler";
+import { geneModule, type GeneInteractionTarget } from "@weng-lab/genomebrowser-tracks/gene";
+import { ccreBigBedModule } from "@weng-lab/genomebrowser-tracks/ccre";
+import type { AnyTrackInstance, TrackInteraction } from "@weng-lab/genomebrowser";
+import type { BigBedRow } from "@weng-lab/genomebrowser-tracks/bigbed";
+import { ldModule } from "../modules/ld";
+import { HUMAN_GENE_URL, isCcreUrl } from "./collections";
 
-type TrackSelectRow = {
-  id?: string;
-  assay?: string;
-  displayName?: string;
+export function gwasTracks(studyId: string) {
+  return [
+    geneModule.create({
+      id: "screen-gwas-genes",
+      title: "GENCODE v40 Comprehensive Genes",
+      display: "merged",
+      color: "#0c184a",
+      source: "host",
+      config: { url: HUMAN_GENE_URL },
+    }),
+    ccreBigBedModule.create({
+      id: "screen-gwas-ccres",
+      title: "All cCREs colored by group",
+      display: "dense",
+      source: "host",
+      config: { url: "https://downloads.wenglab.org/GRCh38-cCREs.DCC.bigBed" },
+    }),
+    ldModule.create({ id: "screen-gwas-ld", title: "LD", source: "host", config: { studyId } }),
+  ];
+}
+export type TrackCallbacks = {
+  regions: TrackInteraction<BigBedRow>;
+  genes: TrackInteraction<GeneInteractionTarget>;
 };
-
-export type CcreTooltipBiosample = {
-  name: string;
-  displayname: string;
-};
-
-// GWAS-specific tracks with -ignore suffix to prevent removal by TrackSelect
-export const gwasTracks: Track[] = [
-  {
-    ...defaultTranscript,
-    color: "#0c184a",
-    id: "human-genes-ignore",
-    assembly: "GRCh38",
-    version: 40,
-  },
-  {
-    ...defaultBigBed,
-    color: "#0c184a",
-    id: "human-ccre-ignore",
-    title: "All cCREs colored by group",
-    url: "https://downloads.wenglab.org/GRCh38-cCREs.DCC.bigBed",
-    tooltip: (rect: Rect) => <CCRETooltip assembly={"GRCh38"} name={rect.name} {...rect} />,
-  },
-  {
-    id: "ld-track-ignore",
-    title: "LD",
-    trackType: TrackType.LDTrack,
-    displayMode: DisplayMode.LDBlock,
-    height: 50,
-    titleSize: 12,
-    color: "#ff0000",
-  },
-];
-
-// Callback types for track interactions (using any to avoid type conflicts with library types)
-// add more fields for more things to pass down and adjust injectCallbacks as needed
-export interface TrackCallbacks {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onHover: (item: any) => void;
-  onLeave: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onCCREClick: (item: any) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onGeneClick: (item: any) => void;
-  ccreTooltip: (rect: Rect, biosample?: CcreTooltipBiosample) => JSX.Element;
-  chromHmmTooltip: (rect: BulkBedRect, tissue: string) => JSX.Element;
+export function injectCallbacks(track: AnyTrackInstance, callbacks: TrackCallbacks): AnyTrackInstance {
+  if (track.type === "gene") return { ...track, interaction: callbacks.genes };
+  if (track.type === "ccre-bigbed" || (track.type === "bigbed" && isCcreUrl((track.config as { url?: string }).url)))
+    return { ...track, interaction: callbacks.regions };
+  // ChromHMM and TF peaks still highlight on hover, without navigating to a cCRE on click.
+  if (["bigbed", "bulkbed", "screen-tf-peaks"].includes(track.type))
+    return { ...track, interaction: { onHover: callbacks.regions.onHover, onLeave: callbacks.regions.onLeave } };
+  return track;
 }
 
-// Helper to inject callbacks based on track type
-export function injectCallbacks(track: Track, callbacks: TrackCallbacks, row?: TrackSelectRow): Track {
-  if (track.trackType === TrackType.Transcript) {
-    return {
-      ...track,
-      onHover: callbacks.onHover,
-      onLeave: callbacks.onLeave,
-      onClick: callbacks.onGeneClick,
-    };
-  }
-  if (track.trackType === TrackType.BigBed) {
-    const assay = row?.assay?.toLowerCase();
-    const isChromHmm = assay === "chromhmm" || track.id.toLowerCase().includes("chromhmm");
-
-    if (isChromHmm) {
-      const displayName = row?.displayName || track.title?.replace(/, chromhmm$/i, "") || "";
-      return {
-        ...track,
-        onHover: callbacks.onHover,
-        onLeave: callbacks.onLeave,
-        tooltip: (rect: BulkBedRect) => callbacks.chromHmmTooltip(rect, displayName),
-      };
-    }
-    return {
-      ...track,
-      onHover: callbacks.onHover,
-      onLeave: callbacks.onLeave,
-      onClick: callbacks.onCCREClick,
-      tooltip: (rect: Rect) => {
-        const trackMetadata = track as Track & {
-          biosampleName?: string;
-          biosampleDisplayName?: string;
-        };
-
-        const biosample =
-          trackMetadata.biosampleName && trackMetadata.biosampleDisplayName
-            ? {
-                name: trackMetadata.biosampleName,
-                displayname: trackMetadata.biosampleDisplayName,
-              }
-            : undefined;
-
-        return callbacks.ccreTooltip(rect, biosample);
-      },
-    };
-  }
-  return track;
+export const RULER_TRACK_ID = "screen-ruler";
+export function withReferenceTracks(
+  tracks: AnyTrackInstance[],
+  gene: AnyTrackInstance,
+  assembly: Assembly
+): AnyTrackInstance[] {
+  const existingRuler = tracks.find((track) => track.base.id === RULER_TRACK_ID);
+  const ruler = rulerModule.create({
+    id: RULER_TRACK_ID,
+    title: "Ruler",
+    ...existingRuler?.base,
+    display: "full",
+    source: "host",
+    config: { ...existingRuler?.config, sequenceUrl: assemblies[assembly].files.sequence },
+  });
+  return [
+    ruler,
+    ...(tracks.some((track) => track.base.id === gene.base.id) ? [] : [gene]),
+    ...tracks.filter((track) => track.base.id !== RULER_TRACK_ID),
+  ];
 }

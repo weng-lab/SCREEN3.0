@@ -1,33 +1,40 @@
-import { Chromosome, createBrowserStoreMemo, createTrackStoreMemo, Domain, Track } from "@weng-lab/genomebrowser";
-import { tfPeaksTrack } from "@weng-lab/genomebrowser-ui";
-import { AnyEntityType } from "common/entityTabsConfig";
-import { GenomicRange } from "common/types/globalTypes";
-import { useEffect, useMemo } from "react";
+import {
+  createBrowserStore,
+  createTrackStore,
+  createTrackFromEntry,
+  type GenomicRegion,
+} from "@weng-lab/genomebrowser";
+import { assemblies } from "common/assemblies";
+import type { AnyEntityType } from "common/entityTabsConfig";
+import type { Assembly, GenomicRange } from "common/types/globalTypes";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import { randomColor } from "../utils";
-import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
-import { gwasTracks, injectCallbacks, TrackCallbacks } from "../TrackSelect/defaultTracks";
+import {
+  getLocalBrowser,
+  getLocalTracks,
+  setLocalBrowser,
+  setLocalTracks,
+  durableHighlights,
+  sameBrowserState,
+} from "./getLocalStorage";
+import {
+  gwasTracks,
+  injectCallbacks,
+  RULER_TRACK_ID,
+  withReferenceTracks,
+  type TrackCallbacks,
+} from "../TrackSelect/defaultTracks";
+import { createScreenModules } from "../modules/registry";
+import { catalogEntries, defaultTrackIds, defaultGeneTrackId } from "../TrackSelect/collections";
 
 export type UseLocalBrowserParams = {
-  /** The entity's id/name, used as the local storage key and the default highlight's id */
   name: string;
-  assembly: string;
-  /** The entity's own coordinates, highlighted so the feature stays visible within the padded view */
+  assembly: Assembly;
   entityCoordinates: GenomicRange;
-  /**
-   * The browser's starting view. Already padded by the caller - this hook deliberately does not
-   * expand it, so that `expandCoordinates` is applied exactly once per browser (see
-   * GenomeBrowserView).
-   */
-  browserDomain: Domain;
+  browserDomain: GenomicRegion;
   type: AnyEntityType;
   breakpoint?: "sm" | "md";
 };
-
-/**
- * Pass entity name/id, coordinates and starting domain to get back the browser store.
- * Will first check local storage for any saved browser state before creating it from scratch.
- * @returns a browser store instance
- */
 export function useLocalBrowser({
   name,
   assembly,
@@ -37,95 +44,98 @@ export function useLocalBrowser({
   breakpoint,
 }: UseLocalBrowserParams) {
   const trackWidth = breakpoint === "sm" ? 550 : breakpoint === "md" ? 950 : 1450;
-
-  const localBrowser = useMemo(() => getLocalBrowser(name, assembly), [name, assembly]);
-
-  // potential infinite loop
-  const browserStore = createBrowserStoreMemo(
-    {
-      domain: localBrowser?.domain != null ? localBrowser?.domain : browserDomain,
-      highlights:
-        localBrowser?.highlights ||
-        (type !== "gwas" && [
-          {
-            color: randomColor(),
-            domain: {
-              chromosome: entityCoordinates.chromosome as Chromosome,
-              start: entityCoordinates.start,
-              end: entityCoordinates.end,
-            },
-            id: name,
-            opacity: 0.2,
-          },
-        ]),
-      trackWidth: trackWidth,
+  const useStore = useMemo(() => {
+    const initial = {
+      assembly: assemblies[assembly].browserAssembly,
+      region: browserDomain,
+      trackWidth,
       marginWidth: 50,
-      multiplier: 3,
-    },
-    [localBrowser]
-  );
-
-  // Responsive breakpoint handling
-  const setTrackWidth = browserStore((s) => s.setTrackWidth);
-  const setTitleSize = browserStore((s) => s.setTitleSize);
-  const setFontSize = browserStore((s) => s.setFontSize);
-
+      highlights: type === "gwas" ? [] : [{ color: randomColor(), region: entityCoordinates, id: name, opacity: 0.2 }],
+    };
+    const saved = getLocalBrowser(name, assembly);
+    try {
+      return createBrowserStore({ ...initial, ...saved });
+    } catch {
+      return createBrowserStore(initial);
+    }
+    // Starting coordinates seed a session, not every render; GWAS region changes are explicit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, assembly, type]);
   useEffect(() => {
     const titleSize = breakpoint === "sm" ? 18 : breakpoint === "md" ? 14 : 12;
-    setTrackWidth(trackWidth);
-    setTitleSize(titleSize);
-    setFontSize(titleSize - 2);
-  }, [breakpoint, trackWidth, setTrackWidth, setTitleSize, setFontSize]);
-
-  const currentDomain = browserStore((state) => state.domain);
-  const highlights = browserStore((state) => state.highlights);
-
-  // Any time domain and highlights change, we update the local storage
+    useStore.setState({ titleSize, fontSize: titleSize - 2 });
+  }, [breakpoint, useStore]);
   useEffect(() => {
-    setLocalBrowser(name, assembly, { domain: currentDomain, highlights: highlights });
-  }, [name, assembly, currentDomain, highlights]);
-
-  return browserStore;
+    const snapshot = () => {
+      const { region, highlights } = useStore.getState();
+      return { region, highlights: durableHighlights(highlights) };
+    };
+    let previousSaved = snapshot();
+    const save = () => {
+      const next = snapshot();
+      if (sameBrowserState(previousSaved, next)) return;
+      setLocalBrowser(name, assembly, next);
+      previousSaved = next;
+    };
+    setLocalBrowser(name, assembly, previousSaved);
+    return useStore.subscribe((state, previous) => {
+      if (state.region !== previous.region || state.highlights !== previous.highlights) save();
+    });
+  }, [name, assembly, useStore]);
+  return useStore;
 }
 
-export function useLocalTracks(assembly: string, entitytype: AnyEntityType, callbacks?: TrackCallbacks) {
-  const localTracks = getLocalTracks(assembly);
-
-  // Start empty if no stored tracks - TrackSelect will populate defaults via initialSelection
-  let initialTracks = localTracks || [];
-  if (entitytype === "gwas") {
-    initialTracks = gwasTracks;
-  }
-  // Rehydrate the tfPeaks custom track: functions (fetcher, renderers, tooltip, settingsPanel)
-  // are lost on JSON serialization, so replace with the canonical object while preserving user settings
-  initialTracks = initialTracks.map((t) => {
-    if (t.id !== "custom-tf-peaks" && t.id !== "human-other-tracks/tf-peaks") return t;
-    const stale = t as unknown as Record<string, unknown>;
-    return {
-      ...tfPeaksTrack,
-      id: t.id,
-      filter: stale.filter as string[] | undefined,
-      color: (stale.color as string) ?? tfPeaksTrack.color,
-      height: (stale.height as number) ?? tfPeaksTrack.height,
-      displayMode: (stale.displayMode as typeof tfPeaksTrack.displayMode) ?? tfPeaksTrack.displayMode,
-      title: (stale.title as string) ?? tfPeaksTrack.title,
-      baseColor: (stale.baseColor as string) ?? tfPeaksTrack.baseColor,
-      overlayColor: (stale.overlayColor as string) ?? tfPeaksTrack.overlayColor,
-    } as Track;
-  });
-  // Inject callbacks if provided (callbacks are lost on JSON serialization)
-  if (callbacks) {
-    initialTracks = initialTracks.map((t) => injectCallbacks(t, callbacks));
-  }
-
-  const trackStore = createTrackStoreMemo(initialTracks, []);
-  const tracks = trackStore((state) => state.tracks);
-
-  // any time the track list changes, update local storage
+export function useLocalTracks(assembly: Assembly, type: AnyEntityType, studyId: string, callbacks: TrackCallbacks) {
+  const useStore = useMemo(() => {
+    const modules = createScreenModules(assembly);
+    const empty = createTrackStore({ modules });
+    const ids = new Set(defaultTrackIds(assembly));
+    const defaults = () =>
+      type === "gwas"
+        ? gwasTracks(studyId)
+        : catalogEntries(assembly).flatMap((e) =>
+            ids.has(e.id) ? [createTrackFromEntry(empty.getState().registry, { ...e, source: "host" })] : []
+          );
+    const saved = type === "gwas" ? null : getLocalTracks(assembly, empty.getState().registry);
+    const defaultTracks = defaults();
+    const geneId = type === "gwas" ? "screen-gwas-genes" : defaultGeneTrackId(assembly);
+    const gene = defaultTracks.find((track) => track.base.id === geneId)!;
+    const pinnedTrackIds = [RULER_TRACK_ID, geneId];
+    try {
+      return createTrackStore({
+        modules,
+        pinnedTrackIds,
+        tracks: withReferenceTracks(saved ?? defaultTracks, gene, assembly),
+      });
+    } catch {
+      return createTrackStore({ modules, pinnedTrackIds, tracks: withReferenceTracks(defaultTracks, gene, assembly) });
+    }
+  }, [assembly, type, studyId]);
+  // Rebind application interactions without recreating the entity's track state.
+  useLayoutEffect(() => {
+    const state = useStore.getState();
+    // Only interactions change; preserve validated config/base identities and track order.
+    useStore.setState({ tracks: state.tracks.map((track) => injectCallbacks(track, callbacks)) });
+  }, [useStore, callbacks]);
   useEffect(() => {
-    if (entitytype === "gwas") return;
-    setLocalTracks(tracks, assembly);
-  }, [tracks, assembly, entitytype]);
-
-  return trackStore;
+    if (type === "gwas") return;
+    const save = () => setLocalTracks(useStore.getState().tracks, assembly);
+    save();
+    return useStore.subscribe((state, previous) => {
+      if (state.tracks === previous.tracks) return;
+      const unchanged =
+        state.tracks.length === previous.tracks.length &&
+        state.tracks.every((track, i) => {
+          const old = previous.tracks[i];
+          return (
+            track.type === old.type &&
+            track.source === old.source &&
+            track.base === old.base &&
+            track.config === old.config
+          );
+        });
+      if (!unchanged) save();
+    });
+  }, [assembly, type, useStore]);
+  return useStore;
 }

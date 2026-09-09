@@ -1,4 +1,4 @@
-import { Chromosome, Vibrant } from "@weng-lab/genomebrowser";
+const Vibrant = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#a65628"];
 import { Result } from "@weng-lab/ui-components";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
@@ -39,7 +39,7 @@ export function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType
   const padding = Math.floor(length * expansionPercentage);
 
   return {
-    chromosome: coordinates.chromosome as Chromosome,
+    chromosome: coordinates.chromosome,
     start: Math.max(0, coordinates.start - padding),
     end: coordinates.end + padding,
   };
