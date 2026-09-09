@@ -1,5 +1,9 @@
 import { Box, Divider, Stack, Typography, ButtonGroup as MuiButtonGroup } from "@mui/material";
-import { BrowserNavigationButton, type BrowserNavigationAction } from "@weng-lab/genomebrowser-ui";
+import {
+  BrowserSelectionControls,
+  BrowserNavigationButton,
+  type BrowserNavigationAction,
+} from "@weng-lab/genomebrowser-ui";
 import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 
 type ButtonConfig = { label: string; action: BrowserNavigationAction };
@@ -85,6 +89,7 @@ const TwoSidedControl = ({
 export default function ControlButtons({ browserStore }: { browserStore: BrowserStoreInstance }) {
   return (
     <Box display={"flex"} flexDirection={"row"} flexWrap={"wrap"} justifyContent={"center"} gap={2}>
+      <BrowserSelectionControls browserStore={browserStore} />
       <TwoSidedControl
         browserStore={browserStore}
         leftButtons={buttonGroups.moveLeft}

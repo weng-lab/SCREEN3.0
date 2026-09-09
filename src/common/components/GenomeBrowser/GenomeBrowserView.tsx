@@ -2,7 +2,7 @@
 
 // @mui
 import { Search } from "@mui/icons-material";
-import { Alert, Box, Button, IconButton, Stack, useMediaQuery } from "@mui/material";
+import { Box, Button, IconButton, Stack, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 
@@ -93,11 +93,6 @@ function EntityBrowserSession({ entity, coordinates, ldData, handleSelectLDBlock
 
   return (
     <Stack ref={containerRef} sx={{ overflow: "hidden" }}>
-      {entity.assembly === "mm10" && (
-        <Alert severity="info">
-          Mouse gene annotations are not yet available. Biosample tracks are available below.
-        </Alert>
-      )}
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={2}

@@ -5,8 +5,8 @@ import { createTrackStore, type TrackStoreInstance } from "@weng-lab/genomebrows
 import { TrackSelect } from "@weng-lab/genomebrowser-ui";
 import { useMemo, useState } from "react";
 import type { Assembly } from "common/types/globalTypes";
-import { injectCallbacks, type TrackCallbacks } from "./defaultTracks";
-import { catalogEntries, collectionsByAssembly, defaultTrackIds } from "./collections";
+import { injectCallbacks, withReferenceTracks, type TrackCallbacks } from "./defaultTracks";
+import { catalogEntries, collectionsByAssembly, defaultTrackIds, defaultGeneTrackId } from "./collections";
 import { createScreenModules } from "../modules/registry";
 import { CHROMHMM_TRACK_ID, combineChromHmm, expandChromHmm } from "./trackState";
 
@@ -64,11 +64,13 @@ export default function TrackSelectModal({
             maxTracks={30}
             title="Track Selection"
             onCommittedTrackIds={() => {
-              const tracks = combineChromHmm(
+              const selectedTracks = combineChromHmm(
                 selectionStore.getState().tracks,
                 assembly,
                 trackStore.getState().getTrack(CHROMHMM_TRACK_ID)
               ).map((t) => injectCallbacks(t, callbacks));
+              const gene = trackStore.getState().getTrack(defaultGeneTrackId(assembly));
+              const tracks = gene ? withReferenceTracks(selectedTracks, gene) : selectedTracks;
               const result = trackStore.getState().setTracks(tracks);
               if (result.ok === false) setError(result.error);
             }}

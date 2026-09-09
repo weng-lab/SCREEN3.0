@@ -6,10 +6,12 @@ import { PEAKS_URL, MOTIFS_URL } from "../modules/tfSources";
 
 export const HUMAN_GENE_URL =
   "https://users.wenglab.org/niship/gencodefiles/human.gencode.v40.comprehensive.annotation.bb";
+export const MOUSE_GENE_URL =
+  "https://users.wenglab.org/niship/gencodefiles/mouse.gencode.vM25.comprehensive.annotation.bb";
 const simpleView = [
   { id: "default", label: "Tracks", columns: [{ field: "title", label: "Track" }], grouping: [], leaf: "title" },
 ];
-const genes: TrackSelectCollection = {
+const humanGenes: TrackSelectCollection = {
   id: "human-genes",
   label: "Genes",
   views: simpleView,
@@ -17,7 +19,7 @@ const genes: TrackSelectCollection = {
     {
       type: "gene",
       id: "gencode-v40",
-      title: "GENCODE v40 Genes",
+      title: "GENCODE v40 Comprehensive Genes",
       display: "merged",
       color: "#0c184a",
       config: { url: HUMAN_GENE_URL },
@@ -25,6 +27,25 @@ const genes: TrackSelectCollection = {
     },
   ],
 };
+const mouseGenes: TrackSelectCollection = {
+  id: "mouse-genes",
+  label: "Genes",
+  views: simpleView,
+  tracks: [
+    {
+      type: "gene",
+      id: "gencode-vM25",
+      title: "GENCODE M25 Comprehensive Genes",
+      display: "merged",
+      color: "#0c184a",
+      config: { url: MOUSE_GENE_URL },
+      metadata: {},
+    },
+  ],
+};
+export function defaultGeneTrackId(assembly: Assembly) {
+  return assembly === "GRCh38" ? "human-genes::gencode-v40" : "mouse-genes::gencode-vM25";
+}
 const other: TrackSelectCollection = {
   id: "human-other-tracks",
   label: "Other Tracks",
@@ -40,13 +61,13 @@ const other: TrackSelectCollection = {
   ],
 };
 export const collectionsByAssembly: Record<Assembly, TrackSelectCollection[]> = {
-  GRCh38: [genes, human, other],
-  mm10: [mouse],
+  GRCh38: [humanGenes, human, other],
+  mm10: [mouseGenes, mouse],
 };
 export function defaultTrackIds(assembly: Assembly) {
   const prefix = assembly === "GRCh38" ? "human" : "mouse";
   return [
-    ...(assembly === "GRCh38" ? ["human-genes::gencode-v40"] : []),
+    defaultGeneTrackId(assembly),
     ...["ccre", "dnase", "h3k4me3", "h3k27ac", "ctcf", "atac"].map(
       (assay) => `${prefix}-biosamples::${assay}-aggregate`
     ),

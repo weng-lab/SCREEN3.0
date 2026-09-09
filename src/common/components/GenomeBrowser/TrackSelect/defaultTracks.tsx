@@ -1,3 +1,4 @@
+import { rulerModule } from "@weng-lab/genomebrowser-tracks/ruler";
 import { geneModule, type GeneInteractionTarget } from "@weng-lab/genomebrowser-tracks/gene";
 import { ccreBigBedModule } from "@weng-lab/genomebrowser-tracks/ccre";
 import type { AnyTrackInstance, TrackInteraction } from "@weng-lab/genomebrowser";
@@ -9,7 +10,7 @@ export function gwasTracks(studyId: string) {
   return [
     geneModule.create({
       id: "screen-gwas-genes",
-      title: "GENCODE v40 Genes",
+      title: "GENCODE v40 Comprehensive Genes",
       display: "merged",
       color: "#0c184a",
       source: "host",
@@ -37,4 +38,15 @@ export function injectCallbacks(track: AnyTrackInstance, callbacks: TrackCallbac
   if (["bigbed", "bulkbed", "screen-tf-peaks"].includes(track.type))
     return { ...track, interaction: { onHover: callbacks.regions.onHover, onLeave: callbacks.regions.onLeave } };
   return track;
+}
+
+export const RULER_TRACK_ID = "screen-ruler";
+export function withReferenceTracks(tracks: AnyTrackInstance[], gene: AnyTrackInstance): AnyTrackInstance[] {
+  return [
+    ...(tracks.some((track) => track.base.id === RULER_TRACK_ID)
+      ? []
+      : [rulerModule.create({ id: RULER_TRACK_ID, title: "Ruler", source: "host", config: {} })]),
+    ...(tracks.some((track) => track.base.id === gene.base.id) ? [] : [gene]),
+    ...tracks,
+  ];
 }
