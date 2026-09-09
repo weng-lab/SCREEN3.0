@@ -11,11 +11,7 @@ export function combineChromHmm(
   assembly: Assembly,
   previous?: AnyTrackInstance
 ): AnyTrackInstance[] {
-  const entries = new Map(
-    catalogEntries(assembly)
-      .filter(isChromHmm)
-      .map((e) => [e.id, e])
-  );
+  const entries = new Map(catalogEntries(assembly).flatMap((e) => (isChromHmm(e) ? [[e.id, e] as const] : [])));
   const selected = tracks.filter((t) => entries.has(t.base.id));
   const seen = new Set<string>();
   const datasets = selected.flatMap((t) => {
@@ -53,6 +49,8 @@ export function expandChromHmm(tracks: AnyTrackInstance[], assembly: Assembly, r
   return tracks.flatMap((track) => {
     if (track.base.id !== CHROMHMM_TRACK_ID) return [track];
     const urls = new Set((track.config as BulkBedConfig).datasets.map((d) => d.url));
-    return entries.filter((e) => urls.has(String(e.config.url))).map((entry) => createTrackFromEntry(registry, entry));
+    return entries.flatMap((entry) =>
+      urls.has(String(entry.config.url)) ? [createTrackFromEntry(registry, entry)] : []
+    );
   });
 }

@@ -23,10 +23,7 @@ export default function TrackSelectModal({
   const initialIds = useMemo(() => {
     const known = new Set(catalogEntries(assembly).map((entry) => entry.id));
     return (
-      selectionStore
-        ?.getState()
-        .tracks.map((track) => track.base.id)
-        .filter((id) => known.has(id)) ?? []
+      selectionStore?.getState().tracks.flatMap((track) => (known.has(track.base.id) ? [track.base.id] : [])) ?? []
     );
   }, [selectionStore, assembly]);
   const [error, setError] = useState<string>();

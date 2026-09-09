@@ -67,6 +67,7 @@ function FullLD({ id, config, region, width, height, color }: TrackRendererProps
   const snps = host.data.filter(
     (s) => s.chromosome === region.chromosome && s.stop > region.start && s.start < region.end
   );
+  const pinned = new Set(config.show);
   const connections = ldConnections(snps, hovered ? [...config.show, hovered] : config.show);
   const y = (s: LDSnp) => height * (isLead(s) ? 1 / 3 : 2 / 3);
   if (host.loading || host.error)
@@ -105,14 +106,12 @@ function FullLD({ id, config, region, width, height, color }: TrackRendererProps
           width={Math.max(4, x(snp.stop) - x(snp.start) + 4)}
           height={height - y(snp)}
           fill={isLead(snp) ? color : lighten(color, 0.3)}
-          stroke={config.show.includes(snp.snpid) ? theme.palette.text.primary : "none"}
+          stroke={pinned.has(snp.snpid) ? theme.palette.text.primary : "none"}
           style={{ cursor: "pointer" }}
           onClick={() => {
             updateTrack(id, {
               config: {
-                show: config.show.includes(snp.snpid)
-                  ? config.show.filter((s) => s !== snp.snpid)
-                  : [...config.show, snp.snpid],
+                show: pinned.has(snp.snpid) ? config.show.filter((s) => s !== snp.snpid) : [...config.show, snp.snpid],
               },
             });
             interaction?.onClick?.(snp);

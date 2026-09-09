@@ -72,9 +72,9 @@ export function useLocalTracks(assembly: Assembly, type: AnyEntityType, studyId:
     const defaults = () =>
       type === "gwas"
         ? gwasTracks(studyId)
-        : catalogEntries(assembly)
-            .filter((e) => ids.has(e.id))
-            .map((e) => createTrackFromEntry(empty.getState().registry, { ...e, source: "host" }));
+        : catalogEntries(assembly).flatMap((e) =>
+            ids.has(e.id) ? [createTrackFromEntry(empty.getState().registry, { ...e, source: "host" })] : []
+          );
     const saved = type === "gwas" ? null : getLocalTracks(assembly);
     try {
       return createTrackStore({ modules, tracks: (saved ?? defaults()).map((t) => injectCallbacks(t, callbacks)) });

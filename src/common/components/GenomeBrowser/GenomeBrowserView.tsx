@@ -35,6 +35,8 @@ export type GenomeBrowserViewProps = EntityViewComponentProps & {
   handleSelectLDBlock?: () => void;
 };
 
+const EMPTY_LD_DATA = { data: [], loading: false } satisfies NonNullable<GenomeBrowserViewProps["ldData"]>;
+
 export default function GenomeBrowserView({
   entity,
   coordinates,
@@ -264,7 +266,7 @@ export default function GenomeBrowserView({
         <DomainDisplay browserStore={useBrowserStore} assembly={entity.assembly} />
         <ControlButtons browserStore={useBrowserStore} />
       </Stack>
-      <LDDataContext.Provider value={ldData ?? { data: [], loading: false }}>
+      <LDDataContext.Provider value={ldData ?? EMPTY_LD_DATA}>
         <GenomeBrowser
           key={`${entity.assembly}:${entity.entityType}:${entity.entityID}`}
           browserStore={useBrowserStore}

@@ -13,7 +13,7 @@ import { ldModule } from "./ld";
 // Resolve host metadata by URL, keeping it out of validated runtime config and persisted callbacks.
 export function createScreenModules(assembly: Assembly) {
   const entries = catalogEntries(assembly);
-  const byUrl = new Map(entries.filter((e) => typeof e.config.url === "string").map((e) => [String(e.config.url), e]));
+  const byUrl = new Map(entries.flatMap((e) => (typeof e.config.url === "string" ? [[e.config.url, e] as const] : [])));
   const ccre = {
     ...ccreBigBedModule,
     tooltipComponent: ({ item, context }) => {

@@ -63,9 +63,9 @@ export function isChromHmm(entry: { metadata: Record<string, unknown> }) {
 
 const ccreUrls = new Set(
   [human, mouse].flatMap((collection) =>
-    collection.tracks
-      .filter((track) => track.metadata.assay.toLowerCase() === "ccre")
-      .map((track) => String(track.config.url))
+    collection.tracks.flatMap((track) =>
+      track.metadata.assay.toLowerCase() === "ccre" ? [String(track.config.url)] : []
+    )
   )
 );
 export function isCcreUrl(url: unknown) {
