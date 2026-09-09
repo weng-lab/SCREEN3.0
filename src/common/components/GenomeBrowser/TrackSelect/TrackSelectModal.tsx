@@ -70,7 +70,7 @@ export default function TrackSelectModal({
                 trackStore.getState().getTrack(CHROMHMM_TRACK_ID)
               ).map((t) => injectCallbacks(t, callbacks));
               const gene = trackStore.getState().getTrack(defaultGeneTrackId(assembly));
-              const tracks = gene ? withReferenceTracks(selectedTracks, gene) : selectedTracks;
+              const tracks = gene ? withReferenceTracks(selectedTracks, gene, assembly) : selectedTracks;
               const result = trackStore.getState().setTracks(tracks);
               if (result.ok === false) setError(result.error);
             }}

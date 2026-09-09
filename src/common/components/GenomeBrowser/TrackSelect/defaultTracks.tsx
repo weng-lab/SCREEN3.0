@@ -1,3 +1,5 @@
+import { assemblies } from "common/assemblies";
+import type { Assembly } from "common/types/globalTypes";
 import { rulerModule } from "@weng-lab/genomebrowser-tracks/ruler";
 import { geneModule, type GeneInteractionTarget } from "@weng-lab/genomebrowser-tracks/gene";
 import { ccreBigBedModule } from "@weng-lab/genomebrowser-tracks/ccre";
@@ -41,12 +43,23 @@ export function injectCallbacks(track: AnyTrackInstance, callbacks: TrackCallbac
 }
 
 export const RULER_TRACK_ID = "screen-ruler";
-export function withReferenceTracks(tracks: AnyTrackInstance[], gene: AnyTrackInstance): AnyTrackInstance[] {
+export function withReferenceTracks(
+  tracks: AnyTrackInstance[],
+  gene: AnyTrackInstance,
+  assembly: Assembly
+): AnyTrackInstance[] {
+  const existingRuler = tracks.find((track) => track.base.id === RULER_TRACK_ID);
+  const ruler = rulerModule.create({
+    id: RULER_TRACK_ID,
+    title: "Ruler",
+    ...existingRuler?.base,
+    display: "full",
+    source: "host",
+    config: { ...existingRuler?.config, sequenceUrl: assemblies[assembly].files.sequence },
+  });
   return [
-    ...(tracks.some((track) => track.base.id === RULER_TRACK_ID)
-      ? []
-      : [rulerModule.create({ id: RULER_TRACK_ID, title: "Ruler", source: "host", config: {} })]),
+    ruler,
     ...(tracks.some((track) => track.base.id === gene.base.id) ? [] : [gene]),
-    ...tracks,
+    ...tracks.filter((track) => track.base.id !== RULER_TRACK_ID),
   ];
 }

@@ -102,9 +102,13 @@ export function useLocalTracks(assembly: Assembly, type: AnyEntityType, studyId:
     const gene = defaultTracks.find((track) => track.base.id === geneId)!;
     const pinnedTrackIds = [RULER_TRACK_ID, geneId];
     try {
-      return createTrackStore({ modules, pinnedTrackIds, tracks: withReferenceTracks(saved ?? defaultTracks, gene) });
+      return createTrackStore({
+        modules,
+        pinnedTrackIds,
+        tracks: withReferenceTracks(saved ?? defaultTracks, gene, assembly),
+      });
     } catch {
-      return createTrackStore({ modules, pinnedTrackIds, tracks: withReferenceTracks(defaultTracks, gene) });
+      return createTrackStore({ modules, pinnedTrackIds, tracks: withReferenceTracks(defaultTracks, gene, assembly) });
     }
   }, [assembly, type, studyId]);
   // Rebind application interactions without recreating the entity's track state.

@@ -6,6 +6,7 @@ type AssemblyConfig = {
   ucscDb: string;
   ucscCcreTrack: string;
   files: {
+    sequence: string;
     cytobands: string;
     cytobandsSource: string;
     /** UCSC chromosome names, lengths, and sequence file paths (not a two-column chrom.sizes file). */
@@ -20,6 +21,7 @@ export const assemblies = {
     ucscDb: "hg38",
     ucscCcreTrack: "cCREs",
     files: {
+      sequence: "https://hgdownload.soe.ucsc.edu/goldenpath/hg38/bigZips/hg38.2bit",
       cytobands: "/genome-browser/hg38.cytoBand.txt",
       cytobandsSource: "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cytoBand.txt.gz",
       chromInfo: "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/chromInfo.txt.gz",
@@ -30,6 +32,7 @@ export const assemblies = {
     ucscDb: "mm10",
     ucscCcreTrack: "encodeCcreCombined",
     files: {
+      sequence: "https://hgdownload.soe.ucsc.edu/goldenpath/mm10/bigZips/mm10.2bit",
       cytobands: "/genome-browser/mm10.cytoBand.txt",
       cytobandsSource: "https://hgdownload.soe.ucsc.edu/goldenPath/mm10/database/cytoBand.txt.gz",
       chromInfo: "https://hgdownload.soe.ucsc.edu/goldenPath/mm10/database/chromInfo.txt.gz",
