@@ -59,7 +59,9 @@ export function useLocalBrowser({
       setLocalBrowser(name, assembly, { region, highlights });
     };
     save();
-    return useStore.subscribe(save);
+    return useStore.subscribe((state, previous) => {
+      if (state.region !== previous.region || state.highlights !== previous.highlights) save();
+    });
   }, [name, assembly, useStore]);
   return useStore;
 }
@@ -86,7 +88,9 @@ export function useLocalTracks(assembly: Assembly, type: AnyEntityType, studyId:
     if (type === "gwas") return;
     const save = () => setLocalTracks(useStore.getState().tracks, assembly);
     save();
-    return useStore.subscribe(save);
+    return useStore.subscribe((state, previous) => {
+      if (state.tracks !== previous.tracks) save();
+    });
   }, [assembly, type, useStore]);
   return useStore;
 }

@@ -52,10 +52,17 @@ export function defaultTrackIds(assembly: Assembly) {
     ),
   ];
 }
-export function catalogEntries(assembly: Assembly) {
-  return collectionsByAssembly[assembly].flatMap((collection) =>
+function buildCatalogEntries(collections: TrackSelectCollection[]) {
+  return collections.flatMap((collection) =>
     collection.tracks.map((track) => ({ ...track, id: `${collection.id}::${track.id}` }))
   );
+}
+const entriesByAssembly = {
+  GRCh38: buildCatalogEntries(collectionsByAssembly.GRCh38),
+  mm10: buildCatalogEntries(collectionsByAssembly.mm10),
+};
+export function catalogEntries(assembly: Assembly) {
+  return entriesByAssembly[assembly];
 }
 export function isChromHmm(entry: { metadata: Record<string, unknown> }) {
   return String(entry.metadata.assay).toLowerCase() === "chromhmm";

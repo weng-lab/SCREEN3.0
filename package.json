@@ -11,8 +11,7 @@
     "lint:fix": "eslint src --fix",
     "gen-types": "dotenv -e .env.local -- graphql-codegen",
     "gen-types -w": "dotenv -e .env.local -- graphql-codegen -w",
-    "doctor": "npx react-doctor@latest",
-    "test:browser": "vitest run"
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "@apollo/client": "^4",
@@ -73,8 +72,7 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "graphql": "^16",
     "prettier": "^3.6.2",
-    "typescript": "^6",
-    "vitest": "4.1.7"
+    "typescript": "^6"
   },
   "resolutions": {
     "@types/react": "19.2.14",

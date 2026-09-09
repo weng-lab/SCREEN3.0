@@ -9,6 +9,13 @@ import { catalogEntries, isChromHmm } from "../TrackSelect/collections";
 import { tfPeaksModule } from "./tfPeaks";
 import { ldModule } from "./ld";
 
+function getBiosample(metadata?: Record<string, unknown>) {
+  const sample = metadata?.sourceSampleId;
+  return typeof sample === "string" && sample !== "aggregate-biosample-data"
+    ? { name: sample, displayname: String(metadata?.displayName ?? sample) }
+    : undefined;
+}
+
 // Customize only tooltip components; fetching, rendering and settings remain first-party.
 // Resolve host metadata by URL, keeping it out of validated runtime config and persisted callbacks.
 export function createScreenModules(assembly: Assembly) {
@@ -18,19 +25,13 @@ export function createScreenModules(assembly: Assembly) {
     ...ccreBigBedModule,
     tooltipComponent: ({ item, context }) => {
       const entry = byUrl.get(context.config.url);
-      const metadata = entry?.metadata;
-      const sample = metadata?.sourceSampleId;
       return (
         <CCRETooltip
           assembly={assembly}
           classification={item.ccreClass}
           color={item.color}
           name={item.name ?? item.fields[0]}
-          biosample={
-            typeof sample === "string" && sample !== "aggregate-biosample-data"
-              ? { name: sample, displayname: String(metadata.displayName ?? sample) }
-              : undefined
-          }
+          biosample={getBiosample(entry?.metadata)}
         />
       );
     },
@@ -40,16 +41,11 @@ export function createScreenModules(assembly: Assembly) {
     tooltipComponent: ({ item, context }) => {
       const entry = byUrl.get(context.config.url);
       if (String(entry?.metadata.assay).toLowerCase() === "ccre") {
-        const sample = entry.metadata.sourceSampleId;
         return (
           <CCRETooltip
             assembly={assembly}
             name={item.name ?? item.fields[0]}
-            biosample={
-              typeof sample === "string" && sample !== "aggregate-biosample-data"
-                ? { name: sample, displayname: String(entry.metadata.displayName ?? sample) }
-                : undefined
-            }
+            biosample={getBiosample(entry.metadata)}
           />
         );
       }

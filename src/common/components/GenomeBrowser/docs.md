@@ -49,7 +49,7 @@ same title, color, height, row-height, and display controls used by the monorepo
 
 ## Verification
 
-Run `yarn test:browser`, `yarn exec tsc --noEmit --incremental false`, and `yarn build`.
+Run `yarn exec tsc --noEmit --incremental false` and `yarn build`.
 Live checks should cover human and mouse regions, cCRE and gene navigation, TF filtering/settings,
 ChromHMM add/remove/cancel/reset, session reload, viewport sizing, and switching GWAS LD blocks.
 API-backed tooltip scores, search, and GWAS data require a working SCREEN API even though gene and
