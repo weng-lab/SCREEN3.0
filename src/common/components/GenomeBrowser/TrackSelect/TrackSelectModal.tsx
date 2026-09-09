@@ -1,48 +1,13 @@
 import EditIcon from "@mui/icons-material/Edit";
-import Button from "@mui/material/Button";
-import type { Track, TrackStoreInstance } from "@weng-lab/genomebrowser";
-import { foldersByAssembly, TrackSelect } from "@weng-lab/genomebrowser-ui";
-import type {
-  BiosampleRowInfo,
-  GeneRowInfo,
-  InitialSelectedIdsByAssembly,
-  OtherTrackInfo,
-  TrackSelectProps,
-} from "@weng-lab/genomebrowser-ui";
+import { Alert, Button } from "@mui/material";
+import { createTrackStore, type TrackStoreInstance } from "@weng-lab/genomebrowser";
+import { TrackSelect } from "@weng-lab/genomebrowser-ui";
 import { useMemo, useState } from "react";
-import { injectCallbacks, TrackCallbacks } from "./defaultTracks";
-
-type Assembly = "GRCh38" | "mm10";
-
-type TrackSelectFolder = TrackSelectProps["folders"][number];
-type TrackSelectRow = BiosampleRowInfo | GeneRowInfo | OtherTrackInfo;
-
-const excludedFolderIds = new Set(["human-mohd", "human-psychscreen"]);
-
-const defaultSelectedTrackIds: InitialSelectedIdsByAssembly = {
-  GRCh38: {
-    "human-genes": ["human-genes/gencode-basic"],
-    "human-biosamples": [
-      "human-biosamples/ccre-aggregate",
-      "human-biosamples/dnase-aggregate",
-      "human-biosamples/h3k4me3-aggregate",
-      "human-biosamples/h3k27ac-aggregate",
-      "human-biosamples/ctcf-aggregate",
-      "human-biosamples/atac-aggregate",
-    ],
-  },
-  mm10: {
-    "mouse-genes": ["mouse-genes/gencode-basic"],
-    "mouse-biosamples": [
-      "mouse-biosamples/ccre-aggregate",
-      "mouse-biosamples/dnase-aggregate",
-      "mouse-biosamples/h3k4me3-aggregate",
-      "mouse-biosamples/h3k27ac-aggregate",
-      "mouse-biosamples/ctcf-aggregate",
-      "mouse-biosamples/atac-aggregate",
-    ],
-  },
-};
+import type { Assembly } from "common/types/globalTypes";
+import { injectCallbacks, type TrackCallbacks } from "./defaultTracks";
+import { catalogEntries, collectionsByAssembly, defaultTrackIds } from "./collections";
+import { createScreenModules } from "../modules/registry";
+import { CHROMHMM_TRACK_ID, combineChromHmm, expandChromHmm } from "./trackState";
 
 export default function TrackSelectModal({
   trackStore,
@@ -50,54 +15,56 @@ export default function TrackSelectModal({
   callbacks,
 }: {
   trackStore: TrackStoreInstance;
-  assembly: string;
+  assembly: Assembly;
   callbacks: TrackCallbacks;
 }) {
-  const [open, setOpen] = useState(false);
-
-  const folders = useMemo(
-    () => foldersByAssembly[assembly as Assembly].filter((folder) => !excludedFolderIds.has(folder.id)),
-    [assembly]
-  );
-
-  const screenFolders = useMemo(
-    () => folders.map((folder) => withScreenCallbacks(folder, callbacks)),
-    [folders, callbacks]
-  );
-  const sessionStorageKey = `${assembly}-screen-track-select-v2`;
-
+  const [selectionStore, setSelectionStore] = useState<TrackStoreInstance>();
+  const defaults = useMemo(() => defaultTrackIds(assembly), [assembly]);
+  const initialIds = useMemo(() => {
+    const known = new Set(catalogEntries(assembly).map((entry) => entry.id));
+    return (
+      selectionStore
+        ?.getState()
+        .tracks.map((track) => track.base.id)
+        .filter((id) => known.has(id)) ?? []
+    );
+  }, [selectionStore, assembly]);
+  const [error, setError] = useState<string>();
+  const open = () => {
+    const store = createTrackStore({
+      modules: createScreenModules(assembly),
+      tracks: expandChromHmm(trackStore.getState().tracks, assembly, trackStore.getState().registry),
+    });
+    setError(undefined);
+    setSelectionStore(() => store);
+  };
   return (
     <>
-      <Button
-        variant="contained"
-        startIcon={<EditIcon />}
-        size="small"
-        onClick={() => setOpen(true)}
-        sx={{ minHeight: 44 }}
-      >
+      <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={open} sx={{ minHeight: 44 }}>
         Select Tracks
       </Button>
-      <TrackSelect
-        assembly={assembly as Assembly}
-        folders={screenFolders}
-        initialSelectedIds={defaultSelectedTrackIds}
-        sessionStorageKey={sessionStorageKey}
-        trackStore={trackStore}
-        maxTracks={30}
-        open={open}
-        onClose={() => setOpen(false)}
-        title="Track Selection"
-      />
+      {error && <Alert severity="error">{error}</Alert>}
+      {selectionStore && (
+        <TrackSelect
+          open
+          onClose={() => setSelectionStore(undefined)}
+          trackCollections={collectionsByAssembly[assembly]}
+          useTrackStore={selectionStore}
+          initialTrackIds={initialIds}
+          defaultTrackIds={defaults}
+          maxTracks={30}
+          title="Track Selection"
+          onCommittedTrackIds={() => {
+            const tracks = combineChromHmm(
+              selectionStore.getState().tracks,
+              assembly,
+              trackStore.getState().getTrack(CHROMHMM_TRACK_ID)
+            ).map((t) => injectCallbacks(t, callbacks));
+            const result = trackStore.getState().setTracks(tracks);
+            if (result.ok === false) setError(result.error);
+          }}
+        />
+      )}
     </>
   );
-}
-
-function withScreenCallbacks(folder: TrackSelectFolder, callbacks: TrackCallbacks): TrackSelectFolder {
-  return {
-    ...folder,
-    createTrack: (row, options): Track | null => {
-      const track = folder.createTrack(row, options);
-      return track ? injectCallbacks(track, callbacks, row as TrackSelectRow) : track;
-    },
-  };
 }

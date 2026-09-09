@@ -1,47 +1,38 @@
 "use client";
+import type { AnyTrackInstance, GenomicRegion, Highlight } from "@weng-lab/genomebrowser";
 
-import { Domain, Highlight, Track } from "@weng-lab/genomebrowser";
-import genomeBrowserUiPackage from "@weng-lab/genomebrowser-ui/package.json";
-import { isValidAssembly } from "common/types/globalTypes";
-
-const TRACK_STORAGE_VERSION = genomeBrowserUiPackage.version;
-
-// Simplified browser state
-type LocalBrowserState = {
-  domain: Domain;
-  highlights: Highlight[];
-};
-
-/**
- * Gets the browser state from session storage for the associated assembly and element
- * @param name the name of the element
- * @param assembly the assembly
- * @returns a simplified browser state object
- */
-export function getLocalBrowser(name: string, assembly: string): LocalBrowserState | null {
-  if (typeof window === "undefined" || !window.sessionStorage) return null;
-  if (!isValidAssembly(assembly)) return null;
-
-  const localBrowserState = sessionStorage.getItem(assembly + "-" + name + "-browser-state");
-  if (!localBrowserState) return null;
-  const localBrowserStateJson = JSON.parse(localBrowserState) as LocalBrowserState;
-  return localBrowserStateJson;
+// Application-owned schema version; package.json is intentionally not a public package export.
+const VERSION = "v2";
+type BrowserState = { region: GenomicRegion; highlights: Highlight[] };
+function read(key: string): unknown {
+  try {
+    return typeof window === "undefined" ? null : JSON.parse(window.sessionStorage.getItem(key) ?? "null");
+  } catch {
+    return null;
+  }
 }
-
-export function setLocalBrowser(name: string, assembly: string, localBrowserState: LocalBrowserState) {
-  sessionStorage.setItem(assembly + "-" + name + "-browser-state", JSON.stringify(localBrowserState));
+function write(key: string, value: unknown) {
+  try {
+    window.sessionStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* Browsing still works with disabled or full session storage. */
+  }
 }
-
-export function getLocalTracks(assembly: string): Track[] | null {
-  if (typeof window === "undefined" || !window.sessionStorage) return null;
-  if (!isValidAssembly(assembly)) return null;
-
-  const localTracks = sessionStorage.getItem(`${assembly}-tracks-${TRACK_STORAGE_VERSION}`);
-  if (!localTracks) return null;
-  const localTracksJson = JSON.parse(localTracks) as Track[];
-  return localTracksJson;
+export function getLocalBrowser(name: string, assembly: string): BrowserState | null {
+  return read(`${assembly}-${name}-browser-${VERSION}`) as BrowserState | null;
 }
-
-export function setLocalTracks(tracks: Track[], assembly: string) {
-  sessionStorage.setItem(`${assembly}-tracks-${TRACK_STORAGE_VERSION}`, JSON.stringify(tracks));
+export function setLocalBrowser(name: string, assembly: string, state: BrowserState) {
+  write(`${assembly}-${name}-browser-${VERSION}`, {
+    ...state,
+    highlights: state.highlights.filter((h) => h.id !== "hover-highlight"),
+  });
+}
+export function getLocalTracks(assembly: string): AnyTrackInstance[] | null {
+  return read(`${assembly}-tracks-${VERSION}`) as AnyTrackInstance[] | null;
+}
+export function setLocalTracks(tracks: AnyTrackInstance[], assembly: string) {
+  write(
+    `${assembly}-tracks-${VERSION}`,
+    tracks.map(({ type, base, config, source }) => ({ type, base, config, source }))
+  );
 }

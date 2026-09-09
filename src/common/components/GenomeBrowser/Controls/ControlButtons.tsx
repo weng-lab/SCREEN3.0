@@ -57,8 +57,8 @@ const TwoSidedControl = ({
 );
 
 export default function ControlButtons({ browserStore }: { browserStore: BrowserStoreInstance }) {
-  const domain = browserStore((state) => state.domain);
-  const setDomain = browserStore((state) => state.setDomain);
+  const domain = browserStore((state) => state.region);
+  const setDomain = browserStore((state) => state.setRegion);
 
   const zoom = useCallback(
     (factor: number) => {
