@@ -1,5 +1,6 @@
 import EditIcon from "@mui/icons-material/Edit";
 import { Alert, Button } from "@mui/material";
+import { createTheme, ThemeProvider, type Theme } from "@mui/material/styles";
 import { createTrackStore, type TrackStoreInstance } from "@weng-lab/genomebrowser";
 import { TrackSelect } from "@weng-lab/genomebrowser-ui";
 import { useMemo, useState } from "react";
@@ -8,6 +9,16 @@ import { injectCallbacks, type TrackCallbacks } from "./defaultTracks";
 import { catalogEntries, collectionsByAssembly, defaultTrackIds } from "./collections";
 import { createScreenModules } from "../modules/registry";
 import { CHROMHMM_TRACK_ID, combineChromHmm, expandChromHmm } from "./trackState";
+
+// Collection views require grouping, which SCREEN disables in the global theme.
+const trackSelectTheme = (theme: Theme) =>
+  createTheme(theme, {
+    components: {
+      MuiDataGrid: {
+        defaultProps: { disableRowGrouping: false },
+      },
+    },
+  });
 
 export default function TrackSelectModal({
   trackStore,
@@ -42,25 +53,27 @@ export default function TrackSelectModal({
       </Button>
       {error && <Alert severity="error">{error}</Alert>}
       {selectionStore && (
-        <TrackSelect
-          open
-          onClose={() => setSelectionStore(undefined)}
-          trackCollections={collectionsByAssembly[assembly]}
-          useTrackStore={selectionStore}
-          initialTrackIds={initialIds}
-          defaultTrackIds={defaults}
-          maxTracks={30}
-          title="Track Selection"
-          onCommittedTrackIds={() => {
-            const tracks = combineChromHmm(
-              selectionStore.getState().tracks,
-              assembly,
-              trackStore.getState().getTrack(CHROMHMM_TRACK_ID)
-            ).map((t) => injectCallbacks(t, callbacks));
-            const result = trackStore.getState().setTracks(tracks);
-            if (result.ok === false) setError(result.error);
-          }}
-        />
+        <ThemeProvider theme={trackSelectTheme}>
+          <TrackSelect
+            open
+            onClose={() => setSelectionStore(undefined)}
+            trackCollections={collectionsByAssembly[assembly]}
+            useTrackStore={selectionStore}
+            initialTrackIds={initialIds}
+            defaultTrackIds={defaults}
+            maxTracks={30}
+            title="Track Selection"
+            onCommittedTrackIds={() => {
+              const tracks = combineChromHmm(
+                selectionStore.getState().tracks,
+                assembly,
+                trackStore.getState().getTrack(CHROMHMM_TRACK_ID)
+              ).map((t) => injectCallbacks(t, callbacks));
+              const result = trackStore.getState().setTracks(tracks);
+              if (result.ok === false) setError(result.error);
+            }}
+          />
+        </ThemeProvider>
       )}
     </>
   );
