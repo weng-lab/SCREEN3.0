@@ -4,6 +4,29 @@ import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 
 type ButtonConfig = { label: string; action: BrowserNavigationAction };
 
+const buttonGroups = {
+  moveLeft: [
+    { label: "◄◄◄", action: { type: "pan", fraction: -1 } },
+    { label: "◄◄", action: { type: "pan", fraction: -0.5 } },
+    { label: "◄", action: { type: "pan", fraction: -0.25 } },
+  ],
+  moveRight: [
+    { label: "►", action: { type: "pan", fraction: 0.25 } },
+    { label: "►►", action: { type: "pan", fraction: 0.5 } },
+    { label: "►►►", action: { type: "pan", fraction: 1 } },
+  ],
+  zoomIn: [
+    { label: "1.5x", action: { type: "zoom", factor: 1 / 1.5 } },
+    { label: "3x", action: { type: "zoom", factor: 1 / 3 } },
+    { label: "10x", action: { type: "zoom", factor: 1 / 10 } },
+  ],
+  zoomOut: [
+    { label: "10x", action: { type: "zoom", factor: 10 } },
+    { label: "3x", action: { type: "zoom", factor: 3 } },
+    { label: "1.5x", action: { type: "zoom", factor: 1.5 } },
+  ],
+} satisfies Record<string, ButtonConfig[]>;
+
 // Reusable button group component
 const ButtonGroup = ({ buttons, browserStore }: { buttons: ButtonConfig[]; browserStore: BrowserStoreInstance }) => (
   <MuiButtonGroup>
@@ -60,29 +83,6 @@ const TwoSidedControl = ({
 );
 
 export default function ControlButtons({ browserStore }: { browserStore: BrowserStoreInstance }) {
-  const buttonGroups = {
-    moveLeft: [
-      { label: "◄◄◄", action: { type: "pan", fraction: -1 } },
-      { label: "◄◄", action: { type: "pan", fraction: -0.5 } },
-      { label: "◄", action: { type: "pan", fraction: -0.25 } },
-    ],
-    moveRight: [
-      { label: "►", action: { type: "pan", fraction: 0.25 } },
-      { label: "►►", action: { type: "pan", fraction: 0.5 } },
-      { label: "►►►", action: { type: "pan", fraction: 1 } },
-    ],
-    zoomIn: [
-      { label: "1.5x", action: { type: "zoom", factor: 1 / 1.5 } },
-      { label: "3x", action: { type: "zoom", factor: 1 / 3 } },
-      { label: "10x", action: { type: "zoom", factor: 1 / 10 } },
-    ],
-    zoomOut: [
-      { label: "10x", action: { type: "zoom", factor: 10 } },
-      { label: "3x", action: { type: "zoom", factor: 3 } },
-      { label: "1.5x", action: { type: "zoom", factor: 1.5 } },
-    ],
-  } satisfies Record<string, ButtonConfig[]>;
-
   return (
     <Box display={"flex"} flexDirection={"row"} flexWrap={"wrap"} justifyContent={"center"} gap={2}>
       <TwoSidedControl
