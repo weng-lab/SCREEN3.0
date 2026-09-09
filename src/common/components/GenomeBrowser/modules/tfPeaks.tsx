@@ -2,11 +2,11 @@ import { defineTrackModule, fetchOnChange } from "@weng-lab/genomebrowser";
 import { bed3Schema, createBigBedFile } from "@weng-lab/genomic-reader";
 import { z } from "zod";
 import TfSettings from "./TfSettings";
-import TfTooltip from "./TfTooltip";
-import TfRenderer from "./TfRenderer";
+import { lazy, Suspense } from "react";
 
-export const PEAKS_URL = "https://users.wenglab.org/gaomingshi/no_trim.TF_name.rPeaks.bb";
-export const MOTIFS_URL = "https://users.wenglab.org/gaomingshi/no_trim.TF_name.decorator.bb";
+const TfRenderer = lazy(() => import("./TfRenderer"));
+const TfTooltip = lazy(() => import("./TfTooltip"));
+
 const schema = z.object({
   primaryUrl: fetchOnChange(z.string().min(1)),
   overlayUrl: fetchOnChange(z.string().min(1)),
@@ -51,7 +51,23 @@ export const tfPeaksModule = defineTrackModule<Peak>()({
     const [primary, overlay] = await Promise.all([read(config.primaryUrl), read(config.overlayUrl)]);
     return { primary: primary.map(parsePeak), overlay };
   },
-  render: { full: TfRenderer },
+  render: {
+    full: (props) => (
+      <Suspense
+        fallback={
+          <text x={8} y={18}>
+            Loading TF peaks…
+          </text>
+        }
+      >
+        <TfRenderer {...props} />
+      </Suspense>
+    ),
+  },
   settingsComponent: TfSettings,
-  tooltipComponent: TfTooltip,
+  tooltipComponent: (props) => (
+    <Suspense fallback={null}>
+      <TfTooltip {...props} />
+    </Suspense>
+  ),
 });

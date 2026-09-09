@@ -7,9 +7,16 @@ import {
 import { assemblies } from "common/assemblies";
 import type { AnyEntityType } from "common/entityTabsConfig";
 import type { Assembly, GenomicRange } from "common/types/globalTypes";
-import { useEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import { randomColor } from "../utils";
-import { getLocalBrowser, getLocalTracks, setLocalBrowser, setLocalTracks } from "./getLocalStorage";
+import {
+  getLocalBrowser,
+  getLocalTracks,
+  setLocalBrowser,
+  setLocalTracks,
+  durableHighlights,
+  sameBrowserState,
+} from "./getLocalStorage";
 import { gwasTracks, injectCallbacks, type TrackCallbacks } from "../TrackSelect/defaultTracks";
 import { createScreenModules } from "../modules/registry";
 import { catalogEntries, defaultTrackIds } from "../TrackSelect/collections";
@@ -53,11 +60,18 @@ export function useLocalBrowser({
     useStore.setState({ titleSize, fontSize: titleSize - 2 });
   }, [breakpoint, useStore]);
   useEffect(() => {
-    const save = () => {
+    const snapshot = () => {
       const { region, highlights } = useStore.getState();
-      setLocalBrowser(name, assembly, { region, highlights });
+      return { region, highlights: durableHighlights(highlights) };
     };
-    save();
+    let previousSaved = snapshot();
+    const save = () => {
+      const next = snapshot();
+      if (sameBrowserState(previousSaved, next)) return;
+      setLocalBrowser(name, assembly, next);
+      previousSaved = next;
+    };
+    setLocalBrowser(name, assembly, previousSaved);
     return useStore.subscribe((state, previous) => {
       if (state.region !== previous.region || state.highlights !== previous.highlights) save();
     });
@@ -76,19 +90,37 @@ export function useLocalTracks(assembly: Assembly, type: AnyEntityType, studyId:
         : catalogEntries(assembly).flatMap((e) =>
             ids.has(e.id) ? [createTrackFromEntry(empty.getState().registry, { ...e, source: "host" })] : []
           );
-    const saved = type === "gwas" ? null : getLocalTracks(assembly);
+    const saved = type === "gwas" ? null : getLocalTracks(assembly, empty.getState().registry);
     try {
-      return createTrackStore({ modules, tracks: (saved ?? defaults()).map((t) => injectCallbacks(t, callbacks)) });
+      return createTrackStore({ modules, tracks: saved ?? defaults() });
     } catch {
-      return createTrackStore({ modules, tracks: defaults().map((t) => injectCallbacks(t, callbacks)) });
+      return createTrackStore({ modules, tracks: defaults() });
     }
-  }, [assembly, type, studyId, callbacks]);
+  }, [assembly, type, studyId]);
+  // Rebind application interactions without recreating the entity's track state.
+  useLayoutEffect(() => {
+    const state = useStore.getState();
+    // Only interactions change; preserve validated config/base identities and track order.
+    useStore.setState({ tracks: state.tracks.map((track) => injectCallbacks(track, callbacks)) });
+  }, [useStore, callbacks]);
   useEffect(() => {
     if (type === "gwas") return;
     const save = () => setLocalTracks(useStore.getState().tracks, assembly);
     save();
     return useStore.subscribe((state, previous) => {
-      if (state.tracks !== previous.tracks) save();
+      if (state.tracks === previous.tracks) return;
+      const unchanged =
+        state.tracks.length === previous.tracks.length &&
+        state.tracks.every((track, i) => {
+          const old = previous.tracks[i];
+          return (
+            track.type === old.type &&
+            track.source === old.source &&
+            track.base === old.base &&
+            track.config === old.config
+          );
+        });
+      if (!unchanged) save();
     });
   }, [assembly, type, useStore]);
   return useStore;

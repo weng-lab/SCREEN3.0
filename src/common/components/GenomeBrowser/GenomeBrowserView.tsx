@@ -7,8 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 
 // @weng-lab
-import { GenomeBrowser, createSettingsStore } from "@weng-lab/genomebrowser";
-import { TrackBaseSettings } from "@weng-lab/genomebrowser-tracks/shared";
+import { GenomeBrowser } from "@weng-lab/genomebrowser";
 import { LDDataContext } from "./modules/ld";
 import type { LDSnp } from "./modules/ldData";
 import { GenomeSearch, Result } from "@weng-lab/ui-components";
@@ -17,18 +16,15 @@ import { GenomeSearch, Result } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { GenomicRange } from "common/types/globalTypes";
 import HighlightDialog from "./Dialogs/HighlightDialog";
-import SettingsModal from "./Dialogs/SettingsModal";
 import { expandCoordinates, randomColor, SearchToScreenTypes } from "./utils";
 import TrackSelectModal from "./TrackSelect/TrackSelectModal";
-import { useLocalBrowser, useLocalTracks } from "./Context/useLocalBrowser";
+import { useBrowserSession } from "./Context/useBrowserSession";
 
 // icons
 import PageviewIcon from "@mui/icons-material/Pageview";
 import ControlButtons from "./Controls/ControlButtons";
 import DomainDisplay from "./Controls/DomainDisplay";
-import { useEffect, useMemo, useRef } from "react";
-import { TrackCallbacks } from "./TrackSelect/defaultTracks";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 export type GenomeBrowserViewProps = EntityViewComponentProps & {
   coordinates: GenomicRange;
   ldData?: { data: readonly LDSnp[]; loading: boolean; error?: string };
@@ -37,20 +33,17 @@ export type GenomeBrowserViewProps = EntityViewComponentProps & {
 
 const EMPTY_LD_DATA = { data: [], loading: false } satisfies NonNullable<GenomeBrowserViewProps["ldData"]>;
 
-export default function GenomeBrowserView({
-  entity,
-  coordinates,
-  ldData,
-  handleSelectLDBlock,
-}: GenomeBrowserViewProps) {
+export default function GenomeBrowserView(props: GenomeBrowserViewProps) {
+  const { assembly, entityType, entityID } = props.entity;
+  return <EntityBrowserSession key={`${assembly}:${entityType}:${entityID}`} {...props} />;
+}
+
+function EntityBrowserSession({ entity, coordinates, ldData, handleSelectLDBlock }: GenomeBrowserViewProps) {
   const theme = useTheme();
   const isMedium = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const breakpoint: "sm" | "md" | undefined = isSmall ? "sm" : isMedium ? "md" : undefined;
 
-  /**
-   * @todo when refactoring this to include GWAS need to change this logic
-   */
   const name =
     entity.entityType === "region"
       ? entity.entityID.replace("%3A", ":")
@@ -58,72 +51,13 @@ export default function GenomeBrowserView({
         ? `${coordinates.chromosome}:${coordinates.start}-${coordinates.end}`
         : entity.entityID;
 
-  /**
-   * The single place entity coordinates get padded for the browser. Callers pass the feature's own
-   * coordinates and everything downstream - the starting domain, the GWAS domain sync, and the
-   * recenter button - uses this one value, so the padding can never be applied twice.
-   */
-  const expandedCoordinates = useMemo(
-    () => expandCoordinates(coordinates, entity.entityType),
-    [coordinates, entity.entityType]
+  const { useBrowserStore, useTrackStore, useSettingsStore, callbacks, expandedCoordinates } = useBrowserSession(
+    entity,
+    coordinates,
+    breakpoint
   );
-
-  const useBrowserStore = useLocalBrowser({
-    name: entity.entityID,
-    assembly: entity.assembly,
-    entityCoordinates: coordinates,
-    browserDomain: expandedCoordinates,
-    type: entity.entityType,
-    breakpoint,
-  });
-
-  const setDomain = useBrowserStore((s) => s.setRegion);
-  useEffect(() => {
-    if (entity.entityType !== "gwas") return;
-    setDomain(expandedCoordinates);
-  }, [expandedCoordinates, setDomain, entity.entityType]);
-
-  // interaction callback functions
-  const addHighlight = useBrowserStore((s) => s.addHighlight);
-  const removeHighlight = useBrowserStore((s) => s.removeHighlight);
-  const router = useRouter();
-  const callbacks = useMemo<TrackCallbacks>(() => {
-    const hover = (item: { chromosome?: string; start: number; end: number; color?: string }) =>
-      addHighlight({
-        id: "hover-highlight",
-        region: {
-          chromosome: item.chromosome ?? useBrowserStore.getState().region.chromosome,
-          start: item.start,
-          end: item.end,
-        },
-        color: item.color || "#0000ff",
-        opacity: 0.2,
-      });
-    const leave = () => removeHighlight("hover-highlight");
-    return {
-      regions: {
-        onHover: hover,
-        onLeave: leave,
-        onClick: (item) => {
-          const name = item.name ?? item.fields[0];
-          if (name) router.push(`/${entity.assembly}/ccre/${encodeURIComponent(name)}`);
-        },
-      },
-      genes: {
-        onHover: (item) => hover(item.feature),
-        onLeave: leave,
-        onClick: (item) => {
-          const name = item.feature.geneName;
-          if (name && !name.startsWith("ENSG")) router.push(`/${entity.assembly}/gene/${encodeURIComponent(name)}`);
-        },
-      },
-    };
-  }, [addHighlight, removeHighlight, router, entity.assembly, useBrowserStore]);
-  const useTrackStore = useLocalTracks(entity.assembly, entity.entityType, entity.entityID, callbacks);
-  const useSettingsStore = useMemo(
-    () => createSettingsStore({ baseSettingsComponent: TrackBaseSettings, modalComponent: SettingsModal }),
-    []
-  );
+  const setDomain = useBrowserStore((state) => state.setRegion);
+  const addHighlight = useBrowserStore((state) => state.addHighlight);
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const container = containerRef.current;
@@ -267,12 +201,7 @@ export default function GenomeBrowserView({
         <ControlButtons browserStore={useBrowserStore} />
       </Stack>
       <LDDataContext.Provider value={ldData ?? EMPTY_LD_DATA}>
-        <GenomeBrowser
-          key={`${entity.assembly}:${entity.entityType}:${entity.entityID}`}
-          browserStore={useBrowserStore}
-          trackStore={useTrackStore}
-          settingsStore={useSettingsStore}
-        />
+        <GenomeBrowser browserStore={useBrowserStore} trackStore={useTrackStore} settingsStore={useSettingsStore} />
       </LDDataContext.Provider>
     </Stack>
   );

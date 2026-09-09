@@ -2,7 +2,7 @@ import type { TrackSelectCollection } from "@weng-lab/genomebrowser-ui";
 import type { Assembly } from "common/types/globalTypes";
 import human from "./data/human-biosamples.json";
 import mouse from "./data/mouse-biosamples.json";
-import { PEAKS_URL, MOTIFS_URL } from "../modules/tfPeaks";
+import { PEAKS_URL, MOTIFS_URL } from "../modules/tfSources";
 
 export const HUMAN_GENE_URL =
   "https://users.wenglab.org/niship/gencodefiles/human.gencode.v40.comprehensive.annotation.bb";

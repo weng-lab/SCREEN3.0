@@ -4,14 +4,28 @@ SCREEN uses the published `2.0.0-beta.1` runtime, tracks, UI, and genomic reader
 
 ## State and navigation
 
-`GenomeBrowserView` owns stable per-entity browser and track stores. Coordinates are padded exactly
-once there. GWAS block changes explicitly move the viewport; normal rerenders do not reset pan/zoom.
-`ResizeObserver` sizes the browser to its container. Browser navigation uses `region` / `setRegion`.
+`GenomeBrowserView` keys the complete browser session by assembly, entity type, and entity ID.
+`Context/useBrowserSession.tsx` composes its stores and pads coordinates once;
+`useEntityInteractions.ts` owns SCREEN routing and hover callbacks. GWAS block changes explicitly
+move the viewport; normal rerenders do not reset pan/zoom. Switching entities also closes old
+settings and selection dialogs. Callback updates rebind interactions without recreating tracks.
+`ResizeObserver` sizes the browser to its container. SCREEN's button layout uses the shared
+`BrowserNavigationButton`, including width-preserving pans at chromosome boundaries.
 
-Session storage uses SCREEN's `v2` schema namespace. Old v1 track selections and highlights are left
-untouched but are not loaded into v2. The v2 state restores track order, settings, datasets, viewport,
-and user highlights; callbacks are reconstructed from application code, and transient hover
-highlights are excluded. Invalid or inaccessible storage falls back to defaults.
+Session storage keeps SCREEN's existing `v2` namespace. Regions and permanent highlights belong
+to each entity; non-GWAS track preferences are shared across entities of the same assembly. GWAS
+retains its dedicated tracks without track persistence, and explicitly recenters on its active LD
+block. Old v1 records remain untouched and are not loaded into v2.
+
+Restoration validates the browser fields against an application schema and the region against its
+assembly. Only region/highlights can override initial browser state. Saved track fields are checked
+against registered modules; invalid state falls back to defaults, and an intentionally empty track
+list remains empty. Callbacks are reconstructed from application code.
+
+Only durable changes are written: region, permanent highlights, and track type/base/config/source
+in display order. Hover-only browser changes do not serialize state. Layout and callback-only
+updates do not write it, and identical serialized values are not written again. Saving remains
+synchronous, with no timer or delayed flush. Disabled/full session storage does not prevent browsing.
 
 ## Tracks and collections
 
@@ -46,7 +60,10 @@ SCREEN. Gene callbacks read `item.feature`, including when hovering an exon or i
   including comma-separated target/score pairs. Hover reveals arcs; clicks toggle pinned SNPs.
 - `screen-tf-peaks`: ports the old TF peak and motif overlay track to `genomic-reader`. File readers
   are cached per browser track. TF filtering, score shading, motif overlays/logos, cCRE accessions,
-  and supporting biosamples are retained.
+  and supporting biosamples are retained. Its renderer and tooltip load on demand, so motif JSON
+  and logo rendering are deferred until TF rendering/tooltip use. Source URL constants live in
+  `tfSources.ts` without importing renderer code. Both biosample catalogs remain bundled; splitting
+  catalog initialization and tooltip metadata is outside this small loading cleanup.
 
 All module tooltips use the tracks package's `TrackTooltip`; settings use its shared field and
 layout components. `createSettingsStore({ baseSettingsComponent: TrackBaseSettings })` supplies the
@@ -54,7 +71,8 @@ same title, color, height, row-height, and display controls used by the monorepo
 
 ## Verification
 
-Run `yarn exec tsc --noEmit --incremental false` and `yarn build`.
+Run `yarn exec tsc --noEmit --incremental false` and targeted ESLint on changed files.
+No dedicated regression suite is maintained for this integration.
 Live checks should cover human and mouse regions, cCRE and gene navigation, TF filtering/settings,
 ChromHMM add/remove/cancel/reset, session reload, viewport sizing, and switching GWAS LD blocks.
 API-backed tooltip scores, search, and GWAS data require a working SCREEN API even though gene and

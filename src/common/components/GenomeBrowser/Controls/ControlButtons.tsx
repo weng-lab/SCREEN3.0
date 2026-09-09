@@ -1,19 +1,20 @@
-import { Box, Button, Divider, Stack, Typography, ButtonGroup as MuiButtonGroup } from "@mui/material";
-import { useCallback } from "react";
+import { Box, Divider, Stack, Typography, ButtonGroup as MuiButtonGroup } from "@mui/material";
+import { BrowserNavigationButton, type BrowserNavigationAction } from "@weng-lab/genomebrowser-ui";
 import { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 
-type ButtonConfig = { label: string; onClick: (value: number) => void; value: number };
+type ButtonConfig = { label: string; action: BrowserNavigationAction };
 
 // Reusable button group component
-const ButtonGroup = ({ buttons }: { buttons: ButtonConfig[] }) => (
+const ButtonGroup = ({ buttons, browserStore }: { buttons: ButtonConfig[]; browserStore: BrowserStoreInstance }) => (
   <MuiButtonGroup>
     {buttons.map((btn) => {
       return (
-        <Button
+        <BrowserNavigationButton
           key={btn.label}
           variant="outlined"
           size="small"
-          onClick={() => btn.onClick(btn.value)}
+          browserStore={browserStore}
+          action={btn.action}
           sx={{
             padding: "2px 8px",
             minWidth: "30px",
@@ -21,19 +22,21 @@ const ButtonGroup = ({ buttons }: { buttons: ButtonConfig[] }) => (
           }}
         >
           {btn.label}
-        </Button>
+        </BrowserNavigationButton>
       );
     })}
   </MuiButtonGroup>
 );
 
 const TwoSidedControl = ({
+  browserStore,
   leftButtons,
   rightButtons,
   label,
   leftLabel,
   rightLabel,
 }: {
+  browserStore: BrowserStoreInstance;
   leftButtons: ButtonConfig[];
   rightButtons: ButtonConfig[];
   label?: string;
@@ -45,91 +48,51 @@ const TwoSidedControl = ({
     <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
       <Stack direction={"column"} alignItems={"center"}>
         {leftLabel && <Typography variant="body2">{leftLabel}</Typography>}
-        <ButtonGroup buttons={leftButtons} />
+        <ButtonGroup buttons={leftButtons} browserStore={browserStore} />
       </Stack>
       <Divider orientation="vertical" flexItem />
       <Stack direction={"column"} alignItems={"center"}>
         {rightLabel && <Typography variant="body2">{rightLabel}</Typography>}
-        <ButtonGroup buttons={rightButtons} />
+        <ButtonGroup buttons={rightButtons} browserStore={browserStore} />
       </Stack>
     </Stack>
   </Stack>
 );
 
 export default function ControlButtons({ browserStore }: { browserStore: BrowserStoreInstance }) {
-  const domain = browserStore((state) => state.region);
-  const setDomain = browserStore((state) => state.setRegion);
-
-  const zoom = useCallback(
-    (factor: number) => {
-      // Calculate new domain width
-      const width = domain.end - domain.start;
-      const newWidth = Math.round(width * factor);
-      const center = Math.round((domain.start + domain.end) / 2);
-
-      // Calculate new start and end based on center point
-      const newStart = Math.max(0, Math.round(center - newWidth / 2));
-      const newEnd = Math.round(center + newWidth / 2);
-
-      // Dispatch with exact coordinates instead of using factor
-      setDomain({
-        ...domain,
-        start: newStart,
-        end: newEnd,
-      });
-    },
-    [domain, setDomain]
-  );
-
-  const shift = useCallback(
-    (delta: number) => {
-      // Round the delta to ensure consistent integer values
-      const roundedDelta = Math.round(delta);
-      const width = domain.end - domain.start;
-
-      // Ensure we don't go below 0
-      const newStart = Math.max(0, Math.round(domain.start + roundedDelta));
-      const newEnd = Math.round(newStart + width);
-
-      // Dispatch with exact coordinates instead of using delta
-      setDomain({
-        ...domain,
-        start: newStart,
-        end: newEnd,
-      });
-    },
-    [domain, setDomain]
-  );
-
-  const width = domain.end - domain.start;
-
   const buttonGroups = {
     moveLeft: [
-      { label: "◄◄◄", onClick: shift, value: -width },
-      { label: "◄◄", onClick: shift, value: -Math.round(width / 2) },
-      { label: "◄", onClick: shift, value: -Math.round(width / 4) },
+      { label: "◄◄◄", action: { type: "pan", fraction: -1 } },
+      { label: "◄◄", action: { type: "pan", fraction: -0.5 } },
+      { label: "◄", action: { type: "pan", fraction: -0.25 } },
     ],
     moveRight: [
-      { label: "►", onClick: shift, value: Math.round(width / 4) },
-      { label: "►►", onClick: shift, value: Math.round(width / 2) },
-      { label: "►►►", onClick: shift, value: width },
+      { label: "►", action: { type: "pan", fraction: 0.25 } },
+      { label: "►►", action: { type: "pan", fraction: 0.5 } },
+      { label: "►►►", action: { type: "pan", fraction: 1 } },
     ],
     zoomIn: [
-      { label: "1.5x", onClick: zoom, value: 1 / 1.5 },
-      { label: "3x", onClick: zoom, value: 1 / 3 },
-      { label: "10x", onClick: zoom, value: 1 / 10 },
+      { label: "1.5x", action: { type: "zoom", factor: 1 / 1.5 } },
+      { label: "3x", action: { type: "zoom", factor: 1 / 3 } },
+      { label: "10x", action: { type: "zoom", factor: 1 / 10 } },
     ],
     zoomOut: [
-      { label: "10x", onClick: zoom, value: 10 },
-      { label: "3x", onClick: zoom, value: 3 },
-      { label: "1.5x", onClick: zoom, value: 1.5 },
+      { label: "10x", action: { type: "zoom", factor: 10 } },
+      { label: "3x", action: { type: "zoom", factor: 3 } },
+      { label: "1.5x", action: { type: "zoom", factor: 1.5 } },
     ],
-  };
+  } satisfies Record<string, ButtonConfig[]>;
 
   return (
     <Box display={"flex"} flexDirection={"row"} flexWrap={"wrap"} justifyContent={"center"} gap={2}>
-      <TwoSidedControl leftButtons={buttonGroups.moveLeft} rightButtons={buttonGroups.moveRight} label="Move" />
       <TwoSidedControl
+        browserStore={browserStore}
+        leftButtons={buttonGroups.moveLeft}
+        rightButtons={buttonGroups.moveRight}
+        label="Move"
+      />
+      <TwoSidedControl
+        browserStore={browserStore}
         leftButtons={buttonGroups.zoomIn}
         rightButtons={buttonGroups.zoomOut}
         leftLabel="Zoom In"
