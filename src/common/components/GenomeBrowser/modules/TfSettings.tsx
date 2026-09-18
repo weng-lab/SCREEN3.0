@@ -1,6 +1,7 @@
 import type { TrackSettingsProps } from "@weng-lab/genomebrowser";
 import {
   TrackSettingsLayout,
+  TrackBaseSettings,
   TrackSettingsSection,
   TrackSettingsFieldGrid,
   TrackSettingsUrlField,
@@ -8,9 +9,10 @@ import {
 import type { Config, Peak } from "./tfPeaks";
 import TfFilterFields from "./TfFilterFields";
 
-export default function TfSettings({ track, updateTrack }: TrackSettingsProps<Config, Peak>) {
+export default function TfSettings({ track, updateTrack, displayOptions }: TrackSettingsProps<Config, Peak>) {
   return (
     <TrackSettingsLayout>
+      <TrackBaseSettings track={track} updateTrack={updateTrack} displayOptions={displayOptions} />
       <TrackSettingsSection title="Data sources">
         <TrackSettingsFieldGrid>
           <TrackSettingsUrlField

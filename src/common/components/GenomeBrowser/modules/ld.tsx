@@ -5,13 +5,14 @@ import {
   fetchOnChange,
   useInteraction,
   useTooltip,
-  useTrackStore,
+  useGenomeBrowser,
   type TrackRendererProps,
   type TrackSettingsProps,
 } from "@weng-lab/genomebrowser";
 import {
   TrackTooltip,
   TrackSettingsLayout,
+  TrackBaseSettings,
   TrackSettingsSection,
   TrackSettingsFieldGrid,
   TrackSettingsTextField,
@@ -32,9 +33,10 @@ export const LDDataContext = createContext<{ data: readonly LDSnp[]; loading: bo
 const schema = z.object({ studyId: fetchOnChange(z.string().min(1)), show: z.array(z.string()).default([]) });
 type Config = z.infer<typeof schema>;
 
-function LDSettings({ track, updateTrack }: TrackSettingsProps<Config, LDSnp>) {
+function LDSettings({ track, updateTrack, displayOptions }: TrackSettingsProps<Config, LDSnp>) {
   return (
     <TrackSettingsLayout>
+      <TrackBaseSettings track={track} updateTrack={updateTrack} displayOptions={displayOptions} />
       <TrackSettingsSection title="Linkage disequilibrium">
         <TrackSettingsFieldGrid>
           <TrackSettingsTextField
@@ -63,6 +65,7 @@ function FullLD({ id, config, region, width, height, color }: TrackRendererProps
   const host = use(LDDataContext);
   const theme = useTheme();
   const [hovered, setHovered] = useState<string>();
+  const { useTrackStore } = useGenomeBrowser();
   const updateTrack = useTrackStore((s) => s.updateTrack);
   const interaction = useInteraction<LDSnp>();
   const tooltip = useTooltip<LDSnp, Config>();

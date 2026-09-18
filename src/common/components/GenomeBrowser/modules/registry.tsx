@@ -1,3 +1,4 @@
+import type { AnyTrackModule } from "@weng-lab/genomebrowser";
 import { firstPartyTrackModules } from "@weng-lab/genomebrowser-tracks";
 import { bigBedModule } from "@weng-lab/genomebrowser-tracks/bigbed";
 import { ccreBigBedModule } from "@weng-lab/genomebrowser-tracks/ccre";
@@ -18,7 +19,7 @@ function getBiosample(metadata?: Record<string, unknown>) {
 
 // Customize only tooltip components; fetching, rendering and settings remain first-party.
 // Resolve host metadata by URL, keeping it out of validated runtime config and persisted callbacks.
-export function createScreenModules(assembly: Assembly) {
+export function createScreenModules(assembly: Assembly): AnyTrackModule[] {
   const entries = catalogEntries(assembly);
   const byUrl = new Map(entries.flatMap((e) => (typeof e.config.url === "string" ? [[e.config.url, e] as const] : [])));
   const ccre = {
@@ -40,7 +41,7 @@ export function createScreenModules(assembly: Assembly) {
     ...bigBedModule,
     tooltipComponent: ({ item, context }) => {
       const entry = byUrl.get(context.config.url);
-      if (String(entry?.metadata.assay).toLowerCase() === "ccre") {
+      if (String(entry?.metadata?.assay).toLowerCase() === "ccre") {
         return (
           <CCRETooltip
             assembly={assembly}

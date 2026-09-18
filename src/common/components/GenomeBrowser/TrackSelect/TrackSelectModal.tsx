@@ -1,5 +1,4 @@
-import EditIcon from "@mui/icons-material/Edit";
-import { Alert, Button } from "@mui/material";
+import { Alert } from "@mui/material";
 import { createTheme, ThemeProvider, type Theme } from "@mui/material/styles";
 import { createTrackStore, type TrackStoreInstance } from "@weng-lab/genomebrowser";
 import { TrackSelect } from "@weng-lab/genomebrowser-ui";
@@ -24,39 +23,35 @@ export default function TrackSelectModal({
   trackStore,
   assembly,
   callbacks,
+  onClose,
 }: {
   trackStore: TrackStoreInstance;
   assembly: Assembly;
   callbacks: TrackCallbacks;
+  onClose: () => void;
 }) {
-  const [selectionStore, setSelectionStore] = useState<TrackStoreInstance>();
+  const [selectionStore] = useState(() =>
+    createTrackStore({
+      modules: createScreenModules(assembly),
+      tracks: expandChromHmm(trackStore.getState().tracks, assembly, trackStore.getState().registry),
+    })
+  );
   const defaults = useMemo(() => defaultTrackIds(assembly), [assembly]);
   const initialIds = useMemo(() => {
-    const known = new Set(catalogEntries(assembly).map((entry) => entry.id));
+    const known = new Set(catalogEntries(assembly).map((entry) => entry.base.id));
     return (
       selectionStore?.getState().tracks.flatMap((track) => (known.has(track.base.id) ? [track.base.id] : [])) ?? []
     );
   }, [selectionStore, assembly]);
   const [error, setError] = useState<string>();
-  const open = () => {
-    const store = createTrackStore({
-      modules: createScreenModules(assembly),
-      tracks: expandChromHmm(trackStore.getState().tracks, assembly, trackStore.getState().registry),
-    });
-    setError(undefined);
-    setSelectionStore(() => store);
-  };
   return (
     <>
-      <Button variant="contained" startIcon={<EditIcon />} size="small" onClick={open} sx={{ minHeight: 44 }}>
-        Select Tracks
-      </Button>
       {error && <Alert severity="error">{error}</Alert>}
       {selectionStore && (
         <ThemeProvider theme={trackSelectTheme}>
           <TrackSelect
             open
-            onClose={() => setSelectionStore(undefined)}
+            onClose={onClose}
             trackCollections={collectionsByAssembly[assembly]}
             useTrackStore={selectionStore}
             initialTrackIds={initialIds}

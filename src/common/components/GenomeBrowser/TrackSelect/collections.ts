@@ -1,4 +1,4 @@
-import type { TrackSelectCollection } from "@weng-lab/genomebrowser-ui";
+import type { TrackCollection } from "@weng-lab/genomebrowser";
 import type { Assembly } from "common/types/globalTypes";
 import human from "./data/human-biosamples.json";
 import mouse from "./data/mouse-biosamples.json";
@@ -11,33 +11,39 @@ export const MOUSE_GENE_URL =
 const simpleView = [
   { id: "default", label: "Tracks", columns: [{ field: "title", label: "Track" }], grouping: [], leaf: "title" },
 ];
-const humanGenes: TrackSelectCollection = {
+const humanGenes: TrackCollection = {
+  assembly: "GRCh38",
   id: "human-genes",
   label: "Genes",
   views: simpleView,
   tracks: [
     {
       type: "gene",
-      id: "gencode-v40",
-      title: "GENCODE v40 Comprehensive Genes",
-      display: "merged",
-      color: "#0c184a",
+      base: {
+        id: "gencode-v40",
+        title: "GENCODE v40 Comprehensive Genes",
+        display: "merged",
+        color: "#0c184a",
+      },
       config: { url: HUMAN_GENE_URL },
       metadata: {},
     },
   ],
 };
-const mouseGenes: TrackSelectCollection = {
+const mouseGenes: TrackCollection = {
+  assembly: "mm10",
   id: "mouse-genes",
   label: "Genes",
   views: simpleView,
   tracks: [
     {
       type: "gene",
-      id: "gencode-vM25",
-      title: "GENCODE M25 Comprehensive Genes",
-      display: "merged",
-      color: "#0c184a",
+      base: {
+        id: "gencode-vM25",
+        title: "GENCODE M25 Comprehensive Genes",
+        display: "merged",
+        color: "#0c184a",
+      },
       config: { url: MOUSE_GENE_URL },
       metadata: {},
     },
@@ -46,21 +52,24 @@ const mouseGenes: TrackSelectCollection = {
 export function defaultGeneTrackId(assembly: Assembly) {
   return assembly === "GRCh38" ? "human-genes::gencode-v40" : "mouse-genes::gencode-vM25";
 }
-const other: TrackSelectCollection = {
+const other: TrackCollection = {
+  assembly: "GRCh38",
   id: "human-other-tracks",
   label: "Other Tracks",
   views: simpleView,
   tracks: [
     {
       type: "screen-tf-peaks",
-      id: "tf-peaks",
-      title: "TF ChIP-seq Peaks",
+      base: {
+        id: "tf-peaks",
+        title: "TF ChIP-seq Peaks",
+      },
       config: { primaryUrl: PEAKS_URL, overlayUrl: MOTIFS_URL },
       metadata: {},
     },
   ],
 };
-export const collectionsByAssembly: Record<Assembly, TrackSelectCollection[]> = {
+export const collectionsByAssembly: Record<Assembly, TrackCollection[]> = {
   GRCh38: [humanGenes, human, other],
   mm10: [mouseGenes, mouse],
 };
@@ -73,9 +82,9 @@ export function defaultTrackIds(assembly: Assembly) {
     ),
   ];
 }
-function buildCatalogEntries(collections: TrackSelectCollection[]) {
+function buildCatalogEntries(collections: TrackCollection[]) {
   return collections.flatMap((collection) =>
-    collection.tracks.map((track) => ({ ...track, id: `${collection.id}::${track.id}` }))
+    collection.tracks.map((track) => ({ ...track, base: { ...track.base, id: `${collection.id}::${track.base.id}` } }))
   );
 }
 const entriesByAssembly = {
@@ -85,8 +94,8 @@ const entriesByAssembly = {
 export function catalogEntries(assembly: Assembly) {
   return entriesByAssembly[assembly];
 }
-export function isChromHmm(entry: { metadata: Record<string, unknown> }) {
-  return String(entry.metadata.assay).toLowerCase() === "chromhmm";
+export function isChromHmm(entry: { metadata?: Record<string, unknown> }) {
+  return String(entry.metadata?.assay).toLowerCase() === "chromhmm";
 }
 
 const ccreUrls = new Set(

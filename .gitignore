@@ -46,3 +46,6 @@ next-env.d.ts
 # agent configs
 .devserve
 .opencode
+
+# local yalc package copies
+/.yalc/

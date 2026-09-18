@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import type { BrowserStoreInstance } from "@weng-lab/genomebrowser";
 import { Cytobands } from "@weng-lab/genomebrowser-ui";
 import { readCytobands, type Cytoband } from "@weng-lab/genomic-reader";
@@ -46,24 +46,19 @@ export default function DomainDisplay({
     return () => observer.disconnect();
   }, []);
   return (
-    <Stack alignItems="center" sx={{ width: "100%", maxWidth: 450 }}>
-      <Typography>
-        {region.chromosome}:{region.start.toLocaleString()}-{region.end.toLocaleString()}
-      </Typography>
-      <Box ref={container} sx={{ width: "100%", minHeight: 20 }}>
-        {error === assembly ? (
-          <Typography variant="caption">Unable to load chromosome bands</Typography>
-        ) : (
-          <Cytobands
-            bands={bands?.assembly === assembly ? bands.data : []}
-            chromosome={region.chromosome}
-            chromosomeLength={chromosomeLength}
-            currentRegion={region}
-            width={width}
-            height={20}
-          />
-        )}
-      </Box>
-    </Stack>
+    <Box ref={container} sx={{ width: "100%", minHeight: 14, mt: 1, mb: 0.5 }}>
+      {error === assembly ? (
+        <Typography variant="caption">Unable to load chromosome bands</Typography>
+      ) : (
+        <Cytobands
+          bands={bands?.assembly === assembly ? bands.data : []}
+          chromosome={region.chromosome}
+          chromosomeLength={chromosomeLength}
+          currentRegion={region}
+          width={width}
+          height={14}
+        />
+      )}
+    </Box>
   );
 }

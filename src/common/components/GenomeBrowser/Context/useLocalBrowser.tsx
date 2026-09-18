@@ -1,9 +1,4 @@
-import {
-  createBrowserStore,
-  createTrackStore,
-  createTrackFromEntry,
-  type GenomicRegion,
-} from "@weng-lab/genomebrowser";
+import { createBrowserStore, createTrackStore, type GenomicRegion } from "@weng-lab/genomebrowser";
 import { assemblies } from "common/assemblies";
 import type { AnyEntityType } from "common/entityTabsConfig";
 import type { Assembly, GenomicRange } from "common/types/globalTypes";
@@ -33,38 +28,28 @@ export type UseLocalBrowserParams = {
   entityCoordinates: GenomicRange;
   browserDomain: GenomicRegion;
   type: AnyEntityType;
-  breakpoint?: "sm" | "md";
 };
-export function useLocalBrowser({
-  name,
-  assembly,
-  entityCoordinates,
-  browserDomain,
-  type,
-  breakpoint,
-}: UseLocalBrowserParams) {
-  const trackWidth = breakpoint === "sm" ? 550 : breakpoint === "md" ? 950 : 1450;
+export function useLocalBrowser({ name, assembly, entityCoordinates, browserDomain, type }: UseLocalBrowserParams) {
   const useStore = useMemo(() => {
     const initial = {
       assembly: assemblies[assembly].browserAssembly,
       region: browserDomain,
-      trackWidth,
       marginWidth: 50,
-      highlights: type === "gwas" ? [] : [{ color: randomColor(), region: entityCoordinates, id: name, opacity: 0.2 }],
+      highlights: type === "gwas" ? [] : [{ color: "#e41a1c", region: entityCoordinates, id: name, opacity: 0.2 }],
     };
-    const saved = getLocalBrowser(name, assembly);
-    try {
-      return createBrowserStore({ ...initial, ...saved });
-    } catch {
-      return createBrowserStore(initial);
-    }
+    return createBrowserStore(initial);
     // Starting coordinates seed a session, not every render; GWAS region changes are explicit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, assembly, type]);
-  useEffect(() => {
-    const titleSize = breakpoint === "sm" ? 18 : breakpoint === "md" ? 14 : 12;
-    useStore.setState({ titleSize, fontSize: titleSize - 2 });
-  }, [breakpoint, useStore]);
+  // Hydrate with the same defaults as the server, then restore before persistence starts.
+  useLayoutEffect(() => {
+    const saved = getLocalBrowser(name, assembly);
+    useStore.setState(
+      saved ?? {
+        highlights: useStore.getInitialState().highlights.map((highlight) => ({ ...highlight, color: randomColor() })),
+      }
+    );
+  }, [name, assembly, useStore]);
   useEffect(() => {
     const snapshot = () => {
       const { region, highlights } = useStore.getState();
@@ -94,23 +79,28 @@ export function useLocalTracks(assembly: Assembly, type: AnyEntityType, studyId:
       type === "gwas"
         ? gwasTracks(studyId)
         : catalogEntries(assembly).flatMap((e) =>
-            ids.has(e.id) ? [createTrackFromEntry(empty.getState().registry, { ...e, source: "host" })] : []
+            ids.has(e.base.id)
+              ? [empty.getState().registry.get(e.type).create({ base: e.base, config: e.config, source: "host" })]
+              : []
           );
-    const saved = type === "gwas" ? null : getLocalTracks(assembly, empty.getState().registry);
     const defaultTracks = defaults();
     const geneId = type === "gwas" ? "screen-gwas-genes" : defaultGeneTrackId(assembly);
     const gene = defaultTracks.find((track) => track.base.id === geneId)!;
     const pinnedTrackIds = [RULER_TRACK_ID, geneId];
-    try {
-      return createTrackStore({
-        modules,
-        pinnedTrackIds,
-        tracks: withReferenceTracks(saved ?? defaultTracks, gene, assembly),
-      });
-    } catch {
-      return createTrackStore({ modules, pinnedTrackIds, tracks: withReferenceTracks(defaultTracks, gene, assembly) });
-    }
+    return createTrackStore({ modules, pinnedTrackIds, tracks: withReferenceTracks(defaultTracks, gene, assembly) });
   }, [assembly, type, studyId]);
+  useLayoutEffect(() => {
+    if (type === "gwas") return;
+    const state = useStore.getState();
+    const saved = getLocalTracks(assembly, state.registry);
+    if (!saved) return;
+    const gene = useStore.getInitialState().tracks.find((track) => track.base.id === defaultGeneTrackId(assembly))!;
+    try {
+      state.setTracks(withReferenceTracks(saved, gene, assembly));
+    } catch {
+      // Keep the defaults if saved reference tracks no longer validate.
+    }
+  }, [assembly, type, useStore]);
   // Rebind application interactions without recreating the entity's track state.
   useLayoutEffect(() => {
     const state = useStore.getState();

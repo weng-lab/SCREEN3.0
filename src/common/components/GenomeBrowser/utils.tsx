@@ -1,5 +1,4 @@
 const Vibrant = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#a65628"];
-import { Result } from "@weng-lab/ui-components";
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
 import { useMemo } from "react";
@@ -8,16 +7,6 @@ export function randomColor() {
   const idx = Math.floor(Math.random() * Vibrant.length);
   return Vibrant[idx];
 }
-
-export const SearchToScreenTypes: Partial<Record<Result["type"], AnyEntityType>> = {
-  Coordinate: "region",
-  Gene: "gene",
-  SNP: "variant",
-  Study: "gwas",
-  cCRE: "ccre",
-  iCRE: "ccre",
-  "Legacy cCRE": "ccre",
-};
 
 const expansionPercentages: Record<AnyEntityType, number> = {
   ccre: 20,

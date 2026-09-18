@@ -11,21 +11,25 @@ import { HUMAN_GENE_URL, isCcreUrl } from "./collections";
 export function gwasTracks(studyId: string) {
   return [
     geneModule.create({
-      id: "screen-gwas-genes",
-      title: "GENCODE v40 Comprehensive Genes",
-      display: "merged",
-      color: "#0c184a",
+      base: {
+        id: "screen-gwas-genes",
+        title: "GENCODE v40 Comprehensive Genes",
+        display: "merged",
+        color: "#0c184a",
+      },
       source: "host",
       config: { url: HUMAN_GENE_URL },
     }),
     ccreBigBedModule.create({
-      id: "screen-gwas-ccres",
-      title: "All cCREs colored by group",
-      display: "dense",
+      base: {
+        id: "screen-gwas-ccres",
+        title: "All cCREs colored by group",
+        display: "dense",
+      },
       source: "host",
       config: { url: "https://downloads.wenglab.org/GRCh38-cCREs.DCC.bigBed" },
     }),
-    ldModule.create({ id: "screen-gwas-ld", title: "LD", source: "host", config: { studyId } }),
+    ldModule.create({ base: { id: "screen-gwas-ld", title: "LD" }, source: "host", config: { studyId } }),
   ];
 }
 export type TrackCallbacks = {
@@ -50,10 +54,12 @@ export function withReferenceTracks(
 ): AnyTrackInstance[] {
   const existingRuler = tracks.find((track) => track.base.id === RULER_TRACK_ID);
   const ruler = rulerModule.create({
-    id: RULER_TRACK_ID,
-    title: "Ruler",
-    ...existingRuler?.base,
-    display: "full",
+    base: {
+      id: RULER_TRACK_ID,
+      title: "Ruler",
+      ...existingRuler?.base,
+      display: "full",
+    },
     source: "host",
     config: { ...existingRuler?.config, sequenceUrl: assemblies[assembly].files.sequence },
   });

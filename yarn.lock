@@ -3909,34 +3909,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@weng-lab/genomebrowser-tracks@npm:2.0.0-beta.2":
-  version: 2.0.0-beta.2
-  resolution: "@weng-lab/genomebrowser-tracks@npm:2.0.0-beta.2"
+"@weng-lab/genomebrowser-tracks@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@weng-lab/genomebrowser-tracks@npm:2.0.0"
   dependencies:
     "@dnd-kit/core": "npm:^6.3.1"
     "@dnd-kit/sortable": "npm:^10.0.0"
     "@dnd-kit/utilities": "npm:^3.2.2"
-    "@weng-lab/genomic-reader": "npm:^2.0.0-beta.2"
+    "@weng-lab/genomic-reader": "npm:^2.0.0"
     react-colorful: "npm:^5.8.0"
     zod: "npm:^4.4.3"
   peerDependencies:
     "@emotion/react": ^11.0.0
     "@emotion/styled": ^11.0.0
     "@mui/material": ^7.0.0
-    "@weng-lab/genomebrowser": ^2.0.0-beta.2
+    "@weng-lab/genomebrowser": ^2.0.0
     react: ^19.2.0
     react-dom: ^19.2.0
-  checksum: 10c0/2baa2c5faa44069f8ec3e4a5a96a896b68521d2f9011e93117dd2aece54e5ebb1d215034475e6afe125d2120276c232595edc8b6d8cfa9add686781d419aa1ea
+  checksum: 10c0/5e1d453bda26be5aae71662256becbd8f15ab8ff3be734ce31d06e6c8317d46e68705d36ac35581d8849cd3783a81259a2ba1df8d452599a7b56d01282d15f07
   languageName: node
   linkType: hard
 
-"@weng-lab/genomebrowser-ui@npm:2.0.0-beta.2":
-  version: 2.0.0-beta.2
-  resolution: "@weng-lab/genomebrowser-ui@npm:2.0.0-beta.2"
+"@weng-lab/genomebrowser-ui@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@weng-lab/genomebrowser-ui@npm:2.0.1"
   dependencies:
-    "@weng-lab/genomebrowser": "npm:^2.0.0-beta.2"
-    "@weng-lab/genomic-reader": "npm:^2.0.0-beta.2"
-    jiti: "npm:^2.6.2"
+    "@weng-lab/genomebrowser": "npm:^2.0.0"
+    "@weng-lab/genomic-reader": "npm:^2.0.0"
     zod: "npm:^4.4.3"
   peerDependencies:
     "@emotion/react": ^11.0.0
@@ -3946,35 +3945,37 @@ __metadata:
     "@mui/x-data-grid-premium": ^8.0.0
     "@mui/x-license": ^8.0.0
     "@mui/x-tree-view": ^8.0.0
+    "@weng-lab/ui-components": ^3.1.4
     react: ^19.2.0
     react-dom: ^19.2.0
-  bin:
-    trackselect: dist/trackselect.js
-  checksum: 10c0/1b200297d708c76ed917bdbc08a2add93696c48102ad374869387fe0907e14dc097d800a1f210d7a05c53fb8ad16826706361628d333d7fdac9fad45a0865130
+  checksum: 10c0/a1f56ef604655a66b84bdd30303bcd09a862acda157d5315166625a3e294a68dc22aa9d126eb57f81a59fd640f60f67340e78ffea05f7fec25a3a3c8048ac9c4
   languageName: node
   linkType: hard
 
-"@weng-lab/genomebrowser@npm:2.0.0-beta.3, @weng-lab/genomebrowser@npm:^2.0.0-beta.2":
-  version: 2.0.0-beta.3
-  resolution: "@weng-lab/genomebrowser@npm:2.0.0-beta.3"
+"@weng-lab/genomebrowser@npm:2.0.0, @weng-lab/genomebrowser@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@weng-lab/genomebrowser@npm:2.0.0"
   dependencies:
+    jiti: "npm:^2.6.2"
     zod: "npm:^4.4.3"
     zustand: "npm:5.0.13"
   peerDependencies:
     react: ^19.2.0
     react-dom: ^19.2.0
-  checksum: 10c0/10cfb5a00443d46ff675923484958de7edac0fedd17233875370649f64ccdfb21152e615205950e63f271f072ffa1737a76e6b03f208338da77f0572cf4e0e62
+  bin:
+    genomebrowser: dist/cli.js
+  checksum: 10c0/96f6c783e4f826dfae052a3802e56a51867a587e7ff9bca3e1cc52c1bb2f82a7e83a842917848b1692007011f507219bcbafc0d33395103189218aa625076abc
   languageName: node
   linkType: hard
 
-"@weng-lab/genomic-reader@npm:2.0.0-beta.2, @weng-lab/genomic-reader@npm:^2.0.0-beta.2":
-  version: 2.0.0-beta.2
-  resolution: "@weng-lab/genomic-reader@npm:2.0.0-beta.2"
+"@weng-lab/genomic-reader@npm:2.0.0, @weng-lab/genomic-reader@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@weng-lab/genomic-reader@npm:2.0.0"
   dependencies:
     fflate: "npm:^0.8.2"
   peerDependencies:
     zod: ^4.0.0
-  checksum: 10c0/bfa13bc5e83f7c629cc77121dcf522c9acf9982e242267f5646983f9ec83b4c656aa25fa98407658afcbaba92fc813642c68cdbe6c1575e98be0cf283b53ba06
+  checksum: 10c0/18565f76c30c6d3118cb175ba99c592f520bf9431eed2583855e417dc6585791e15f1755c0b737307f89709fd0206f5d4fe508e97e4d762ebd8254c739992cd6
   languageName: node
   linkType: hard
 
@@ -8518,10 +8519,10 @@ __metadata:
     "@typescript/native-preview": "npm:^7.0.0-dev.20260422.1"
     "@vercel/analytics": "npm:^1.6.1"
     "@visx/visx": "npm:^3"
-    "@weng-lab/genomebrowser": "npm:2.0.0-beta.3"
-    "@weng-lab/genomebrowser-tracks": "npm:2.0.0-beta.2"
-    "@weng-lab/genomebrowser-ui": "npm:2.0.0-beta.2"
-    "@weng-lab/genomic-reader": "npm:2.0.0-beta.2"
+    "@weng-lab/genomebrowser": "npm:2.0.0"
+    "@weng-lab/genomebrowser-tracks": "npm:2.0.0"
+    "@weng-lab/genomebrowser-ui": "npm:2.0.1"
+    "@weng-lab/genomic-reader": "npm:2.0.0"
     "@weng-lab/ui-components": "npm:3.1.6"
     "@weng-lab/visualization": "npm:1.5.0"
     d3-scale-chromatic: "npm:^3.1.0"
