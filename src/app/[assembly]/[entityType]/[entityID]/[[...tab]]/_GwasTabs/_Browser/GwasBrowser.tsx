@@ -6,7 +6,6 @@ import { useGWASSnpsData, useLdBlocks, type LdBlock } from "common/hooks/data/gw
 import { useState } from "react";
 import SelectLdBlock from "./SelectLdBlock";
 import { useStableCoordinates } from "common/components/GenomeBrowser/utils";
-import { createDataStoreMemo, useCustomData } from "@weng-lab/genomebrowser";
 import type { GenomicRange } from "common/types/globalTypes";
 
 /** Shown when a study has no LD blocks to focus the browser on */
@@ -45,18 +44,6 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
   const stableLdBlock = useStableCoordinates(activeLdBlock);
   const currentCoordinates = stableLdBlock ?? (loading ? null : FALLBACK_COORDINATES);
 
-  const dataStore = createDataStoreMemo();
-
-  useCustomData(
-    "ld-track-ignore",
-    {
-      data: data,
-      loading: loading,
-      error: error ? { message: error.message } : undefined,
-    },
-    dataStore
-  );
-
   if (error && !currentCoordinates)
     return (
       <Alert severity="error" variant="outlined">
@@ -80,7 +67,7 @@ export default function GwasBrowser({ entity }: EntityViewComponentProps) {
       <GenomeBrowserView
         entity={entity}
         coordinates={currentCoordinates}
-        dataStore={dataStore}
+        ldData={{ data: data ?? [], loading, error: error?.message }}
         handleSelectLDBlock={handleSelectLDblockClick}
       />
     </>

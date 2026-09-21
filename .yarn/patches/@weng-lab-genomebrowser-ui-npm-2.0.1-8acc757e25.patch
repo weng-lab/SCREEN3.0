@@ -1,0 +1,13 @@
+diff --git a/dist/genomebrowser-ui.es.js b/dist/genomebrowser-ui.es.js
+index 271b2d46942634a91c851e87079f94937d05b60a..8f22ae64a750076d725829cae00f2d2dabe22979 100644
+--- a/dist/genomebrowser-ui.es.js
++++ b/dist/genomebrowser-ui.es.js
+@@ -282,7 +282,7 @@ var je = {
+ 	}
+ };
+ function Me({ browserStore: t, navigationActions: n }) {
+-	let [r, a] = x(.25), [c, d] = x(3), [f, p] = x(null);
++	let [r, a] = x(.25), [c, d] = x(1.5), [f, p] = x(null);
+ 	return /* @__PURE__ */ D(G, {
+ 		title: "Navigate",
+ 		children: /* @__PURE__ */ O(l, {
