@@ -22,7 +22,7 @@ const humanGenes: TrackCollection = {
       base: {
         id: "gencode-v40",
         title: "GENCODE v40 Comprehensive Genes",
-        display: "merged",
+        display: "full",
         color: "#0c184a",
       },
       config: { url: HUMAN_GENE_URL },
@@ -41,7 +41,7 @@ const mouseGenes: TrackCollection = {
       base: {
         id: "gencode-vM25",
         title: "GENCODE M25 Comprehensive Genes",
-        display: "merged",
+        display: "full",
         color: "#0c184a",
       },
       config: { url: MOUSE_GENE_URL },

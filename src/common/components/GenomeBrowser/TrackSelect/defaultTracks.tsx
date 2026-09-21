@@ -14,7 +14,7 @@ export function gwasTracks(studyId: string) {
       base: {
         id: "screen-gwas-genes",
         title: "GENCODE v40 Comprehensive Genes",
-        display: "merged",
+        display: "full",
         color: "#0c184a",
       },
       source: "host",
