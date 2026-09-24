@@ -1,7 +1,7 @@
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
-import { Button, Tooltip } from "@mui/material";
+import { Box, Button, Tooltip } from "@mui/material";
 import { createTheme, ThemeProvider, type Theme } from "@mui/material/styles";
 import type { BrowserStoreInstance, TrackStoreInstance } from "@weng-lab/genomebrowser";
 import { ControlToolbar, HighlightDialog } from "@weng-lab/genomebrowser-ui";
@@ -40,7 +40,14 @@ export default function BrowserControls({
   const [tracksOpen, setTracksOpen] = useState(false);
 
   return (
-    <>
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: 1440,
+        mx: "auto",
+        "& > [role='group']": { justifyContent: "space-evenly" },
+      }}
+    >
       <ThemeProvider theme={toolbarTheme}>
         <ControlToolbar
           browserStore={browserStore}
@@ -80,6 +87,6 @@ export default function BrowserControls({
           onClose={() => setTracksOpen(false)}
         />
       )}
-    </>
+    </Box>
   );
 }
