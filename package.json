@@ -35,7 +35,7 @@
     "@visx/visx": "^3",
     "@weng-lab/genomebrowser": "2.0.0",
     "@weng-lab/genomebrowser-tracks": "2.0.0",
-    "@weng-lab/genomebrowser-ui": "patch:@weng-lab/genomebrowser-ui@npm%3A2.0.1#~/.yarn/patches/@weng-lab-genomebrowser-ui-npm-2.0.1-8acc757e25.patch",
+    "@weng-lab/genomebrowser-ui": "2.0.1",
     "@weng-lab/genomic-reader": "2.0.0",
     "@weng-lab/ui-components": "3.1.6",
     "@weng-lab/visualization": "1.5.0",
