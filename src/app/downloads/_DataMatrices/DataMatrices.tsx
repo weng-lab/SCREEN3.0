@@ -310,6 +310,7 @@ export function DataMatrices() {
             pointData={scatterData}
             loading={umapLoading}
             selectable
+            square
             onSelectionChange={handleSelectionChange}
             miniMap={miniMapConfig}
             leftAxisLabel="UMAP-2"

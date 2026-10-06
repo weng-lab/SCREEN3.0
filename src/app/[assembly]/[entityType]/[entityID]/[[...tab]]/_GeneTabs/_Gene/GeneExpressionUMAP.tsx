@@ -165,6 +165,7 @@ const GeneExpressionUMAP = ({
           controlsHighlight={theme.palette.primary.light}
           pointData={scatterData}
           selectable
+          square
           loading={loading}
           miniMap={MINIMAP_CONFIG}
           groupPointsAnchor="exp_accession"

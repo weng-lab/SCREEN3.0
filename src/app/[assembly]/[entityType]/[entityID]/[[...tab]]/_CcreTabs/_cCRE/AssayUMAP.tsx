@@ -235,6 +235,7 @@ const AssayUMAP = ({
           leftAxisLabel="UMAP-2"
           bottomAxisLabel="UMAP-1"
           selectable
+          square
           loading={loading_umap}
           miniMap={MINIMAP_CONFIG}
           tooltipBody={(point) => <TooltipBody metaData={point.metaData} assay={assay} />}

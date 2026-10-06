@@ -2,8 +2,7 @@ import React, { useMemo } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Point } from "@weng-lab/visualization";
-import { defaultStyles, useTooltip, useTooltipInPortal } from "@visx/tooltip";
-import { TooltipInPortalProps } from "@visx/tooltip/lib/hooks/useTooltipInPortal";
+import { defaultStyles, useTooltip, useTooltipInPortal, TooltipInPortalProps } from "@visx/tooltip";
 import { localPoint } from "@visx/event";
 import { tissueColors } from "common/colors";
 
