@@ -56,6 +56,8 @@ const biosampleHasAssay = (biosample: EncodeBiosample, assay: Selected["assay"])
   }
 };
 
+const UMAP_INITIAL_STATE = { minimap: { open: true }, controls: { selectionType: "pan" } } as const;
+
 export function DataMatrices() {
   const [selectedAssay, setSelectedAssay] = useState<Selected>({ assembly: "Human", assay: "DNase" });
   const [lifeStage, setLifeStage] = useState("all");
@@ -315,14 +317,7 @@ export function DataMatrices() {
             miniMap={miniMapConfig}
             leftAxisLabel="UMAP-2"
             bottomAxisLabel="UMAP-1"
-            initialState={{
-              minimap: {
-                open: true,
-              },
-              controls: {
-                selectionType: "pan",
-              },
-            }}
+            initialState={UMAP_INITIAL_STATE}
             animation="scale"
             animationBuffer={0.01}
             //Only human DNAse will be animaited since its first shown

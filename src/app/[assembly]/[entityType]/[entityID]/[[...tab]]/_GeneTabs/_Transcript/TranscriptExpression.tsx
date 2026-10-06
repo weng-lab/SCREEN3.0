@@ -2,6 +2,7 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
+import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 import { useTranscriptExpression } from "common/hooks/data/gene";
 import { useState, useMemo } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
@@ -99,6 +100,7 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
   return (
     <TwoPaneLayout
       direction={{ xs: "column", lg: "row" }}
+      {...twoPaneHeights()}
       TableComponent={
         <TranscriptExpressionTable
           rows={transformedRows}

@@ -20,6 +20,7 @@ import type {
 import { getTPM } from "./types";
 import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
+import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 /**
  * Flattens gene expression data into one row per sample.
  * Filters by RNAtype and handles replicate splitting/averaging. TPM values are always raw (unscaled).
@@ -224,6 +225,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
   return (
     <TwoPaneLayout
       direction={{ xs: "column", lg: "row" }}
+      {...twoPaneHeights()}
       TableComponent={
         <GeneExpressionTable
           rows={transformedRows}
