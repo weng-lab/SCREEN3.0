@@ -42,6 +42,7 @@ const BiosampleEnrichment = ({ entity }: EntityViewComponentProps) => {
   const { selected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: dataGWASEnrichment ?? emptyRows,
     getRowId: (r) => r.accession,
+    initialSort: [{ field: "fc", sort: "desc" }],
   });
 
   const { ref: barRef, ...barDownload } = usePlotDownload();

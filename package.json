@@ -37,7 +37,7 @@
     "@weng-lab/genomebrowser-tracks": "2.0.0",
     "@weng-lab/genomebrowser-ui": "2.0.1",
     "@weng-lab/genomic-reader": "2.0.0",
-    "@weng-lab/ui-components": "3.1.6",
+    "@weng-lab/ui-components": "4.0.0",
     "@weng-lab/visualization": "1.5.0",
     "d3-scale-chromatic": "^3.1.0",
     "logo-test": "^0.0.5",

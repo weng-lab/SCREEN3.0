@@ -149,6 +149,8 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
   const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: transformedRows,
     getRowId: (r) => r.file_accession ?? r.exp_accession,
+    initialSort: [{ field: "tpm", sort: "desc" }],
+    isPresorted: viewBy === "byTissueTPM",
   });
 
   /** Set of experiment accessions (ENCSR) that have at least one replicate selected */
@@ -229,7 +231,6 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
           loading={geneExpressionData.loading}
           error={!!geneExpressionData.error}
           tableProps={tableProps}
-          isPresorted={viewBy === "byTissueTPM"}
           scale={scale}
         />
       }

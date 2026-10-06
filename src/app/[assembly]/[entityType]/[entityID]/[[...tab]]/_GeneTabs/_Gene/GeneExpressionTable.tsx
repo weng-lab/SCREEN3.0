@@ -1,22 +1,11 @@
 import { GeneExpressionTableProps, getScaledTPM, PointMetadata } from "./types";
 import { IconButton } from "@mui/material";
-import { TableColDef, Table, useSyncedTable } from "@weng-lab/ui-components";
-import { GridSortModel } from "@mui/x-data-grid-premium";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utils";
 
-const initialSort: GridSortModel = [{ field: "tpm", sort: "desc" }];
-
-const GeneExpressionTable = ({
-  label,
-  rows,
-  loading,
-  error,
-  tableProps,
-  isPresorted,
-  scale,
-}: GeneExpressionTableProps) => {
+const GeneExpressionTable = ({ label, rows, loading, error, tableProps, scale }: GeneExpressionTableProps) => {
   const columns: TableColDef<PointMetadata>[] = useMemo(
     () => [
       {
@@ -84,9 +73,7 @@ const GeneExpressionTable = ({
     [scale]
   );
 
-  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted });
-
-  return <Table {...syncedTableProps} label={label} rows={rows} loading={loading} error={error} />;
+  return <Table {...tableProps} columns={columns} label={label} rows={rows} loading={loading} error={error} />;
 };
 
 export default GeneExpressionTable;

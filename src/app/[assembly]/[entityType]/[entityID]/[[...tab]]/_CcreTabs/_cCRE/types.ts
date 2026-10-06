@@ -48,10 +48,6 @@ export type AssayTableProps = {
   assay: CcreAssay;
   entityID: string;
   tableProps: ReturnType<typeof useTablePlotSync<BiosampleRow>>["tableProps"];
-  /**
-   * True when rows are presorted, and sorting should not be allowed on the table
-   */
-  isPresorted: boolean;
 };
 
 /** Props for the AssayBarPlot component */

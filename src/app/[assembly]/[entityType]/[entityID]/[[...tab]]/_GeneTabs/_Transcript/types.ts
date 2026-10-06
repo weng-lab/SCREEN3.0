@@ -31,7 +31,6 @@ export type TranscriptExpressionTableProps = {
   rows: TranscriptMetadata[];
   transcriptExpressionData: UseTranscriptExpressionReturn;
   tableProps: ReturnType<typeof useTablePlotSync<TranscriptMetadata>>["tableProps"];
-  isPresorted: boolean;
   scale: TranscriptExpressionScale;
   selectedPeak: string;
   setPeak: (newPeak: string) => void;

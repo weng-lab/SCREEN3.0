@@ -74,6 +74,8 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
   const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: transformedRows,
     getRowId: (r) => r.expAccession,
+    initialSort: [{ field: " ", sort: "desc" }],
+    isPresorted: viewBy === "tissue",
   });
 
   const handleSetViewBy = (newView: TranscriptExpressionViewBy) => {
@@ -102,7 +104,6 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
           rows={transformedRows}
           transcriptExpressionData={transcriptExpressionData}
           tableProps={tableProps}
-          isPresorted={viewBy === "tissue"}
           scale={scale}
           selectedPeak={peak}
           setPeak={setUserPeak}

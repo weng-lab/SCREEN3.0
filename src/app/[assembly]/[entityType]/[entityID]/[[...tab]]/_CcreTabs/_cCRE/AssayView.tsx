@@ -60,6 +60,8 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
   const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: transformedRows,
     getRowId: (r) => r.name,
+    initialSort: [{ field: assay, sort: "desc" }],
+    isPresorted: viewBy === "tissue",
   });
 
   useEffect(() => {
@@ -86,7 +88,6 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
           assay={assay}
           entityID={entityID}
           tableProps={tableProps}
-          isPresorted={viewBy === "tissue"}
         />
       }
       plots={[

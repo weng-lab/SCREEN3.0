@@ -84,9 +84,5 @@ export type GeneExpressionTableProps = {
   loading: boolean;
   error: boolean;
   tableProps: ReturnType<typeof useTablePlotSync<PointMetadata>>["tableProps"];
-  /**
-   * True when rows are presorted, and sorting should not be allowed on the table
-   */
-  isPresorted: boolean;
   scale: GeneExpressionScale;
 };
