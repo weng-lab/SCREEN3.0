@@ -13,7 +13,7 @@ import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 
 export default defineConfig([
   {
-    ignores: ["node_modules/**", ".next/**", ".vscode/**", ".yarn/**"],
+    ignores: ["node_modules/**", ".next/**", ".vscode/**", ".yarn/**", "src/common/types/generated/**"],
   },
   js.configs.recommended,
   ...nextCoreWebVitals,
