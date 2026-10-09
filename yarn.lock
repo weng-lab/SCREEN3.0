@@ -4056,9 +4056,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@weng-lab/ui-components@file:../web-components/packages/ui-components::locator=screen%40workspace%3A.":
-  version: 4.0.0
-  resolution: "@weng-lab/ui-components@file:../web-components/packages/ui-components#../web-components/packages/ui-components::hash=f7dac8&locator=screen%40workspace%3A."
+"@weng-lab/ui-components@npm:4.1.0-beta.0":
+  version: 4.1.0-beta.0
+  resolution: "@weng-lab/ui-components@npm:4.1.0-beta.0"
   peerDependencies:
     "@emotion/react": ^11.14.0
     "@emotion/styled": ^11.14.0
@@ -4067,13 +4067,13 @@ __metadata:
     "@mui/x-data-grid-premium": ^8.18.0
     react: ^19.1.0
     react-dom: ^19.1.0
-  checksum: 10c0/5eff66062accb51569d5864666c7a6ec2c4a9673dcad0a3b35dcbab1d511fbf811b421ae678732aae325d6a18f9d398b337262f144ad478d117073c3adc45fff
+  checksum: 10c0/f7c0560874525721768789ec55f8a84f0bc82f2ee1fc5bb9a4d9795ab537e8f64f74ee2d193e366cdb6236a2c97834870975d827ef939ae4afbd37fe7dc1c472
   languageName: node
   linkType: hard
 
-"@weng-lab/visualization@file:../web-components/packages/visualization::locator=screen%40workspace%3A.":
-  version: 2.7.0
-  resolution: "@weng-lab/visualization@file:../web-components/packages/visualization#../web-components/packages/visualization::hash=d9a375&locator=screen%40workspace%3A."
+"@weng-lab/visualization@npm:2.7.0-beta.0":
+  version: 2.7.0-beta.0
+  resolution: "@weng-lab/visualization@npm:2.7.0-beta.0"
   dependencies:
     "@types/d3-hierarchy": "npm:^3.1.7"
     "@types/d3-shape": "npm:^3.1.8"
@@ -4096,7 +4096,7 @@ __metadata:
     "@visx/visx": ^4.0.0
     react: ^19.1.0
     react-dom: ^19.1.0
-  checksum: 10c0/9fb4b9c769b86e3783f42abe5fa347c22525b245f5d25369d1c607c0e398d7576058fe75e85dd8a571139ab5c7f523b678925c57a220069cfd2a748f8fd89f36
+  checksum: 10c0/767e2a86b2bc48aa4a131e1b1e70eceb94feb8ca39c10e7dd6bd6dedf83bf631faad13ba79f34d5d24f6deb3363fee72ef79d3001886f80cb5e2aeadc4f62335
   languageName: node
   linkType: hard
 
@@ -8434,8 +8434,8 @@ __metadata:
     "@weng-lab/genomebrowser-tracks": "npm:2.0.0"
     "@weng-lab/genomebrowser-ui": "npm:2.1.0"
     "@weng-lab/genomic-reader": "npm:2.0.0"
-    "@weng-lab/ui-components": "file:../web-components/packages/ui-components"
-    "@weng-lab/visualization": "file:../web-components/packages/visualization"
+    "@weng-lab/ui-components": "npm:4.1.0-beta.0"
+    "@weng-lab/visualization": "npm:2.7.0-beta.0"
     d3-scale-chromatic: "npm:^3.1.0"
     dotenv-cli: "npm:^11.0.0"
     eslint: "npm:^9.38.0"
