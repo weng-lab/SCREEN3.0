@@ -61,12 +61,13 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
 
   const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy, assay), [rows, viewBy, assay]);
 
-  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
-    rows: transformedRows,
-    getRowId: (r) => r.name,
-    initialSort: [{ field: assay, sort: "desc" }],
-    isPresorted: viewBy === "tissue",
-  });
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId, filters } =
+    useTablePlotSync({
+      rows: transformedRows,
+      getRowId: (r) => r.name,
+      initialSort: [{ field: assay, sort: "desc" }],
+      isPresorted: viewBy === "tissue",
+    });
 
   useEffect(() => {
     if (!assay) return;
@@ -154,6 +155,8 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
                     setSelected={setSelected}
                     toggleSelection={toggleSelection}
                     getRowId={getRowId}
+                    filters={filters}
+                    columns={columns}
                     assay={assay}
                     assembly={assembly}
                   />

@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { useGeneExpression } from "common/hooks/data/gene";
-import type { useTablePlotSync } from "@weng-lab/ui-components";
+import type { SyncedTableProps, TableColDef, TableFilters } from "@weng-lab/ui-components";
 import type { Assembly } from "common/types/globalTypes";
 
 type GeneExpressionReturnItem = ReturnType<typeof useGeneExpression>["data"][number];
@@ -70,7 +70,14 @@ export type GeneExpressionViolinPlotProps = GeneExpressionControlProps & {
 export type GeneExpressionUMAPProps = {
   geneName: string;
   rows: PointMetadata[];
-  highlightedAccessions: Set<string>;
+  /** Experiments with any replicate selected. */
+  selectedAccessions: ReadonlySet<string>;
+  /** The table's filters, which the UMAP's chips edit. */
+  filters: TableFilters;
+  /** Whether the table lists any of an experiment's replicates. */
+  isListed: (accession: string) => boolean;
+  /** The table's columns, which name its filters. */
+  columns: TableColDef<PointMetadata>[];
   onPointToggle: (item: PointMetadata) => void;
   onLassoSelect: (items: PointMetadata[]) => void;
   loading: boolean;
@@ -83,6 +90,6 @@ export type GeneExpressionTableProps = {
   label: string;
   loading: boolean;
   error: boolean;
-  tableProps: ReturnType<typeof useTablePlotSync<PointMetadata>>["tableProps"];
-  scale: GeneExpressionScale;
+  tableProps: SyncedTableProps<PointMetadata>;
+  columns: TableColDef<PointMetadata>[];
 };

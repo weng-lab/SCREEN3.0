@@ -1,40 +1,74 @@
-import { useEffect, useMemo, useState, useRef } from "react";
-import { Button, Stack, InputLabel, Select, MenuItem, SelectChangeEvent, Box } from "@mui/material";
+import { useMemo, useState } from "react";
+import { Button, Stack, InputLabel, Select, MenuItem, SelectChangeEvent, Box, Typography } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import { Download } from "@mui/icons-material";
-import { allColsHidden, BiosampleTable, EncodeBiosample } from "@weng-lab/ui-components";
-import { GridColumnVisibilityModel } from "@mui/x-data-grid-premium";
-import { ScatterPlot, Point } from "@weng-lab/visualization";
-import { PointMetaData } from "../types";
-import { tissueColors } from "common/colors";
+import {
+  allColsHidden,
+  BiosampleTable,
+  columns as biosampleColumns,
+  EncodeBiosample,
+  initialTableState,
+  useEncodeBiosampleData,
+  useTablePlotSync,
+} from "@weng-lab/ui-components";
+import { GridColumnVisibilityModel, type GridFilterModel, type GridSortModel } from "@mui/x-data-grid-premium";
+import BiosampleUMAP from "common/components/BiosampleUMAP/BiosampleUMAP";
+import {
+  lifeStageField,
+  sampleTypeField,
+  tissueField,
+  type CategoryField,
+} from "common/components/BiosampleUMAP/fields";
 import { UMAP_QUERY } from "../queries";
 import AssemblyControls, { Selected } from "./AssemblyControls";
-import UmapLegend from "./UmapLegend";
 import DownloadModal from "./DownloadModal";
 
 const assemblies: Array<"Human" | "Mouse"> = ["Human", "Mouse"];
 
-const miniMapConfig = {
-  position: {
-    right: 50,
-    bottom: 50,
-  },
-};
+/** A biosample with its place on the assay's UMAP, and its experiment for the assay. */
+type UmapBiosample = EncodeBiosample & { umap: [number, number]; experimentAccession: string | null };
 
-// Direct copy from old SCREEN
-function colorMap(strings) {
-  const counts = {};
-  //Count the occurences of each tissue/sample
-  strings.forEach((x) => (counts[x] = counts[x] ? counts[x] + 1 : 1));
-  //Removes duplicate elements in the array
-  strings = [...new Set(strings)];
-  const colors = {};
-  //For each tissue/sample type
-  strings.forEach((x) => {
-    colors[x] = tissueColors[x] ?? tissueColors.missing;
-  });
-  return [colors, counts];
-}
+const FIELDS: CategoryField<UmapBiosample>[] = [
+  tissueField("ontology"),
+  sampleTypeField("sampleType"),
+  lifeStageField("lifeStage"),
+];
+
+const RADIUS = { base: 2, selected: 3 };
+
+const nameOf = (biosample: { name: string }) => biosample.name;
+const getX = (biosample: UmapBiosample) => biosample.umap[0];
+const getY = (biosample: UmapBiosample) => biosample.umap[1];
+
+const TooltipBody = (biosample: UmapBiosample) => (
+  <>
+    <Typography>
+      <b>Biosample:</b> {biosample.displayname}
+    </Typography>
+    <Typography>
+      <b>Organ/Tissue:</b> {biosample.ontology}
+    </Typography>
+    <Typography>
+      <b>Sample Type:</b> {biosample.sampleType}
+    </Typography>
+    <Typography>
+      <b>Life Stage:</b> {biosample.lifeStage}
+    </Typography>
+    {biosample.experimentAccession && (
+      <Typography>
+        <b>Experiment:</b> {biosample.experimentAccession}
+      </Typography>
+    )}
+  </>
+);
+
+/** The table's search reaches its hidden columns, as BiosampleTable's own initial state has it. */
+const INITIAL_FILTERS: GridFilterModel = { items: [], quickFilterExcludeHiddenColumns: false };
+
+/** BiosampleTable's own initial sort. */
+const INITIAL_SORT: GridSortModel = [...initialTableState.sorting.sortModel];
+
+const NO_BIOSAMPLES: EncodeBiosample[] = [];
 
 // Only the accession column for the selected assay is shown, everything else is hidden.
 const assayColumnVisibility = (selected: Selected): GridColumnVisibilityModel => ({
@@ -61,12 +95,23 @@ const UMAP_INITIAL_STATE = { minimap: { open: true }, controls: { selectionType:
 export function DataMatrices() {
   const [selectedAssay, setSelectedAssay] = useState<Selected>({ assembly: "Human", assay: "DNase" });
   const [lifeStage, setLifeStage] = useState("all");
-  const [colorBy, setColorBy] = useState<"ontology" | "sampleType">("ontology");
 
-  const [selectedBiosamples, setSelectedBiosamples] = useState<string[]>([]);
+  const { data: biosamples, loading: biosamplesLoading } = useEncodeBiosampleData({
+    assembly: selectedAssay.assembly === "Human" ? "GRCh38" : "mm10",
+  });
+  // The biosamples with the selected assay: the table's rows, and every one the UMAP can place.
+  const tableRows = useMemo(
+    () => (biosamples ?? NO_BIOSAMPLES).filter((biosample) => biosampleHasAssay(biosample, selectedAssay.assay)),
+    [biosamples, selectedAssay.assay]
+  );
+  const { selected, setSelected, toggleSelection, tableProps, filters } = useTablePlotSync({
+    rows: tableRows,
+    getRowId: nameOf,
+    initialSort: INITIAL_SORT,
+    initialFilters: INITIAL_FILTERS,
+  });
 
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const graphContainerRef = useRef(null);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(() =>
     assayColumnVisibility(selectedAssay)
@@ -74,7 +119,7 @@ export function DataMatrices() {
 
   const handleSetSelectedAssay = (newSelected: Selected) => {
     if (JSON.stringify(newSelected) !== JSON.stringify(selectedAssay)) {
-      setSelectedBiosamples([]); // clear umap selection when assay changes
+      setSelected([]); // clear umap selection when assay changes
       setSelectedAssay(newSelected);
       // Note: this discards any manual column modifications the user made.
       setColumnVisibilityModel(assayColumnVisibility(newSelected));
@@ -91,27 +136,6 @@ export function DataMatrices() {
     nextFetchPolicy: "cache-first",
   });
 
-  useEffect(() => {
-    const graphElement = graphContainerRef.current;
-
-    const handleWheel = (event: WheelEvent) => {
-      // Prevent default scroll behavior when using the wheel in the graph
-      event.preventDefault();
-    };
-    if (graphElement) {
-      graphElement.addEventListener("wheel", handleWheel, { passive: false });
-    }
-    return () => {
-      if (graphElement) {
-        graphElement.removeEventListener("wheel", handleWheel);
-      }
-    };
-  }, []);
-
-  const handleSetTableSelection = (biosamples: EncodeBiosample[]) => {
-    setSelectedBiosamples(biosamples.map((x) => x.name));
-  };
-
   const handleOpenDownloadModal = () => {
     setOpenModal(true);
   };
@@ -120,83 +144,22 @@ export function DataMatrices() {
     setOpenModal(false);
   };
 
-  const fData = useMemo(() => {
-    return (
-      umapData &&
-      umapData.ccREBiosampleQuery.biosamples.filter(
-        (x) => x.umap_coordinates && (lifeStage === "all" || lifeStage === x.lifeStage)
-      )
+  const umapBiosamples: UmapBiosample[] = useMemo(() => {
+    const placed = new Map(
+      (umapData?.ccREBiosampleQuery.biosamples ?? []).map(({ name, umap_coordinates, experimentAccession }) => [
+        name,
+        { umap_coordinates, experimentAccession },
+      ])
     );
-  }, [umapData, lifeStage]);
-
-  const [sampleTypeColors] = useMemo(
-    () =>
-      colorMap(
-        (umapData &&
-          umapData.ccREBiosampleQuery &&
-          umapData.ccREBiosampleQuery.biosamples.flatMap((x) => (x.umap_coordinates ? [x.sampleType] : []))) ||
-          []
-      ),
-    [umapData]
-  );
-  const [ontologyColors] = useMemo(
-    () =>
-      colorMap(
-        (umapData &&
-          umapData.ccREBiosampleQuery &&
-          //Check if umap coordinates exist, then map each entry to it's ontology (tissue type). This array of strings is passed to colorMap
-          umapData.ccREBiosampleQuery.biosamples.flatMap((x) => (x.umap_coordinates ? [x.ontology] : []))) ||
-          []
-      ),
-    [umapData]
-  );
-
-  const handleSelectionChange = (selectedPoints: Point<PointMetaData>[]) => {
-    const selected = new Set(selectedPoints.map((point) => point.x));
-    const selectedBiosamples = fData.flatMap((biosample) =>
-      selected.has(biosample.umap_coordinates[0]) && biosample.umap_coordinates
-        ? [
-            {
-              name: biosample.name,
-              displayname: biosample.displayname,
-              ontology: biosample.ontology,
-              sampleType: biosample.sampleType,
-              lifeStage: biosample.lifeStage,
-              umap_coordinates: biosample.umap_coordinates!,
-              experimentAccession: biosample.experimentAccession,
-            },
-          ]
-        : []
-    );
-    setSelectedBiosamples(selectedBiosamples.map((x) => x.name));
-  };
-
-  const scatterData: Point<PointMetaData>[] = useMemo(() => {
-    if (!fData) return [];
-
-    const selectedNames = new Set(selectedBiosamples);
-    const anySelected = selectedNames.size > 0;
-
-    return fData.map((x) => {
-      const isSelected = selectedNames.has(x.name);
-
-      return {
-        x: x.umap_coordinates![0],
-        y: x.umap_coordinates![1],
-        r: anySelected && isSelected ? 3 : 2,
-        color:
-          !anySelected || isSelected
-            ? (colorBy === "sampleType" ? sampleTypeColors : ontologyColors)[x[colorBy]]
-            : "#aaaaaa",
-        opacity: !anySelected || isSelected ? 1 : 0.1,
-        shape: "circle",
-        metaData: {
-          name: x.displayname,
-          accession: x.experimentAccession,
-        },
-      };
+    return tableRows.flatMap((biosample) => {
+      const { umap_coordinates: umap, experimentAccession } = placed.get(biosample.name) ?? {};
+      return umap && (lifeStage === "all" || lifeStage === biosample.lifeStage)
+        ? [{ ...biosample, umap: [umap[0], umap[1]] as [number, number], experimentAccession }]
+        : [];
     });
-  }, [fData, colorBy, sampleTypeColors, ontologyColors, selectedBiosamples]);
+  }, [umapData, tableRows, lifeStage]);
+
+  const selectedNames = useMemo(() => new Set(selected.map(nameOf)), [selected]);
 
   return (
     <Box
@@ -258,21 +221,6 @@ export function DataMatrices() {
             }}
           >
             <Stack>
-              <InputLabel id="color-by-label">Color By</InputLabel>
-              <Select
-                size="small"
-                id="color-by"
-                value={colorBy}
-                onChange={(event: SelectChangeEvent) => {
-                  setColorBy(event.target.value as "ontology" | "sampleType");
-                }}
-                sx={{ width: 180 }}
-              >
-                <MenuItem value="ontology">Tissue/Organ</MenuItem>
-                <MenuItem value="sampleType">Biosample Type</MenuItem>
-              </Select>
-            </Stack>
-            <Stack>
               <InputLabel id="show-label">Show</InputLabel>
               <Select
                 size="small"
@@ -308,44 +256,44 @@ export function DataMatrices() {
             borderRadius: 2,
           }}
         >
-          <ScatterPlot
-            pointData={scatterData}
-            loading={umapLoading}
-            selectable
-            square
-            onSelectionChange={handleSelectionChange}
-            miniMap={miniMapConfig}
-            leftAxisLabel="UMAP-2"
-            bottomAxisLabel="UMAP-1"
+          <BiosampleUMAP
+            rows={umapBiosamples}
+            keyOf={nameOf}
+            x={getX}
+            y={getY}
+            fields={FIELDS}
+            noun="biosample"
+            filters={filters}
+            columns={biosampleColumns}
+            selected={selectedNames}
+            onPointClicked={toggleSelection}
+            onLassoSelect={(picked) =>
+              setSelected((prev) => [...prev, ...picked.filter(({ name }) => !selectedNames.has(name))])
+            }
+            tooltipBody={TooltipBody}
+            radius={RADIUS}
+            loading={umapLoading || biosamplesLoading}
+            downloadFileName={`${selectedAssay.assembly}_${selectedAssay.assay}_UMAP`}
             initialState={UMAP_INITIAL_STATE}
-            animation="scale"
-            animationBuffer={0.01}
-            //Only human DNAse will be animaited since its first shown
+            // Only human DNase will be animated, since it's shown first
             animationGroupSize={65}
           />
         </Box>
       </Box>
       <Box sx={{ minHeight: 0, overflow: "auto" }}>
         <BiosampleTable
+          {...tableProps}
           label={"Find Biosamples"}
           assembly={selectedAssay.assembly === "Human" ? "GRCh38" : "mm10"}
-          checkboxSelection
-          onSelectionChange={handleSetTableSelection}
-          selected={selectedBiosamples}
-          prefilterBiosamples={(biosample) => biosampleHasAssay(biosample, selectedAssay.assay)}
+          rows={tableRows}
+          loading={biosamplesLoading}
+          // BiosampleTable's own grouping and columns, sorted and filtered by useTablePlotSync
+          initialState={{ ...initialTableState, ...tableProps.initialState }}
           columnVisibilityModel={columnVisibilityModel}
           onColumnVisibilityModelChange={setColumnVisibilityModel}
           // temporary fix while other tables are not setup to group rows
           disableRowGrouping={false}
           divHeight={{ height: 750 }}
-        />
-      </Box>
-      <Box sx={{ gridColumn: "1 / -1" }}>
-        <UmapLegend
-          scatterData={scatterData}
-          colorBy={colorBy}
-          sampleTypeColors={sampleTypeColors}
-          ontologyColors={ontologyColors}
         />
       </Box>
       <DownloadModal openModal={openModal} handleCloseModal={handleCloseModal} selectedAssay={selectedAssay} />

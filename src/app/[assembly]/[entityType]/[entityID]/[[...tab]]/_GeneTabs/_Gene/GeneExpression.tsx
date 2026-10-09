@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useMemo, useState } from "react";
-import GeneExpressionTable from "./GeneExpressionTable";
+import GeneExpressionTable, { geneExpressionColumns } from "./GeneExpressionTable";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
 import { useGeneExpression } from "common/hooks/data/gene";
@@ -21,6 +21,10 @@ import { getTPM } from "./types";
 import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
 import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
+
+/** The UMAP draws an experiment once, for all its replicates. */
+const experimentOf = (row: PointMetadata) => row.exp_accession;
+
 /**
  * Flattens gene expression data into one row per sample.
  * Filters by RNAtype and handles replicate splitting/averaging. TPM values are always raw (unscaled).
@@ -147,18 +151,25 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
 
   const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy), [rows, viewBy]);
 
-  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
-    rows: transformedRows,
-    getRowId: (r) => r.file_accession ?? r.exp_accession,
-    initialSort: [{ field: "tpm", sort: "desc" }],
-    isPresorted: viewBy === "byTissueTPM",
-  });
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId, filters } =
+    useTablePlotSync({
+      rows: transformedRows,
+      getRowId: (r) => r.file_accession ?? r.exp_accession,
+      initialSort: [{ field: "tpm", sort: "desc" }],
+      isPresorted: viewBy === "byTissueTPM",
+    });
 
-  /** Set of experiment accessions (ENCSR) that have at least one replicate selected */
-  const umapHighlightedAccessions = useMemo(() => {
-    if (!selected.length) return new Set<string>();
-    return new Set(selected.map((s) => s.exp_accession));
-  }, [selected]);
+  const columns = useMemo(() => geneExpressionColumns(scale), [scale]);
+
+  // The experiments the table lists, any of their replicates will do: the UMAP dims the rest.
+  const listedExperiments = useMemo(
+    () => new Set(transformedRows.filter((row) => filters.isListed(getRowId(row))).map(experimentOf)),
+    [transformedRows, filters, getRowId]
+  );
+  const isExperimentListed = useCallback((accession: string) => listedExperiments.has(accession), [listedExperiments]);
+
+  /** Experiment accessions (ENCSR) with at least one replicate selected */
+  const selectedAccessions = useMemo(() => new Set(selected.map(experimentOf)), [selected]);
 
   /** Toggle all replicates for a given experiment when clicking a UMAP point */
   const handleUmapToggle = useCallback(
@@ -233,7 +244,7 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
           loading={geneExpressionData.loading}
           error={!!geneExpressionData.error}
           tableProps={tableProps}
-          scale={scale}
+          columns={columns}
         />
       }
       plots={[
@@ -281,7 +292,10 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
               ref={umapRef}
               geneName={entity.entityID}
               rows={umapRows}
-              highlightedAccessions={umapHighlightedAccessions}
+              selectedAccessions={selectedAccessions}
+              filters={filters}
+              isListed={isExperimentListed}
+              columns={columns}
               onPointToggle={handleUmapToggle}
               onLassoSelect={handleUmapLassoSelect}
               loading={geneExpressionData.loading}
