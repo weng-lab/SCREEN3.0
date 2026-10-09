@@ -1,4 +1,5 @@
 export * from "./useDistanceAnchor";
+export * from "./useEntityHeaderHeight";
 export * from "./useEntityTabsHeight";
 export * from "./useHeaderHeight";
 export * from "./useGrowOnScroll";

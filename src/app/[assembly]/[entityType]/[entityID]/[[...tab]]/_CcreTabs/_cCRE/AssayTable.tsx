@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from "react";
-import { Table, useSyncedTable } from "@weng-lab/ui-components";
-import { GridColumnVisibilityModel, GridSortModel } from "@mui/x-data-grid-premium";
+import { useEffect } from "react";
+import { Table } from "@weng-lab/ui-components";
+import { GridColumnVisibilityModel } from "@mui/x-data-grid-premium";
 import { CcreAssay } from "common/types/globalTypes";
 import { CCRE_ASSAYS } from "common/assays";
 import { formatAssay } from "common/assays";
@@ -14,25 +14,22 @@ const makeColumnVisibiltyModel = (assay: CcreAssay): GridColumnVisibilityModel =
   return hidden;
 };
 
-const AssayTable = ({ rows, columns, assay, entityID, tableProps, isPresorted }: AssayTableProps) => {
-  const initialSort: GridSortModel = useMemo(() => [{ field: assay, sort: "desc" }], [assay]);
-
-  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted });
-
-  // Update column visibility and sort column when assay changes
+const AssayTable = ({ rows, columns, assay, entityID, tableProps }: AssayTableProps) => {
+  // Update column visibility when assay changes
   useEffect(() => {
-    if (!syncedTableProps.apiRef.current) return;
-    syncedTableProps.apiRef.current.setColumnVisibilityModel(makeColumnVisibiltyModel(assay));
-  }, [syncedTableProps.apiRef, assay]);
+    if (!tableProps.apiRef.current) return;
+    tableProps.apiRef.current.setColumnVisibilityModel(makeColumnVisibiltyModel(assay));
+  }, [tableProps.apiRef, assay]);
 
   return (
     <Table
-      {...syncedTableProps}
+      {...tableProps}
+      columns={columns}
       label={`${entityID} ${formatAssay(assay)} z-scores`}
       rows={rows}
       loading={!rows}
       initialState={{
-        ...syncedTableProps.initialState,
+        ...tableProps.initialState,
         columns: { columnVisibilityModel: makeColumnVisibiltyModel(assay) },
       }}
     />

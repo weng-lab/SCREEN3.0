@@ -2,9 +2,8 @@ import { GWASEnrichment, UseGWASEnrichmentReturn } from "common/hooks/data/gwas"
 import { useMemo } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { IconButton, Tooltip } from "@mui/material";
-import { Table, TableColDef, useSyncedTable } from "@weng-lab/ui-components";
+import { Table, TableColDef } from "@weng-lab/ui-components";
 import type { useTablePlotSync } from "@weng-lab/ui-components";
-import { GridSortModel } from "@mui/x-data-grid-premium";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utils";
 
@@ -12,8 +11,6 @@ export type BiosampleEnrichmentTableProps = {
   enrichmentdata: UseGWASEnrichmentReturn;
   tableProps: ReturnType<typeof useTablePlotSync<GWASEnrichment>>["tableProps"];
 };
-
-const initialSort: GridSortModel = [{ field: "fc", sort: "desc" }];
 
 const LabelTooltip = (
   <Tooltip title="Suggested Biosamples: Suggested biosamples to investigate based on cCRE enrichment as calculated by the Variant Enrichment and Sample Prioritization Analysis (VESPA) pipeline">
@@ -80,11 +77,10 @@ const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnric
     []
   );
 
-  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted: false });
-
   return (
     <Table
-      {...syncedTableProps}
+      {...tableProps}
+      columns={columns}
       showToolbar
       rows={data}
       loading={loading}
@@ -92,7 +88,9 @@ const BiosampleEnrichmentTable = ({ enrichmentdata, tableProps }: BiosampleEnric
       label={`Suggested Biosamples`}
       emptyTableFallback={"No Suggested Biosamples found for this study"}
       slotProps={{
+        ...tableProps.slotProps,
         toolbar: {
+          ...tableProps.slotProps.toolbar,
           labelTooltip: LabelTooltip,
         },
       }}

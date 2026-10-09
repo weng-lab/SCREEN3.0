@@ -1,4 +1,4 @@
-import type { TableColDef, useTablePlotSync } from "@weng-lab/ui-components";
+import type { SyncedTableProps, TableColDef, TableFilters } from "@weng-lab/ui-components";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { AnyOpenEntity } from "common/OpenEntitiesContext";
 import type { Assembly, CcreAssay, CcreClass } from "common/types/globalTypes";
@@ -47,11 +47,7 @@ export type AssayTableProps = {
   columns: TableColDef[];
   assay: CcreAssay;
   entityID: string;
-  tableProps: ReturnType<typeof useTablePlotSync<BiosampleRow>>["tableProps"];
-  /**
-   * True when rows are presorted, and sorting should not be allowed on the table
-   */
-  isPresorted: boolean;
+  tableProps: SyncedTableProps<BiosampleRow>;
 };
 
 /** Props for the AssayBarPlot component */
@@ -96,6 +92,10 @@ export type AssayUMAPProps = {
   setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
   toggleSelection: (item: BiosampleRow) => void;
   getRowId: (item: BiosampleRow) => string;
+  /** The table's filters, which the UMAP's chips edit and its points follow. */
+  filters: TableFilters;
+  /** The table's columns, which name its filters. */
+  columns: TableColDef[];
   assay: CcreAssay;
   assembly: Assembly;
   ref?: React.RefObject<DownloadPlotHandle>;
