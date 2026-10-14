@@ -120,7 +120,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
           },
           {
             description:
-              "Scatterplot visualizations: now use improved chip-style and gradient legends, and well as offer a new “shape by” option alongside “color by”. Accompanying table column filtering has been improved and color scales slightly cleaned up for better visualization.",
+              "Scatterplot visualizations: now use improved chip-style and gradient legends, as well as offer a new “shape by” option alongside “color by”. Accompanying table column filtering has been improved and color scales slightly cleaned up for better visualization.",
           },
           {
             description:
