@@ -3,6 +3,7 @@ import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { useGeneExpression } from "common/hooks/data/gene";
 import type { SyncedTableProps, TableColDef, TableFilters } from "@weng-lab/ui-components";
 import type { Assembly } from "common/types/globalTypes";
+import { capitalizeFirstLetter } from "common/utils";
 
 type GeneExpressionReturnItem = ReturnType<typeof useGeneExpression>["data"][number];
 
@@ -24,6 +25,17 @@ export const getScaledTPM = (d: PointMetadata, scale: GeneExpressionScale): numb
 /** Build a scale-appropriate axis label for expression plots */
 export const getScaleLabel = (geneName: string, scale: GeneExpressionScale): string =>
   scale === "linearTPM" ? `${geneName} Expression: TPM` : `${geneName} Expression: Log\u2081\u2080(TPM + 1)`;
+
+/** A sample's hover on every expression plot, with its value in the plot's scale. */
+export const expressionTooltip = (row: PointMetadata, value: number, scale: GeneExpressionScale) => ({
+  title: capitalizeFirstLetter(row.biosample),
+  rows: [
+    { label: "Accession", value: row.biorep != null ? `${row.exp_accession} (rep. ${row.biorep})` : row.exp_accession },
+    { label: "Organ/Tissue", value: capitalizeFirstLetter(row.tissue) },
+    { label: "Sample Type", value: capitalizeFirstLetter(row.biosample_type) },
+    { label: scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)", value: value.toFixed(2) },
+  ],
+});
 
 export type GeneExpressionViewBy = "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM";
 export type GeneExpressionScale = "linearTPM" | "logTPM";

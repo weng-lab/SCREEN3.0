@@ -4056,9 +4056,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@weng-lab/ui-components@npm:4.1.0-beta.0":
-  version: 4.1.0-beta.0
-  resolution: "@weng-lab/ui-components@npm:4.1.0-beta.0"
+"@weng-lab/ui-components@npm:4.1.0":
+  version: 4.1.0
+  resolution: "@weng-lab/ui-components@npm:4.1.0"
   peerDependencies:
     "@emotion/react": ^11.14.0
     "@emotion/styled": ^11.14.0
@@ -4067,13 +4067,13 @@ __metadata:
     "@mui/x-data-grid-premium": ^8.18.0
     react: ^19.1.0
     react-dom: ^19.1.0
-  checksum: 10c0/f7c0560874525721768789ec55f8a84f0bc82f2ee1fc5bb9a4d9795ab537e8f64f74ee2d193e366cdb6236a2c97834870975d827ef939ae4afbd37fe7dc1c472
+  checksum: 10c0/4d11d5d7094bf614dd642cce9594ef19d8651cfcb14247fb293c3518adca47d6d2fbaebd1906179ac271640897c81c97d51e0787b40009abac5523ad88240b63
   languageName: node
   linkType: hard
 
-"@weng-lab/visualization@npm:2.7.0-beta.0":
-  version: 2.7.0-beta.0
-  resolution: "@weng-lab/visualization@npm:2.7.0-beta.0"
+"@weng-lab/visualization@npm:2.8.0":
+  version: 2.8.0
+  resolution: "@weng-lab/visualization@npm:2.8.0"
   dependencies:
     "@types/d3-hierarchy": "npm:^3.1.7"
     "@types/d3-shape": "npm:^3.1.8"
@@ -4096,7 +4096,7 @@ __metadata:
     "@visx/visx": ^4.0.0
     react: ^19.1.0
     react-dom: ^19.1.0
-  checksum: 10c0/767e2a86b2bc48aa4a131e1b1e70eceb94feb8ca39c10e7dd6bd6dedf83bf631faad13ba79f34d5d24f6deb3363fee72ef79d3001886f80cb5e2aeadc4f62335
+  checksum: 10c0/0f1ace2f46bf30ac82fdb2a8844e171499b09af7be03a5fe2d9ed9e64f828da86c44091bff4a832add55c64a840cc5e237481da182054d59cff135fe12ae578f
   languageName: node
   linkType: hard
 
@@ -8434,8 +8434,8 @@ __metadata:
     "@weng-lab/genomebrowser-tracks": "npm:2.0.0"
     "@weng-lab/genomebrowser-ui": "npm:2.1.0"
     "@weng-lab/genomic-reader": "npm:2.0.0"
-    "@weng-lab/ui-components": "npm:4.1.0-beta.0"
-    "@weng-lab/visualization": "npm:2.7.0-beta.0"
+    "@weng-lab/ui-components": "npm:4.1.0"
+    "@weng-lab/visualization": "npm:2.8.0"
     d3-scale-chromatic: "npm:^3.1.0"
     dotenv-cli: "npm:^11.0.0"
     eslint: "npm:^9.38.0"

@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { UseTranscriptExpressionReturn } from "common/hooks/data/gene";
 import type { useTablePlotSync } from "@weng-lab/ui-components";
+import { capitalizeWords } from "common/utils";
 
 export type TranscriptMetadata = UseTranscriptExpressionReturn["data"][number];
 
@@ -14,6 +15,18 @@ export const getLogRPM = (d: TranscriptMetadata): number => Math.log10(getRPM(d)
 
 export const getScaledRPM = (d: TranscriptMetadata, scale: TranscriptExpressionScale): number =>
   scale === "log" ? getLogRPM(d) : getRPM(d);
+
+/** A sample's hover on every TSS plot, with its value in the plot's scale. */
+export const tssTooltip = (row: TranscriptMetadata, value: number, scale: TranscriptExpressionScale) => ({
+  title: capitalizeWords(row.biosampleSummary.replaceAll("_", " ")),
+  rows: [
+    { label: "Accession", value: row.expAccession },
+    { label: "Organ/Tissue", value: capitalizeWords(row.organ) },
+    { label: "Sample Type", value: capitalizeWords(row.biosampleType) },
+    { label: "Strand", value: row.strand },
+    { label: scale === "linear" ? "RPM" : "Log₁₀(RPM + 1)", value: value.toFixed(2) },
+  ],
+});
 
 /** Shared control state passed to plot components that render TranscriptPlotControls */
 export type TranscriptExpressionControlProps = {

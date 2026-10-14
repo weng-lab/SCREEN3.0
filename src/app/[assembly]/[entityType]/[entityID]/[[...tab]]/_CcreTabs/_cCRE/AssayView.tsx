@@ -7,6 +7,8 @@ import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
+import { retargetActiveOnly } from "./activeFilter";
+import { withValueOptions } from "common/components/columns";
 import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
 
 // BiosampleActivity's assay tabs (48px) and the gap under them sit over the panes.
@@ -69,10 +71,14 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
       isPresorted: viewBy === "tissue",
     });
 
+  const { setModel: setFilterModel } = filters;
   useEffect(() => {
     if (!assay) return;
     setSelected([]);
-  }, [assay, setSelected]);
+    setFilterModel((model) => retargetActiveOnly(model, assay));
+  }, [assay, setSelected, setFilterModel]);
+
+  const tableColumns = useMemo(() => withValueOptions(columns, rows), [columns, rows]);
 
   const handleSetViewBy = (newView: ViewBy) => {
     setSelected([]);
@@ -90,7 +96,7 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
       TableComponent={
         <AssayTable
           rows={transformedRows}
-          columns={columns}
+          columns={tableColumns}
           assay={assay}
           entityID={entityID}
           tableProps={tableProps}
@@ -156,7 +162,7 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
                     toggleSelection={toggleSelection}
                     getRowId={getRowId}
                     filters={filters}
-                    columns={columns}
+                    columns={tableColumns}
                     assay={assay}
                     assembly={assembly}
                   />

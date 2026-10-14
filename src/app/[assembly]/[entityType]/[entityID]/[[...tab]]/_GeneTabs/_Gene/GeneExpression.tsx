@@ -20,6 +20,7 @@ import type {
 import { getTPM } from "./types";
 import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
+import { withValueOptions } from "common/components/columns";
 import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 
 /** The UMAP draws an experiment once, for all its replicates. */
@@ -159,7 +160,8 @@ const GeneExpression = ({ entity }: EntityViewComponentProps) => {
       isPresorted: viewBy === "byTissueTPM",
     });
 
-  const columns = useMemo(() => geneExpressionColumns(scale), [scale]);
+  // Options from every experiment, as the UMAP's chips are, so they hold as the controls change the rows.
+  const columns = useMemo(() => withValueOptions(geneExpressionColumns(scale), umapRows), [scale, umapRows]);
 
   // The experiments the table lists, any of their replicates will do: the UMAP dims the rest.
   const listedExperiments = useMemo(

@@ -2,7 +2,13 @@
 import React, { useMemo, useState } from "react";
 import { Alert, Skeleton, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
-import { GridRenderCellParams, GridComparatorFn, gridNumberComparator } from "@mui/x-data-grid-premium";
+import {
+  GridRenderCellParams,
+  GridComparatorFn,
+  gridNumberComparator,
+  type ValueOptions,
+} from "@mui/x-data-grid-premium";
+import { withValueOptions } from "common/components/columns";
 import type { CcreAssay } from "common/types/globalTypes";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { capitalizeFirstLetter } from "common/utils";
@@ -15,6 +21,8 @@ import { useBiosampleActivity, useDynamicEnhancersData, useSilencersData } from 
 import { Silencer_Studies } from "./consts";
 import { LinkComponent } from "common/components/LinkComponent";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
+
+const capitalizeOption = (value: ValueOptions) => capitalizeFirstLetter(String(value));
 
 const disableCsvEscapeChar = {
   toolbar: { csvOptions: { escapeFormulas: false }, excelOptions: { escapeFormulas: false } },
@@ -138,19 +146,24 @@ const coreAndPartialCols: TableColDef[] = [
     maxWidth: 400,
     valueFormatter: capitalizeFirstLetter,
   },
+  // Options filled in from each table's rows - see withValueOptions.
   {
     headerName: "Organ/Tissue",
     field: "ontology",
-    valueFormatter: capitalizeFirstLetter,
+    type: "singleSelect",
+    getOptionLabel: capitalizeOption,
   },
   {
     headerName: "Sample Type",
     field: "sampleType",
-    valueFormatter: capitalizeFirstLetter,
+    type: "singleSelect",
+    getOptionLabel: capitalizeOption,
   },
   {
     headerName: "Life Stage",
     field: "lifeStage",
+    type: "singleSelect",
+    getOptionLabel: capitalizeOption,
   },
   {
     headerName: "DNase",
@@ -329,6 +342,13 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
     return biosampleRows?.filter((row) => row.collection === "ancillary");
   }, [biosampleRows]);
 
+  const coreColumns = useMemo(() => withValueOptions(coreAndPartialCols, coreCollection), [coreCollection]);
+  const partialColumns = useMemo(
+    () => withValueOptions(coreAndPartialCols, partialDataCollection),
+    [partialDataCollection]
+  );
+  const ancillaryColumns = useMemo(() => withValueOptions(ancillaryCols, ancillaryCollection), [ancillaryCollection]);
+
   const assaySpecificRows: BiosampleRow[] = useMemo(() => {
     if (tab === "tables") return undefined;
     // Bake the active assay's score into `value` so plots can read it off the
@@ -406,7 +426,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             <Table
               label="Core Collection"
               rows={coreCollection}
-              columns={coreAndPartialCols}
+              columns={coreColumns}
               loading={loadingCorePartialAncillary}
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
@@ -436,7 +456,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
             <Table
               label="Partial Data Collection"
               rows={partialDataCollection}
-              columns={coreAndPartialCols}
+              columns={partialColumns}
               loading={loadingCorePartialAncillary}
               error={errorCorePartialAncillary}
               divHeight={{ height: "400px" }}
@@ -452,7 +472,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
           <Table
             label="Ancillary Collection"
             rows={ancillaryCollection}
-            columns={ancillaryCols}
+            columns={ancillaryColumns}
             loading={loadingCorePartialAncillary}
             error={errorCorePartialAncillary}
             divHeight={{ height: "400px" }}

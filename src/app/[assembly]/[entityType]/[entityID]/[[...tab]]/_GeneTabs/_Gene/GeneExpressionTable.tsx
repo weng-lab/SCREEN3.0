@@ -2,7 +2,10 @@ import { GeneExpressionScale, GeneExpressionTableProps, getScaledTPM, PointMetad
 import { IconButton } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { OpenInNew } from "@mui/icons-material";
+import type { ValueOptions } from "@mui/x-data-grid-premium";
 import { capitalizeFirstLetter } from "common/utils";
+
+const capitalizeOption = (value: ValueOptions) => capitalizeFirstLetter(String(value));
 
 /** The table's columns, which the UMAP also reads to name the table's filters. */
 export const geneExpressionColumns = (scale: GeneExpressionScale): TableColDef<PointMetadata>[] => [
@@ -37,13 +40,18 @@ export const geneExpressionColumns = (scale: GeneExpressionScale): TableColDef<P
     valueFormatter: (value: number) => value.toFixed(2),
     minWidth: 75,
   },
+  // Options filled in from the rows - see withValueOptions.
   {
     field: "tissue",
     headerName: "Organ/Tissue",
+    type: "singleSelect",
+    getOptionLabel: capitalizeOption,
   },
   {
     field: "biosample_type",
     headerName: "Biosample Type",
+    type: "singleSelect",
+    getOptionLabel: capitalizeOption,
   },
   {
     field: "link",

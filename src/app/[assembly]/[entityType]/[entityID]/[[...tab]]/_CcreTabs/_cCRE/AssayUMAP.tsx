@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { gql } from "common/types/generated";
 import { useQuery } from "@apollo/client/react";
-import { FormControl, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
+import { Checkbox, FormControlLabel, Tooltip } from "@mui/material";
 import { interpolateRdYlBu } from "d3-scale-chromatic";
 import BiosampleUMAP, { type RampColoring } from "common/components/BiosampleUMAP/BiosampleUMAP";
 import {
@@ -10,10 +10,10 @@ import {
   tissueField,
   type CategoryField,
 } from "common/components/BiosampleUMAP/fields";
-import { formatAssay } from "common/assays";
 import { CLASS_COLORS, CLASS_DESCRIPTIONS } from "common/ccre";
-import { CcreAssay, CcreClass } from "common/types/globalTypes";
-import type { BiosampleRow, AssayUMAPProps } from "./types";
+import { CcreClass } from "common/types/globalTypes";
+import { ACTIVE_Z, isActiveOnly, withActiveOnly } from "./activeFilter";
+import { biosampleTooltip, type BiosampleRow, type AssayUMAPProps } from "./types";
 
 const BIOSAMPLE_UMAP = gql(`
   query BiosampleUmap($assembly: String!, $assay: String!) {
@@ -43,24 +43,6 @@ const FIELDS: CategoryField<UmapRow>[] = [
 
 const RADIUS = { base: 2, selected: 4 };
 
-/** The z-score past which a cCRE counts as active in a biosample. */
-const ACTIVE_Z = 1.64;
-
-/** Active only: the top half of RdYlBu from the cutoff up, with everything below it in the neutral. */
-const ACTIVE_STOPS = [
-  { at: 0, color: interpolateRdYlBu(0.5) },
-  { at: 1, color: interpolateRdYlBu(0) },
-];
-
-/** All: RdYlBu either side of zero, blue low and red high. */
-const ALL_STOPS = [
-  { at: 0, color: interpolateRdYlBu(1) },
-  { at: 0.5, color: interpolateRdYlBu(0.5) },
-  { at: 1, color: interpolateRdYlBu(0) },
-];
-
-type ScoreMode = "active" | "all";
-
 const keyOf = (row: UmapRow) => row.name;
 const getX = (row: UmapRow) => row.umap[0];
 const getY = (row: UmapRow) => row.umap[1];
@@ -70,22 +52,21 @@ const scoreOf = (row: UmapRow) => row.value ?? null;
 const formatEnd = (value: number) => String(Number(value.toFixed(2)));
 const formatScore = (value: number) => value.toFixed(2);
 
-const TooltipBody = ({ row, assay }: { row: BiosampleRow; assay: CcreAssay }) => (
-  <>
-    <Typography>
-      <b>Sample:</b> {row.displayname}
-    </Typography>
-    <Typography>
-      <b>Organ/Tissue:</b> {row.ontology}
-    </Typography>
-    <Typography>
-      <b>Sample Type:</b> {row.sampleType}
-    </Typography>
-    <Typography>
-      <b>{formatAssay(assay)}:</b> {row[assay]?.toFixed(2)}
-    </Typography>
-  </>
-);
+/** RdYlBu either side of zero, blue low and red high. */
+const SCORE: RampColoring<UmapRow> = {
+  label: "Z Score",
+  valueOf: scoreOf,
+  stops: [
+    { at: 0, color: interpolateRdYlBu(1) },
+    { at: 0.5, color: interpolateRdYlBu(0.5) },
+    { at: 1, color: interpolateRdYlBu(0) },
+  ],
+  kind: "diverging",
+  defaultRange: [-4, 4],
+  adjustable: true,
+  format: formatEnd,
+  formatValue: formatScore,
+};
 
 const AssayUMAP = ({
   rows,
@@ -99,8 +80,6 @@ const AssayUMAP = ({
   columns,
   ref,
 }: AssayUMAPProps) => {
-  const [scoreMode, setScoreMode] = useState<ScoreMode>("active");
-
   const { data: data_umap, loading: loading_umap } = useQuery(BIOSAMPLE_UMAP, {
     variables: {
       assembly: assembly.toLowerCase(),
@@ -122,25 +101,20 @@ const AssayUMAP = ({
 
   const selectedNames = useMemo(() => new Set(selected.map(getRowId)), [selected, getRowId]);
 
-  const score = useMemo((): RampColoring<UmapRow> => {
-    const controls = (
-      <FormControl>
-        <RadioGroup row value={scoreMode} onChange={(event) => setScoreMode(event.target.value as ScoreMode)}>
-          <FormControlLabel value="active" control={<Radio size="small" />} label="Active Only" />
-          <FormControlLabel value="all" control={<Radio size="small" />} label="All" />
-        </RadioGroup>
-      </FormControl>
-    );
-    const shared = { label: "Z Score", valueOf: scoreOf, format: formatEnd, formatValue: formatScore, controls };
-    return scoreMode === "active"
-      ? {
-          ...shared,
-          stops: ACTIVE_STOPS,
-          defaultRange: [ACTIVE_Z, 4],
-          cutoff: { value: ACTIVE_Z, label: `Below ${ACTIVE_Z}` },
+  const activeOnly = (
+    <Tooltip title={`List only the biosamples where this cCRE is active (Z ≥ ${ACTIVE_Z}) in the table and plots`}>
+      <FormControlLabel
+        label="Active only"
+        control={
+          <Checkbox
+            size="small"
+            checked={isActiveOnly(filters.model)}
+            onChange={(event) => filters.setModel((model) => withActiveOnly(model, assay, event.target.checked))}
+          />
         }
-      : { ...shared, stops: ALL_STOPS, kind: "diverging", defaultRange: [-4, 4], adjustable: true };
-  }, [scoreMode]);
+      />
+    </Tooltip>
+  );
 
   return (
     <BiosampleUMAP
@@ -149,10 +123,12 @@ const AssayUMAP = ({
       x={getX}
       y={getY}
       fields={FIELDS}
-      ramp={score}
+      ramp={SCORE}
       noun="biosample"
       filters={filters}
       columns={columns}
+      controls={activeOnly}
+      controlledColumns={[assay]}
       selected={selectedNames}
       onPointClicked={toggleSelection}
       onLassoSelect={(picked) =>
@@ -161,7 +137,7 @@ const AssayUMAP = ({
           return [...prev, ...picked.filter((row) => !alreadySelected.has(getRowId(row)))];
         })
       }
-      tooltipBody={(row) => <TooltipBody row={row} assay={assay} />}
+      tooltip={(row) => biosampleTooltip(row, assay)}
       radius={RADIUS}
       loading={loading_umap}
       downloadFileName={`${assay}_UMAP`}

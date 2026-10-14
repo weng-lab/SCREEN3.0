@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type Ref } from "react";
+import { useId, useMemo, useState, type ReactNode, type Ref } from "react";
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import {
@@ -26,13 +26,12 @@ import {
   type ShapeScale,
 } from "./fields";
 import type { TableFilters } from "@weng-lab/ui-components";
+import PlotTooltip, { type PlotTooltipProps } from "../PlotTooltip";
 
 /** A continuous value the points can be colored by, along a ramp with a colorbar in place of chips. */
 export type RampColoring<T> = {
   /** In the Color By select, and what the colorbar is read out as. */
   label: string;
-  /** The units the colorbar's ends are in, written before it: "Log₁₀(TPM + 1)". */
-  unit?: string;
   /** A row's value, in the ramp's units. Null where it has none. */
   valueOf: (row: T) => number | null;
   stops: readonly RampStop[];
@@ -47,19 +46,10 @@ export type RampColoring<T> = {
   formatValue?: (value: number) => string;
   /** What the range editor says about the scale. */
   notes?: string[];
-  /** A value below which points take the neutral instead of a ramp color, and what the legend calls them. */
-  cutoff?: { value: number; label: string };
-  /** More controls, beside the selects while this colors the plot. */
-  controls?: ReactNode;
 };
 
 /** Points with no value on the ramp. */
 const NO_VALUE_COLOR = "#757575";
-/**
- * Points below a ramp's cutoff: light, as they're most of an inactive cCRE's biosamples and the colored
- * few should stand out, but a step darker than a dimmed point.
- */
-const BELOW_CUTOFF_COLOR = "#CCCCCC";
 
 /** The Color By select's value for the ramp. A field's is its column. */
 const RAMP = "ramp";
@@ -68,10 +58,12 @@ const NO_SHAPE = "none";
 
 const MINIMAP_CONFIG = { position: { right: 50, bottom: 50 } };
 
-/** Room for the plot's controls, which sit to the left of a square plot - see the plot's maxHeight. */
-const CONTROLS_OFFSET = 65;
-
 const MENU_PROPS = { disableScrollLock: true };
+
+type InitialState<T> = ChartProps<PointMeta<T>, true, false>["initialState"];
+
+/** Pan first, so a drag moves around the plot; the toolbar switches to lasso selection. */
+const PAN_FIRST = { controls: { selectionType: "pan" } } as const;
 
 type PointMeta<T> = {
   row: T;
@@ -117,18 +109,24 @@ export type BiosampleUMAPProps<T> = {
   isListed?: (key: string) => boolean;
   /** The table's columns, whose headers name the filters no chip row shows. */
   columns?: readonly { field: string; headerName?: string }[];
+  /** More controls, beside the selects. */
+  controls?: ReactNode;
+  /** Columns whose filters `controls` show, so the note under the chips doesn't name them too. */
+  controlledColumns?: readonly string[];
   /** The selected rows' keys. The rest are dimmed while any are. */
   selected: ReadonlySet<string>;
   onPointClicked: (row: T) => void;
   /** Rows lassoed, less any the table doesn't list. */
   onLassoSelect: (rows: T[]) => void;
-  tooltipBody: (row: T) => ReactNode;
+  /** A point's hover, less the note on why it's dimmed, which is added here. */
+  tooltip: (row: T) => Omit<PlotTooltipProps, "note">;
   /** A point's radius, and a selected one's. */
   radius: { base: number; selected: number };
   loading: boolean;
   downloadFileName: string;
   animationGroupSize: number;
-  initialState?: ChartProps<PointMeta<T>, true, false>["initialState"];
+  /** Merged over panning first. */
+  initialState?: InitialState<T>;
   ref?: Ref<DownloadPlotHandle>;
 };
 
@@ -152,10 +150,12 @@ const BiosampleUMAP = <T,>({
   filters,
   isListed = filters.isListed,
   columns = [],
+  controls,
+  controlledColumns = [],
   selected,
   onPointClicked,
   onLassoSelect,
-  tooltipBody,
+  tooltip,
   radius,
   loading,
   downloadFileName,
@@ -200,7 +200,6 @@ const BiosampleUMAP = <T,>({
       if (colorField) return { color: colorOf(colorField, valueOf(colorField, row)), rampValue: null };
       const value = coloring?.valueOf(row) ?? null;
       if (!onRamp || value === null || !Number.isFinite(value)) return { color: NO_VALUE_COLOR, rampValue: null };
-      if (coloring?.cutoff && value < coloring.cutoff.value) return { color: BELOW_CUTOFF_COLOR, rampValue: null };
       return { color: onRamp(value), rampValue: value };
     };
 
@@ -306,8 +305,8 @@ const BiosampleUMAP = <T,>({
   // The shape row is its own only where it names another field; otherwise the color chips carry the glyphs.
   const shapeRow = shaping && shaping.field !== colorField ? shaping.field : null;
 
-  // What the table filters by that no chip row shows, named so the reader knows why points are dimmed.
-  const chipColumns: (string | undefined)[] = [colorField?.column, shapeRow?.column];
+  // What the table filters by that no chip row or control shows, named so the reader knows why points are dimmed.
+  const chipColumns: (string | undefined)[] = [colorField?.column, shapeRow?.column, ...controlledColumns];
   const unshown = [
     ...filters.columns
       .filter((column) => !chipColumns.includes(column))
@@ -320,17 +319,7 @@ const BiosampleUMAP = <T,>({
     ...(filters.searching ? ["search"] : []),
   ];
 
-  // Band-aid: the plot's controls sit on its left, and a square plot takes min(width, height), so the
-  // height is kept below the width to leave them room.
-  const plotContainerRef = useRef<HTMLDivElement>(null);
-  const [plotContainerWidth, setPlotContainerWidth] = useState(0);
-  useEffect(() => {
-    const el = plotContainerRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => setPlotContainerWidth(entry.contentRect.width));
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  const mergedInitialState = useMemo(() => ({ ...PAN_FIRST, ...initialState }), [initialState]);
 
   return (
     <Box display="flex" flexDirection="column" height="100%" gap={1}>
@@ -371,7 +360,7 @@ const BiosampleUMAP = <T,>({
             </Select>
           </FormControl>
         )}
-        {coloring?.controls}
+        {controls}
         {rampLegend && <Box ml="auto">{rampLegend}</Box>}
       </Stack>
       {shapeRow && chipRow(shapeRow, true, shapeRow.label)}
@@ -387,21 +376,12 @@ const BiosampleUMAP = <T,>({
           </Button>
         </Stack>
       )}
-      <Box
-        ref={plotContainerRef}
-        sx={{
-          flex: 1,
-          minHeight: 0,
-          position: "relative",
-          ...(plotContainerWidth > 0 && { maxHeight: plotContainerWidth - CONTROLS_OFFSET }),
-        }}
-      >
+      <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ScatterPlot
           pointData={points}
           loading={loading}
           selectable
-          square
-          initialState={initialState}
+          initialState={mergedInitialState}
           onPointClicked={({ metaData }) => {
             // A row the table doesn't list can't be selected there either.
             if (metaData!.faded !== "unlisted") onPointClicked(metaData!.row);
@@ -415,17 +395,13 @@ const BiosampleUMAP = <T,>({
           spotlight
           onHoveredPointChange={(point) => setPlotHover(point?.metaData ?? null)}
           tooltipBody={({ metaData }) => (
-            // Held to a width, as biosample names can run long.
-            <Box maxWidth={350}>
-              {metaData!.faded && (
-                <Typography variant="body2" color="text.secondary" fontStyle="italic">
-                  {FADED_NOTES[metaData!.faded]}
-                </Typography>
-              )}
-              {tooltipBody(metaData!.row)}
-            </Box>
+            <PlotTooltip
+              {...tooltip(metaData!.row)}
+              note={metaData!.faded ? FADED_NOTES[metaData!.faded] : undefined}
+            />
           )}
           controlsHighlight={theme.palette.primary.light}
+          controlsPosition="right"
           miniMap={MINIMAP_CONFIG}
           leftAxisLabel="UMAP-2"
           bottomAxisLabel="UMAP-1"
@@ -488,7 +464,7 @@ const RampLegend = <T,>({
   );
   const offRamp = shown.length - values.length;
 
-  const legend = (
+  return (
     <ColorbarLegend
       label={coloring.label}
       stops={coloring.stops}
@@ -503,21 +479,8 @@ const RampLegend = <T,>({
       marker={marker}
       control={coloring.adjustable ? { defaultRange: coloring.defaultRange, onChange: onRangeChange } : undefined}
       notes={coloring.notes}
-      missing={{
-        count: offRamp,
-        color: coloring.cutoff ? BELOW_CUTOFF_COLOR : NO_VALUE_COLOR,
-        label: coloring.cutoff?.label,
-      }}
+      missing={{ count: offRamp, color: NO_VALUE_COLOR }}
     />
-  );
-
-  return coloring.unit ? (
-    <Stack direction="row" alignItems="center" gap={1}>
-      <Typography variant="caption">{coloring.unit}</Typography>
-      {legend}
-    </Stack>
-  ) : (
-    legend
   );
 };
 

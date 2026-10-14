@@ -1,15 +1,10 @@
-import { GeneExpressionUMAPProps, getLogTPM, getTPM, PointMetadata } from "./types";
-import { Typography } from "@mui/material";
+import { expressionTooltip, GeneExpressionUMAPProps, getTPM, PointMetadata } from "./types";
 import { useMemo } from "react";
-import { evenStops } from "@weng-lab/visualization";
-import { interpolateYlOrRd } from "d3-scale-chromatic";
 import BiosampleUMAP, { type RampColoring } from "common/components/BiosampleUMAP/BiosampleUMAP";
 import { sampleTypeField, tissueField, type CategoryField } from "common/components/BiosampleUMAP/fields";
+import { CLIP_PERCENTILE, defaultRange, fromLogValue, SEQUENTIAL_RAMP, toLogValue } from "common/colorRamp";
 
 const FIELDS: CategoryField<PointMetadata>[] = [tissueField("tissue"), sampleTypeField("biosample_type")];
-
-/** YlOrRd at nine even steps, as the expression gradient has always been drawn. */
-const EXPRESSION_STOPS = evenStops(Array.from({ length: 9 }, (_, i) => interpolateYlOrRd(i / 8)));
 
 const RADIUS = { base: 4, selected: 6 };
 
@@ -19,31 +14,17 @@ const getY = (row: PointMetadata) => row.umap_2;
 
 /** log10(TPM + 1), or null where the experiment has no quantification for the gene. */
 const logTPMOf = (row: PointMetadata) => {
-  const value = getLogTPM(row);
+  const value = toLogValue(getTPM(row));
   return Number.isFinite(value) ? value : null;
 };
 
-const formatLog = (value: number) => value.toFixed(2);
+const formatTpm = (tpm: number) => `${tpm.toLocaleString("en-US", { maximumFractionDigits: 2 })} TPM`;
 
-const TooltipBody = (row: PointMetadata) => (
-  <>
-    <Typography>
-      <b>Accession:</b> {row.exp_accession}
-    </Typography>
-    <Typography>
-      <b>Biosample:</b> {row.biosample}
-    </Typography>
-    <Typography>
-      <b>Tissue:</b> {row.tissue}
-    </Typography>
-    <Typography>
-      <b>Log₁₀(TPM + 1):</b> {getLogTPM(row).toFixed(2)}
-    </Typography>
-    <Typography>
-      <b>TPM:</b> {getTPM(row).toFixed(2)}
-    </Typography>
-  </>
-);
+/** An end of the bar falls between values, so only its magnitude matters. */
+const formatTpmBound = (tpm: number) => `${tpm.toLocaleString("en-US", { maximumSignificantDigits: 2 })} TPM`;
+
+/** Raw TPM whatever the other plots' scale: the UMAP is kept apart from their controls. */
+const tooltip = (row: PointMetadata) => expressionTooltip(row, getTPM(row), "linearTPM");
 
 const GeneExpressionUMAP = ({
   geneName,
@@ -57,17 +38,21 @@ const GeneExpressionUMAP = ({
   loading,
   ref,
 }: GeneExpressionUMAPProps) => {
+  // Scaled in log10, but the bar's ends and a sweep read in TPM.
   const expression: RampColoring<PointMetadata> = useMemo(() => {
-    const max = Math.max(0, ...rows.flatMap((row) => logTPMOf(row) ?? []));
+    const values = Float64Array.from(rows.flatMap((row) => logTPMOf(row) ?? [])).sort();
     return {
       label: "Expression",
-      unit: "Log₁₀(TPM + 1)",
       valueOf: logTPMOf,
-      stops: EXPRESSION_STOPS,
-      defaultRange: [0, max],
+      stops: SEQUENTIAL_RAMP,
+      defaultRange: values.length > 0 ? defaultRange(values) : [0, 0],
       adjustable: true,
-      format: formatLog,
-      notes: ["Colors follow log₁₀(TPM + 1), from 0 to the most highly expressed experiment by default."],
+      format: (log) => formatTpmBound(fromLogValue(log)),
+      formatValue: (log) => formatTpm(fromLogValue(log)),
+      notes: [
+        "On a log scale: colors follow log₁₀(TPM + 1).",
+        `Starts at the middle ${100 - 2 * CLIP_PERCENTILE}% of experiments, so a few extreme values don't wash out the rest.`,
+      ],
     };
   }, [rows]);
 
@@ -86,7 +71,7 @@ const GeneExpressionUMAP = ({
       selected={selectedAccessions}
       onPointClicked={onPointToggle}
       onLassoSelect={onLassoSelect}
-      tooltipBody={TooltipBody}
+      tooltip={tooltip}
       radius={RADIUS}
       loading={loading}
       downloadFileName={`${geneName}_expression_UMAP`}

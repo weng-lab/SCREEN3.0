@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Button, Stack, InputLabel, Select, MenuItem, SelectChangeEvent, Box, Typography } from "@mui/material";
+import { Button, Stack, InputLabel, Select, MenuItem, SelectChangeEvent, Box } from "@mui/material";
+import { capitalizeFirstLetter } from "common/utils";
 import { useQuery } from "@apollo/client/react";
 import { Download } from "@mui/icons-material";
 import {
@@ -40,27 +41,15 @@ const nameOf = (biosample: { name: string }) => biosample.name;
 const getX = (biosample: UmapBiosample) => biosample.umap[0];
 const getY = (biosample: UmapBiosample) => biosample.umap[1];
 
-const TooltipBody = (biosample: UmapBiosample) => (
-  <>
-    <Typography>
-      <b>Biosample:</b> {biosample.displayname}
-    </Typography>
-    <Typography>
-      <b>Organ/Tissue:</b> {biosample.ontology}
-    </Typography>
-    <Typography>
-      <b>Sample Type:</b> {biosample.sampleType}
-    </Typography>
-    <Typography>
-      <b>Life Stage:</b> {biosample.lifeStage}
-    </Typography>
-    {biosample.experimentAccession && (
-      <Typography>
-        <b>Experiment:</b> {biosample.experimentAccession}
-      </Typography>
-    )}
-  </>
-);
+const tooltip = (biosample: UmapBiosample) => ({
+  title: capitalizeFirstLetter(biosample.displayname),
+  rows: [
+    ...(biosample.experimentAccession ? [{ label: "Accession", value: biosample.experimentAccession }] : []),
+    { label: "Organ/Tissue", value: capitalizeFirstLetter(biosample.ontology) },
+    { label: "Sample Type", value: capitalizeFirstLetter(biosample.sampleType) },
+    { label: "Life Stage", value: capitalizeFirstLetter(biosample.lifeStage) },
+  ],
+});
 
 /** The table's search reaches its hidden columns, as BiosampleTable's own initial state has it. */
 const INITIAL_FILTERS: GridFilterModel = { items: [], quickFilterExcludeHiddenColumns: false };
@@ -90,7 +79,7 @@ const biosampleHasAssay = (biosample: EncodeBiosample, assay: Selected["assay"])
   }
 };
 
-const UMAP_INITIAL_STATE = { minimap: { open: true }, controls: { selectionType: "pan" } } as const;
+const UMAP_INITIAL_STATE = { minimap: { open: true } };
 
 export function DataMatrices() {
   const [selectedAssay, setSelectedAssay] = useState<Selected>({ assembly: "Human", assay: "DNase" });
@@ -270,7 +259,7 @@ export function DataMatrices() {
             onLassoSelect={(picked) =>
               setSelected((prev) => [...prev, ...picked.filter(({ name }) => !selectedNames.has(name))])
             }
-            tooltipBody={TooltipBody}
+            tooltip={tooltip}
             radius={RADIUS}
             loading={umapLoading || biosamplesLoading}
             downloadFileName={`${selectedAssay.assembly}_${selectedAssay.assay}_UMAP`}

@@ -1,6 +1,7 @@
 import { GWASEnrichment } from "common/hooks/data/gwas";
 import { BarPlot, BarData, DownloadPlotHandle } from "@weng-lab/visualization";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import PlotTooltip from "common/components/PlotTooltip";
 import { capitalizeFirstLetter, truncateString } from "common/utils";
 import { tissueColors } from "common/colors";
 import { useMemo } from "react";
@@ -14,15 +15,17 @@ export type BiosampleEnrichmentBarPlotProps = {
   study: string;
 };
 
-const PlotTooltip = (bar: BarData<GWASEnrichment>) => (
-  <div style={{ padding: 2, maxWidth: 350 }}>
-    <Typography>{capitalizeFirstLetter(bar.metadata.displayname?.replaceAll("_", " "))}</Typography>
-    <Typography variant="body2">Log2(Fold Enrichment): {bar.metadata.fc.toFixed(3)}</Typography>
-    <Typography variant="body2">FDR: {bar.metadata.fdr.toFixed(3)}</Typography>
-    <Typography variant="body2">
-      <i>P</i>: {bar.metadata.pvalue.toFixed(3)}
-    </Typography>
-  </div>
+const TooltipContents = ({ metadata }: BarData<GWASEnrichment>) => (
+  <PlotTooltip
+    title={capitalizeFirstLetter(metadata.displayname?.replaceAll("_", " ") ?? "")}
+    rows={[
+      { label: "Accession", value: metadata.accession },
+      { label: "Organ/Tissue", value: capitalizeFirstLetter(metadata.ontology) },
+      { label: "Log₂(Fold Enrichment)", value: metadata.fc.toFixed(3) },
+      { label: "FDR", value: metadata.fdr.toFixed(3) },
+      { label: "P", value: metadata.pvalue.toFixed(3) },
+    ]}
+  />
 );
 
 const BiosampleEnrichmentBarPlot = ({
@@ -67,7 +70,7 @@ const BiosampleEnrichmentBarPlot = ({
           onBarClicked={handleBarClick}
           data={plotData}
           topAxisLabel={`Log2(Fold Enrichment)`}
-          TooltipContents={PlotTooltip}
+          TooltipContents={TooltipContents}
           ref={ref}
           downloadFileName={`${study}_lollipop_plot`}
           animation="slideRight"

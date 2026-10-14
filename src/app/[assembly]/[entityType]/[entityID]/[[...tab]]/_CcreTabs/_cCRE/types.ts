@@ -3,6 +3,10 @@ import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { AnyOpenEntity } from "common/OpenEntitiesContext";
 import type { Assembly, CcreAssay, CcreClass } from "common/types/globalTypes";
 import type { Dispatch, SetStateAction } from "react";
+import type { PlotTooltipProps } from "common/components/PlotTooltip";
+import { formatAssay } from "common/assays";
+import { CLASS_DESCRIPTIONS } from "common/ccre";
+import { capitalizeFirstLetter } from "common/utils";
 
 export type BiosampleRow = {
   /**
@@ -31,6 +35,17 @@ export type BiosampleRow = {
   ctcfExpAccession?: string;
   tf?: string;
 };
+
+/** A biosample's hover on every assay plot. */
+export const biosampleTooltip = (row: BiosampleRow, assay: CcreAssay): PlotTooltipProps => ({
+  title: capitalizeFirstLetter(row.displayname),
+  rows: [
+    { label: "Organ/Tissue", value: capitalizeFirstLetter(row.ontology) },
+    ...(row.sampleType ? [{ label: "Sample Type", value: capitalizeFirstLetter(row.sampleType) }] : []),
+    ...(row.value != null ? [{ label: `${formatAssay(assay)} Z-score`, value: row.value.toFixed(2) }] : []),
+    ...(row.group ? [{ label: "Classification", value: CLASS_DESCRIPTIONS[row.group] ?? row.group }] : []),
+  ],
+});
 
 export type AssayViewProps = {
   rows: BiosampleRow[];
