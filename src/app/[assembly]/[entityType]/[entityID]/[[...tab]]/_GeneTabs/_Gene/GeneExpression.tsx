@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useMemo, useState } from "react";
-import GeneExpressionTable, { geneExpressionColumns } from "./GeneExpressionTable";
+import GeneExpressionTable from "./GeneExpressionTable";
+import { geneExpressionColumns } from "./columns";
 import GeneExpressionUMAP from "./GeneExpressionUMAP";
 import GeneExpressionBarPlot from "./GeneExpressionBarPlot";
 import { useGeneExpression } from "common/hooks/data/gene";

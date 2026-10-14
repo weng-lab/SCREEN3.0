@@ -36,6 +36,12 @@ export type BiosampleRow = {
   tf?: string;
 };
 
+/**
+ * The table's column for the assay in view, on `value`: one field whatever the assay, so the table's
+ * filters and sort on it carry over from assay to assay.
+ */
+export const SCORE_FIELD = "value" satisfies keyof BiosampleRow;
+
 /** A biosample's hover on every assay plot. */
 export const biosampleTooltip = (row: BiosampleRow, assay: CcreAssay): PlotTooltipProps => ({
   title: capitalizeFirstLetter(row.displayname),

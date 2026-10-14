@@ -53,8 +53,8 @@ export type ShapeScale = ReadonlyMap<string, PointShape>;
 export const shapeScaleOf = <T>(field: CategoryField<T>, rows: readonly T[]): ShapeScale | null => {
   if (!field.shapeOrder) return null;
   const present = new Set(rows.map((row) => valueOf(field, row)));
-  const unlisted = [...present].filter((value) => !field.shapeOrder!.includes(value)).sort();
-  const order = [...field.shapeOrder, ...unlisted];
+  // The listed order, then any values it doesn't list, alphabetically.
+  const order = [...new Set([...field.shapeOrder, ...[...present].sort()])];
   if (present.size < 2 || order.length > POINT_SHAPES.length) return null;
   return new Map(order.map((value, i) => [value, POINT_SHAPES[i]]));
 };

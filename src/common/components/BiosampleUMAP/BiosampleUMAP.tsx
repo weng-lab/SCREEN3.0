@@ -164,35 +164,10 @@ const BiosampleUMAP = <T,>({
   ref,
 }: BiosampleUMAPProps<T>) => {
   const theme = useTheme();
-  const colorFields = useMemo(() => fields.filter((field) => field.colorOf), [fields]);
-  const [colorBy, setColorBy] = useState<string>(ramp ? RAMP : (colorFields[0]?.column ?? RAMP));
-  const [shapeBy, setShapeBy] = useState<string>(NO_SHAPE);
-  const colorLabelId = useId();
-  const shapeLabelId = useId();
+  const { colorFields, colorField, coloring, setColorBy } = useColoring(fields, ramp);
+  const { shapeOptions, shaping, setShapeBy } = useShaping(fields, rows);
 
-  // A field, or the ramp where none is picked.
-  const colorField = useMemo(
-    () => colorFields.find(({ column }) => column === colorBy) ?? null,
-    [colorFields, colorBy]
-  );
-  const coloring = colorField ? null : (ramp ?? null);
-
-  // Shape scales over every row, so a value keeps its shape as filters change.
-  const shapeOptions = useMemo(
-    () =>
-      fields.flatMap((field) => {
-        const scale = shapeScaleOf(field, rows);
-        return scale ? [{ field, scale }] : [];
-      }),
-    [fields, rows]
-  );
-  const shaping: { field: CategoryField<T>; scale: ShapeScale } | null =
-    shapeOptions.find(({ field }) => field.column === shapeBy) ?? null;
-
-  // Where the ramp's colors stop: the default, or where the reader moved it from that default.
-  const [moved, setMoved] = useState<{ from: ColorRange; range: ColorRange } | null>(null);
-  const range =
-    coloring && moved && sameRange(moved.from, coloring.defaultRange) ? moved.range : (coloring?.defaultRange ?? null);
+  const [range, setRange] = useRampRange(coloring?.defaultRange ?? null);
 
   const points = useMemo(() => {
     const onRamp = coloring && range && rampColor(coloring.stops, range);
@@ -235,8 +210,9 @@ const BiosampleUMAP = <T,>({
   const [legendHover, setLegendHover] = useState<LegendHover | null>(null);
 
   // From the points in focus, so a switched-off chip highlights nothing.
-  const hoveredPoints = useMemo(() => {
+  const spotlit = useMemo(() => {
     if (legendHover === null) return undefined;
+    // A stretch of the colorbar dims everything outside it even while empty.
     if (legendHover.kind === "range") {
       const [low, high] = legendHover.within;
       return shown.filter(({ metaData }) => {
@@ -244,13 +220,11 @@ const BiosampleUMAP = <T,>({
         return value !== null && value >= low && value <= high;
       });
     }
+    // A chip with nothing in focus - one switched off - leaves the plot be.
     const field = fields.find(({ column }) => column === legendHover.column);
-    return field ? shown.filter(({ metaData }) => valueOf(field, metaData!.row) === legendHover.value) : [];
+    const group = field ? shown.filter(({ metaData }) => valueOf(field, metaData!.row) === legendHover.value) : [];
+    return group.length > 0 ? group : undefined;
   }, [legendHover, shown, fields]);
-  // A stretch of the colorbar dims everything outside it even while empty; a chip with nothing in focus
-  // - one switched off - leaves the plot be.
-  const spotlit =
-    hoveredPoints && (hoveredPoints.length > 0 || legendHover?.kind === "range") ? hoveredPoints : undefined;
 
   const ringed = (field: CategoryField<T>) =>
     plotHover
@@ -298,84 +272,39 @@ const BiosampleUMAP = <T,>({
           sweep === null || range === null ? null : { kind: "range", sweep, within: sweptValues(range, sweep) }
         )
       }
-      onRangeChange={(next) => setMoved({ from: coloring.defaultRange, range: next })}
+      onRangeChange={setRange}
     />
   );
 
   // The shape row is its own only where it names another field; otherwise the color chips carry the glyphs.
   const shapeRow = shaping && shaping.field !== colorField ? shaping.field : null;
 
-  // What the table filters by that no chip row or control shows, named so the reader knows why points are dimmed.
-  const chipColumns: (string | undefined)[] = [colorField?.column, shapeRow?.column, ...controlledColumns];
-  const unshown = [
-    ...filters.columns
-      .filter((column) => !chipColumns.includes(column))
-      .map(
-        (column) =>
-          columns.find(({ field }) => field === column)?.headerName ??
-          fields.find((field) => field.column === column)?.label ??
-          column
-      ),
-    ...(filters.searching ? ["search"] : []),
-  ];
-
   const mergedInitialState = useMemo(() => ({ ...PAN_FIRST, ...initialState }), [initialState]);
 
   return (
     <Box display="flex" flexDirection="column" height="100%" gap={1}>
       <Stack direction="row" alignItems="center" flexWrap="wrap" gap={1}>
-        <FormControl size="small">
-          <InputLabel id={colorLabelId}>Color By</InputLabel>
-          <Select
-            labelId={colorLabelId}
-            value={colorField?.column ?? RAMP}
-            label="Color By"
-            onChange={(event) => setColorBy(event.target.value)}
-            MenuProps={MENU_PROPS}
-          >
-            {ramp && <MenuItem value={RAMP}>{ramp.label}</MenuItem>}
-            {colorFields.map(({ column, label }) => (
-              <MenuItem key={column} value={column}>
-                {label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {shapeOptions.length > 0 && (
-          <FormControl size="small">
-            <InputLabel id={shapeLabelId}>Shape By</InputLabel>
-            <Select
-              labelId={shapeLabelId}
-              value={shaping?.field.column ?? NO_SHAPE}
-              label="Shape By"
-              onChange={(event) => setShapeBy(event.target.value)}
-              MenuProps={MENU_PROPS}
-            >
-              <MenuItem value={NO_SHAPE}>None</MenuItem>
-              {shapeOptions.map(({ field: { column, label } }) => (
-                <MenuItem key={column} value={column}>
-                  {label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
+        <ColorShapeSelects
+          rampLabel={ramp?.label}
+          colorFields={colorFields}
+          colorField={colorField}
+          onColorBy={setColorBy}
+          shapeFields={shapeOptions.map(({ field }) => field)}
+          shapeField={shaping?.field ?? null}
+          onShapeBy={setShapeBy}
+        />
         {controls}
         {rampLegend && <Box ml="auto">{rampLegend}</Box>}
       </Stack>
       {shapeRow && chipRow(shapeRow, true, shapeRow.label)}
       {/* Named only beneath a shape row, to tell the two apart. */}
       {colorField && chipRow(colorField, false, shapeRow ? colorField.label : undefined)}
-      {unshown.length > 0 && (
-        <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
-          <Typography variant="caption" color="text.secondary">
-            Also filtered in the table by {listOf(unshown)}.
-          </Typography>
-          <Button size="small" onClick={filters.clear} sx={{ py: 0 }}>
-            Clear all filters
-          </Button>
-        </Stack>
-      )}
+      <OtherFiltersNote
+        filters={filters}
+        shownColumns={[colorField?.column, shapeRow?.column, ...controlledColumns]}
+        columns={columns}
+        fields={fields}
+      />
       <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ScatterPlot
           pointData={points}
@@ -411,26 +340,165 @@ const BiosampleUMAP = <T,>({
           animationBuffer={0.01}
           animationGroupSize={animationGroupSize}
         />
-        {!loading && points.length > 0 && shown.length === 0 && (
-          <Stack
-            position="absolute"
-            alignItems="center"
-            justifyContent="center"
-            sx={{ inset: 0, pointerEvents: "none" }}
-          >
-            {/* Backed, since the dimmed points are drawn underneath. */}
-            <Typography
-              color="text.secondary"
-              sx={{ px: 2, py: 1, borderRadius: 1, bgcolor: "background.paper", boxShadow: 1 }}
-            >
-              {selected.size > 0
-                ? "None of the selected points are listed in the table"
-                : "No points are listed in the table"}
-            </Typography>
-          </Stack>
-        )}
+        {!loading && <NothingListed points={points.length} shown={shown.length} anySelected={selected.size > 0} />}
       </Box>
     </Box>
+  );
+};
+
+/** What colors the points: a field, or the ramp where none is picked. */
+const useColoring = <T,>(fields: CategoryField<T>[], ramp: RampColoring<T> | undefined) => {
+  const colorFields = useMemo(() => fields.filter((field) => field.colorOf), [fields]);
+  const [colorBy, setColorBy] = useState<string>(ramp ? RAMP : (colorFields[0]?.column ?? RAMP));
+  const colorField = useMemo(
+    () => colorFields.find(({ column }) => column === colorBy) ?? null,
+    [colorFields, colorBy]
+  );
+  return { colorFields, colorField, coloring: colorField ? null : (ramp ?? null), setColorBy };
+};
+
+/** What shapes the points, if anything, from the fields that can. */
+const useShaping = <T,>(fields: CategoryField<T>[], rows: readonly T[]) => {
+  const [shapeBy, setShapeBy] = useState<string>(NO_SHAPE);
+  // Shape scales over every row, so a value keeps its shape as filters change.
+  const shapeOptions = useMemo(
+    () =>
+      fields.flatMap((field) => {
+        const scale = shapeScaleOf(field, rows);
+        return scale ? [{ field, scale }] : [];
+      }),
+    [fields, rows]
+  );
+  const shaping: { field: CategoryField<T>; scale: ShapeScale } | null =
+    shapeOptions.find(({ field }) => field.column === shapeBy) ?? null;
+  return { shapeOptions, shaping, setShapeBy };
+};
+
+/** Where a ramp's colors stop: its default, or where the reader moved them from that default. */
+const useRampRange = (defaultRange: ColorRange | null) => {
+  const [moved, setMoved] = useState<{ from: ColorRange; range: ColorRange } | null>(null);
+  const range = defaultRange && moved && sameRange(moved.from, defaultRange) ? moved.range : defaultRange;
+  const setRange = (next: ColorRange) => {
+    if (defaultRange) setMoved({ from: defaultRange, range: next });
+  };
+  return [range, setRange] as const;
+};
+
+type ColorShapeSelectsProps = {
+  /** The ramp's option, first, where there is one. */
+  rampLabel?: string;
+  colorFields: readonly { column: string; label: string }[];
+  /** The field coloring the points, or null for the ramp. */
+  colorField: { column: string } | null;
+  onColorBy: (value: string) => void;
+  shapeFields: readonly { column: string; label: string }[];
+  shapeField: { column: string } | null;
+  onShapeBy: (value: string) => void;
+};
+
+/** The Color By select, and Shape By where any field can shape the points. */
+const ColorShapeSelects = ({
+  rampLabel,
+  colorFields,
+  colorField,
+  onColorBy,
+  shapeFields,
+  shapeField,
+  onShapeBy,
+}: ColorShapeSelectsProps) => {
+  const colorLabelId = useId();
+  const shapeLabelId = useId();
+  return (
+    <>
+      <FormControl size="small">
+        <InputLabel id={colorLabelId}>Color By</InputLabel>
+        <Select
+          labelId={colorLabelId}
+          value={colorField?.column ?? RAMP}
+          label="Color By"
+          onChange={(event) => onColorBy(event.target.value)}
+          MenuProps={MENU_PROPS}
+        >
+          {rampLabel && <MenuItem value={RAMP}>{rampLabel}</MenuItem>}
+          {colorFields.map(({ column, label }) => (
+            <MenuItem key={column} value={column}>
+              {label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      {shapeFields.length > 0 && (
+        <FormControl size="small">
+          <InputLabel id={shapeLabelId}>Shape By</InputLabel>
+          <Select
+            labelId={shapeLabelId}
+            value={shapeField?.column ?? NO_SHAPE}
+            label="Shape By"
+            onChange={(event) => onShapeBy(event.target.value)}
+            MenuProps={MENU_PROPS}
+          >
+            <MenuItem value={NO_SHAPE}>None</MenuItem>
+            {shapeFields.map(({ column, label }) => (
+              <MenuItem key={column} value={column}>
+                {label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
+    </>
+  );
+};
+
+type OtherFiltersNoteProps = {
+  filters: TableFilters;
+  /** Columns whose filters a chip row or control already shows. */
+  shownColumns: readonly (string | undefined)[];
+  /** The table's columns, whose headers name the rest. */
+  columns: readonly { field: string; headerName?: string }[];
+  fields: readonly { column: string; label: string }[];
+};
+
+/** What the table filters by that no chip row or control shows, named so the reader knows why points are dimmed. */
+const OtherFiltersNote = ({ filters, shownColumns, columns, fields }: OtherFiltersNoteProps) => {
+  const shown = new Set(shownColumns);
+  const unshown = [
+    ...filters.columns
+      .filter((column) => !shown.has(column))
+      .map(
+        (column) =>
+          columns.find(({ field }) => field === column)?.headerName ??
+          fields.find((field) => field.column === column)?.label ??
+          column
+      ),
+    ...(filters.searching ? ["search"] : []),
+  ];
+  if (unshown.length === 0) return null;
+  return (
+    <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
+      <Typography variant="caption" color="text.secondary">
+        Also filtered in the table by {listOf(unshown)}.
+      </Typography>
+      <Button size="small" onClick={filters.clear} sx={{ py: 0 }}>
+        Clear all filters
+      </Button>
+    </Stack>
+  );
+};
+
+/** Over the plot when it has points but every one is dimmed. */
+const NothingListed = ({ points, shown, anySelected }: { points: number; shown: number; anySelected: boolean }) => {
+  if (points === 0 || shown > 0) return null;
+  return (
+    <Stack position="absolute" alignItems="center" justifyContent="center" sx={{ inset: 0, pointerEvents: "none" }}>
+      {/* Backed, since the dimmed points are drawn underneath. */}
+      <Typography
+        color="text.secondary"
+        sx={{ px: 2, py: 1, borderRadius: 1, bgcolor: "background.paper", boxShadow: 1 }}
+      >
+        {anySelected ? "None of the selected points are listed in the table" : "No points are listed in the table"}
+      </Typography>
+    </Stack>
   );
 };
 

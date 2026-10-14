@@ -13,7 +13,7 @@ import {
 import { CLASS_COLORS, CLASS_DESCRIPTIONS } from "common/ccre";
 import { CcreClass } from "common/types/globalTypes";
 import { ACTIVE_Z, isActiveOnly, withActiveOnly } from "./activeFilter";
-import { biosampleTooltip, type BiosampleRow, type AssayUMAPProps } from "./types";
+import { biosampleTooltip, SCORE_FIELD, type BiosampleRow, type AssayUMAPProps } from "./types";
 
 const BIOSAMPLE_UMAP = gql(`
   query BiosampleUmap($assembly: String!, $assay: String!) {
@@ -42,6 +42,9 @@ const FIELDS: CategoryField<UmapRow>[] = [
 ];
 
 const RADIUS = { base: 2, selected: 4 };
+
+/** The score column's filter is the Active only toggle's. */
+const CONTROLLED_COLUMNS = [SCORE_FIELD];
 
 const keyOf = (row: UmapRow) => row.name;
 const getX = (row: UmapRow) => row.umap[0];
@@ -109,7 +112,7 @@ const AssayUMAP = ({
           <Checkbox
             size="small"
             checked={isActiveOnly(filters.model)}
-            onChange={(event) => filters.setModel((model) => withActiveOnly(model, assay, event.target.checked))}
+            onChange={(event) => filters.setModel((model) => withActiveOnly(model, event.target.checked))}
           />
         }
       />
@@ -128,7 +131,7 @@ const AssayUMAP = ({
       filters={filters}
       columns={columns}
       controls={activeOnly}
-      controlledColumns={[assay]}
+      controlledColumns={CONTROLLED_COLUMNS}
       selected={selectedNames}
       onPointClicked={toggleSelection}
       onLassoSelect={(picked) =>

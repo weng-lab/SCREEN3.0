@@ -7,9 +7,8 @@ import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
-import { retargetActiveOnly } from "./activeFilter";
 import { withValueOptions } from "common/components/columns";
-import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
+import { SCORE_FIELD, type AssayViewProps, type BiosampleRow, type ViewBy } from "./types";
 
 // BiosampleActivity's assay tabs (48px) and the gap under them sit over the panes.
 const PANE_HEIGHTS = twoPaneHeights(`${48 + 16}px`);
@@ -67,18 +66,23 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
     useTablePlotSync({
       rows: transformedRows,
       getRowId: (r) => r.name,
-      initialSort: [{ field: assay, sort: "desc" }],
+      initialSort: [{ field: SCORE_FIELD, sort: "desc" }],
       isPresorted: viewBy === "tissue",
     });
 
-  const { setModel: setFilterModel } = filters;
   useEffect(() => {
     if (!assay) return;
     setSelected([]);
-    setFilterModel((model) => retargetActiveOnly(model, assay));
-  }, [assay, setSelected, setFilterModel]);
+  }, [assay, setSelected]);
 
-  const tableColumns = useMemo(() => withValueOptions(columns, rows), [columns, rows]);
+  // The assay in view's column, moved onto the score field.
+  const tableColumns = useMemo(
+    () =>
+      withValueOptions(columns, rows).map((column) =>
+        column.field === assay ? { ...column, field: SCORE_FIELD } : column
+      ),
+    [columns, rows, assay]
+  );
 
   const handleSetViewBy = (newView: ViewBy) => {
     setSelected([]);
