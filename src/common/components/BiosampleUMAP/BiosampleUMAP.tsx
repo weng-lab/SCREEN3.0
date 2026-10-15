@@ -56,8 +56,6 @@ const RAMP = "ramp";
 /** The Shape By select's value for no shapes. */
 const NO_SHAPE = "none";
 
-const MINIMAP_CONFIG = { position: { right: 50, bottom: 50 } };
-
 const MENU_PROPS = { disableScrollLock: true };
 
 type InitialState<T> = ChartProps<PointMeta<T>, true, false>["initialState"];
@@ -330,7 +328,6 @@ const BiosampleUMAP = <T,>({
           )}
           controlsHighlight={theme.palette.primary.light}
           controlsPosition="right"
-          miniMap={MINIMAP_CONFIG}
           leftAxisLabel="UMAP-2"
           bottomAxisLabel="UMAP-1"
           ref={ref}

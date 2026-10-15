@@ -79,7 +79,7 @@ const biosampleHasAssay = (biosample: EncodeBiosample, assay: Selected["assay"])
   }
 };
 
-const UMAP_INITIAL_STATE = { minimap: { open: true } };
+const UMAP_INITIAL_STATE = { minimap: { showWhileZoomed: true } };
 
 export function DataMatrices() {
   const [selectedAssay, setSelectedAssay] = useState<Selected>({ assembly: "Human", assay: "DNase" });
