@@ -12,7 +12,8 @@ import {
 } from "common/components/BiosampleUMAP/fields";
 import { CLASS_COLORS, CLASS_DESCRIPTIONS } from "common/ccre";
 import { CcreClass } from "common/types/globalTypes";
-import { ACTIVE_Z, isActiveOnly, withActiveOnly } from "./activeFilter";
+import { formatAssay } from "common/assays";
+import { ACTIVE_Z, activeOnlyState, withActiveOnly } from "./activeFilter";
 import { biosampleTooltip, SCORE_FIELD, type BiosampleRow, type AssayUMAPProps } from "./types";
 
 const BIOSAMPLE_UMAP = gql(`
@@ -43,7 +44,7 @@ const FIELDS: CategoryField<UmapRow>[] = [
 
 const RADIUS = { base: 2, selected: 4 };
 
-/** The score column's filter is the Active only toggle's. */
+/** The score column, whose filter the Active only checkbox shows while it's on. */
 const CONTROLLED_COLUMNS = [SCORE_FIELD];
 
 const keyOf = (row: UmapRow) => row.name;
@@ -104,14 +105,23 @@ const AssayUMAP = ({
 
   const selectedNames = useMemo(() => new Set(selected.map(getRowId)), [selected, getRowId]);
 
-  const activeOnly = (
-    <Tooltip title={`List only the biosamples where this cCRE is active (Z ≥ ${ACTIVE_Z}) in the table and plots`}>
+  const activeOnly = activeOnlyState(filters.model);
+  const activeOnlyControl = (
+    <Tooltip
+      title={
+        activeOnly === "other"
+          ? `The table filters ${formatAssay(assay)} another way. Remove that filter to use this.`
+          : `List only the biosamples where this cCRE is active (Z ≥ ${ACTIVE_Z}) in the table and plots`
+      }
+    >
       <FormControlLabel
         label="Active only"
         control={
           <Checkbox
             size="small"
-            checked={isActiveOnly(filters.model)}
+            checked={activeOnly === "on"}
+            // On the checkbox, not the label, so the label still shows the tooltip.
+            disabled={activeOnly === "other"}
             onChange={(event) => filters.setModel((model) => withActiveOnly(model, event.target.checked))}
           />
         }
@@ -130,8 +140,8 @@ const AssayUMAP = ({
       noun="biosample"
       filters={filters}
       columns={columns}
-      controls={activeOnly}
-      controlledColumns={CONTROLLED_COLUMNS}
+      controls={activeOnlyControl}
+      controlledColumns={activeOnly === "on" ? CONTROLLED_COLUMNS : undefined}
       selected={selectedNames}
       onPointClicked={toggleSelection}
       onLassoSelect={(picked) =>

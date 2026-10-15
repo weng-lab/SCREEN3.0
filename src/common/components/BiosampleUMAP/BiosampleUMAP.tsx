@@ -108,7 +108,7 @@ export type BiosampleUMAPProps<T> = {
    */
   isListed?: (key: string) => boolean;
   /** The table's columns, whose headers name the filters no chip row shows. */
-  columns?: readonly { field: string; headerName?: string }[];
+  columns: readonly { field: string; headerName?: string }[];
   /** More controls, beside the selects. */
   controls?: ReactNode;
   /** Columns whose filters `controls` show, so the note under the chips doesn't name them too. */
@@ -149,7 +149,7 @@ const BiosampleUMAP = <T,>({
   noun,
   filters,
   isListed = filters.isListed,
-  columns = [],
+  columns,
   controls,
   controlledColumns = [],
   selected,
@@ -303,7 +303,6 @@ const BiosampleUMAP = <T,>({
         filters={filters}
         shownColumns={[colorField?.column, shapeRow?.column, ...controlledColumns]}
         columns={columns}
-        fields={fields}
       />
       <Box sx={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ScatterPlot
@@ -456,21 +455,15 @@ type OtherFiltersNoteProps = {
   shownColumns: readonly (string | undefined)[];
   /** The table's columns, whose headers name the rest. */
   columns: readonly { field: string; headerName?: string }[];
-  fields: readonly { column: string; label: string }[];
 };
 
 /** What the table filters by that no chip row or control shows, named so the reader knows why points are dimmed. */
-const OtherFiltersNote = ({ filters, shownColumns, columns, fields }: OtherFiltersNoteProps) => {
+const OtherFiltersNote = ({ filters, shownColumns, columns }: OtherFiltersNoteProps) => {
   const shown = new Set(shownColumns);
   const unshown = [
     ...filters.columns
       .filter((column) => !shown.has(column))
-      .map(
-        (column) =>
-          columns.find(({ field }) => field === column)?.headerName ??
-          fields.find((field) => field.column === column)?.label ??
-          column
-      ),
+      .map((column) => columns.find(({ field }) => field === column)?.headerName ?? column),
     ...(filters.searching ? ["search"] : []),
   ];
   if (unshown.length === 0) return null;

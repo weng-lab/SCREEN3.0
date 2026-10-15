@@ -4071,9 +4071,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@weng-lab/visualization@npm:2.8.0":
-  version: 2.8.0
-  resolution: "@weng-lab/visualization@npm:2.8.0"
+"@weng-lab/visualization@npm:2.9.0-beta.1":
+  version: 2.9.0-beta.1
+  resolution: "@weng-lab/visualization@npm:2.9.0-beta.1"
   dependencies:
     "@types/d3-hierarchy": "npm:^3.1.7"
     "@types/d3-shape": "npm:^3.1.8"
@@ -4096,7 +4096,7 @@ __metadata:
     "@visx/visx": ^4.0.0
     react: ^19.1.0
     react-dom: ^19.1.0
-  checksum: 10c0/0f1ace2f46bf30ac82fdb2a8844e171499b09af7be03a5fe2d9ed9e64f828da86c44091bff4a832add55c64a840cc5e237481da182054d59cff135fe12ae578f
+  checksum: 10c0/9695ee2887333e8186e835cd4c63d1694b06f611623e0da48d39d91972f388d7fa155503f8d947bc583e19e34a612c69e931d337a60606f3d6bd13aea6d81b88
   languageName: node
   linkType: hard
 
@@ -8435,7 +8435,7 @@ __metadata:
     "@weng-lab/genomebrowser-ui": "npm:2.1.0"
     "@weng-lab/genomic-reader": "npm:2.0.0"
     "@weng-lab/ui-components": "npm:4.1.0"
-    "@weng-lab/visualization": "npm:2.8.0"
+    "@weng-lab/visualization": "npm:2.9.0-beta.1"
     d3-scale-chromatic: "npm:^3.1.0"
     dotenv-cli: "npm:^11.0.0"
     eslint: "npm:^9.38.0"

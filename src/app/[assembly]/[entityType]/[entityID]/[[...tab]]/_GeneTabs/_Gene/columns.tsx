@@ -2,10 +2,8 @@ import { GeneExpressionScale, getScaledTPM, PointMetadata } from "./types";
 import { IconButton } from "@mui/material";
 import { TableColDef } from "@weng-lab/ui-components";
 import { OpenInNew } from "@mui/icons-material";
-import type { ValueOptions } from "@mui/x-data-grid-premium";
 import { capitalizeFirstLetter } from "common/utils";
-
-const capitalizeOption = (value: ValueOptions) => capitalizeFirstLetter(String(value));
+import { capitalizeOption } from "common/components/columns";
 
 /** The table's columns, which the UMAP also reads to name the table's filters. */
 export const geneExpressionColumns = (scale: GeneExpressionScale): TableColDef<PointMetadata>[] => [

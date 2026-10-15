@@ -30,7 +30,7 @@ const UNKNOWN = "unknown";
 export const valueOf = <T>({ column }: CategoryField<T>, row: T): string =>
   (row[column] as string | null | undefined) || UNKNOWN;
 
-export const labelOf = <T>(field: CategoryField<T>, value: string) => (field.labelOf ?? capitalizeFirstLetter)(value);
+const labelOf = <T>(field: CategoryField<T>, value: string) => (field.labelOf ?? capitalizeFirstLetter)(value);
 
 export const colorOf = <T>(field: CategoryField<T>, value: string) => field.colorOf?.(value) ?? tissueColors.missing;
 

@@ -1,5 +1,10 @@
-import type { GridValidRowModel } from "@mui/x-data-grid-premium";
+import type { GridValidRowModel, ValueOptions } from "@mui/x-data-grid-premium";
 import type { TableColDef } from "@weng-lab/ui-components";
+import { capitalizeFirstLetter } from "common/utils";
+
+/** A `getOptionLabel` for options held lowercase. A `{ value, label }` option keeps its label, as in MUI's default. */
+export const capitalizeOption = (option: ValueOptions): string =>
+  typeof option === "object" ? option.label : capitalizeFirstLetter(String(option));
 
 /**
  * Fills in the options of every column marked `type: "singleSelect"` without them, from the values

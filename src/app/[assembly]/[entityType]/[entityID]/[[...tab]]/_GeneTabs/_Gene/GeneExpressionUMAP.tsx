@@ -1,12 +1,23 @@
-import { expressionTooltip, GeneExpressionUMAPProps, getTPM, PointMetadata } from "./types";
+import { expressionTooltip, GeneExpressionUMAPProps, getLogTPM, getTPM, PointMetadata } from "./types";
 import { useMemo } from "react";
+import { percentileRange } from "@weng-lab/visualization";
 import BiosampleUMAP, { type RampColoring } from "common/components/BiosampleUMAP/BiosampleUMAP";
 import { sampleTypeField, tissueField, type CategoryField } from "common/components/BiosampleUMAP/fields";
-import { CLIP_PERCENTILE, defaultRange, fromLogValue, SEQUENTIAL_RAMP, toLogValue } from "common/colorRamp";
 
 const FIELDS: CategoryField<PointMetadata>[] = [tissueField("tissue"), sampleTypeField("biosample_type")];
 
 const RADIUS = { base: 4, selected: 6 };
+
+/** MOHD's embedding explorer ramp, stops as it has them. Its order is carried by hue: yellow is the lightest. */
+const MOHD_RAMP = [
+  { at: 0, color: "#2541b2" },
+  { at: 0.34, color: "#35a6a0" },
+  { at: 0.68, color: "#f6d55c" },
+  { at: 1, color: "#d8422c" },
+];
+
+/** Percentile trimmed off each end for the default range. Values beyond take an end's color. */
+const CLIP_PERCENTILE = 2;
 
 const keyOf = (row: PointMetadata) => row.exp_accession;
 const getX = (row: PointMetadata) => row.umap_1;
@@ -14,9 +25,11 @@ const getY = (row: PointMetadata) => row.umap_2;
 
 /** log10(TPM + 1), or null where the experiment has no quantification for the gene. */
 const logTPMOf = (row: PointMetadata) => {
-  const value = toLogValue(getTPM(row));
+  const value = getLogTPM(row);
   return Number.isFinite(value) ? value : null;
 };
+
+const fromLogTPM = (log: number) => 10 ** log - 1;
 
 const formatTpm = (tpm: number) => `${tpm.toLocaleString("en-US", { maximumFractionDigits: 2 })} TPM`;
 
@@ -44,11 +57,11 @@ const GeneExpressionUMAP = ({
     return {
       label: "Expression",
       valueOf: logTPMOf,
-      stops: SEQUENTIAL_RAMP,
-      defaultRange: values.length > 0 ? defaultRange(values) : [0, 0],
+      stops: MOHD_RAMP,
+      defaultRange: values.length > 0 ? percentileRange(values, CLIP_PERCENTILE) : [0, 0],
       adjustable: true,
-      format: (log) => formatTpmBound(fromLogValue(log)),
-      formatValue: (log) => formatTpm(fromLogValue(log)),
+      format: (log) => formatTpmBound(fromLogTPM(log)),
+      formatValue: (log) => formatTpm(fromLogTPM(log)),
       notes: [
         "On a log scale: colors follow log₁₀(TPM + 1).",
         `Starts at the middle ${100 - 2 * CLIP_PERCENTILE}% of experiments, so a few extreme values don't wash out the rest.`,

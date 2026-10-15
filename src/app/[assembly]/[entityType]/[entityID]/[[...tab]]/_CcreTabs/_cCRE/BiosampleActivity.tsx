@@ -2,13 +2,8 @@
 import React, { useMemo, useState } from "react";
 import { Alert, Skeleton, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { TableColDef, Table } from "@weng-lab/ui-components";
-import {
-  GridRenderCellParams,
-  GridComparatorFn,
-  gridNumberComparator,
-  type ValueOptions,
-} from "@mui/x-data-grid-premium";
-import { withValueOptions } from "common/components/columns";
+import { GridRenderCellParams, GridComparatorFn, gridNumberComparator } from "@mui/x-data-grid-premium";
+import { capitalizeOption, withValueOptions } from "common/components/columns";
 import type { CcreAssay } from "common/types/globalTypes";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { capitalizeFirstLetter } from "common/utils";
@@ -21,8 +16,6 @@ import { useBiosampleActivity, useDynamicEnhancersData, useSilencersData } from 
 import { Silencer_Studies } from "./consts";
 import { LinkComponent } from "common/components/LinkComponent";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
-
-const capitalizeOption = (value: ValueOptions) => capitalizeFirstLetter(String(value));
 
 const disableCsvEscapeChar = {
   toolbar: { csvOptions: { escapeFormulas: false }, excelOptions: { escapeFormulas: false } },
