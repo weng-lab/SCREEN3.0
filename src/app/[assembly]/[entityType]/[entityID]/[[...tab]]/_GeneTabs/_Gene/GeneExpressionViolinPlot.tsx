@@ -1,7 +1,8 @@
-import { GeneExpressionViolinPlotProps, getScaleLabel, getScaledTPM, PointMetadata } from "./types";
+import { expressionTooltip, GeneExpressionViolinPlotProps, getScaleLabel, getScaledTPM, PointMetadata } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
+import PlotTooltip from "common/components/PlotTooltip";
 import { tissueColors } from "common/colors";
 import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/utils";
 import GenePlotControls from "./GenePlotControls";
@@ -121,26 +122,10 @@ const GeneExpressionViolinPlot = ({
           ref={ref}
           downloadFileName={`${geneName}_expression_violin_plot`}
           pointTooltipBody={(point) => (
-            <Box maxWidth={300}>
-              {point.outlier && (
-                <div>
-                  <strong>Outlier</strong>
-                </div>
-              )}
-              <div>
-                <strong>Accession:</strong> {point.metadata?.exp_accession}
-                {point.metadata?.biorep != null && ` (rep. ${point.metadata.biorep})`}
-              </div>
-              <div>
-                <strong>Biosample:</strong> {point.metadata?.biosample}
-              </div>
-              <div>
-                <strong>Tissue:</strong> {point.metadata?.tissue}
-              </div>
-              <div>
-                <strong>{scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)"}:</strong> {point.value.toFixed(1)}
-              </div>
-            </Box>
+            <PlotTooltip
+              {...expressionTooltip(point.metadata!, point.value, scale)}
+              note={point.outlier ? "Outlier" : undefined}
+            />
           )}
         />
       </Box>

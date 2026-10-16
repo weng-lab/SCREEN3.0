@@ -5,7 +5,7 @@ import { EntityHeader } from "./EntityHeader";
 import { OpenEntityTabs } from "./OpenEntitiesTabs/OpenEntitiesTabBar";
 import { Assembly } from "common/types/globalTypes";
 import { AnyEntityType } from "../../entityTabsConfig";
-import { useEntityTabsHeight, useScrollReset } from "common/hooks/ui";
+import { useEntityHeaderHeight, useEntityTabsHeight, useScrollReset } from "common/hooks/ui";
 
 export type EntityDetailsLayoutProps = {
   assembly: Assembly;
@@ -15,6 +15,7 @@ export type EntityDetailsLayoutProps = {
 
 export default function EntityDetailsLayout({ assembly, entityID, entityType, children }: EntityDetailsLayoutProps) {
   useEntityTabsHeight();
+  useEntityHeaderHeight();
   useScrollReset();
 
   return (
@@ -39,7 +40,9 @@ export default function EntityDetailsLayout({ assembly, entityID, entityType, ch
           <EntityDetailsTabs assembly={assembly} entityType={entityType} entityID={entityID} orientation="vertical" />
         </Box>
         <Stack id="main-content" spacing={2} m={2} gridColumn={{ xs: 1, md: 2 }} gridRow={1}>
-          <EntityHeader entityID={entityID} entityType={entityType} assembly={assembly} />
+          <Box id="entity-header">
+            <EntityHeader entityID={entityID} entityType={entityType} assembly={assembly} />
+          </Box>
           <Box id="horizonatal-view-tabs-container" display={{ xs: "block", md: "none" }}>
             <EntityDetailsTabs
               assembly={assembly}

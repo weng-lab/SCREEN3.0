@@ -3,10 +3,11 @@ import { useQuery } from "@apollo/client/react";
 import { Stack } from "@mui/material";
 import { ScientificNotation } from "common/utils";
 import { gql } from "common/types/generated";
-import { GetimmuneeQtLsQueryQueryVariables } from "common/types/generated/graphql";
+import { GetimmuneeQtLsQueryQuery, GetimmuneeQtLsQueryQueryVariables } from "common/types/generated/graphql";
 import { LinkComponent } from "./LinkComponent";
 import { TableColDef, Table } from "@weng-lab/ui-components";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
+import { Assembly } from "common/types/globalTypes";
 
 const EQTL_QUERY = gql(`
 query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
@@ -29,198 +30,121 @@ query getimmuneeQTLsQuery($genes: [String], $snps: [String],$ccre: [String]) {
 } 
 `);
 
+type EQTLRow = GetimmuneeQtLsQueryQuery["immuneeQTLsQuery"][number];
+type EQTLColumn = TableColDef<EQTLRow>;
+type EntityType = EntityViewComponentProps["entity"]["entityType"];
+
+// eQTL rows carry "." where the source data has no value; those cells are plain text, not links
+const linkUnlessMissing = (href: (value: string) => string): EQTLColumn["renderCell"] =>
+  // Named so react/display-name is satisfied — the renderCell result is treated as a component
+  function LinkCell(params) {
+    return params.value === "." ? (
+      <>{params.value}</>
+    ) : (
+      <LinkComponent href={href(params.value)}>{params.value}</LinkComponent>
+    );
+  };
+
+const scientific: EQTLColumn["renderCell"] = (params) => ScientificNotation(params.value, 2, { variant: "body2" });
+
+const gtexColumns = (entityType: EntityType, assembly: Assembly): EQTLColumn[] => {
+  const showVariantCols = entityType === "gene" || entityType === "ccre";
+  return [
+    { field: "variant_id", headerName: "Variant Name" },
+    ...(showVariantCols
+      ? [{ field: "rsid", headerName: "rsID", renderCell: linkUnlessMissing((v) => `/${assembly}/variant/${v}`) }]
+      : []),
+    ...(entityType === "variant" || entityType === "ccre"
+      ? [{ field: "genename", headerName: "Gene", renderCell: linkUnlessMissing((v) => `/${assembly}/gene/${v}`) }]
+      : []),
+    ...(showVariantCols
+      ? [
+          { field: "chromosome", headerName: "Chromosome" },
+          { field: "position", headerName: "Position" },
+          { field: "ref", headerName: "Ref" },
+          { field: "alt", headerName: "Alt" },
+        ]
+      : []),
+    { field: "slope", headerName: "Slope", display: "flex", renderCell: scientific },
+    { field: "pval_nominal", headerName: "Q Value", display: "flex", renderCell: scientific },
+    { field: "celltype", headerName: "Celltype", valueGetter: (_, row) => row.celltype.replaceAll("_", " ") },
+    ...(entityType === "gene" || entityType === "variant"
+      ? [{ field: "ccre", headerName: "cCRE", renderCell: linkUnlessMissing((v) => `/${assembly}/ccre/${v}`) }]
+      : []),
+  ];
+};
+
+const oneK1KColumns = (entityType: EntityType, assembly: Assembly): EQTLColumn[] => {
+  const showVariantCols = entityType === "gene" || entityType === "ccre";
+  return [
+    ...(showVariantCols
+      ? [
+          {
+            field: "rsid",
+            headerName: "rsID",
+            renderCell: (params) => (
+              <LinkComponent href={`/${assembly}/variant/${params.value}`}>{params.value}</LinkComponent>
+            ),
+          },
+          { field: "chromosome", headerName: "Chromosome" },
+          { field: "position", headerName: "Position" },
+        ]
+      : []),
+    ...(entityType === "variant" || entityType === "ccre"
+      ? [
+          {
+            field: "genename",
+            headerName: "Gene",
+            renderCell: (params) => (
+              <LinkComponent href={`/${assembly}/gene/${params.value}`}>{params.value}</LinkComponent>
+            ),
+          },
+        ]
+      : []),
+    ...(showVariantCols
+      ? [
+          { field: "ref", headerName: "A1" },
+          { field: "alt", headerName: "A2" },
+        ]
+      : []),
+    { field: "fdr", headerName: "FDR", display: "flex", renderCell: scientific },
+    { field: "spearmans_rho", headerName: "Spearman's rho", display: "flex", renderCell: scientific },
+    { field: "celltype", headerName: "Celltype" },
+    ...(entityType === "gene" || entityType === "variant"
+      ? [{ field: "ccre", headerName: "cCRE", renderCell: linkUnlessMissing((v) => `/${assembly}/ccre/${v}`) }]
+      : []),
+  ];
+};
+
+const queryVariables = (entityType: EntityType, entityID: string): GetimmuneeQtLsQueryQueryVariables => {
+  if (entityType === "gene") return { genes: [entityID] };
+  if (entityType === "ccre") return { ccre: [entityID] };
+  return { snps: [entityID] };
+};
+
 export default function EQTLs({ entity }: EntityViewComponentProps) {
   const { entityID, entityType, assembly } = entity;
-
-  let variables: GetimmuneeQtLsQueryQueryVariables = {};
-  let gtexTitle: string;
-  let onekTitle: string;
-
-  //Change query variables and table title based on element type
-  if (entityType === "gene") {
-    variables = { genes: [entityID] };
-    gtexTitle = `GTEx eQTLs for ${entityID}`;
-    onekTitle = `OneK1K eQTLs for ${entityID}`;
-  } else if (entityType === "ccre") {
-    variables = { ccre: [entityID] };
-    gtexTitle = `GTEx eQTLs for ${entityID}`;
-    onekTitle = `OneK1K eQTLs for ${entityID}`;
-  } else {
-    variables = { snps: [entityID] };
-    gtexTitle = `GTEx eQTLs for ${entityID}`;
-    onekTitle = `OneK1K eQTLs for ${entityID}`;
-  }
 
   const {
     loading,
     error,
     data: eqtlData,
   } = useQuery(EQTL_QUERY, {
-    variables,
+    variables: queryVariables(entityType, entityID),
     skip: !entity,
   });
 
   const gtexRows = eqtlData?.immuneeQTLsQuery.filter((i) => i.study === "GTEX");
   const oneK1KRows = eqtlData?.immuneeQTLsQuery.filter((i) => i.study === "OneK1K");
 
-  const gtexColumns: TableColDef<(typeof gtexRows)[number]>[] = [];
-
-  gtexColumns.push({
-    field: "variant_id",
-    headerName: "Variant Name",
-  });
-
-  if (entityType === "gene" || entityType === "ccre") {
-    gtexColumns.push({
-      field: "rsid",
-      headerName: "rsID",
-      renderCell: (params) =>
-        params.value === "." ? (
-          <>{params.value}</>
-        ) : (
-          <LinkComponent href={`/${assembly}/variant/${params.value}`}>{params.value}</LinkComponent>
-        ),
-    });
-  }
-
-  if (entityType === "variant" || entityType === "ccre") {
-    gtexColumns.push({
-      field: "genename",
-      headerName: "Gene",
-      renderCell: (params) =>
-        params.value === "." ? (
-          <>{params.value}</>
-        ) : (
-          <LinkComponent href={`/${assembly}/gene/${params.value}`}>{params.value}</LinkComponent>
-        ),
-    });
-  }
-
-  if (entityType === "gene" || entityType === "ccre") {
-    gtexColumns.push(
-      { field: "chromosome", headerName: "Chromosome" },
-      { field: "position", headerName: "Position" },
-      { field: "ref", headerName: "Ref" },
-      { field: "alt", headerName: "Alt" }
-    );
-  }
-
-  gtexColumns.push(
-    {
-      field: "slope",
-      headerName: "Slope",
-      display: "flex",
-      renderCell: (params) => ScientificNotation(params.value, 2, { variant: "body2" }),
-    },
-    {
-      field: "pval_nominal",
-      headerName: "Q Value",
-      display: "flex",
-      renderCell: (params) => ScientificNotation(params.value, 2, { variant: "body2" }),
-    },
-    {
-      field: "celltype",
-      headerName: "Celltype",
-      valueGetter: (_, row) => row.celltype.replaceAll("_", " "),
-    }
-  );
-
-  if (entityType === "gene" || entityType === "variant") {
-    gtexColumns.push({
-      field: "ccre",
-      headerName: "cCRE",
-      renderCell: (params) =>
-        params.value === "." ? (
-          <>{params.value}</>
-        ) : (
-          <LinkComponent href={`/${assembly}/ccre/${params.value}`}>{params.value}</LinkComponent>
-        ),
-    });
-  }
-
-  const oneK1KColumns: TableColDef<(typeof gtexRows)[number]>[] = [];
-
-  if (entityType === "gene" || entityType === "ccre") {
-    oneK1KColumns.push(
-      {
-        field: "rsid",
-        headerName: "rsID",
-        renderCell: (params) => (
-          <LinkComponent href={`/${assembly}/variant/${params.value}`}>{params.value}</LinkComponent>
-        ),
-      },
-      {
-        field: "chromosome",
-        headerName: "Chromosome",
-      },
-      {
-        field: "position",
-        headerName: "Position",
-      }
-    );
-  }
-
-  if (entityType === "variant" || entityType === "ccre") {
-    oneK1KColumns.push({
-      field: "genename",
-      headerName: "Gene",
-      renderCell: (params) => <LinkComponent href={`/${assembly}/gene/${params.value}`}>{params.value}</LinkComponent>,
-    });
-  }
-
-  if (entityType === "gene" || entityType === "ccre") {
-    oneK1KColumns.push(
-      {
-        field: "ref",
-        headerName: "A1",
-      },
-      {
-        field: "alt",
-        headerName: "A2",
-      }
-    );
-  }
-
-  oneK1KColumns.push(
-    {
-      field: "fdr",
-      headerName: "FDR",
-      display: "flex",
-      renderCell: (params) => ScientificNotation(params.value, 2, { variant: "body2" }),
-    },
-    {
-      field: "spearmans_rho",
-      headerName: "Spearman's rho",
-      display: "flex",
-      renderCell: (params) => ScientificNotation(params.value, 2, { variant: "body2" }),
-    },
-    {
-      field: "celltype",
-      headerName: "Celltype",
-    }
-  );
-
-  if (entityType === "gene" || entityType === "variant") {
-    oneK1KColumns.push({
-      field: "ccre",
-      headerName: "cCRE",
-      renderCell: (params) =>
-        params.value === "." ? (
-          <>{params.value}</>
-        ) : (
-          <LinkComponent href={`/${assembly}/ccre/${params.value}`}>{params.value}</LinkComponent>
-        ),
-    });
-  }
-
   return (
     <Stack spacing={2}>
       <Table
-        columns={gtexColumns}
+        columns={gtexColumns(entityType, assembly)}
         rows={gtexRows}
         loading={loading}
         error={!!error}
-        label={gtexTitle}
+        label={`GTEx eQTLs for ${entityID}`}
         initialState={{
           sorting: {
             sortModel: [{ field: "pval_nominal", sort: "asc" }],
@@ -230,11 +154,11 @@ export default function EQTLs({ entity }: EntityViewComponentProps) {
         divHeight={{ maxHeight: "400px" }}
       />
       <Table
-        columns={oneK1KColumns}
+        columns={oneK1KColumns(entityType, assembly)}
         rows={oneK1KRows}
         loading={loading}
         error={!!error}
-        label={onekTitle}
+        label={`OneK1K eQTLs for ${entityID}`}
         initialState={{
           sorting: {
             sortModel: [{ field: "fdr", sort: "asc" }],

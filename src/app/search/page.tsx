@@ -114,28 +114,16 @@ const AlertSection = ({ type }: { type: "encode" | "old-screen" | "no-results" }
   }
 };
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const [tabValue, setTabValue] = useState(0);
+type RawSearchParams = { [key: string]: string | string[] | undefined };
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setTabValue(+newValue);
-  };
-
-  const assembly = use(searchParams).assembly;
-  const encodeSearch = use(searchParams).q || "";
-  const oldScreenGene = use(searchParams).gene;
-  const oldScreenAccessions = use(searchParams).accessions || "";
-  const oldScreenSNP = use(searchParams).snpid;
-  const oldScreenChr = use(searchParams).chromosome;
-  const oldScreenStart = use(searchParams).start;
-  const oldScreenEnd = use(searchParams).end;
-
-  const oldScreenCoordinates =
-    oldScreenChr && oldScreenStart && oldScreenEnd ? `${oldScreenChr}:${oldScreenStart}-${oldScreenEnd}` : null;
+/**
+ * Reads both the current `q` search and the legacy SCREEN URL params (gene/snpid/accessions/
+ * coordinates), which the old site linked to directly. Redirects home on anything malformed.
+ */
+const parseSearchParams = (params: RawSearchParams) => {
+  const { assembly, gene: oldScreenGene, snpid: oldScreenSNP } = params;
+  const encodeSearch = params.q || "";
+  const oldScreenAccessions = params.accessions || "";
 
   //Should never happen, but check to make sure no duplicate entries for params and has valid assembly just in case
   if (
@@ -149,13 +137,72 @@ export default function Page({
     redirect("/");
   }
 
-  const searchStrings = [
+  const { chromosome, start, end } = params;
+  const oldScreenCoordinates = chromosome && start && end ? `${chromosome}:${start}-${end}` : null;
+
+  const searchStrings: string[] = [
     ...encodeSearch.split(" "),
     oldScreenGene,
     oldScreenSNP,
     oldScreenCoordinates,
     ...oldScreenAccessions.split(","),
   ].filter((x) => x);
+
+  return { assembly, encodeSearch, searchStrings };
+};
+
+const ResultTabs = ({
+  grouped,
+  assembly,
+  tabValue,
+  onTabChange,
+}: {
+  grouped: Record<string, Result[]>;
+  assembly: Assembly;
+  tabValue: number;
+  onTabChange: (event: React.SyntheticEvent, newValue: string) => void;
+}) => {
+  const resultTypes = grouped ? Object.keys(grouped) : [];
+  return (
+    <TabContext value={tabValue}>
+      <TabList onChange={onTabChange} aria-label="lab API tabs example">
+        {resultTypes.map((x, i) => (
+          <Tab key={x} label={`${x} (${grouped[x].length})`} value={i} />
+        ))}
+      </TabList>
+      {resultTypes.map((x, i) => (
+        <TabPanel key={x} value={i} sx={{ p: 0 }}>
+          <Stack spacing={2}>
+            {grouped[x].map((result) => {
+              const El = result.type === "Legacy cCRE" ? LegacyCcreReturnEl : ReturnEl;
+              return <El result={result} assembly={assembly} key={result.id ?? result.title} />;
+            })}
+          </Stack>
+        </TabPanel>
+      ))}
+    </TabContext>
+  );
+};
+
+const NoResultsHelp = () => (
+  <div>
+    <Typography>Try Searching for:</Typography>
+    <ul style={{ margin: 0 }}>
+      <Typography component={"li"}>A gene name (e.g., &quot;SP1&quot;)</Typography>
+      <Typography component={"li"}>Genomic coordinates (e.g., &quot;chr12:53380176-53385176&quot;)</Typography>
+      <Typography component={"li"}>A cCRE accession or rsID</Typography>
+    </ul>
+  </div>
+);
+
+export default function Page({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setTabValue(+newValue);
+  };
+
+  const { assembly, encodeSearch, searchStrings } = parseSearchParams(use(searchParams));
 
   const geneVersion = useMemo(() => (assembly === "GRCh38" ? [29, 40] : 25), [assembly]);
 
@@ -175,8 +222,6 @@ export default function Page({
     return acc;
   }, {});
 
-  const resultTypes = grouped ? Object.keys(grouped) : [];
-
   const noResults = data && !data.length;
 
   return (
@@ -193,35 +238,9 @@ export default function Page({
       {loading ? (
         <CircularProgress />
       ) : noResults ? (
-        <div>
-          <Typography>Try Searching for:</Typography>
-          <ul style={{ margin: 0 }}>
-            <Typography component={"li"}>A gene name (e.g., &quot;SP1&quot;)</Typography>
-            <Typography component={"li"}>Genomic coordinates (e.g., &quot;chr12:53380176-53385176&quot;)</Typography>
-            <Typography component={"li"}>A cCRE accession or rsID</Typography>
-          </ul>
-        </div>
+        <NoResultsHelp />
       ) : (
-        <TabContext value={tabValue}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
-            {resultTypes.map((x, i) => (
-              <Tab key={x} label={`${x} (${grouped[x].length})`} value={i} />
-            ))}
-          </TabList>
-          {resultTypes.map((x, i) => (
-            <TabPanel key={x} value={i} sx={{ p: 0 }}>
-              <Stack spacing={2}>
-                {grouped[x].map((result) =>
-                  result.type === "Legacy cCRE" ? (
-                    <LegacyCcreReturnEl result={result} assembly={assembly} key={result.id ?? result.title} />
-                  ) : (
-                    <ReturnEl result={result} assembly={assembly} key={result.id ?? result.title} />
-                  )
-                )}
-              </Stack>
-            </TabPanel>
-          ))}
-        </TabContext>
+        <ResultTabs grouped={grouped} assembly={assembly} tabValue={tabValue} onTabChange={handleChange} />
       )}
     </Stack>
   );

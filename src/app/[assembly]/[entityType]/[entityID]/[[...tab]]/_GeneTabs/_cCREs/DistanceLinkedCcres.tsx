@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Tooltip, Typography } from "@mui/material";
 import { useCcreData, UseCcreDataParams } from "common/hooks/data/ccre";
 import { UseGeneDataReturn } from "common/hooks/data/gene";
 import { LinkComponent } from "common/components/LinkComponent";
@@ -9,7 +9,7 @@ import { useMemo, useState } from "react";
 import CalculateNearbyCCREsPopper from "../_Gene/CalcNearbyCCREs";
 import { formatTssOffset } from "../_Gene/utils";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
-import { InfoOutlineRounded } from "@mui/icons-material";
+import { EmptyTableFallback } from "common/components/EmptyTableFallback";
 import { calcDistCcreToTSS } from "common/utils";
 import { ClassificationFormatting } from "common/components/ClassificationFormatting";
 import { useCcresWithGeneInClosest3 } from "common/hooks/data/ccre";
@@ -233,22 +233,7 @@ export default function DistanceLinkedCcres({
   );
 
   const emptyTableFallback = useMemo(
-    () => (
-      <Stack
-        direction={"row"}
-        border={"1px solid #e0e0e0"}
-        borderRadius={1}
-        p={2}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-      >
-        <Stack direction={"row"} spacing={1}>
-          <InfoOutlineRounded />
-          <Typography>No Nearby cCREs Found</Typography>
-        </Stack>
-        {toolbarExtra}
-      </Stack>
-    ),
+    () => <EmptyTableFallback message="No Nearby cCREs Found" action={toolbarExtra} />,
     [toolbarExtra]
   );
 

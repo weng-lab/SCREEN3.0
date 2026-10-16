@@ -4,6 +4,12 @@
       "src/common/types/generated/**",
       "src/common/apollo/mohdClient.ts",
       "src/common/components/MohdInfoBanner.tsx"
+    ],
+    "overrides": [
+      {
+        "files": ["src/app/about/_Sections/**"],
+        "rules": ["react-doctor/duplicate-jsx-subtree"]
+      }
     ]
   }
 }

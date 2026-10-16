@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
-import { BigBedData } from "genomic-reader";
+// This is the GraphQL bigRequests response shape, not the file reader's record type.
+type BigBedData = { start: number; end: number; name: string; chr: string; color: string };
 import { gql } from "common/types/generated/gql";
 import { Assembly, GenomicRange } from "common/types/globalTypes";
 import Config from "common/config.json";
