@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
+import { TwoPaneLayout, useTablePlotSync, withValueOptions } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
 import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
@@ -7,7 +7,6 @@ import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
-import { withValueOptions } from "common/components/columns";
 import { SCORE_FIELD, type AssayViewProps, type BiosampleRow, type ViewBy } from "./types";
 
 // BiosampleActivity's assay tabs (48px) and the gap under them sit over the panes.

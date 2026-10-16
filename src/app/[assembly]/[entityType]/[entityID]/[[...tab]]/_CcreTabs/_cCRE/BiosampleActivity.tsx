@@ -1,9 +1,8 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { Alert, Skeleton, Stack, Tab, Tabs, Typography } from "@mui/material";
-import { TableColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table, capitalizeOption, withValueOptions } from "@weng-lab/ui-components";
 import { GridRenderCellParams, GridComparatorFn, gridNumberComparator } from "@mui/x-data-grid-premium";
-import { capitalizeOption, withValueOptions } from "common/components/columns";
 import type { CcreAssay } from "common/types/globalTypes";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
 import { capitalizeFirstLetter } from "common/utils";

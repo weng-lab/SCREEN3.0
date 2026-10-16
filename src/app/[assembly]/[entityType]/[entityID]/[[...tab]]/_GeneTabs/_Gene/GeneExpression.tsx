@@ -19,9 +19,8 @@ import type {
   GeneExpressionControlProps,
 } from "./types";
 import { getTPM } from "./types";
-import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
+import { TwoPaneLayout, useTablePlotSync, withValueOptions } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
-import { withValueOptions } from "common/components/columns";
 import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 
 /** The UMAP draws an experiment once, for all its replicates. */
