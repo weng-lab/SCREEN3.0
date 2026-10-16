@@ -1,19 +1,15 @@
 import { FormControl, IconButton, MenuItem, Select, Tooltip, Typography } from "@mui/material";
-import { TableColDef, Table, useSyncedTable } from "@weng-lab/ui-components";
-import { GridSortModel } from "@mui/x-data-grid-premium";
+import { TableColDef, Table } from "@weng-lab/ui-components";
 import { useMemo } from "react";
 import { OpenInNew } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "common/utils";
 import { getScaledRPM } from "./types";
 import type { TranscriptMetadata, TranscriptExpressionTableProps } from "./types";
 
-const initialSort: GridSortModel = [{ field: " ", sort: "desc" }];
-
 const TranscriptExpressionTable = ({
   rows,
   transcriptExpressionData,
   tableProps,
-  isPresorted,
   scale,
   selectedPeak,
   setPeak,
@@ -81,8 +77,6 @@ const TranscriptExpressionTable = ({
     [scale]
   );
 
-  const { syncedTableProps } = useSyncedTable({ tableProps, columns, initialSort, isPresorted });
-
   const TableLabel = useMemo(
     () => (
       <>
@@ -111,12 +105,15 @@ const TranscriptExpressionTable = ({
 
   return (
     <Table
-      {...syncedTableProps}
+      {...tableProps}
+      columns={columns}
       label={TableLabel}
       rows={rows}
       loading={loading}
       slotProps={{
+        ...tableProps.slotProps,
         toolbar: {
+          ...tableProps.slotProps.toolbar,
           csvOptions: { fileName: "TSS Expression at " + selectedPeak },
           excelOptions: { fileName: "TSS Expression at " + selectedPeak },
         },

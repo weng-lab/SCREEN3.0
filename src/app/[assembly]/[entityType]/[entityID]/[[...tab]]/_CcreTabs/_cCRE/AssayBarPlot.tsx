@@ -3,29 +3,10 @@ import { BarData, BarPlot } from "@weng-lab/visualization";
 import { capitalizeFirstLetter, truncateString } from "common/utils";
 import { formatAssay } from "common/assays";
 import { tissueColors } from "common/colors";
-import { useMemo } from "react";
-import { Typography } from "@mui/material";
+import { useCallback, useMemo } from "react";
+import PlotTooltip from "common/components/PlotTooltip";
 import AssayPlotControls from "./AssayPlotControls";
-import type { AssayBarPlotProps, BiosampleRow } from "./types";
-
-const PlotTooltip = (bar: BarData<BiosampleRow>) => {
-  return (
-    <Box maxWidth={350}>
-      <Typography variant="body2">
-        <b>Sample:</b> {capitalizeFirstLetter(bar.metadata.displayname)}
-      </Typography>
-      <Typography variant="body2">
-        <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.ontology)}
-      </Typography>
-      <Typography variant="body2">
-        <b>Classification:</b> {capitalizeFirstLetter(bar.metadata.group)}
-      </Typography>
-      <Typography variant="body2">
-        <b>Z-Score</b> {bar.value.toFixed(2)}
-      </Typography>
-    </Box>
-  );
-};
+import { biosampleTooltip, type AssayBarPlotProps, type BiosampleRow } from "./types";
 
 const AssayBarPlot = ({
   sortedFilteredData,
@@ -71,6 +52,11 @@ const AssayBarPlot = ({
     toggleSelection(bar.metadata);
   };
 
+  const TooltipContents = useCallback(
+    (bar: BarData<BiosampleRow>) => <PlotTooltip {...biosampleTooltip(bar.metadata, assay)} />,
+    [assay]
+  );
+
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <AssayPlotControls
@@ -88,7 +74,7 @@ const AssayBarPlot = ({
           cutoffNegativeValues={cutoffLowSignal}
           show95thPercentileLine={show95Line}
           onBarClicked={handleBarClick}
-          TooltipContents={PlotTooltip}
+          TooltipContents={TooltipContents}
           ref={ref}
           downloadFileName={`${assay}_bar_plot`}
           animation="slideRight"

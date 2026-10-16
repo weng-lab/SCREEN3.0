@@ -1,8 +1,9 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { useGeneExpression } from "common/hooks/data/gene";
-import type { useTablePlotSync } from "@weng-lab/ui-components";
+import type { SyncedTableProps, TableColDef, TableFilters } from "@weng-lab/ui-components";
 import type { Assembly } from "common/types/globalTypes";
+import { capitalizeFirstLetter } from "common/utils";
 
 type GeneExpressionReturnItem = ReturnType<typeof useGeneExpression>["data"][number];
 
@@ -24,6 +25,17 @@ export const getScaledTPM = (d: PointMetadata, scale: GeneExpressionScale): numb
 /** Build a scale-appropriate axis label for expression plots */
 export const getScaleLabel = (geneName: string, scale: GeneExpressionScale): string =>
   scale === "linearTPM" ? `${geneName} Expression: TPM` : `${geneName} Expression: Log\u2081\u2080(TPM + 1)`;
+
+/** A sample's hover on every expression plot, with its value in the plot's scale. */
+export const expressionTooltip = (row: PointMetadata, value: number, scale: GeneExpressionScale) => ({
+  title: capitalizeFirstLetter(row.biosample),
+  rows: [
+    { label: "Accession", value: row.biorep != null ? `${row.exp_accession} (rep. ${row.biorep})` : row.exp_accession },
+    { label: "Organ/Tissue", value: capitalizeFirstLetter(row.tissue) },
+    { label: "Sample Type", value: capitalizeFirstLetter(row.biosample_type) },
+    { label: scale === "linearTPM" ? "TPM" : "Log\u2081\u2080(TPM + 1)", value: value.toFixed(2) },
+  ],
+});
 
 export type GeneExpressionViewBy = "byTissueMaxTPM" | "byExperimentTPM" | "byTissueTPM";
 export type GeneExpressionScale = "linearTPM" | "logTPM";
@@ -70,7 +82,14 @@ export type GeneExpressionViolinPlotProps = GeneExpressionControlProps & {
 export type GeneExpressionUMAPProps = {
   geneName: string;
   rows: PointMetadata[];
-  highlightedAccessions: Set<string>;
+  /** Experiments with any replicate selected. */
+  selectedAccessions: ReadonlySet<string>;
+  /** The table's filters, which the UMAP's chips edit. */
+  filters: TableFilters;
+  /** Whether the table lists any of an experiment's replicates. */
+  isListed: (accession: string) => boolean;
+  /** The table's columns, which name its filters. */
+  columns: TableColDef<PointMetadata>[];
   onPointToggle: (item: PointMetadata) => void;
   onLassoSelect: (items: PointMetadata[]) => void;
   loading: boolean;
@@ -83,10 +102,6 @@ export type GeneExpressionTableProps = {
   label: string;
   loading: boolean;
   error: boolean;
-  tableProps: ReturnType<typeof useTablePlotSync<PointMetadata>>["tableProps"];
-  /**
-   * True when rows are presorted, and sorting should not be allowed on the table
-   */
-  isPresorted: boolean;
-  scale: GeneExpressionScale;
+  tableProps: SyncedTableProps<PointMetadata>;
+  columns: TableColDef<PointMetadata>[];
 };

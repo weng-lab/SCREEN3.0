@@ -1,8 +1,9 @@
 import type { TranscriptMetadata, TranscriptExpressionViolinPlotProps } from "./types";
-import { getScaledRPM } from "./types";
+import { getScaledRPM, tssTooltip } from "./types";
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Distribution, ViolinPlot, ViolinPoint } from "@weng-lab/visualization";
+import PlotTooltip from "common/components/PlotTooltip";
 import { tissueColors } from "common/colors";
 import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/utils";
 import TranscriptPlotControls from "./TranscriptPlotControls";
@@ -113,34 +114,10 @@ const TranscriptExpressionViolinPlot = ({
           ref={ref}
           downloadFileName={`${geneName}_TSS_violin_plot`}
           pointTooltipBody={(point) => (
-            <Box maxWidth={300}>
-              {point.outlier && (
-                <div>
-                  <strong>Outlier</strong>
-                </div>
-              )}
-              <div>
-                <strong>Sample:</strong> {point.metadata?.biosampleName}
-              </div>
-              <div>
-                <strong>Tissue:</strong> {point.metadata?.organ}
-              </div>
-              <div>
-                <strong>Strand:</strong> {point.metadata?.strand}
-              </div>
-              {scale === "linear" ? (
-                <div>
-                  <strong>RPM:</strong> {point.metadata?.value.toFixed(2)}
-                </div>
-              ) : (
-                <div>
-                  <strong>
-                    Log<sub>10</sub>(RPM + 1):
-                  </strong>{" "}
-                  {point.value.toFixed(2)}
-                </div>
-              )}
-            </Box>
+            <PlotTooltip
+              {...tssTooltip(point.metadata!, point.value, scale)}
+              note={point.outlier ? "Outlier" : undefined}
+            />
           )}
         />
       </Box>

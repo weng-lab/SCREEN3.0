@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Box, Button, Tooltip } from "@mui/material";
 import Image from "next/image";
 
 export type ExternalResourceButtonProps = {
@@ -8,6 +8,8 @@ export type ExternalResourceButtonProps = {
   imageSrc: string;
   /** Names the resource. The button has no text, so this is its accessible name */
   label: string;
+  /** Hover text while disabled, for a link that doesn't exist rather than one that hasn't loaded */
+  disabledReason?: string;
   /** Bypasses the Next image optimizer, for hosts it can't process */
   unoptimized?: boolean;
 };
@@ -16,8 +18,14 @@ export type ExternalResourceButtonProps = {
  * Fixed-size logo button linking out to an external resource, shared by the entity headers so every
  * outbound link has the same footprint and the same disabled treatment.
  */
-export const ExternalResourceButton = ({ href, imageSrc, label, unoptimized }: ExternalResourceButtonProps) => {
-  return (
+export const ExternalResourceButton = ({
+  href,
+  imageSrc,
+  label,
+  disabledReason,
+  unoptimized,
+}: ExternalResourceButtonProps) => {
+  const button = (
     <Button
       variant="outlined"
       href={href}
@@ -45,5 +53,16 @@ export const ExternalResourceButton = ({ href, imageSrc, label, unoptimized }: E
         alt={label}
       />
     </Button>
+  );
+
+  if (href || !disabledReason) return button;
+
+  // Disabled buttons don't fire pointer events, so the tooltip needs a wrapper to listen on
+  return (
+    <Tooltip title={disabledReason}>
+      <Box component="span" display="flex">
+        {button}
+      </Box>
+    </Tooltip>
   );
 };

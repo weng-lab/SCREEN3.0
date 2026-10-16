@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
+import { TwoPaneLayout, useTablePlotSync, withValueOptions } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
+import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
-import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
+import { SCORE_FIELD, type AssayViewProps, type BiosampleRow, type ViewBy } from "./types";
+
+// BiosampleActivity's assay tabs (48px) and the gap under them sit over the panes.
+const PANE_HEIGHTS = twoPaneHeights(`${48 + 16}px`);
 
 /**
  * Applies the viewBy transformation to rows.
@@ -57,15 +61,27 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
 
   const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy, assay), [rows, viewBy, assay]);
 
-  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
-    rows: transformedRows,
-    getRowId: (r) => r.name,
-  });
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId, filters } =
+    useTablePlotSync({
+      rows: transformedRows,
+      getRowId: (r) => r.name,
+      initialSort: [{ field: SCORE_FIELD, sort: "desc" }],
+      isPresorted: viewBy === "tissue",
+    });
 
   useEffect(() => {
     if (!assay) return;
     setSelected([]);
   }, [assay, setSelected]);
+
+  // The assay in view's column, moved onto the score field.
+  const tableColumns = useMemo(
+    () =>
+      withValueOptions(columns, rows).map((column) =>
+        column.field === assay ? { ...column, field: SCORE_FIELD } : column
+      ),
+    [columns, rows, assay]
+  );
 
   const handleSetViewBy = (newView: ViewBy) => {
     setSelected([]);
@@ -79,14 +95,14 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
   return (
     <TwoPaneLayout
       direction={{ xs: "column", lg: "row" }}
+      {...PANE_HEIGHTS}
       TableComponent={
         <AssayTable
           rows={transformedRows}
-          columns={columns}
+          columns={tableColumns}
           assay={assay}
           entityID={entityID}
           tableProps={tableProps}
-          isPresorted={viewBy === "tissue"}
         />
       }
       plots={[
@@ -148,6 +164,8 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
                     setSelected={setSelected}
                     toggleSelection={toggleSelection}
                     getRowId={getRowId}
+                    filters={filters}
+                    columns={tableColumns}
                     assay={assay}
                     assembly={assembly}
                   />

@@ -5,8 +5,9 @@ import { formatAssay } from "common/assays";
 import { tissueColors } from "common/colors";
 import { useMemo, useState } from "react";
 import { sortDistributions, handleViolinToggle, type ViolinSortBy } from "common/utils";
+import PlotTooltip from "common/components/PlotTooltip";
 import AssayPlotControls from "./AssayPlotControls";
-import type { AssayViolinPlotProps, BiosampleRow } from "./types";
+import { biosampleTooltip, type AssayViolinPlotProps, type BiosampleRow } from "./types";
 
 const AssayViolinPlot = ({
   rows,
@@ -117,28 +118,7 @@ const AssayViolinPlot = ({
           ref={ref}
           downloadFileName={`${assay}_violin_plot`}
           pointTooltipBody={(point) => (
-            <Box maxWidth={300}>
-              {point.outlier && (
-                <div>
-                  <strong>Outlier</strong>
-                </div>
-              )}
-              <div>
-                <strong>Sample:</strong> {point.metadata?.displayname}
-              </div>
-              <div>
-                <strong>Organ/Tissue:</strong> {point.metadata?.ontology}
-              </div>
-              <div>
-                <strong>Sample Type:</strong> {point.metadata?.sampleType}
-              </div>
-              <div>
-                <strong>{formatAssay(assay)} z-score:</strong> {point.metadata[assay]}
-              </div>
-              <div>
-                <strong>Class in this sample:</strong> {point.metadata?.group}
-              </div>
-            </Box>
+            <PlotTooltip {...biosampleTooltip(point.metadata!, assay)} note={point.outlier ? "Outlier" : undefined} />
           )}
         />
       </Box>
