@@ -107,7 +107,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     id: "r3.2026.4",
     version: "r3.2026.4",
-    date: "2026-10-16",
+    date: "2026-10-27",
     title: "October 2026 Release",
     summary: "Genome browser updates and scatterplot legend improvements",
     sections: [
