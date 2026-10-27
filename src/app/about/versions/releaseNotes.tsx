@@ -107,24 +107,27 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     id: "r3.2026.4",
     version: "r3.2026.4",
-    date: "2026-10-27",
+    date: "2026-10-28",
     title: "October 2026 Release",
-    summary: "Genome browser updates and scatterplot legend improvements",
+    summary: "Genome browser updates and visualization improvements",
     sections: [
       {
         bulletedChildren: true,
         children: [
           {
             description:
-              "In-app genome browser updated to next major version, bringing various improvements to performance and UI",
+              "In-app genome browser updated to next major version, bringing various improvements to performance and UI.",
           },
           {
             description:
-              "Scatterplot visualizations: now use improved chip-style and gradient legends, as well as offer a new “shape by” option alongside “color by”. Accompanying table column filtering has been improved and color scales slightly cleaned up for better visualization.",
+              "Scatterplot visualizations: now use improved chip-style and gradient legends, as well as offer a new “shape by” option alongside “color by”. Accompanying table column filtering has been improved and color scales cleaned up for better visualization.",
+          },
+          {
+            description: "Visualization plot touch input has been substantially improved for mobile.",
           },
           {
             description:
-              "cCREs which have been identified as iCREs (immune cCREs) now have a link to our sister site igSCREEN in the entity header",
+              "cCREs which have been identified as iCREs (immune cCREs) now have a link to our sister site igSCREEN in the entity header.",
             link: "https://igscreen.vercel.app/",
           },
         ],
