@@ -1,184 +1,96 @@
-import { GeneExpressionUMAPProps, getLogTPM, getTPM, PointMetadata } from "./types";
-import { Box, SelectChangeEvent, Typography } from "@mui/material";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Point, ScatterPlot } from "@weng-lab/visualization";
-import { tissueColors } from "common/colors";
-import { theme } from "app/theme";
-import { scaleLinear } from "@visx/scale";
-import { interpolateYlOrRd } from "d3-scale-chromatic";
-import { Stack } from "@mui/system";
-import UMAPLegend from "common/components/UMAPLegend";
-import { ColorBySelect } from "common/components/ColorBySelect";
+import { expressionTooltip, GeneExpressionUMAPProps, getLogTPM, getTPM, PointMetadata } from "./types";
+import { useMemo } from "react";
+import { percentileRange } from "@weng-lab/visualization";
+import BiosampleUMAP, { type RampColoring } from "common/components/BiosampleUMAP/BiosampleUMAP";
+import { sampleTypeField, tissueField, type CategoryField } from "common/components/BiosampleUMAP/fields";
 
-//generate the domain for the gradient based on the max number
-const generateDomain = (max: number, steps: number) => {
-  return Array.from({ length: steps }, (_, i) => (i / (steps - 1)) * max);
+const FIELDS: CategoryField<PointMetadata>[] = [tissueField("tissue"), sampleTypeField("biosample_type")];
+
+const RADIUS = { base: 4, selected: 6 };
+
+/** MOHD's embedding explorer ramp, stops as it has them. Its order is carried by hue: yellow is the lightest. */
+const MOHD_RAMP = [
+  { at: 0, color: "#2541b2" },
+  { at: 0.34, color: "#35a6a0" },
+  { at: 0.68, color: "#f6d55c" },
+  { at: 1, color: "#d8422c" },
+];
+
+/** Percentile trimmed off each end for the default range. Values beyond take an end's color. */
+const CLIP_PERCENTILE = 2;
+
+const keyOf = (row: PointMetadata) => row.exp_accession;
+const getX = (row: PointMetadata) => row.umap_1;
+const getY = (row: PointMetadata) => row.umap_2;
+
+/** log10(TPM + 1), or null where the experiment has no quantification for the gene. */
+const logTPMOf = (row: PointMetadata) => {
+  const value = getLogTPM(row);
+  return Number.isFinite(value) ? value : null;
 };
 
-const MINIMAP_CONFIG = { position: { right: 50, bottom: 50 } };
+const fromLogTPM = (log: number) => 10 ** log - 1;
 
-const TooltipBody = (point: Point<PointMetadata>) => {
-  return (
-    <>
-      <Typography>
-        <b>Accession:</b> {point.metaData.exp_accession}
-      </Typography>
-      <Typography>
-        <b>Biosample:</b> {point.metaData.biosample}
-      </Typography>
-      <Typography>
-        <b>Tissue:</b> {point.metaData.tissue}
-      </Typography>
-      <Typography>
-        <b>Log₁₀(TPM + 1):</b> {getLogTPM(point.metaData).toFixed(2)}
-      </Typography>
-      <Typography>
-        <b>TPM:</b> {getTPM(point.metaData).toFixed(2)}
-      </Typography>
-    </>
-  );
-};
+const formatTpm = (tpm: number) => `${tpm.toLocaleString("en-US", { maximumFractionDigits: 2 })} TPM`;
+
+/** An end of the bar falls between values, so only its magnitude matters. */
+const formatTpmBound = (tpm: number) => `${tpm.toLocaleString("en-US", { maximumSignificantDigits: 2 })} TPM`;
+
+/** Raw TPM whatever the other plots' scale: the UMAP is kept apart from their controls. */
+const tooltip = (row: PointMetadata) => expressionTooltip(row, getTPM(row), "linearTPM");
 
 const GeneExpressionUMAP = ({
   geneName,
   rows,
-  highlightedAccessions,
+  selectedAccessions,
+  filters,
+  isListed,
+  columns,
   onPointToggle,
   onLassoSelect,
   loading,
   ref,
 }: GeneExpressionUMAPProps) => {
-  const [colorScheme, setColorScheme] = useState<"expression" | "organ/tissue" | "sampleType">("expression");
-
-  // Band-aid: ScatterPlot's controls are absolutely positioned on the left of the container.
-  // The square plot uses min(width, height), so we keep height < width to ensure the controls
-  // don't overlap the plot. Measure the container width and cap height at width - CONTROLS_OFFSET.
-  const CONTROLS_OFFSET = 65;
-  const plotContainerRef = useRef<HTMLDivElement>(null);
-  const [plotContainerWidth, setPlotContainerWidth] = useState(0);
-  useEffect(() => {
-    const el = plotContainerRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => setPlotContainerWidth(entry.contentRect.width));
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleColorSchemeChange = (event: SelectChangeEvent) => {
-    setColorScheme(event.target.value as "expression" | "organ/tissue" | "sampleType");
-  };
-
-  //find the max logTPM for the domain of the gradient
-  const maxValue = useMemo(() => {
-    if (!rows || rows.length === 0) return 0;
-    return Math.max(...rows.map((x) => getLogTPM(x)));
+  // Scaled in log10, but the bar's ends and a sweep read in TPM.
+  const expression: RampColoring<PointMetadata> = useMemo(() => {
+    const values = Float64Array.from(rows.flatMap((row) => logTPMOf(row) ?? [])).sort();
+    return {
+      label: "Expression",
+      valueOf: logTPMOf,
+      stops: MOHD_RAMP,
+      defaultRange: values.length > 0 ? percentileRange(values, CLIP_PERCENTILE) : [0, 0],
+      adjustable: true,
+      format: (log) => formatTpmBound(fromLogTPM(log)),
+      formatValue: (log) => formatTpm(fromLogTPM(log)),
+      notes: [
+        "On a log scale: colors follow log₁₀(TPM + 1).",
+        `Starts at the middle ${100 - 2 * CLIP_PERCENTILE}% of experiments, so a few extreme values don't wash out the rest.`,
+      ],
+    };
   }, [rows]);
 
-  const colorScale = useMemo(
-    () =>
-      scaleLinear({
-        domain: generateDomain(maxValue, 9), // 9 evenly spaced domain stops (9 colors)
-        range: Array.from({ length: 9 }, (_, i) => i / 8), // Normalize range for interpolation
-        clamp: true,
-      }),
-    [maxValue]
-  );
-
-  const scatterData: Point<PointMetadata>[] = useMemo(() => {
-    if (!rows) return [];
-
-    const anyHighlighted = highlightedAccessions.size > 0;
-    const isHighlighted = (x: PointMetadata) => highlightedAccessions.has(x.exp_accession);
-
-    return rows.map((x) => {
-      const gradientColor = interpolateYlOrRd(colorScale(getLogTPM(x)));
-
-      const getColor = () => {
-        if (!isHighlighted(x) && anyHighlighted) return "#CCCCCC";
-        switch (colorScheme) {
-          case "expression":
-            return gradientColor;
-          case "organ/tissue":
-            return tissueColors[x.tissue] ?? tissueColors.missing;
-          case "sampleType":
-            return tissueColors[x.biosample_type] ?? tissueColors.missing;
-        }
-      };
-
-      return {
-        x: x.umap_1,
-        y: x.umap_2,
-        r: isHighlighted(x) ? 6 : 4,
-        color: getColor(),
-        metaData: x,
-      };
-    });
-  }, [rows, highlightedAccessions, colorScale, colorScheme]);
-
-  const handlePointsSelected = (selectedPoints: Point<PointMetadata>[]) => {
-    onLassoSelect(selectedPoints.map((point) => point.metaData));
-  };
-
-  const handlePointSelected = (selectedPoint: Point<PointMetadata>) => {
-    onPointToggle(selectedPoint.metaData);
-  };
-
-  const expressionGradient = useMemo(() => {
-    const stops = generateDomain(maxValue, 9).map((value) => {
-      const scaled = colorScale(value);
-      return interpolateYlOrRd(scaled);
-    });
-    return `#808080, ${stops.join(", ")}`;
-  }, [maxValue, colorScale]);
-
-  if (!scatterData || scatterData.length === 0) return null;
-
   return (
-    <Box display="flex" flexDirection="column" height="100%">
-      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems="center">
-        <ColorBySelect colorScheme={colorScheme} handleColorSchemeChange={handleColorSchemeChange} />
-        <UMAPLegend
-          colorScheme={colorScheme}
-          scatterData={scatterData}
-          gradientConfig={{
-            label: "Log₁₀(TPM + 1)",
-            minLabel: "0",
-            maxLabel: maxValue.toFixed(2),
-            gradient: expressionGradient,
-          }}
-          getTissue={(x) => x.tissue}
-          getSampleType={(x) => x.biosample_type}
-        />
-      </Stack>
-      <Box
-        ref={plotContainerRef}
-        sx={{
-          flex: 1,
-          minHeight: 0,
-          position: "relative",
-          ...(plotContainerWidth > 0 && { maxHeight: plotContainerWidth - CONTROLS_OFFSET }),
-        }}
-      >
-        <ScatterPlot
-          onSelectionChange={handlePointsSelected}
-          onPointClicked={handlePointSelected}
-          controlsHighlight={theme.palette.primary.light}
-          pointData={scatterData}
-          selectable
-          loading={loading}
-          miniMap={MINIMAP_CONFIG}
-          groupPointsAnchor="exp_accession"
-          tooltipBody={(point) => <TooltipBody {...point} />}
-          leftAxisLabel="UMAP-2"
-          bottomAxisLabel="UMAP-1"
-          ref={ref}
-          downloadFileName={`${geneName}_expression_UMAP`}
-          animation="scale"
-          animationBuffer={0.01}
-          animationGroupSize={15}
-        />
-      </Box>
-    </Box>
+    <BiosampleUMAP
+      rows={rows}
+      keyOf={keyOf}
+      x={getX}
+      y={getY}
+      fields={FIELDS}
+      ramp={expression}
+      noun="experiment"
+      filters={filters}
+      isListed={isListed}
+      columns={columns}
+      selected={selectedAccessions}
+      onPointClicked={onPointToggle}
+      onLassoSelect={onLassoSelect}
+      tooltip={tooltip}
+      radius={RADIUS}
+      loading={loading}
+      downloadFileName={`${geneName}_expression_UMAP`}
+      animationGroupSize={15}
+      ref={ref}
+    />
   );
 };
 

@@ -3,6 +3,7 @@ import { Assembly, GenomicRange } from "common/types/globalTypes";
 import { formatGenomicRange } from "common/utils";
 import { expandCoordinates } from "common/components/GenomeBrowser/utils";
 import { ExternalResourceButton } from "./ExternalResourceButton";
+import { assemblies } from "common/assemblies";
 
 export type UcscBrowserButtonProps = {
   assembly: Assembly;
@@ -20,8 +21,7 @@ export type UcscBrowserButtonProps = {
  * presentational so each header stays the owner of how its coordinates are derived.
  */
 export const UcscBrowserButton = ({ assembly, coordinates, entityType }: UcscBrowserButtonProps) => {
-  const assemblyDb = assembly === "mm10" ? "mm10" : "hg38";
-  const ucscTrack = assembly === "mm10" ? "encodeCcreCombined" : "cCREs";
+  const { ucscDb: assemblyDb, ucscCcreTrack: ucscTrack } = assemblies[assembly];
   const position = coordinates && formatGenomicRange(expandCoordinates(coordinates, entityType));
 
   return (

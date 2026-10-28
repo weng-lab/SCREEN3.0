@@ -1,9 +1,10 @@
-import { GeneExpressionBarPlotProps, getScaleLabel, getScaledTPM, PointMetadata } from "./types";
+import { expressionTooltip, GeneExpressionBarPlotProps, getScaleLabel, getScaledTPM, PointMetadata } from "./types";
 import { useCallback, useMemo } from "react";
 import { capitalizeFirstLetter } from "common/utils";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { tissueColors } from "common/colors";
 import { BarPlot, BarData } from "@weng-lab/visualization";
+import PlotTooltip from "common/components/PlotTooltip";
 import GenePlotControls from "./GenePlotControls";
 
 const makeLabel = (tpm: number, biosample: string, accession: string, biorep?: number): string => {
@@ -54,34 +55,8 @@ const GeneExpressionBarPlot = ({
     toggleSelection(bar.metadata);
   };
 
-  const PlotTooltip = useCallback(
-    (bar: BarData<PointMetadata>) => {
-      return (
-        <Box maxWidth={350}>
-          <Typography variant="body2">
-            <b>Sample:</b> {capitalizeFirstLetter(bar.metadata.biosample)}
-          </Typography>
-          <Typography variant="body2">
-            <b>Tissue:</b> {capitalizeFirstLetter(bar.metadata.tissue)}
-          </Typography>
-          <Typography variant="body2">
-            <b>Biosample Type:</b> {capitalizeFirstLetter(bar.metadata.biosample_type)}
-          </Typography>
-          {scale === "linearTPM" ? (
-            <Typography variant="body2">
-              <b>TPM:</b> {bar.value.toFixed(1)}
-            </Typography>
-          ) : (
-            <Typography variant="body2">
-              <b>
-                Log<sub>10</sub>(TPM + 1):
-              </b>{" "}
-              {bar.value.toFixed(1)}
-            </Typography>
-          )}
-        </Box>
-      );
-    },
+  const TooltipContents = useCallback(
+    (bar: BarData<PointMetadata>) => <PlotTooltip {...expressionTooltip(bar.metadata, bar.value, scale)} />,
     [scale]
   );
 
@@ -103,7 +78,7 @@ const GeneExpressionBarPlot = ({
           onBarClicked={handleBarClick}
           data={plotData}
           topAxisLabel={getScaleLabel(geneName, scale)}
-          TooltipContents={PlotTooltip}
+          TooltipContents={TooltipContents}
           ref={ref}
           downloadFileName={`${geneName}_expression_bar_plot`}
           animation="slideRight"

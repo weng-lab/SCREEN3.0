@@ -2,6 +2,7 @@
 import { BarChart, CandlestickChart } from "@mui/icons-material";
 import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
+import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 import { useTranscriptExpression } from "common/hooks/data/gene";
 import { useState, useMemo } from "react";
 import TranscriptExpressionTable from "./TranscriptExpressionTable";
@@ -74,6 +75,8 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
   const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
     rows: transformedRows,
     getRowId: (r) => r.expAccession,
+    initialSort: [{ field: " ", sort: "desc" }],
+    isPresorted: viewBy === "tissue",
   });
 
   const handleSetViewBy = (newView: TranscriptExpressionViewBy) => {
@@ -97,12 +100,12 @@ const TranscriptExpression = ({ entity }: EntityViewComponentProps) => {
   return (
     <TwoPaneLayout
       direction={{ xs: "column", lg: "row" }}
+      {...twoPaneHeights()}
       TableComponent={
         <TranscriptExpressionTable
           rows={transformedRows}
           transcriptExpressionData={transcriptExpressionData}
           tableProps={tableProps}
-          isPresorted={viewBy === "tissue"}
           scale={scale}
           selectedPeak={peak}
           setPeak={setUserPeak}

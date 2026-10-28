@@ -8,6 +8,11 @@ const config: CodegenConfig = {
     "./src/common/types/generated/": {
       preset: "client",
       plugins: [],
+      // Apollo adds __typename to every selection at runtime, so type it as always present.
+      config: {
+        nonOptionalTypename: true,
+        skipTypeNameForRoot: true,
+      },
       presetConfig: {
         gqlTagName: "gql",
         // No GraphQL fragments are defined in this codebase, so the fragment-masking

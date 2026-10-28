@@ -1,6 +1,6 @@
 "use client";
-import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
-import { InfoOutlineRounded } from "@mui/icons-material";
+import { Box, Button, Tooltip } from "@mui/material";
+import { EmptyTableFallback } from "common/components/EmptyTableFallback";
 import { Grid, Skeleton } from "@mui/material";
 import { useLinkedCcres, useLinkedCcresReturn } from "common/hooks/data/gene";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "../../_CcreTabs/_Genes/columns";
@@ -48,6 +48,14 @@ export default function ComputationalLinkedCcres({
   const handleMethodSelected = (method: string) => {
     setMethod(method);
   };
+
+  const changeMethodButton = (
+    <Tooltip title="Advanced Filters">
+      <Button variant="outlined" onClick={() => setOpen(true)}>
+        Change Method
+      </Button>
+    </Tooltip>
+  );
 
   const CompuLinkedcCREs_columns: TableColDef<(typeof dataCompucCREs)[number]>[] = [
     sharedColumns.accession,
@@ -215,38 +223,16 @@ export default function ComputationalLinkedCcres({
       sortColumn: "score",
       sortDirection: "desc",
       emptyTableFallback: (
-        <Stack
-          direction={"row"}
-          border={"1px solid #e0e0e0"}
-          borderRadius={1}
-          p={2}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-        >
-          <Stack direction={"row"} spacing={1}>
-            <InfoOutlineRounded />
-            {loadingCompucCREs ? (
-              <Typography>Fetching Computational Linked cCREs by {method}</Typography>
-            ) : (
-              <Typography>No Computational Predictions</Typography>
-            )}
-          </Stack>
-          <Tooltip title="Advanced Filters">
-            <Button variant="outlined" onClick={() => setOpen(true)}>
-              Change Method
-            </Button>
-          </Tooltip>
-        </Stack>
+        <EmptyTableFallback
+          message={
+            loadingCompucCREs ? `Fetching Computational Linked cCREs by ${method}` : "No Computational Predictions"
+          }
+          action={changeMethodButton}
+        />
       ),
       slotProps: {
         toolbar: {
-          extra: (
-            <Tooltip title="Advanced Filters">
-              <Button variant="outlined" onClick={() => setOpen(true)}>
-                Change Method
-              </Button>
-            </Tooltip>
-          ),
+          extra: changeMethodButton,
         },
       },
     },

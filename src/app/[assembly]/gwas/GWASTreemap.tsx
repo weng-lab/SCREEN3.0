@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import { Treemap, TreemapNode } from "@weng-lab/visualization";
+import PlotTooltip from "common/components/PlotTooltip";
 import { ParentTermMetadata, subdisease_treemap, tree } from "./gwasTreeMappings";
 
 const treemapStyle = {
@@ -10,14 +11,7 @@ const treemapStyle = {
 };
 
 const tooltipBody = (node: TreemapNode<ParentTermMetadata>) => (
-  <Box maxWidth={300}>
-    <div>
-      <strong>{node.label}</strong>
-    </div>
-    <div>
-      <strong>{node.value}</strong>
-    </div>
-  </Box>
+  <PlotTooltip title={node.label} rows={[{ label: "Studies", value: node.value }]} />
 );
 
 type GWASTreemapProps = {

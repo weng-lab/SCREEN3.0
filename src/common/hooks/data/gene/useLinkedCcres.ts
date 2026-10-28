@@ -10,7 +10,7 @@ export type useLinkedCcresParams = {
 type BaseReturn = LinkedCcresQuery["linkedcCREs"][number];
 
 interface LinkedCcreInfo extends BaseReturn {
-  assay?: "RNAPII-ChIAPET" | "CTCF-ChIAPET" | "Intact-HiC" | "CRISPRi-FlowFISH";
+  assay: "RNAPII-ChIAPET" | "CTCF-ChIAPET" | "Intact-HiC" | "CRISPRi-FlowFISH" | null;
 }
 
 export type useLinkedCcresReturn = { data: LinkedCcreInfo[] | undefined; loading: boolean; error: ErrorLike };

@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import { TwoPaneLayout, useTablePlotSync } from "@weng-lab/ui-components";
+import { TwoPaneLayout, useTablePlotSync, withValueOptions } from "@weng-lab/ui-components";
 import { usePlotDownload } from "common/hooks/ui";
+import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
+import { Alert } from "@mui/material";
+import { formatAssay } from "common/assays";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
 import AssayUMAP from "./AssayUMAP";
-import type { AssayViewProps, BiosampleRow, ViewBy } from "./types";
+import { SCORE_FIELD, type AssayViewProps, type BiosampleRow, type ViewBy } from "./types";
+
+// BiosampleActivity's assay tabs (48px) and the gap under them sit over the panes.
+const PANE_HEIGHTS = twoPaneHeights(`${48 + 16}px`);
 
 /**
  * Applies the viewBy transformation to rows.
@@ -57,15 +63,27 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
 
   const transformedRows = useMemo(() => applyViewByTransform(rows, viewBy, assay), [rows, viewBy, assay]);
 
-  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId } = useTablePlotSync({
-    rows: transformedRows,
-    getRowId: (r) => r.name,
-  });
+  const { selected, setSelected, sortedFilteredData, tableProps, toggleSelection, getRowId, filters } =
+    useTablePlotSync({
+      rows: transformedRows,
+      getRowId: (r) => r.name,
+      initialSort: [{ field: SCORE_FIELD, sort: "desc" }],
+      isPresorted: viewBy === "tissue",
+    });
 
   useEffect(() => {
     if (!assay) return;
     setSelected([]);
   }, [assay, setSelected]);
+
+  // The assay in view's column, moved onto the score field.
+  const tableColumns = useMemo(
+    () =>
+      withValueOptions(columns, rows).map((column) =>
+        column.field === assay ? { ...column, field: SCORE_FIELD } : column
+      ),
+    [columns, rows, assay]
+  );
 
   const handleSetViewBy = (newView: ViewBy) => {
     setSelected([]);
@@ -75,18 +93,19 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
   const { ref: barRef, ...barDownload } = usePlotDownload();
   const { ref: violinRef, ...violinDownload } = usePlotDownload();
   const { ref: umapRef, ...umapDownload } = usePlotDownload();
+  const hasUmap = assay !== "atac";
 
   return (
     <TwoPaneLayout
       direction={{ xs: "column", lg: "row" }}
+      {...PANE_HEIGHTS}
       TableComponent={
         <AssayTable
           rows={transformedRows}
-          columns={columns}
+          columns={tableColumns}
           assay={assay}
           entityID={entityID}
           tableProps={tableProps}
-          isPresorted={viewBy === "tissue"}
         />
       }
       plots={[
@@ -135,27 +154,30 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
           ),
           ...violinDownload,
         },
-        ...(assay !== "atac"
-          ? [
-              {
-                tabTitle: "UMAP",
-                icon: <ScatterPlot />,
-                plotComponent: (
-                  <AssayUMAP
-                    ref={umapRef}
-                    rows={rows}
-                    selected={selected}
-                    setSelected={setSelected}
-                    toggleSelection={toggleSelection}
-                    getRowId={getRowId}
-                    assay={assay}
-                    assembly={assembly}
-                  />
-                ),
-                ...umapDownload,
-              },
-            ]
-          : []),
+        // Kept on ATAC, which has no UMAP, to say so: a tab that came and went with the assay would
+        // leave the layout quietly showing another in its place.
+        {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: hasUmap ? (
+            <AssayUMAP
+              ref={umapRef}
+              rows={rows}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              getRowId={getRowId}
+              filters={filters}
+              columns={tableColumns}
+              assay={assay}
+              assembly={assembly}
+            />
+          ) : (
+            <Alert severity="info">UMAP is not available for {formatAssay(assay)}</Alert>
+          ),
+          // Nothing to download without one, which hides the Download button.
+          ...(hasUmap ? umapDownload : {}),
+        },
       ]}
     />
   );

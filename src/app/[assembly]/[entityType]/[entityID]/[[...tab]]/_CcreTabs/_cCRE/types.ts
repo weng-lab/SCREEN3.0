@@ -1,8 +1,12 @@
-import type { TableColDef, useTablePlotSync } from "@weng-lab/ui-components";
+import type { SyncedTableProps, TableColDef, TableFilters } from "@weng-lab/ui-components";
 import type { DownloadPlotHandle } from "@weng-lab/visualization";
 import type { AnyOpenEntity } from "common/OpenEntitiesContext";
 import type { Assembly, CcreAssay, CcreClass } from "common/types/globalTypes";
 import type { Dispatch, SetStateAction } from "react";
+import type { PlotTooltipProps } from "common/components/PlotTooltip";
+import { formatAssay } from "common/assays";
+import { CLASS_DESCRIPTIONS } from "common/ccre";
+import { capitalizeFirstLetter } from "common/utils";
 
 export type BiosampleRow = {
   /**
@@ -32,6 +36,23 @@ export type BiosampleRow = {
   tf?: string;
 };
 
+/**
+ * The table's column for the assay in view, on `value`: one field whatever the assay, so the table's
+ * filters and sort on it carry over from assay to assay.
+ */
+export const SCORE_FIELD = "value" satisfies keyof BiosampleRow;
+
+/** A biosample's hover on every assay plot. */
+export const biosampleTooltip = (row: BiosampleRow, assay: CcreAssay): PlotTooltipProps => ({
+  title: capitalizeFirstLetter(row.displayname),
+  rows: [
+    { label: "Organ/Tissue", value: capitalizeFirstLetter(row.ontology) },
+    ...(row.sampleType ? [{ label: "Sample Type", value: capitalizeFirstLetter(row.sampleType) }] : []),
+    ...(row.value != null ? [{ label: `${formatAssay(assay)} Z-score`, value: row.value.toFixed(2) }] : []),
+    ...(row.group ? [{ label: "Classification", value: CLASS_DESCRIPTIONS[row.group] ?? row.group }] : []),
+  ],
+});
+
 export type AssayViewProps = {
   rows: BiosampleRow[];
   columns: TableColDef[];
@@ -47,11 +68,7 @@ export type AssayTableProps = {
   columns: TableColDef[];
   assay: CcreAssay;
   entityID: string;
-  tableProps: ReturnType<typeof useTablePlotSync<BiosampleRow>>["tableProps"];
-  /**
-   * True when rows are presorted, and sorting should not be allowed on the table
-   */
-  isPresorted: boolean;
+  tableProps: SyncedTableProps<BiosampleRow>;
 };
 
 /** Props for the AssayBarPlot component */
@@ -96,6 +113,10 @@ export type AssayUMAPProps = {
   setSelected: Dispatch<SetStateAction<BiosampleRow[]>>;
   toggleSelection: (item: BiosampleRow) => void;
   getRowId: (item: BiosampleRow) => string;
+  /** The table's filters, which the UMAP's chips edit and its points follow. */
+  filters: TableFilters;
+  /** The table's columns, which name its filters. */
+  columns: TableColDef[];
   assay: CcreAssay;
   assembly: Assembly;
   ref?: React.RefObject<DownloadPlotHandle>;

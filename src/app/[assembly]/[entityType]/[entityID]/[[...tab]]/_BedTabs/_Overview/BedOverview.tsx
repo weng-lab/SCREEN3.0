@@ -3,7 +3,7 @@ import { Stack } from "@mui/system";
 import { EntityViewComponentProps } from "common/entityTabsConfig/types";
 import { decodeRegions } from "common/utils";
 import { useMemo } from "react";
-import { GenomicRange } from "common/types/generated/graphql";
+import { GenomicRange } from "common/types/globalTypes";
 import {
   // GRID_CHECKBOX_SELECTION_COL_DEF,
   TableColDef,

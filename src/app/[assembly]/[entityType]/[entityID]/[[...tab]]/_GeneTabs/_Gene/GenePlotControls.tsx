@@ -1,15 +1,12 @@
 import React from "react";
-import { Stack, FormControl, FormLabel, ToggleButtonGroup, ToggleButton, Tooltip, styled } from "@mui/material";
+import { Stack, FormControl, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
 import type {
   GeneExpressionRNAType,
   GeneExpressionScale,
   GeneExpressionViewBy,
   GeneExpressionReplicates,
 } from "./types";
-
-const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
-  ...theme.typography.body2,
-}));
+import { StyledFormLabel, ViolinPlotControls, ViolinSortBy } from "common/components/plotControls";
 
 interface ControlProps {
   assembly: string;
@@ -21,8 +18,8 @@ interface ControlProps {
   setScale: (newScale: GeneExpressionScale) => void;
   setViewBy: (newView: GeneExpressionViewBy) => void;
   setReplicates: (newReplicates: GeneExpressionReplicates) => void;
-  setSortBy?: (sortBy: "median" | "max" | "tissue") => void;
-  sortBy?: "median" | "max" | "tissue";
+  setSortBy?: (sortBy: ViolinSortBy) => void;
+  sortBy?: ViolinSortBy;
   setShowPoints?: (showPoints: boolean) => void;
   showPoints?: boolean;
   violin?: boolean;
@@ -134,55 +131,12 @@ const GenePlotControls: React.FC<ControlProps> = ({
         </ToggleButtonGroup>
       </FormControl>
       {violin ? (
-        <Stack direction="row" spacing={2} alignItems="center">
-          <FormControl>
-            <StyledFormLabel>Sort By</StyledFormLabel>
-            <ToggleButtonGroup
-              color="primary"
-              value={sortBy}
-              exclusive
-              onChange={(_event, value) => {
-                if (value !== null) {
-                  setSortBy(value);
-                }
-              }}
-              aria-label="View By"
-              size="small"
-            >
-              <ToggleButton sx={{ textTransform: "none" }} value="max">
-                Max
-              </ToggleButton>
-              <ToggleButton sx={{ textTransform: "none" }} value="median">
-                Median
-              </ToggleButton>
-              <ToggleButton sx={{ textTransform: "none" }} value="tissue">
-                Tissue
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </FormControl>
-          <FormControl>
-            <StyledFormLabel>Show Points</StyledFormLabel>
-            <ToggleButtonGroup
-              color="primary"
-              value={showPoints}
-              exclusive
-              onChange={(_event, value) => {
-                if (value !== null) {
-                  setShowPoints(value);
-                }
-              }}
-              aria-label="show points"
-              size="small"
-            >
-              <ToggleButton sx={{ textTransform: "none" }} value={true}>
-                On
-              </ToggleButton>
-              <ToggleButton sx={{ textTransform: "none" }} value={false}>
-                Off
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </FormControl>
-        </Stack>
+        <ViolinPlotControls
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          showPoints={showPoints}
+          setShowPoints={setShowPoints}
+        />
       ) : (
         <FormControl>
           <StyledFormLabel>View By</StyledFormLabel>

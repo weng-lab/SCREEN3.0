@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Skeleton, Stack, Tooltip } from "@mui/material";
 import { useLinkedGenes, LinkedGeneInfo } from "common/hooks/data/ccre";
 import { ChIAPETCols, CrisprFlowFISHCols, eQTLCols, IntactHiCLoopsCols } from "./columns";
 import LinkedElements, { TableDef } from "common/components/linkedElements";
@@ -13,7 +13,7 @@ import { EntityViewComponentProps } from "common/entityTabsConfig";
 import { useCompuLinkedGenes } from "common/hooks/data/ccre";
 import { useState } from "react";
 import { formatCoord, sharedColumns } from "../../_GwasTabs/_Gene/columns";
-import { InfoOutlineRounded } from "@mui/icons-material";
+import { EmptyTableFallback } from "common/components/EmptyTableFallback";
 import SelectCompuGenesMethod from "../../_GwasTabs/_Gene/SelectCompuGenesMethod";
 
 const CompuLinkedGenes_columns: TableColDef<ReturnType<typeof useCompuLinkedGenes>["data"][number]>[] = [
@@ -96,6 +96,14 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
     setMethod(method);
   };
 
+  const changeMethodButton = (
+    <Tooltip title="Advanced Filters">
+      <Button variant="outlined" onClick={() => setOpen(true)}>
+        Change Method
+      </Button>
+    </Tooltip>
+  );
+
   // make types for the data
   const collectLinked = (predicate: (x: LinkedGeneInfo) => boolean) =>
     linkedGenes?.reduce<(LinkedGeneInfo & { id: string })[]>((acc, x: LinkedGeneInfo) => {
@@ -156,38 +164,16 @@ export default function CcreLinkedGenes({ entity }: EntityViewComponentProps) {
       sortColumn: "score",
       sortDirection: "desc",
       emptyTableFallback: (
-        <Stack
-          direction={"row"}
-          border={"1px solid #e0e0e0"}
-          borderRadius={1}
-          p={2}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-        >
-          <Stack direction={"row"} spacing={1}>
-            <InfoOutlineRounded />
-            {loadingCompuGenes ? (
-              <Typography>Fetching Computational Linked Genes by {method}</Typography>
-            ) : (
-              <Typography>No Computational Predictions</Typography>
-            )}
-          </Stack>
-          <Tooltip title="Advanced Filters">
-            <Button variant="outlined" onClick={() => setOpen(true)}>
-              Change Method
-            </Button>
-          </Tooltip>
-        </Stack>
+        <EmptyTableFallback
+          message={
+            loadingCompuGenes ? `Fetching Computational Linked Genes by ${method}` : "No Computational Predictions"
+          }
+          action={changeMethodButton}
+        />
       ),
       slotProps: {
         toolbar: {
-          extra: (
-            <Tooltip title="Advanced Filters">
-              <Button variant="outlined" onClick={() => setOpen(true)}>
-                Change Method
-              </Button>
-            </Tooltip>
-          ),
+          extra: changeMethodButton,
         },
       },
     },

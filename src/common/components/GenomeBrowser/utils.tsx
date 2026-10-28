@@ -1,5 +1,4 @@
-import { Chromosome, Vibrant } from "@weng-lab/genomebrowser";
-import { Result } from "@weng-lab/ui-components";
+const Vibrant = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#a65628"];
 import { AnyEntityType } from "common/entityTabsConfig";
 import { GenomicRange } from "common/types/globalTypes";
 import { useMemo } from "react";
@@ -8,16 +7,6 @@ export function randomColor() {
   const idx = Math.floor(Math.random() * Vibrant.length);
   return Vibrant[idx];
 }
-
-export const SearchToScreenTypes: Partial<Record<Result["type"], AnyEntityType>> = {
-  Coordinate: "region",
-  Gene: "gene",
-  SNP: "variant",
-  Study: "gwas",
-  cCRE: "ccre",
-  iCRE: "ccre",
-  "Legacy cCRE": "ccre",
-};
 
 const expansionPercentages: Record<AnyEntityType, number> = {
   ccre: 20,
@@ -39,7 +28,7 @@ export function expandCoordinates(coordinates: GenomicRange, type: AnyEntityType
   const padding = Math.floor(length * expansionPercentage);
 
   return {
-    chromosome: coordinates.chromosome as Chromosome,
+    chromosome: coordinates.chromosome,
     start: Math.max(0, coordinates.start - padding),
     end: coordinates.end + padding,
   };
