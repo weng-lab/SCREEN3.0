@@ -3,6 +3,8 @@ import { TwoPaneLayout, useTablePlotSync, withValueOptions } from "@weng-lab/ui-
 import { usePlotDownload } from "common/hooks/ui";
 import { twoPaneHeights } from "common/components/EntityDetails/entityPageHeight";
 import { BarChart, CandlestickChart, ScatterPlot } from "@mui/icons-material";
+import { Alert } from "@mui/material";
+import { formatAssay } from "common/assays";
 import AssayTable from "./AssayTable";
 import AssayBarPlot from "./AssayBarPlot";
 import AssayViolinPlot from "./AssayViolinPlot";
@@ -91,6 +93,7 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
   const { ref: barRef, ...barDownload } = usePlotDownload();
   const { ref: violinRef, ...violinDownload } = usePlotDownload();
   const { ref: umapRef, ...umapDownload } = usePlotDownload();
+  const hasUmap = assay !== "atac";
 
   return (
     <TwoPaneLayout
@@ -151,29 +154,30 @@ const AssayView = ({ rows, columns, assay, entity }: AssayViewProps) => {
           ),
           ...violinDownload,
         },
-        ...(assay !== "atac"
-          ? [
-              {
-                tabTitle: "UMAP",
-                icon: <ScatterPlot />,
-                plotComponent: (
-                  <AssayUMAP
-                    ref={umapRef}
-                    rows={rows}
-                    selected={selected}
-                    setSelected={setSelected}
-                    toggleSelection={toggleSelection}
-                    getRowId={getRowId}
-                    filters={filters}
-                    columns={tableColumns}
-                    assay={assay}
-                    assembly={assembly}
-                  />
-                ),
-                ...umapDownload,
-              },
-            ]
-          : []),
+        // Kept on ATAC, which has no UMAP, to say so: a tab that came and went with the assay would
+        // leave the layout quietly showing another in its place.
+        {
+          tabTitle: "UMAP",
+          icon: <ScatterPlot />,
+          plotComponent: hasUmap ? (
+            <AssayUMAP
+              ref={umapRef}
+              rows={rows}
+              selected={selected}
+              setSelected={setSelected}
+              toggleSelection={toggleSelection}
+              getRowId={getRowId}
+              filters={filters}
+              columns={tableColumns}
+              assay={assay}
+              assembly={assembly}
+            />
+          ) : (
+            <Alert severity="info">UMAP is not available for {formatAssay(assay)}</Alert>
+          ),
+          // Nothing to download without one, which hides the Download button.
+          ...(hasUmap ? umapDownload : {}),
+        },
       ]}
     />
   );
