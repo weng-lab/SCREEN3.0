@@ -34,7 +34,9 @@ const marks = [
 
 export const DistanceSlider = ({ distance, handleDistanceChange }: DistanceSliderProps) => {
   return (
-    <Box sx={{ width: "200px", mr: 2 }}>
+    // Room either side for the end marks' labels, which MUI centers on the ends of the track. Kept wide enough for
+    // its marks' labels not to run together: a toolbar too narrow for it puts it on a row of its own.
+    <Box sx={{ width: 200, minWidth: 160, mx: 1.5 }}>
       <Slider
         aria-label="Distance slider"
         defaultValue={500}

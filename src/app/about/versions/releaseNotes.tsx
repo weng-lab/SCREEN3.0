@@ -107,7 +107,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     id: "r3.2026.4",
     version: "r3.2026.4",
-    date: "2026-10-28",
+    date: "2026-10-30",
     title: "October 2026 Release",
     summary: "Genome browser updates and visualization improvements",
     sections: [
@@ -120,10 +120,15 @@ export const RELEASE_NOTES: ReleaseNote[] = [
           },
           {
             description:
-              "Scatterplot visualizations: now use improved chip-style and gradient legends, as well as offer a new “shape by” option alongside “color by”. Accompanying table column filtering has been improved and color scales cleaned up for better visualization.",
+              "Scatterplots: improved chip-style and gradient legends, a new “shape by” option alongside “color by”, better column filtering in the accompanying table, and cleaner color scales.",
           },
           {
-            description: "Visualization plot touch input has been substantially improved for mobile.",
+            description:
+              "Bar and violin plots: long/tall plots now scroll properly, and violin plots turn on their sides when their labels won't fit.",
+          },
+          {
+            description:
+              "Mobile: Interaction with plots through touch substantially improved. Entity pages with visualizations have the table as a tab alongside the plots, and layouts across the site have been reworked to better fit small screens.",
           },
           {
             description:

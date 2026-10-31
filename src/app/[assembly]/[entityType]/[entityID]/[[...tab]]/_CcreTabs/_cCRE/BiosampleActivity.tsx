@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { Alert, Skeleton, Stack, Tab, Tabs, Typography } from "@mui/material";
-import { TableColDef, Table, capitalizeOption, withValueOptions } from "@weng-lab/ui-components";
+import { Alert, Skeleton, Stack, Tab, Typography } from "@mui/material";
+import { TableColDef, Table, capitalizeOption, withValueOptions, ScrollableTabs } from "@weng-lab/ui-components";
 import { GridRenderCellParams, GridComparatorFn, gridNumberComparator } from "@mui/x-data-grid-premium";
 import type { CcreAssay } from "common/types/globalTypes";
 import type { EntityViewComponentProps } from "common/entityTabsConfig";
@@ -370,18 +370,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
 
   return (
     <>
-      <Tabs
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-        value={tab}
-        onChange={handleChange}
-        sx={{
-          "& .MuiTabs-scrollButtons.Mui-disabled": {
-            opacity: 0.3,
-          },
-        }}
-      >
+      <ScrollableTabs value={tab} onChange={handleChange}>
         <Tab value="tables" label="Primary Classification" />
         <Tab value="add_classification" label="Additional Classification" />
         <Tab value="dnase" label="DNase" />
@@ -389,7 +378,7 @@ export const BiosampleActivity = ({ entity }: EntityViewComponentProps) => {
         <Tab value="h3k4me3" label="H3K4me3" />
         <Tab value="h3k27ac" label="H3K27ac" />
         <Tab value="ctcf" label="CTCF" />
-      </Tabs>
+      </ScrollableTabs>
       {tab === "tables" ? (
         <Stack spacing={3} sx={{ mt: "0rem", mb: "0rem" }}>
           <Typography variant="body1" sx={bodyTextSx}>

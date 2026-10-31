@@ -3,6 +3,7 @@ import { AnyOpenEntity, getEntityKey, isSameEntity } from "common/OpenEntitiesCo
 import { DraggableTab } from "./DraggableTab";
 import { Droppable } from "@hello-pangea/dnd";
 import { TabList } from "@mui/lab";
+import { ScrollableTabs } from "@weng-lab/ui-components";
 
 interface OpenTabsProps {
   openEntities: AnyOpenEntity[];
@@ -34,14 +35,12 @@ export const OpenTabs: React.FC<OpenTabsProps> = ({
   return (
     <Droppable droppableId={"droppableID"} direction="horizontal">
       {(provided, snapshot) => (
-        <TabList
-          variant="scrollable"
-          allowScrollButtonsMobile
+        <ScrollableTabs
+          TabsComponent={TabList}
           scrollButtons={snapshot.draggingFromThisWith ? false : "auto"} //prevent scroll buttons from appearing when dragging first or last item
+          // The fade would also hide a tab dragged out past the tabs' edges.
+          fade={!snapshot.draggingFromThisWith}
           sx={{
-            "& .MuiTabs-scrollButtons.Mui-disabled": {
-              opacity: 0.3,
-            },
             "& .MuiTabs-indicator": {
               display: "none", // hide selected indicator since we're adding one back in to fix drag behavior
             },
@@ -64,7 +63,7 @@ export const OpenTabs: React.FC<OpenTabsProps> = ({
           <RemoveMuiProps>
             <div style={{ visibility: "hidden" }}>{provided.placeholder}</div>
           </RemoveMuiProps>
-        </TabList>
+        </ScrollableTabs>
       )}
     </Droppable>
   );

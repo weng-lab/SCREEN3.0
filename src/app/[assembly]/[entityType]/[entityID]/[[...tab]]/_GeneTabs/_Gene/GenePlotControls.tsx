@@ -1,12 +1,12 @@
 import React from "react";
-import { Stack, FormControl, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
+import { FormControl, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
 import type {
   GeneExpressionRNAType,
   GeneExpressionScale,
   GeneExpressionViewBy,
   GeneExpressionReplicates,
 } from "./types";
-import { StyledFormLabel, ViolinPlotControls, ViolinSortBy } from "common/components/plotControls";
+import { PlotControlsRow, StyledFormLabel, ViolinPlotControls, ViolinSortBy } from "common/components/plotControls";
 
 interface ControlProps {
   assembly: string;
@@ -44,7 +44,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
   disabled = false,
 }) => {
   return (
-    <Stack direction="row" gap={2} mb={2} flexWrap="wrap">
+    <PlotControlsRow>
       <FormControl>
         <StyledFormLabel>RNA-seq Type</StyledFormLabel>
         <ToggleButtonGroup
@@ -167,7 +167,7 @@ const GenePlotControls: React.FC<ControlProps> = ({
           </ToggleButtonGroup>
         </FormControl>
       )}
-    </Stack>
+    </PlotControlsRow>
   );
 };
 

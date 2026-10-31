@@ -55,7 +55,8 @@ export default function ContactForm() {
         ref={form}
         id="contact-us"
         sx={{
-          "& > :not(style)": { width: "50ch" },
+          // At most, so a phone narrower than that doesn't widen the page to fit the form.
+          "& > :not(style)": { width: "100%", maxWidth: "50ch" },
         }}
         noValidate
         autoComplete="off"

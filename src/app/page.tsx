@@ -43,6 +43,9 @@ export default function Home() {
           alignItems: "center",
           flexDirection: "column",
           backgroundAttachment: "fixed",
+          // A phone paints a fixed background against the whole page rather than the screen, so cover scaled the helix
+          // to the page's height and left only a blur of its backdrop here. On touch screens it scrolls with the page.
+          "@media (hover: none)": { backgroundAttachment: "scroll" },
         }}
       >
         <Stack

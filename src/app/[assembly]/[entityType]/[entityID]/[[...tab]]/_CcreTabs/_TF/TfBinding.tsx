@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { DNALogo } from "logo-test";
 import { useQuery } from "@apollo/client/react";
-import { TableColDef, Table } from "@weng-lab/ui-components";
+import { TableColDef, Table, ScrollableTabs } from "@weng-lab/ui-components";
 import {
   GRID_ROW_GROUPING_SINGLE_GROUPING_FIELD,
   gridFilteredDescendantCountLookupSelector,
@@ -14,7 +14,7 @@ import {
 import { gql } from "common/types/generated";
 import { LinkComponent } from "common/components/LinkComponent";
 import { EntityViewComponentProps } from "common/entityTabsConfig";
-import { Tabs, Tab } from "@mui/material";
+import { Tab } from "@mui/material";
 import { useCcreRpeaks } from "common/hooks/data/ccre";
 
 const TF_EXPERIMENT_TOTALS = gql(`
@@ -281,21 +281,10 @@ export const TfBinding = ({ entity }: EntityViewComponentProps) => {
 
   return (
     <>
-      <Tabs
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-        value={tab}
-        onChange={handleChange}
-        sx={{
-          "& .MuiTabs-scrollButtons.Mui-disabled": {
-            opacity: 0.3,
-          },
-        }}
-      >
+      <ScrollableTabs value={tab} onChange={handleChange}>
         <Tab value="binding_tfs" label="Bound Transcription Factors" />
         <Tab value="overlapping_peaks" label="Overlapping ChIP-seq Peaks" />
-      </Tabs>
+      </ScrollableTabs>
       {tab === "overlapping_peaks" && (
         <Table
           label={`Overlapping Representative ChIP-seq Peaks for transcription factors and other DNA-associated proteins`}
