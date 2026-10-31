@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+  // Lets a phone on the local network use the dev server: otherwise Next refuses its HMR socket and the page never hydrates.
+  allowedDevOrigins: ["192.168.*.*"],
   async redirects() {
     return [
       {

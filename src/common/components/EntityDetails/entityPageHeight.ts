@@ -10,8 +10,8 @@ const ENTITY_PAGE_CHROME = 16 + 16 + 16;
 const entityPageHeight = (viewport: string, chrome: number, min: number, above = "0px") =>
   `max(calc(${underHeaders(viewport)} - ${chrome}px - ${above}), ${min}px)`;
 
-// A phone gives every touch on a stacked pane to the pane (the table scrolls, the plot pans), so each is held
-// this far short of the window to leave a strip that scrolls the page past it.
+// A phone gives most touches on a stacked pane to the pane (the table and long plots scroll their rows, the
+// UMAP pans), so it's held this far short of the window to leave a strip that scrolls the page past it.
 const STACKED_RESERVE = 96;
 
 /**
@@ -19,7 +19,8 @@ const STACKED_RESERVE = 96;
  * under it, as a CSS length.
  *
  * Side by side, the panes end at the window's bottom with the page scrolled to the top, so the entity header
- * comes off too. Stacked, the panes are scrolled to one at a time, by which point the header has gone.
+ * comes off too. Stacked, the panes show one at a time as tabs, the tab bar included in the height, and are
+ * scrolled to with the header gone.
  */
 export const twoPaneHeights = (above = "0px") => ({
   rowHeight: entityPageHeight("100vh", ENTITY_PAGE_CHROME, 560, `var(--entity-header-height, 112px) - ${above}`),

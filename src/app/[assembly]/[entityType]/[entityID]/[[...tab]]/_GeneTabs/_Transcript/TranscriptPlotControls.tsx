@@ -1,6 +1,6 @@
 import React from "react";
-import { Stack, FormControl, Select, MenuItem, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
-import { StyledFormLabel, ViolinPlotControls, ViolinSortBy } from "common/components/plotControls";
+import { FormControl, Select, MenuItem, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
+import { PlotControlsRow, StyledFormLabel, ViolinPlotControls, ViolinSortBy } from "common/components/plotControls";
 
 interface Peak {
   peakID: string;
@@ -36,7 +36,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
   setShowPoints = () => {},
   showPoints = true,
 }) => (
-  <Stack direction="row" spacing={2} alignItems="center" mb={2} flexWrap="wrap">
+  <PlotControlsRow>
     <FormControl>
       <StyledFormLabel>Peak</StyledFormLabel>
       <Select
@@ -106,7 +106,7 @@ const TranscriptPlotControls: React.FC<TranscriptPlotControlsProps> = ({
     {violin && (
       <ViolinPlotControls sortBy={sortBy} setSortBy={setSortBy} showPoints={showPoints} setShowPoints={setShowPoints} />
     )}
-  </Stack>
+  </PlotControlsRow>
 );
 
 export default TranscriptPlotControls;
