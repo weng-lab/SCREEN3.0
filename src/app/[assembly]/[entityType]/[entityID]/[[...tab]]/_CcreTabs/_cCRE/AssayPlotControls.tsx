@@ -1,7 +1,7 @@
 import React from "react";
-import { Stack, FormControl, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
+import { FormControl, ToggleButtonGroup, ToggleButton, Tooltip } from "@mui/material";
 import type { ViewBy } from "./types";
-import { StyledFormLabel, ViolinPlotControls, ViolinSortBy } from "common/components/plotControls";
+import { PlotControlsRow, StyledFormLabel, ViolinPlotControls, ViolinSortBy } from "common/components/plotControls";
 
 interface AssayPlotControlsProps {
   viewBy: ViewBy;
@@ -30,7 +30,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
   show95Line = true,
   setShow95Line = () => {},
 }) => (
-  <Stack direction="row" gap={2} mb={2} flexWrap="wrap">
+  <PlotControlsRow>
     {!violin && (
       <FormControl>
         <StyledFormLabel>View By</StyledFormLabel>
@@ -107,7 +107,7 @@ const AssayPlotControls: React.FC<AssayPlotControlsProps> = ({
         </ToggleButton>
       </ToggleButtonGroup>
     </FormControl>
-  </Stack>
+  </PlotControlsRow>
 );
 
 export default AssayPlotControls;

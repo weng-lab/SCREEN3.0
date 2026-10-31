@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Tabs, Tab, Divider, Box, Typography } from "@mui/material";
+import { Tab, Divider, Box, Typography } from "@mui/material";
+import { ScrollableTabs } from "@weng-lab/ui-components";
 import { DataMatrices } from "./_DataMatrices/DataMatrices";
 import { useState } from "react";
 import { DownloadRange } from "./_DownloadRange/DownloadRange";
@@ -39,12 +40,13 @@ export default function Downloads() {
       <Typography
         variant="h1"
         component="h1"
+        // In px: sx reads a bare 1 as 100% and -1 as a spacing unit, which ran the heading 8px past the page's edge.
         sx={{
           position: "absolute",
-          width: 1,
-          height: 1,
+          width: "1px",
+          height: "1px",
           padding: 0,
-          margin: -1,
+          margin: "-1px",
           overflow: "hidden",
           clip: "rect(0 0 0 0)",
           whiteSpace: "nowrap",
@@ -54,22 +56,11 @@ export default function Downloads() {
         Download cCRE Data
       </Typography>
       <Box id="downloads-tabs" minWidth={0}>
-        <Tabs
-          value={page}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-          variant="scrollable"
-          allowScrollButtonsMobile
-          sx={{
-            "& .MuiTabs-scrollButtons.Mui-disabled": {
-              opacity: 0.3,
-            },
-          }}
-        >
+        <ScrollableTabs value={page} onChange={handleChange} aria-label="Downloads">
           <Tab label="Annotations" {...a11yProps(0)} />
           <Tab label="Data Matrices" {...a11yProps(1)} />
           <Tab label="Download cCREs in Genomic Region" {...a11yProps(2)} />
-        </Tabs>
+        </ScrollableTabs>
         <Divider />
       </Box>
       <Box minWidth={0} minHeight={0} id="downloads-content">

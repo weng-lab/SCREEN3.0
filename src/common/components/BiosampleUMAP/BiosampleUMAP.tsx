@@ -327,7 +327,6 @@ const BiosampleUMAP = <T,>({
             />
           )}
           controlsHighlight={theme.palette.primary.light}
-          controlsPosition="right"
           leftAxisLabel="UMAP-2"
           bottomAxisLabel="UMAP-1"
           ref={ref}

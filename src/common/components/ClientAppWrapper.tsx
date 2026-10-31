@@ -40,7 +40,15 @@ export default function ClientAppWrapper({ children }: { children: React.ReactNo
   }, []);
 
   return (
-    <Box id="app-wrapper" display={"grid"} gridTemplateRows={"auto minmax(0, 1fr) auto"} minHeight={"100vh"}>
+    // A column that can be narrower than its content, which would otherwise widen the page: on a phone, to fit a table
+    // that its own scroller should hold.
+    <Box
+      id="app-wrapper"
+      display={"grid"}
+      gridTemplateRows={"auto minmax(0, 1fr) auto"}
+      gridTemplateColumns={"minmax(0, 1fr)"}
+      minHeight={"100vh"}
+    >
       {/* Offset hash-link scroll targets so they aren't hidden behind the sticky header.
           Applied via scroll-padding-top on the scroll root (rather than :target scroll-margin)
           so it also works for Next.js soft navigation, which scrolls programmatically. */}
